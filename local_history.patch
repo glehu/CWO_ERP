@@ -1,0 +1,44 @@
+Index: src/main/kotlin/CwODB.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/kotlin/CwODB.kt b/src/main/kotlin/CwODB.kt
+--- a/src/main/kotlin/CwODB.kt	(date 1624877843550)
++++ b/src/main/kotlin/CwODB.kt	(date 1624877843550)
+@@ -16,7 +16,7 @@
+     private val finalMaxSearchResults = 2000
+ 
+     //Values visible from outside usage of this class
+-    val progressModel: ProgressModel by inject()
++    private val progressModel: ProgressModel by inject()
+     private val progressValueProperty = SimpleIntegerProperty()
+     private val totalEntriesProperty = SimpleIntegerProperty()
+     private val completionProperty = SimpleIntegerProperty()
+@@ -148,14 +148,13 @@
+     // Returns an array of all entries that fit the search criteria
+     fun getEntriesFromSearchString(
+         searchText: String, ixNr: String, exactSearch: Boolean, module: String,
+-        maxSearchResults: Int = finalMaxSearchResults,
+-        progressModel: ProgressModel
++        maxSearchResults: Int = finalMaxSearchResults
+     ): MutableList<ByteArray>
+     {
+         val searchString = indexFormat(searchText)
+         val entryList: MutableList<ByteArray> = ArrayList()
+         val indexData =
+-            getEntryIndexDataMultisearch(searchString, ixNr, exactSearch, maxSearchResults, module, progressModel)
++            getEntryIndexDataMultisearch(searchString, ixNr, exactSearch, maxSearchResults, module)
+         for (result in indexData[1].indices)
+         {
+             if (indexData[1][result].toInt() > 0)
+@@ -170,8 +169,7 @@
+     private fun getEntryIndexDataMultisearch(
+         searchText: String, ixNr: String, exactSearch: Boolean,
+         maxSearchResults: Int = finalMaxSearchResults,
+-        module: String,
+-        progressModel: ProgressModel
++        module: String
+     ): MutableList<MutableList<Long>>
+     {
+         val positionsInDBList: MutableList<Long> = ArrayList()

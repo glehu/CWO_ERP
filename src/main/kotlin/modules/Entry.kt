@@ -1,0 +1,5 @@
+package modules
+
+interface Entry
+{
+}
