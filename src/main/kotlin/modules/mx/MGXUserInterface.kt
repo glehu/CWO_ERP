@@ -48,9 +48,6 @@ class MainView : View("CWO ERP")
                 }
             }
         }
-        right = vbox {
-            //imageview(resources["/graphics/orochi_logo_red_400_400.png"])
-        }
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             tab("M1Songs") {
