@@ -10,14 +10,12 @@ import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.Module
 import modules.m1.SongModel
-import modules.m1.gui.MG1Analytics
-import modules.m1.gui.SongFinder
 import modules.m2.Contact
 import modules.m2.getContactFromProperty
 import modules.m2.getContactPropertyFromContact
 import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
-import modules.m2.misc.ContactModel
+import modules.m2.gui.MG2Analytics
 import modules.m2.misc.ContactProperty
 import modules.mx.MXLog
 import tornadofx.*
@@ -54,6 +52,12 @@ class ContactController : Module, Controller()
     fun openWizardFindContact()
     {
         find(ContactFinder::class, Scope(indexManager)).openModal()
+    }
+
+    fun openAnalytics()
+    {
+        //TODO: Add multiple analytics modes
+        find(MG2Analytics::class, Scope(indexManager)).openModal()
     }
 
     fun openDataImport()

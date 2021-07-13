@@ -71,8 +71,8 @@ class MainView : View("CWO ERP")
                         }
                         //Analytics functions
                         vbox {
-                            button("Genre Distributions") {
-                                action { m1Controller.openGenreDistribution() }
+                            button("Analytics") {
+                                action { m1Controller.openAnalytics() }
                                 tooltip("Display a chart to show the distribution of genres.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                             }
@@ -80,6 +80,7 @@ class MainView : View("CWO ERP")
                         //Maintenance functions
                         vbox {
                             button("Rebuild indices") {
+                                //TODO: Not yet implemented
                                 tooltip("Rebuilds all indices in case of faulty indices.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 40.0 }
                             }
@@ -100,6 +101,14 @@ class MainView : View("CWO ERP")
                             button("Find Contact") {
                                 action { m2Controller.openWizardFindContact() }
                                 tooltip("Find a song in the database.")
+                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                            }
+                        }
+                        //Analytics functions
+                        vbox {
+                            button("Analytics") {
+                                action { m2Controller.openAnalytics() }
+                                tooltip("Display a chart to show the distribution of genres.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                             }
                         }

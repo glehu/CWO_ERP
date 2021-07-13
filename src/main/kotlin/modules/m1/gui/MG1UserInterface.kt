@@ -51,8 +51,9 @@ class SongController : Module, Controller()
         find(SongFinder::class, Scope(indexManager)).openModal()
     }
 
-    fun openGenreDistribution()
+    fun openAnalytics()
     {
+        //TODO: Add multiple analytics modes
         find(MG1Analytics::class, Scope(indexManager)).openModal()
     }
 }
