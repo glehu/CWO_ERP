@@ -1,5 +1,5 @@
 package modules
 
-interface Entry
+interface IEntry
 {
 }

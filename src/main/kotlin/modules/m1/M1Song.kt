@@ -2,12 +2,12 @@ package modules.m1
 
 import db.CwODB
 import kotlinx.serialization.Serializable
-import modules.Entry
+import modules.IEntry
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Serializable
-data class Song(var uID: Int, var name: String): Entry
+data class Song(var uID: Int, var name: String): IEntry
 {
     /*  M1SONGS DB Version 0.1.5-PreAlpha
 

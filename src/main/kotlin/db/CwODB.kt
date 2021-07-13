@@ -4,9 +4,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.IndexManager
-import modules.Module
-import modules.m1.logic.M1IndexManager
+import modules.IIndexManager
+import modules.IModule
 import modules.mx.MXLog
 import modules.mx.extractNumbers
 import modules.mx.getModulePath
@@ -16,7 +15,7 @@ import java.io.File
 import java.io.RandomAccessFile
 import kotlin.system.measureTimeMillis
 
-class CwODB : Module, Controller()
+class CwODB : IModule, Controller()
 {
     override fun moduleName() = "CwODB"
 
@@ -143,7 +142,7 @@ class CwODB : Module, Controller()
     fun getEntriesFromSearchString(
         searchText: String, ixNr: Int, exactSearch: Boolean,
         module: String, maxSearchResults: Int = finalMaxSearchResults,
-        indexManager: IndexManager,
+        indexManager: IIndexManager,
         updateProgress: (Int, ByteArray) -> Unit
     )
     {

@@ -3,7 +3,7 @@ package modules.m2.logic
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.Module
+import modules.IModule
 import modules.m2.Contact
 import modules.mx.MXLog
 import tornadofx.Controller
@@ -13,7 +13,7 @@ import kotlin.streams.asSequence
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class M2Import : Module, Controller()
+class M2Import : IModule, Controller()
 {
     override fun moduleName() = "M2Import"
 

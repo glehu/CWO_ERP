@@ -2,7 +2,7 @@ package modules
 
 import db.Index
 
-interface IndexManager : Module
+interface IIndexManager : IModule
 {
     val indexList: Map<Int, Index>
     fun getIndexUserSelection(): ArrayList<String>

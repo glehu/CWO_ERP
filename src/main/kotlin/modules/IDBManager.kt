@@ -3,7 +3,7 @@ package modules
 import db.CwODB
 import java.io.RandomAccessFile
 
-interface DBManager: Module
+interface IDBManager: IModule
 {
     fun saveEntry(
         entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,

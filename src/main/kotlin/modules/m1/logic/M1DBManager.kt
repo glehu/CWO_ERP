@@ -5,15 +5,13 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
-import modules.DBManager
-import modules.Module
+import modules.IDBManager
+import modules.IModule
 import modules.m1.Song
-import modules.m1.SongProperty
-import modules.m1.getSongFromProperty
 import modules.mx.MXLog
 import java.io.RandomAccessFile
 
-class M1DBManager : Module, DBManager
+class M1DBManager : IModule, IDBManager
 {
     override fun moduleName() = "M1DBManager"
 

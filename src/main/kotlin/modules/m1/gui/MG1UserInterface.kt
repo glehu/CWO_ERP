@@ -8,7 +8,7 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.Module
+import modules.IModule
 import modules.m1.Song
 import modules.m1.SongProperty
 import modules.m1.getSongFromProperty
@@ -20,7 +20,7 @@ import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class SongController : Module, Controller()
+class SongController : IModule, Controller()
 {
     override fun moduleName() = "MG1UserInterface"
 
@@ -59,7 +59,7 @@ class SongController : Module, Controller()
 }
 
 @ExperimentalSerializationApi
-class SongFinder : Module, View("Find Song")
+class SongFinder : IModule, View("Find Song")
 {
     override fun moduleName() = "MG1UserInterface"
     val db: CwODB by inject()

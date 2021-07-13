@@ -1,6 +1,6 @@
 package modules.mx
 
-import modules.Module
+import modules.IModule
 import tornadofx.runAsync
 import java.io.File
 import java.time.LocalDateTime
@@ -11,7 +11,7 @@ class MXLog
     {
         INFO, WARNING, ERROR
     }
-    companion object Logger: Module
+    companion object Logger: IModule
     {
         override fun moduleName() = "MXLog"
 

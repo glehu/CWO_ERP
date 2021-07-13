@@ -6,8 +6,8 @@ import db.IndexContent
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.IndexManager
-import modules.Module
+import modules.IIndexManager
+import modules.IModule
 import modules.m2.Contact
 import modules.mx.MXLog
 import modules.mx.indexFormat
@@ -15,7 +15,7 @@ import tornadofx.Controller
 import kotlin.collections.ArrayList
 
 @ExperimentalSerializationApi
-class M2IndexManager: Module, IndexManager, Controller()
+class M2IndexManager: IModule, IIndexManager, Controller()
 {
     override fun moduleName() = "M2IndexManager"
     override val indexList = mutableMapOf<Int, Index>()

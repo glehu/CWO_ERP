@@ -8,21 +8,20 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.Module
+import modules.IModule
 import modules.m1.SongModel
 import modules.m2.Contact
 import modules.m2.getContactFromProperty
 import modules.m2.getContactPropertyFromContact
 import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
-import modules.m2.gui.MG2Analytics
 import modules.m2.misc.ContactProperty
 import modules.mx.MXLog
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class ContactController : Module, Controller()
+class ContactController : IModule, Controller()
 {
     override fun moduleName() = "MG2UserInterface"
 
@@ -67,7 +66,7 @@ class ContactController : Module, Controller()
 }
 
 @ExperimentalSerializationApi
-class ContactFinder : Module, View("Find Contact")
+class ContactFinder : IModule, View("Find Contact")
 {
     override fun moduleName() = "MG2UserInterface"
     val db: CwODB by inject()

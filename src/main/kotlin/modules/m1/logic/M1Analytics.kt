@@ -2,13 +2,13 @@ package modules.m1.logic
 
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.Module
+import modules.IModule
 import modules.m1.Song
 import modules.mx.MXLog
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
-class M1Analytics : Module, Controller()
+class M1Analytics : IModule, Controller()
 {
     override fun moduleName() = "M1Analytics"
     val db: CwODB by inject()

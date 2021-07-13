@@ -2,7 +2,7 @@ package modules.m1.misc
 
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.Module
+import modules.IModule
 import modules.m1.Song
 import modules.m1.getGenreList
 import modules.m1.logic.M1DBManager
@@ -15,7 +15,7 @@ import kotlin.streams.asSequence
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class M1Benchmark : Module, Controller()
+class M1Benchmark : IModule, Controller()
 {
     override fun moduleName() = "M1Benchmark"
 
