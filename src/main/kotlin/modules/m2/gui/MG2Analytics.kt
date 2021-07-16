@@ -10,7 +10,7 @@ import modules.m2.logic.M2IndexManager
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MG2Analytics : Fragment("Genre distribution")
+class MG2Analytics : Fragment("City distribution")
 {
     val db: CwODB by inject()
     val indexManager: M2IndexManager by inject(Scope(db))

@@ -23,6 +23,7 @@ class M2Analytics : IModule, Controller()
         val map = mutableMapOf<String, Double>()
         val dbManager = M2DBManager()
         MXLog.log("M2", MXLog.LogType.INFO, "City distribution analysis start", moduleName())
+        var city: String
         val timeInMS = measureTimeMillis {
             db.getEntriesFromSearchString(
                 "", 0, false, "M2", -1, indexManager
@@ -32,11 +33,12 @@ class M2Analytics : IModule, Controller()
                 val contact: Contact = dbManager.getEntry(entryBytes) as Contact
                 if (contact.uID != -1)
                 {
+                    city = contact.city.uppercase()
                     contactCount += 1.0
-                    if (map.containsKey(contact.city))
+                    if (map.containsKey(city))
                     {
-                        map[contact.city] = map[contact.city]!! + 1.0
-                    } else map[contact.city] = 1.0
+                        map[city] = map[city]!! + 1.0
+                    } else map[city] = 1.0
                 }
             }
             map["[amount]"] = contactCount
