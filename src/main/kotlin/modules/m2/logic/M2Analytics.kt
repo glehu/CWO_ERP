@@ -16,14 +16,18 @@ class M2Analytics : IModule, Controller()
     @ExperimentalSerializationApi
     fun getChartDataOnCityDistribution(
         indexManager: M2IndexManager,
+        amount: Int = -1,
         updateProgress: (Pair<Int, String>) -> Unit
     ): MutableMap<String, Double>
     {
-        var contactCount = 0.0
-        val map = mutableMapOf<String, Double>()
         val dbManager = M2DBManager()
-        MXLog.log("M2", MXLog.LogType.INFO, "City distribution analysis start", moduleName())
+        val tempMap = mutableMapOf<String, Double>()
+        lateinit var sortedMap: MutableMap<String, Double>
+        var map = mutableMapOf<String, Double>()
+        var contactCount = 0.0
+        var amountCount = 0
         var city: String
+        MXLog.log("M2", MXLog.LogType.INFO, "City distribution analysis start", moduleName())
         val timeInMS = measureTimeMillis {
             db.getEntriesFromSearchString(
                 "", 0, false, "M2", -1, indexManager
@@ -35,11 +39,34 @@ class M2Analytics : IModule, Controller()
                 {
                     city = contact.city.uppercase()
                     contactCount += 1.0
-                    if (map.containsKey(city))
+                    if (tempMap.containsKey(city))
                     {
-                        map[city] = map[city]!! + 1.0
-                    } else map[city] = 1.0
+                        tempMap[city] = tempMap[city]!! + 1.0
+                    } else tempMap[city] = 1.0
                 }
+            }
+            if (amount != -1)
+            {
+                sortedMap = mutableMapOf()
+                tempMap.entries.sortedBy { it.value }.reversed().forEach { sortedMap[it.key] = it.value }
+                for ((k, v) in sortedMap)
+                {
+                    if (amountCount < amount)
+                    {
+                        map[k] = v
+                    } else
+                    {
+                        //Here we sum the remaining entries
+                        if (map.containsKey("..."))
+                        {
+                            map["..."] = map["..."]!! + v
+                        } else map["..."] = v
+                    }
+                    amountCount++
+                }
+            } else
+            {
+                map = tempMap
             }
             map["[amount]"] = contactCount
         }

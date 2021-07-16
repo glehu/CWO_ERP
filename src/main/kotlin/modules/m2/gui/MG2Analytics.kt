@@ -18,19 +18,30 @@ class MG2Analytics : Fragment("City distribution")
     private val progressProperty = SimpleIntegerProperty()
     private var progressN by progressProperty
     private var maxEntries = 0
+    private val amountProperty = SimpleIntegerProperty()
+    private var amount by amountProperty
     override val root = form {
+        //Default value
+        amount = 1
         vbox {
-            button("Start") {
-                action {
-                    maxEntries = m2controller.db.getLastUniqueID("M2")
-                    runAsync {
-                        val genreDist = m2controller.getChartDataOnCityDistribution(indexManager) {
-                            progressN = it.first
-                            updateProgress(it.first.toDouble(), maxEntries.toDouble())
-                            updateMessage("${it.second} (${it.first} / $maxEntries)")
+            hbox {
+                button("Start") {
+                    action {
+                        maxEntries = m2controller.db.getLastUniqueID("M2")
+                        runAsync {
+                            val genreDist = m2controller.getChartDataOnCityDistribution(indexManager, amount)
+                            {
+                                progressN = it.first
+                                updateProgress(it.first.toDouble(), maxEntries.toDouble())
+                                updateMessage("${it.second} (${it.first} / $maxEntries)")
+                            }
+                            ui { showPiechart(genreDist) }
                         }
-                        ui { showPiechart(genreDist) }
                     }
+                }
+                textfield(amountProperty) {
+                    prefWidth = 50.0
+                    tooltip("Sets the amount of cities to show.")
                 }
             }
             add<ProgressView>()
@@ -51,7 +62,8 @@ class MG2Analytics : Fragment("City distribution")
         }
     }
 
-    class ProgressView : View() {
+    class ProgressView : View()
+    {
         private val status: TaskStatus by inject()
 
         override val root = vbox(4) {
