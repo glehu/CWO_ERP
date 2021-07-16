@@ -41,7 +41,10 @@ class M2Analytics : IModule, Controller()
             }
             map["[amount]"] = contactCount
         }
-        MXLog.log("M2", MXLog.LogType.INFO, "City distribution analysis end (${timeInMS / 1000} sec)", moduleName())
+        MXLog.log(
+            "M2", MXLog.LogType.INFO, "City distribution analysis end (${timeInMS / 1000} sec)",
+            moduleName()
+        )
         return map.toSortedMap()
     }
 }

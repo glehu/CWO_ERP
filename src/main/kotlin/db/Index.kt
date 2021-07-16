@@ -1,9 +1,10 @@
 package db
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Index(val module: String)
+data class Index(@SerialName("m") val module: String)
 {
-    val indexMap = mutableMapOf<Int, IndexContent>()
+    @SerialName("i") val indexMap = mutableMapOf<Int, IndexContent>()
 }
