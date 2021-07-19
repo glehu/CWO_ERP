@@ -15,7 +15,7 @@ import modules.m1.getSongFromProperty
 import modules.m1.getSongPropertyFromSong
 import modules.m1.logic.M1DBManager
 import modules.m1.logic.M1IndexManager
-import modules.mx.MXLog
+import modules.mx.logic.MXLog
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 

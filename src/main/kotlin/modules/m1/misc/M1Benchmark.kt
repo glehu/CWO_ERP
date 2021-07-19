@@ -7,7 +7,7 @@ import modules.m1.Song
 import modules.m1.getGenreList
 import modules.m1.logic.M1DBManager
 import modules.m1.logic.M1IndexManager
-import modules.mx.MXLog
+import modules.mx.logic.MXLog
 import tornadofx.Controller
 import tornadofx.Scope
 import kotlin.random.Random

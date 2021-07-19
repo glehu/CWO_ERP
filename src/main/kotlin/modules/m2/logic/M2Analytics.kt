@@ -4,7 +4,7 @@ import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m2.Contact
-import modules.mx.MXLog
+import modules.mx.logic.MXLog
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 

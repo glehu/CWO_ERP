@@ -6,7 +6,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IIndexManager
 import modules.IModule
-import modules.mx.MXLog
+import modules.mx.logic.MXLog
 import modules.mx.extractNumbers
 import modules.mx.getModulePath
 import modules.mx.indexFormat

@@ -6,6 +6,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.SongController
 import modules.m1.misc.M1Benchmark
 import modules.m2.gui.ContactController
+import modules.mx.logic.MXLog
+import modules.mx.logic.MXPasswordManager
 import tornadofx.*
 
 @ExperimentalSerializationApi

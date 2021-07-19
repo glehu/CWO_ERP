@@ -5,11 +5,10 @@ import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m2.Contact
-import modules.mx.MXLog
+import modules.mx.logic.MXLog
 import tornadofx.Controller
 import tornadofx.Scope
 import java.io.File
-import kotlin.streams.asSequence
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi

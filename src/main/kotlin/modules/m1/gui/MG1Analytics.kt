@@ -6,7 +6,7 @@ import javafx.scene.chart.PieChart
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Analytics
 import modules.m1.logic.M1IndexManager
-import modules.mx.MXGProgressbar
+import modules.mx.gui.MXGProgressbar
 import tornadofx.*
 
 @ExperimentalSerializationApi

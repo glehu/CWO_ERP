@@ -1,4 +1,4 @@
-package modules.mx
+package modules.mx.gui
 
 import javafx.scene.text.FontWeight
 import tornadofx.*

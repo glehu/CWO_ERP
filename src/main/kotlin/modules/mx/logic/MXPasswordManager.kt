@@ -1,9 +1,13 @@
-package modules.mx
+package modules.mx.logic
 
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IModule
+import modules.mx.getProgramPath
+import modules.mx.getToken
+import modules.mx.misc.MXCredentials
+import modules.mx.misc.MXUser
 import tornadofx.Controller
 import java.io.File
 import java.util.*

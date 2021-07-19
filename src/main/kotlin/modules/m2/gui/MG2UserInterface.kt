@@ -16,7 +16,7 @@ import modules.m2.getContactPropertyFromContact
 import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
 import modules.m2.misc.ContactProperty
-import modules.mx.MXLog
+import modules.mx.logic.MXLog
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
