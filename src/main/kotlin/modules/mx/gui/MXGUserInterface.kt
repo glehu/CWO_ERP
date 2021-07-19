@@ -38,6 +38,7 @@ class MXGLogin : View("Login")
                 field("Password") { passwordfield(passwordProperty) }
             }
             button("Login") {
+                shortcut("Enter")
                 action {
                     if (usernameProperty.value != null && passwordProperty.value != null)
                     {

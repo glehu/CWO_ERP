@@ -1,8 +1,11 @@
 package modules.mx.gui
 
 import javafx.collections.ObservableList
+import modules.m1.gui.SongViewerWizard
 import modules.mx.logic.MXPasswordManager
 import modules.mx.misc.MXUser
+import modules.mx.misc.UserModel
+import modules.mx.misc.getUserPropertyFromUser
 import tornadofx.*
 
 class MXGUserManager : Fragment("User Management")
@@ -17,11 +20,17 @@ class MXGUserManager : Fragment("User Management")
             users.add(v)
         }
         tableview(users) {
-            readonlyColumn("ID", MXUser::username).prefWidth(300.0)
-            readonlyColumn("Name", MXUser::password).prefWidth(300.0)
+            readonlyColumn("Username", MXUser::username).prefWidth(300.0)
+            readonlyColumn("Password (encrypted)", MXUser::password).prefWidth(300.0)
             onUserSelect(1) {
+                showUser(it)
                 close()
             }
         }
+    }
+
+    private fun showUser(user: MXUser)
+    {
+        MXGUser(user).openModal()
     }
 }

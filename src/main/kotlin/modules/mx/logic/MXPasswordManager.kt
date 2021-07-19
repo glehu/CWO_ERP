@@ -23,6 +23,28 @@ class MXPasswordManager : IModule, Controller()
         return compareCredentials(username, password, getCredentials())
     }
 
+    fun updateUser(user: MXUser)
+    {
+        val credentials = getCredentials()
+        credentials.credentials[user.username] = user
+        writeCredentials(credentials)
+    }
+
+    fun getCredentials(): MXCredentials
+    {
+        val credentialsFile = getCredentialsFile()
+        if (!credentialsFile.isFile) initializeCredentials(credentialsFile)
+        return Json.decodeFromString(credentialsFile.readText())
+    }
+
+    private fun writeCredentials(credentials: MXCredentials)
+    {
+        getCredentialsFile().writeText(Json.encodeToString(credentials))
+        MXLog.log("MX", MXLog.LogType.INFO, "Credentials updated", moduleName())
+    }
+
+    private fun getCredentialsFile() = File("${getModulePath("MX")}\\credentials.dat")
+
     private fun compareCredentials(username: String, password: String, credentials: MXCredentials): Boolean
     {
         var successful = false
@@ -37,13 +59,6 @@ class MXPasswordManager : IModule, Controller()
             "MX", MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials", moduleName()
         )
         return successful
-    }
-
-    fun getCredentials(): MXCredentials
-    {
-        val credentialsFile = File("${getModulePath("MX")}\\credentials.dat")
-        if (!credentialsFile.isFile) initializeCredentials(credentialsFile)
-        return Json.decodeFromString(credentialsFile.readText())
     }
 
     private fun initializeCredentials(credentialsFile: File)
