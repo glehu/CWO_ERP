@@ -23,7 +23,6 @@ class M2DBManager : IModule, IDBManager
     {
         entry as Contact
         indexManager as M2IndexManager
-        MXLog.log("M2", MXLog.LogType.INFO, "Serializing \"${entry.name}\"", moduleName())
         entry.initialize()
         val songSerialized = ProtoBuf.encodeToByteArray(entry)
         val (posDBX, byteSizeX) = cwodb.saveEntry(songSerialized, entry.uID, posDB, byteSize, "M2", raf)
