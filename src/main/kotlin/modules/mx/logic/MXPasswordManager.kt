@@ -23,11 +23,17 @@ class MXPasswordManager : IModule, Controller()
         return compareCredentials(username, password, getCredentials())
     }
 
-    fun updateUser(user: MXUser)
+    fun updateUser(userNew: MXUser, userOriginal: MXUser)
     {
-        val credentials = getCredentials()
-        credentials.credentials[user.username] = user
-        writeCredentials(credentials)
+        val c = getCredentials()
+        //Check if username changed
+        if (userNew.username != userOriginal.username)
+        {
+            //Username changed => Recreate user entry in map since keys are constant
+            c.credentials.remove(userOriginal.username)
+        }
+        c.credentials[userNew.username] = userNew
+        writeCredentials(c)
     }
 
     fun getCredentials(): MXCredentials
@@ -49,7 +55,7 @@ class MXPasswordManager : IModule, Controller()
     {
         var successful = false
         val user = credentials.credentials[username]
-        if (user!!.password == encrypt(password, getToken()))
+        if (user != null && user.password == encrypt(password, getToken()))
         {
             successful = true
             MXLog.log(

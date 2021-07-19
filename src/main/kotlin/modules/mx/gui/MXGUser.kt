@@ -10,17 +10,20 @@ class MXGUser(user: MXUser): Fragment("User")
 {
     private val passwordManager: MXPasswordManager by inject()
     private val passwordProperty = SimpleStringProperty()
-    private var password by passwordProperty
+    private val usernameProperty = SimpleStringProperty()
+    private val originalUser = user.copy()
     override val root = form {
+        usernameProperty.value = user.username
         passwordProperty.value = passwordManager.decrypt(user.password, getToken())
         fieldset {
-            field("Username") { textfield(user.username) }
+            field("Username") { textfield(usernameProperty) }
             field("Password") { textfield(passwordProperty) }
         }
         button("Save") {
             action {
+                user.username = usernameProperty.value
                 user.password = passwordManager.encrypt(passwordProperty.value, getToken())
-                passwordManager.updateUser(user)
+                passwordManager.updateUser(user, originalUser)
                 close()
             }
         }
