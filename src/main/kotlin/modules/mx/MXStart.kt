@@ -2,6 +2,7 @@ package modules.mx
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.logic.MXLog
+import modules.mx.misc.MXUser
 import tornadofx.launch
 import java.io.File
 
@@ -18,8 +19,10 @@ fun loginRoutines()
     checkIniFile(iniFile)
 }
 
-fun startupRoutines()
+fun startupRoutines(user: MXUser)
 {
+    //Set active user
+    activeUser = user
     //Check if all data paths and files exist
     if (!File(getModulePath("M1")).isDirectory) File(getModulePath("M1")).mkdirs()
     if (!File(getModulePath("M2")).isDirectory) File(getModulePath("M2")).mkdirs()

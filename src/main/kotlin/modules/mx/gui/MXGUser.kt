@@ -1,30 +1,44 @@
 package modules.mx.gui
 
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
-import modules.mx.logic.MXPasswordManager
+import modules.mx.logic.MXUserManager
 import modules.mx.misc.MXUser
 import modules.mx.token
 import tornadofx.*
 
-class MXGUser(user: MXUser): Fragment("User")
+class MXGUser(user: MXUser) : Fragment("User")
 {
-    private val passwordManager: MXPasswordManager by inject()
+    private val userManager: MXUserManager by inject()
     private val passwordProperty = SimpleStringProperty()
     private val usernameProperty = SimpleStringProperty()
+    private val canAccessM1Songs = SimpleBooleanProperty()
+    private val canAccessM2Contacts = SimpleBooleanProperty()
     private val originalUser = user.copy()
     override val root = form {
+        //ToDo: Replace this mess with a UserModel (binds)
         usernameProperty.value = user.username
-        passwordProperty.value = passwordManager.decrypt(user.password, token)
-        fieldset {
+        passwordProperty.value = userManager.decrypt(user.password, token)
+        canAccessM1Songs.value = user.canAccessM1Song
+        canAccessM2Contacts.value = user.canAccessM2Contact
+        fieldset("Credentials") {
             field("Username") { textfield(usernameProperty) }
             field("Password") { textfield(passwordProperty) }
+        }
+        fieldset("Rights (Attention! Changes to rights are active only after a restart!)") {
+            fieldset("Access to...") {
+                field("M1Songs") { checkbox("", canAccessM1Songs) }
+                field("M2Contacts") { checkbox("", canAccessM2Contacts) }
+            }
         }
         button("Save") {
             shortcut("Enter")
             action {
                 user.username = usernameProperty.value
-                user.password = passwordManager.encrypt(passwordProperty.value, token)
-                passwordManager.updateUser(user, originalUser)
+                user.password = userManager.encrypt(passwordProperty.value, token)
+                user.canAccessM1Song = canAccessM1Songs.value
+                user.canAccessM2Contact = canAccessM2Contacts.value
+                userManager.updateUser(user, originalUser)
                 close()
             }
         }

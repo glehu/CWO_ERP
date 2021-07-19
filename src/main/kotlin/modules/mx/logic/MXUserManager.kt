@@ -15,14 +15,18 @@ import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
-class MXPasswordManager : IModule, Controller()
+class MXUserManager : IModule, Controller()
 {
     override fun moduleName() = "MXPasswordManager"
 
     fun login(username: String, password: String): Boolean
     {
-        startupRoutines()
         return compareCredentials(username, password, getCredentials())
+    }
+
+    fun getUser(username: String): MXUser?
+    {
+        return getCredentials().credentials[username]
     }
 
     fun updateUser(userNew: MXUser, userOriginal: MXUser)
@@ -60,6 +64,7 @@ class MXPasswordManager : IModule, Controller()
         if (user != null && user.password == encrypt(password, token))
         {
             successful = true
+            startupRoutines(user)
             MXLog.log(
                 "MX", MXLog.LogType.INFO, "User \"$username\" login successful", moduleName()
             )

@@ -8,7 +8,8 @@ import modules.m1.misc.M1Benchmark
 import modules.m2.gui.ContactController
 import modules.mx.gui.MXGUserManager
 import modules.mx.logic.MXLog
-import modules.mx.logic.MXPasswordManager
+import modules.mx.logic.MXUserManager
+import modules.mx.misc.MXUser
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -27,7 +28,7 @@ class StyleMain : Stylesheet()
 @ExperimentalSerializationApi
 class MXGLogin : View("Login")
 {
-    private val passwordManager: MXPasswordManager by inject()
+    private val userManager: MXUserManager by inject()
     private val usernameProperty = SimpleStringProperty()
     private val passwordProperty = SimpleStringProperty()
     override val root = form {
@@ -42,7 +43,7 @@ class MXGLogin : View("Login")
                 action {
                     if (usernameProperty.value != null && passwordProperty.value != null)
                     {
-                        if (passwordManager.login(usernameProperty.value, passwordProperty.value))
+                        if (userManager.login(usernameProperty.value, passwordProperty.value))
                         {
                             close()
                             find(MXGUserInterface::class).openModal()
@@ -83,6 +84,7 @@ class MXGUserInterface : View("CWO ERP")
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             tab("M1Songs") {
+                if (!activeUser.canAccessM1Song) this.isDisable = true
                 vbox {
                     hbox {
                         //Main functions
@@ -118,6 +120,7 @@ class MXGUserInterface : View("CWO ERP")
                 }
             }
             tab("M2Contacts") {
+                if (!activeUser.canAccessM2Contact) this.isDisable = true
                 vbox {
                     hbox {
                         //Main functions

@@ -1,14 +1,14 @@
 package modules.mx.gui
 
 import javafx.collections.ObservableList
-import modules.mx.logic.MXPasswordManager
+import modules.mx.logic.MXUserManager
 import modules.mx.misc.MXUser
 import tornadofx.*
 
 class MXGUserManager : Fragment("User Management")
 {
-    private val passwordManager: MXPasswordManager by inject()
-    private val credentials = passwordManager.getCredentials()
+    private val userManager: MXUserManager by inject()
+    private val credentials = userManager.getCredentials()
     private var users: ObservableList<MXUser> = observableList(MXUser("", ""))
     override val root = form {
         getUsers()
@@ -18,8 +18,10 @@ class MXGUserManager : Fragment("User Management")
             }
         }
         tableview(users) {
-            readonlyColumn("Username", MXUser::username).prefWidth(300.0)
+            readonlyColumn("Username", MXUser::username).prefWidth(200.0)
             readonlyColumn("Password (encrypted)", MXUser::password)
+            readonlyColumn("Access M1", MXUser::canAccessM1Song)
+            readonlyColumn("Access M2", MXUser::canAccessM2Contact)
             onUserSelect(1) {
                 showUser(it)
                 close()
