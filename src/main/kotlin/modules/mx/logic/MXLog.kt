@@ -71,6 +71,7 @@ class MXLog
 
         fun deleteLogFiles()
         {
+            deleteLogFile("MX")
             for (moduleNr in 1..99)
             {
                 deleteLogFile("M$moduleNr")
