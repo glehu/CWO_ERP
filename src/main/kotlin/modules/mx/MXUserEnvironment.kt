@@ -7,7 +7,8 @@ import java.io.File
 @ExperimentalSerializationApi
 fun main() { launch<CWOMainGUI>() }
 
-fun getModulePath(module: String) = "C:\\ProgramData\\Orochi\\cwo\\data\\$module"
+fun getProgramPath() = "C:\\ProgramData\\Orochi\\cwo"
+fun getModulePath(module: String) = "${getProgramPath()}\\data\\$module"
 fun startupRoutines()
 {
     if (!File(getModulePath("M1")).isDirectory) { File(getModulePath("M1")).mkdirs() }

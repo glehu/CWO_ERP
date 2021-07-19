@@ -4,7 +4,6 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.SongController
-import modules.m1.gui.SongFinder
 import modules.m1.misc.M1Benchmark
 import modules.m2.gui.ContactController
 import tornadofx.*
@@ -25,6 +24,7 @@ class StyleMain : Stylesheet()
 @ExperimentalSerializationApi
 class MXGLogin : View("Login")
 {
+    private val passwordManager: MXPasswordManager by inject()
     private val usernameProperty = SimpleStringProperty()
     private val passwordProperty = SimpleStringProperty()
     override val root = form {
@@ -35,9 +35,17 @@ class MXGLogin : View("Login")
             passwordfield(passwordProperty)
             button("Login") {
                 action {
-                    //ToDo: Check credentials
-                    close()
-                    find(MXGUserInterface::class).openModal()
+                    if (usernameProperty.value != null && passwordProperty.value != null)
+                    {
+                        if (passwordManager.login(usernameProperty.value, passwordProperty.value))
+                        {
+                            close()
+                            find(MXGUserInterface::class).openModal()
+                        } else
+                        {
+                            passwordProperty.value = ""
+                        }
+                    }
                 }
             }
         }
