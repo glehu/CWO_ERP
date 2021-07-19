@@ -32,10 +32,10 @@ class MXGLogin : View("Login")
     override val root = form {
         startupRoutines()
         vbox {
-            label("Username")
-            textfield(usernameProperty)
-            label("Password")
-            passwordfield(passwordProperty)
+            fieldset {
+                field("Username") { textfield(usernameProperty) }
+                field("Password") { passwordfield(passwordProperty) }
+            }
             button("Login") {
                 action {
                     if (usernameProperty.value != null && passwordProperty.value != null)
