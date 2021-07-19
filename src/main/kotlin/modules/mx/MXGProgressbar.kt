@@ -3,7 +3,7 @@ package modules.mx
 import javafx.scene.text.FontWeight
 import tornadofx.*
 
-class MXProgressbar : View()
+class MXGProgressbar : View()
 {
     private val status: TaskStatus by inject()
 
