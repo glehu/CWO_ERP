@@ -6,14 +6,13 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IIndexManager
 import modules.IModule
-import modules.mx.logic.MXLog
 import modules.mx.extractNumbers
 import modules.mx.getModulePath
 import modules.mx.indexFormat
+import modules.mx.logic.MXLog
 import tornadofx.Controller
 import java.io.File
 import java.io.RandomAccessFile
-import kotlin.system.measureTimeMillis
 
 class CwODB : IModule, Controller()
 {
@@ -154,23 +153,15 @@ class CwODB : IModule, Controller()
         val raf: RandomAccessFile = openRandomFileAccess(module, "r")
         //Determines the type of search that will be done depending on the search string
         val filteredMap: Map<Int, IndexContent>
-        val timeInMillis = measureTimeMillis {
-            filteredMap = if (searchString != "*" && searchString != "")
-            {
-                //Search text -> Search for specific entries
-                indexManager.indexList[ixNr]!!.indexMap.filterValues { it.content.contains(searchString) }
-            } else
-            {
-                //No search text -> Show all entries
-                indexManager.indexList[ixNr]!!.indexMap
-            }
+        filteredMap = if (searchString != "*" && searchString != "")
+        {
+            //Search text -> Search for specific entries
+            indexManager.indexList[ixNr]!!.indexMap.filterValues { it.content.contains(searchString) }
+        } else
+        {
+            //No search text -> Show all entries
+            indexManager.indexList[ixNr]!!.indexMap
         }
-        MXLog.log(
-            module,
-            MXLog.LogType.INFO,
-            "${filteredMap.size} results for \"${searchString}\" (in $timeInMillis ms)",
-            moduleName()
-        )
         for ((key, indexContent) in filteredMap)
         {
             entryBytes = getDBEntry(indexContent.pos, indexContent.byteSize, raf)
