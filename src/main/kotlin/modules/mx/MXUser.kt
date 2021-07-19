@@ -1,6 +1,7 @@
 package modules.mx
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MXUser(var username: String, var password: String)
+data class MXUser(@SerialName("u") var username: String, @SerialName("p") var password: String)
