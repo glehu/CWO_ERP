@@ -5,7 +5,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IModule
 import modules.mx.getModulePath
-import modules.mx.getProgramPath
 import modules.mx.getToken
 import modules.mx.misc.MXCredentials
 import modules.mx.misc.MXUser
@@ -21,7 +20,7 @@ class MXPasswordManager : IModule, Controller()
 
     fun login(username: String, password: String): Boolean
     {
-        return compareCredentials(username, password, checkCredentialsFile())
+        return compareCredentials(username, password, getCredentials())
     }
 
     private fun compareCredentials(username: String, password: String, credentials: MXCredentials): Boolean
@@ -40,7 +39,7 @@ class MXPasswordManager : IModule, Controller()
         return successful
     }
 
-    private fun checkCredentialsFile(): MXCredentials
+    fun getCredentials(): MXCredentials
     {
         val credentialsFile = File("${getModulePath("MX")}\\credentials.dat")
         if (!credentialsFile.isFile) initializeCredentials(credentialsFile)

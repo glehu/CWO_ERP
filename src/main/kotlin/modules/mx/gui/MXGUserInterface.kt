@@ -6,6 +6,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.SongController
 import modules.m1.misc.M1Benchmark
 import modules.m2.gui.ContactController
+import modules.mx.gui.MXGUserManager
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXPasswordManager
 import tornadofx.*
@@ -146,6 +147,18 @@ class MXGUserInterface : View("CWO ERP")
                                 tooltip("Import contact data from a .csv file.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                             }
+                        }
+                    }
+                }
+            }
+            tab("MX") {
+                hbox {
+                    //User Management
+                    vbox {
+                        button("User Management") {
+                            action { find(MXGUserManager::class).openModal() }
+                            tooltip("Opens the user management.")
+                            vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                         }
                     }
                 }
