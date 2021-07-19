@@ -15,6 +15,8 @@ fun startupRoutines()
 {
     if (!File(getModulePath("M1")).isDirectory) { File(getModulePath("M1")).mkdirs() }
     if (!File(getModulePath("M2")).isDirectory) { File(getModulePath("M2")).mkdirs() }
+    if (!File(getModulePath("MX")).isDirectory) { File(getModulePath("MX")).mkdirs() }
     MXLog.checkLogFile("M1", true)
     MXLog.checkLogFile("M2", true)
+    MXLog.checkLogFile("MX", true)
 }

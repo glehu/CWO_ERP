@@ -30,6 +30,7 @@ class MXGLogin : View("Login")
     private val usernameProperty = SimpleStringProperty()
     private val passwordProperty = SimpleStringProperty()
     override val root = form {
+        startupRoutines()
         vbox {
             label("Username")
             textfield(usernameProperty)
@@ -43,10 +44,7 @@ class MXGLogin : View("Login")
                         {
                             close()
                             find(MXGUserInterface::class).openModal()
-                        } else
-                        {
-                            passwordProperty.value = ""
-                        }
+                        } else passwordProperty.value = ""
                     }
                 }
             }
@@ -61,7 +59,6 @@ class MXGUserInterface : View("CWO ERP")
     private val m2Controller: ContactController by inject()
 
     override val root = borderpane {
-        startupRoutines()
         top = menubar {
             menu("Misc") {
                 menu("Log") {
