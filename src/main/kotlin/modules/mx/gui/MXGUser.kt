@@ -20,6 +20,7 @@ class MXGUser(user: MXUser): Fragment("User")
             field("Password") { textfield(passwordProperty) }
         }
         button("Save") {
+            shortcut("Enter")
             action {
                 user.username = usernameProperty.value
                 user.password = passwordManager.encrypt(passwordProperty.value, token)
