@@ -7,6 +7,7 @@ import javafx.scene.text.FontWeight
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Analytics
 import modules.m1.logic.M1IndexManager
+import modules.mx.MXProgressbar
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -33,7 +34,7 @@ class MG1Analytics : Fragment("Genre distribution")
                     }
                 }
             }
-            add<ProgressView>()
+            add<MXProgressbar>()
         }
     }
 
@@ -47,20 +48,6 @@ class MG1Analytics : Fragment("Genre distribution")
                 {
                     data.add(PieChart.Data("$k (${v.toInt()})", v))
                 }
-            }
-        }
-    }
-
-    class ProgressView : View() {
-        private val status: TaskStatus by inject()
-
-        override val root = vbox(4) {
-            visibleWhen { status.running }
-            label(status.title).style { fontWeight = FontWeight.BOLD }
-            vbox(4) {
-                label(status.message)
-                progressbar(status.progress)
-                visibleWhen { status.running }
             }
         }
     }

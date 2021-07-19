@@ -7,6 +7,7 @@ import javafx.scene.text.FontWeight
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Analytics
 import modules.m2.logic.M2IndexManager
+import modules.mx.MXProgressbar
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -18,18 +19,18 @@ class MG2Analytics : Fragment("City distribution")
     private val progressProperty = SimpleIntegerProperty()
     private var progressN by progressProperty
     private var maxEntries = 0
-    private val amountProperty = SimpleIntegerProperty()
-    private var amount by amountProperty
+    private val numberOfCitiesProperty = SimpleIntegerProperty()
+    private var numberOfCities by numberOfCitiesProperty
     override val root = form {
         //Default value
-        amount = 1
+        numberOfCities = 1
         vbox {
             hbox {
                 button("Start") {
                     action {
                         maxEntries = m2controller.db.getLastUniqueID("M2")
                         runAsync {
-                            val genreDist = m2controller.getChartDataOnCityDistribution(indexManager, amount)
+                            val genreDist = m2controller.getChartDataOnCityDistribution(indexManager, numberOfCities)
                             {
                                 progressN = it.first
                                 updateProgress(it.first.toDouble(), maxEntries.toDouble())
@@ -39,12 +40,12 @@ class MG2Analytics : Fragment("City distribution")
                         }
                     }
                 }
-                textfield(amountProperty) {
+                textfield(numberOfCitiesProperty) {
                     prefWidth = 50.0
                     tooltip("Sets the amount of cities to show.")
                 }
             }
-            add<ProgressView>()
+            add<MXProgressbar>()
         }
     }
 
@@ -58,21 +59,6 @@ class MG2Analytics : Fragment("City distribution")
                 {
                     data.add(PieChart.Data("$k (${v.toInt()})", v))
                 }
-            }
-        }
-    }
-
-    class ProgressView : View()
-    {
-        private val status: TaskStatus by inject()
-
-        override val root = vbox(4) {
-            visibleWhen { status.running }
-            label(status.title).style { fontWeight = FontWeight.BOLD }
-            vbox(4) {
-                label(status.message)
-                progressbar(status.progress)
-                visibleWhen { status.running }
             }
         }
     }
