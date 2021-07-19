@@ -31,7 +31,7 @@ class MXGLogin : View("Login")
     private val usernameProperty = SimpleStringProperty()
     private val passwordProperty = SimpleStringProperty()
     override val root = form {
-        startupRoutines()
+        loginRoutines()
         vbox {
             fieldset {
                 field("Username") { textfield(usernameProperty) }

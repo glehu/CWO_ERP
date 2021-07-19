@@ -5,9 +5,10 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IModule
 import modules.mx.getModulePath
-import modules.mx.getToken
 import modules.mx.misc.MXCredentials
 import modules.mx.misc.MXUser
+import modules.mx.startupRoutines
+import modules.mx.token
 import tornadofx.Controller
 import java.io.File
 import java.util.*
@@ -20,6 +21,7 @@ class MXPasswordManager : IModule, Controller()
 
     fun login(username: String, password: String): Boolean
     {
+        startupRoutines()
         return compareCredentials(username, password, getCredentials())
     }
 
@@ -55,7 +57,7 @@ class MXPasswordManager : IModule, Controller()
     {
         var successful = false
         val user = credentials.credentials[username]
-        if (user != null && user.password == encrypt(password, getToken()))
+        if (user != null && user.password == encrypt(password, token))
         {
             successful = true
             MXLog.log(
@@ -70,7 +72,7 @@ class MXPasswordManager : IModule, Controller()
     private fun initializeCredentials(credentialsFile: File)
     {
         credentialsFile.createNewFile()
-        val user = MXUser("test", encrypt("test", getToken()))
+        val user = MXUser("test", encrypt("test", token))
         val credentials = MXCredentials(CredentialsType.MAIN)
         credentials.credentials[user.username] = user
         credentialsFile.writeText(Json.encodeToString(credentials))

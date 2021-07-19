@@ -1,9 +1,9 @@
 package modules.mx.gui
 
 import javafx.beans.property.SimpleStringProperty
-import modules.mx.getToken
 import modules.mx.logic.MXPasswordManager
 import modules.mx.misc.MXUser
+import modules.mx.token
 import tornadofx.*
 
 class MXGUser(user: MXUser): Fragment("User")
@@ -14,7 +14,7 @@ class MXGUser(user: MXUser): Fragment("User")
     private val originalUser = user.copy()
     override val root = form {
         usernameProperty.value = user.username
-        passwordProperty.value = passwordManager.decrypt(user.password, getToken())
+        passwordProperty.value = passwordManager.decrypt(user.password, token)
         fieldset {
             field("Username") { textfield(usernameProperty) }
             field("Password") { textfield(passwordProperty) }
@@ -22,7 +22,7 @@ class MXGUser(user: MXUser): Fragment("User")
         button("Save") {
             action {
                 user.username = usernameProperty.value
-                user.password = passwordManager.encrypt(passwordProperty.value, getToken())
+                user.password = passwordManager.encrypt(passwordProperty.value, token)
                 passwordManager.updateUser(user, originalUser)
                 close()
             }
