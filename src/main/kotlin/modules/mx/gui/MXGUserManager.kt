@@ -20,6 +20,7 @@ class MXGUserManager : Fragment("User Management")
         tableview(users) {
             readonlyColumn("Username", MXUser::username).prefWidth(200.0)
             readonlyColumn("Password (encrypted)", MXUser::password)
+            readonlyColumn("Access MX", MXUser::canAccessMX)
             readonlyColumn("Access M1", MXUser::canAccessM1Song)
             readonlyColumn("Access M2", MXUser::canAccessM2Contact)
             onUserSelect(1) {
