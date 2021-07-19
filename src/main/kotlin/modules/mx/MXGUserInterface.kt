@@ -1,15 +1,17 @@
 package modules.mx
 
+import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.SongController
+import modules.m1.gui.SongFinder
 import modules.m1.misc.M1Benchmark
 import modules.m2.gui.ContactController
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class CWOMainGUI : App(MainView::class, Style::class)
-class Style : Stylesheet()
+class CWOMainGUI : App(MXGLogin::class, StyleMain::class)
+class StyleMain : Stylesheet()
 {
     init
     {
@@ -21,7 +23,29 @@ class Style : Stylesheet()
 }
 
 @ExperimentalSerializationApi
-class MainView : View("CWO ERP")
+class MXGLogin : View("Login")
+{
+    private val usernameProperty = SimpleStringProperty()
+    private val passwordProperty = SimpleStringProperty()
+    override val root = form {
+        vbox {
+            label("Username")
+            textfield(usernameProperty)
+            label("Password")
+            passwordfield(passwordProperty)
+            button("Login") {
+                action {
+                    //ToDo: Check credentials
+                    close()
+                    find(MXGUserInterface::class).openModal()
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalSerializationApi
+class MXGUserInterface : View("CWO ERP")
 {
     private val m1Controller: SongController by inject()
     private val m2Controller: ContactController by inject()
