@@ -2,7 +2,7 @@ package modules.m1.gui
 
 import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.SongModel
+import modules.m1.misc.SongModel
 import modules.m1.getGenreList
 import modules.m2.gui.ContactFinder
 import tornadofx.*

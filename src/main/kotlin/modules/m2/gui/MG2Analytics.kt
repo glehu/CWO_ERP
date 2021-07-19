@@ -3,7 +3,6 @@ package modules.m2.gui
 import db.CwODB
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.chart.PieChart
-import javafx.scene.text.FontWeight
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Analytics
 import modules.m2.logic.M2IndexManager

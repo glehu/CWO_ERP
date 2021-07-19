@@ -28,7 +28,7 @@ class M2Import : IModule, Controller()
         var counter = 0
         val timeInMillis = measureTimeMillis {
 
-            csvReader() {
+            csvReader {
                 delimiter = ';'
                 charset = "UTF-8"
             }.open(file) {
@@ -64,12 +64,4 @@ class M2Import : IModule, Controller()
         )
     }
 
-    private fun getRandomString(size: Long): String
-    {
-        val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        return java.util.Random().ints(size, 0, letters.length)
-            .asSequence()
-            .map(letters::get)
-            .joinToString("")
-    }
 }

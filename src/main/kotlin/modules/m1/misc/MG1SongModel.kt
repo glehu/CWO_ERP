@@ -1,4 +1,4 @@
-package modules.m1
+package modules.m1.misc
 
 import javafx.beans.property.*
 import tornadofx.ItemViewModel

@@ -9,7 +9,7 @@ class MXLog
 {
     enum class LogType
     {
-        INFO, WARNING, ERROR
+        INFO, ERROR
     }
     companion object Logger: IModule
     {

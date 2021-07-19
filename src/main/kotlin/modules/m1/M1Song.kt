@@ -3,6 +3,7 @@ package modules.m1
 import db.CwODB
 import kotlinx.serialization.Serializable
 import modules.IEntry
+import modules.m1.misc.SongProperty
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

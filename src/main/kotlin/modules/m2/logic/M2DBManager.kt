@@ -8,7 +8,6 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import modules.IDBManager
 import modules.IModule
 import modules.m2.Contact
-import modules.mx.MXLog
 import java.io.RandomAccessFile
 
 class M2DBManager : IModule, IDBManager

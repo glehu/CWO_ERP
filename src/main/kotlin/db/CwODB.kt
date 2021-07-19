@@ -127,7 +127,7 @@ class CwODB : IModule, Controller()
         return Pair(posDBNew, byteSizeNew)
     }
 
-    fun buildDBIndex(uID: Int, posInDB: Long, byteSize: Int, extend: Boolean): String
+    private fun buildDBIndex(uID: Int, posInDB: Long, byteSize: Int, extend: Boolean): String
     {
         var indexContent = "IX[$uID;$posInDB;$byteSize]"
         if (!extend)

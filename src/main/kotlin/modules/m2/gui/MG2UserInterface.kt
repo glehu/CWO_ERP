@@ -9,7 +9,7 @@ import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
-import modules.m1.SongModel
+import modules.m1.misc.SongModel
 import modules.m2.Contact
 import modules.m2.getContactFromProperty
 import modules.m2.getContactPropertyFromContact
