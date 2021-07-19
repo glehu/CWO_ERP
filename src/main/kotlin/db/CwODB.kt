@@ -152,8 +152,7 @@ class CwODB : IModule, Controller()
         //TODO: Might have to change this again in case of file blockage while trying to read/write twice simultaneously
         val raf: RandomAccessFile = openRandomFileAccess(module, "r")
         //Determines the type of search that will be done depending on the search string
-        val filteredMap: Map<Int, IndexContent>
-        filteredMap = if (searchString != "*" && searchString != "")
+        val filteredMap: Map<Int, IndexContent> = if (searchString != "*" && searchString != "")
         {
             //Search text -> Search for specific entries
             indexManager.indexList[ixNr]!!.indexMap.filterValues { it.content.contains(searchString) }
