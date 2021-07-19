@@ -156,6 +156,7 @@ class MXGUserInterface : View("CWO ERP")
                 }
             }
             tab("MX") {
+                if (!activeUser.canAccessMX) this.isDisable = true
                 hbox {
                     //User Management
                     vbox {

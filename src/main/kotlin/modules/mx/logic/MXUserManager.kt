@@ -77,7 +77,8 @@ class MXUserManager : IModule, Controller()
     private fun initializeCredentials(credentialsFile: File)
     {
         credentialsFile.createNewFile()
-        val user = MXUser("test", encrypt("test", token))
+        val user = MXUser("admin", encrypt("admin", token))
+        user.canAccessMX = true
         val credentials = MXCredentials(CredentialsType.MAIN)
         credentials.credentials[user.username] = user
         credentialsFile.writeText(Json.encodeToString(credentials))
