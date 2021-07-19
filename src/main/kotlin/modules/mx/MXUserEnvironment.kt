@@ -7,6 +7,7 @@ import java.io.File
 @ExperimentalSerializationApi
 fun main() { launch<CWOMainGUI>() }
 
+fun getToken() = "8265726400192847"
 fun getProgramPath() = "C:\\ProgramData\\Orochi\\cwo"
 fun getModulePath(module: String) = "${getProgramPath()}\\data\\$module"
 fun startupRoutines()
