@@ -16,6 +16,7 @@ import modules.m1.getSongPropertyFromSong
 import modules.m1.logic.M1DBManager
 import modules.m1.logic.M1IndexManager
 import modules.mx.logic.MXLog
+import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
@@ -121,7 +122,7 @@ class SongFinder : IModule, View("Find Song")
                 ixNr.value.substring(0, 1).toInt(),
                 exactSearch.isSelected,
                 "M1",
-                10_000,
+                maxSearchResultsGlobal,
                 indexManager
             ) { _, bytes ->
                 if (threadID >= threadIDCurrent)

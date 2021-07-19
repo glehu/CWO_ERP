@@ -17,6 +17,7 @@ import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
 import modules.m2.misc.ContactProperty
 import modules.mx.logic.MXLog
+import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
@@ -136,7 +137,7 @@ class ContactFinder : IModule, View("Find Contact")
                 ixNr.value.substring(0, 1).toInt(),
                 exactSearch.isSelected,
                 "M2",
-                -1,
+                maxSearchResultsGlobal,
                 indexManager
             ) { _, bytes ->
                 //Add the contacts to the table

@@ -18,18 +18,26 @@ val programPath: String = System.getProperty("user.dir")
 var dataPath: String = ""
 fun getModulePath(module: String) = "$dataPath\\data\\$module"
 
+//Search settings
+var maxSearchResultsGlobal: Int = 0
+
 fun checkIniFile(iniFile: File)
 {
     if (!iniFile.isFile)
     {
         iniFile.createNewFile()
         //Now we have to initialize it
-        iniFile.writeText(Json.encodeToString(IniValues("8265726400192847", System.getProperty("user.dir"))))
+        iniFile.writeText(Json.encodeToString(IniValues(
+            token = "8265726400192847",
+            dataPath = System.getProperty("user.dir"),
+            maxSearchResults = 10_000
+        )))
     }
     val iniValuesLoad = Json.decodeFromString<IniValues>(iniFile.readText())
     dataPath = iniValuesLoad.dataPath
     token = iniValuesLoad.token
+    maxSearchResultsGlobal = iniValuesLoad.maxSearchResults
 }
 
 @Serializable
-private data class IniValues(var token: String, var dataPath: String)
+private data class IniValues(var token: String, var dataPath: String, var maxSearchResults: Int)
