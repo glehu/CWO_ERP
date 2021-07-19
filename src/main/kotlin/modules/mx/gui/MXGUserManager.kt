@@ -11,10 +11,11 @@ class MXGUserManager : Fragment("User Management")
     private val credentials = passwordManager.getCredentials()
     private var users: ObservableList<MXUser> = observableList(MXUser("", ""))
     override val root = form {
-        users.clear()
-        for ((_, v) in credentials.credentials)
-        {
-            users.add(v)
+        getUsers()
+        button("Add user") {
+            action {
+                addUser(MXUser("",""))
+            }
         }
         tableview(users) {
             readonlyColumn("Username", MXUser::username).prefWidth(300.0)
@@ -23,6 +24,21 @@ class MXGUserManager : Fragment("User Management")
                 showUser(it)
                 close()
             }
+        }
+    }
+
+    private fun addUser(user: MXUser)
+    {
+        showUser(user)
+        close()
+    }
+
+    private fun getUsers()
+    {
+        users.clear()
+        for ((_, v) in credentials.credentials)
+        {
+            users.add(v)
         }
     }
 
