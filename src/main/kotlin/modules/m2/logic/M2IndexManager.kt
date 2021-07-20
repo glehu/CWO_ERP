@@ -12,7 +12,7 @@ import modules.IIndexManager
 import modules.IModule
 import modules.m2.Contact
 import modules.mx.logic.MXLog
-import modules.mx.indexFormat
+import modules.mx.misc.indexFormat
 import tornadofx.Controller
 import kotlin.collections.ArrayList
 

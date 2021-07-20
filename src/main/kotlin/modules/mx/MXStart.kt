@@ -1,6 +1,7 @@
 package modules.mx
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import modules.mx.gui.CWOMainGUI
 import modules.mx.logic.MXLog
 import modules.mx.misc.MXUser
 import tornadofx.launch

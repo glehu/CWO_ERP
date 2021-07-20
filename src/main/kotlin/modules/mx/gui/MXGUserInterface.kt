@@ -1,4 +1,4 @@
-package modules.mx
+package modules.mx.gui
 
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
@@ -6,9 +6,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.SongController
 import modules.m1.misc.M1Benchmark
 import modules.m2.gui.ContactController
-import modules.mx.gui.MXGUserManager
+import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
+import modules.mx.loginRoutines
 import tornadofx.*
 
 @ExperimentalSerializationApi

@@ -6,9 +6,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IIndexManager
 import modules.IModule
-import modules.mx.extractNumbers
+import modules.mx.misc.extractNumbers
 import modules.mx.getModulePath
-import modules.mx.indexFormat
+import modules.mx.misc.indexFormat
 import modules.mx.logic.MXLog
 import tornadofx.Controller
 import java.io.File

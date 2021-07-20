@@ -10,7 +10,7 @@ import kotlinx.serialization.json.Json
 import modules.IIndexManager
 import modules.IModule
 import modules.mx.logic.MXLog
-import modules.mx.indexFormat
+import modules.mx.misc.indexFormat
 import tornadofx.Controller
 import modules.m1.Song as Song
 

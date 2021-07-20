@@ -1,7 +1,5 @@
 package modules.mx.gui
 
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleStringProperty
 import modules.mx.logic.MXUserManager
 import modules.mx.misc.MXUser
 import modules.mx.misc.MXUserModel

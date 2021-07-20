@@ -8,9 +8,9 @@ class MXUserModelProperty
 {
     //Credentials
     val usernameProperty = SimpleStringProperty("")
-    var username by usernameProperty
+    var username: String by usernameProperty
     val passwordProperty = SimpleStringProperty("")
-    var password by passwordProperty
+    var password: String by passwordProperty
     //Rights... Access to modules
     val canAccessMXProperty = SimpleBooleanProperty(false)
     var canAccessMX by canAccessMXProperty
