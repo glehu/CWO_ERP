@@ -1,5 +1,6 @@
 package modules.mx
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -40,4 +41,7 @@ fun checkIniFile(iniFile: File)
 }
 
 @Serializable
-private data class IniValues(var token: String, var dataPath: String, var maxSearchResults: Int)
+private data class IniValues(
+    @SerialName("encryption key") var token: String,
+    @SerialName("data path") var dataPath: String,
+    @SerialName("max search results") var maxSearchResults: Int)

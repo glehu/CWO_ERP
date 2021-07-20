@@ -16,12 +16,12 @@ fun main()
 fun loginRoutines()
 {
     //Search for the .ini file to setup the software
-    val iniFile = File("$programPath\\cwo_erp.ini")
-    checkIniFile(iniFile)
+    checkIniFile(File("$programPath\\cwo_erp.ini"))
 }
 
 fun startupRoutines(user: MXUser)
 {
+    checkIniFile(File("$programPath\\cwo_erp.ini"))
     //Set active user
     activeUser = user
     //Check if all data paths and files exist
