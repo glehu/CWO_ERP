@@ -1,10 +1,12 @@
 package modules.m1.misc
 
 import javafx.beans.property.*
+import modules.m1.Song
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class SongProperty
 {
@@ -214,3 +216,279 @@ class SongModel : ItemViewModel<SongProperty>(SongProperty())
     val comment = bind(SongProperty::commentProperty)
     val byteSize = bind(SongProperty::byteSizeProperty)
 }
+
+fun getSongPropertyFromSong(song: Song): SongProperty
+{
+    val songProperty = SongProperty()
+    //For songModel to be serialized, it has to be inserted into song
+    //---------------------------------v
+    //----------- Main Data -----------|
+    //---------------------------------^
+    songProperty.uniqueID = song.uID
+    songProperty.name = song.name
+    songProperty.vocalist = song.vocalist
+    songProperty.producer = song.producer
+    songProperty.mixing = song.mixing
+    songProperty.mastering = song.mastering
+    songProperty.genre = song.genre
+    songProperty.subgenre = song.subgenre
+    songProperty.songLength = song.songLength
+    songProperty.vibe = song.vibe
+    //----------------------------------v
+    //------- State of Completion ------|
+    //----------------------------------^
+    songProperty.songState = song.songState
+    songProperty.instruState = song.instruState
+    songProperty.lyricsState = song.lyricsState
+    songProperty.vocalsState = song.vocalsState
+    songProperty.mixingState = song.mixingState
+    songProperty.masteringState = song.masteringState
+    //---------------------------------v
+    //--------- Promotion Data --------|
+    //---------------------------------^
+    songProperty.isPromoted = song.isPromoted
+    songProperty.distributed = song.distributed
+    songProperty.isExclusiveRelease = song.isExclusiveRelease
+    songProperty.exclusiveChannel = song.exclusiveChannel
+    //---------------------------------v
+    //--------- Financial Data --------|
+    //---------------------------------^
+    songProperty.moneySpent = song.moneySpent
+    songProperty.moneyGainedStreams = song.moneyGainedStreams
+    songProperty.moneyGainedSponsor = song.moneyGainedSponsor
+    //---------------------------------v
+    //------- Availability Data -------|
+    //---------------------------------^
+    songProperty.isPublic = song.isPublic
+    songProperty.releaseDate = LocalDate.parse(song.releaseDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+    songProperty.onSpotify = song.onSpotify
+    songProperty.onYouTube = song.onYouTube
+    songProperty.onSoundCloud = song.onSoundCloud
+    //---------------------------------v
+    //------- Visualization Data ------|
+    //---------------------------------^
+    songProperty.hasVisualizer = song.hasVisualizer
+    songProperty.hasAnimeMV = song.hasAnimeMV
+    songProperty.hasRealMV = song.hasRealMV
+    //---------------------------------v
+    //---------- Album/EP Data --------|
+    //---------------------------------^
+    songProperty.inEP = song.inEP
+    songProperty.inAlbum = song.inAlbum
+    songProperty.nameEP = song.nameEP
+    songProperty.nameAlbum = song.nameAlbum
+    //---------------------------------v
+    //-------- Statistics Data --------|
+    //---------------------------------^
+    songProperty.playsSpotify = song.playsSpotify
+    songProperty.playsYouTube = song.playsYouTube
+    songProperty.playsSoundCloud = song.playsSoundCloud
+    //---------------------------------v
+    //---------- Feature Data ---------|
+    //---------------------------------^
+    songProperty.coVocalist1 = song.coVocalist1
+    songProperty.coVocalist2 = song.coVocalist2
+    //---------------------------------v
+    //---------- Collab Data ----------|
+    //---------------------------------^
+    songProperty.coProducer1 = song.coProducer1
+    songProperty.coProducer2 = song.coProducer2
+    //---------------------------------v
+    //--------- Copyright Data --------|
+    //---------------------------------^
+    songProperty.isProtected = song.isProtected
+    songProperty.containsCRMaterial = song.containsCRMaterial
+    songProperty.containsExplicitLyrics = song.containsExplicitLyrics
+    //---------------------------------v
+    //----------- Misc Data -----------|
+    //---------------------------------^
+    songProperty.inspiredByArtist = song.inspiredByArtist
+    songProperty.inspiredBySong = song.inspiredBySong
+    songProperty.dawUsed = song.dawUsed
+    songProperty.micUsed = song.micUsed
+    songProperty.comment = song.comment
+    songProperty.byteSize = song.byteSize
+    return songProperty
+}
+
+fun getSongFromProperty(songProperty: SongProperty): Song
+{
+    val song = Song(-1, songProperty.name)
+    //For songModel to be serialized, it has to be inserted into song
+    //---------------------------------v
+    //----------- Main Data -----------|
+    //---------------------------------^
+    song.uID = songProperty.uniqueID
+    song.vocalist = songProperty.vocalist
+    song.producer = songProperty.producer
+    song.mixing = songProperty.mixing
+    song.mastering = songProperty.mastering
+    song.genre = songProperty.genre
+    song.subgenre = songProperty.subgenre
+    song.songLength = songProperty.songLength
+    song.vibe = songProperty.vibe
+    //----------------------------------v
+    //------- State of Completion ------|
+    //----------------------------------^
+    song.songState = songProperty.songState
+    song.instruState = songProperty.instruState
+    song.lyricsState = songProperty.lyricsState
+    song.vocalsState = songProperty.vocalsState
+    song.mixingState = songProperty.mixingState
+    song.masteringState = songProperty.masteringState
+    //---------------------------------v
+    //--------- Promotion Data --------|
+    //---------------------------------^
+    song.isPromoted = songProperty.isPromoted
+    song.distributed = songProperty.distributed
+    song.isExclusiveRelease = songProperty.isExclusiveRelease
+    song.exclusiveChannel = songProperty.exclusiveChannel
+    //---------------------------------v
+    //--------- Financial Data --------|
+    //---------------------------------^
+    song.moneySpent = songProperty.moneySpent
+    song.moneyGainedStreams = songProperty.moneyGainedStreams
+    song.moneyGainedSponsor = songProperty.moneyGainedSponsor
+    //---------------------------------v
+    //------- Availability Data -------|
+    //---------------------------------^
+    song.isPublic = songProperty.isPublic
+    song.releaseDate = songProperty.releaseDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+    song.onSpotify = songProperty.onSpotify
+    song.onYouTube = songProperty.onYouTube
+    song.onSoundCloud = songProperty.onSoundCloud
+    //---------------------------------v
+    //------- Visualization Data ------|
+    //---------------------------------^
+    song.hasVisualizer = songProperty.hasVisualizer
+    song.hasAnimeMV = songProperty.hasAnimeMV
+    song.hasRealMV = songProperty.hasRealMV
+    //---------------------------------v
+    //---------- Album/EP Data --------|
+    //---------------------------------^
+    song.inEP = songProperty.inEP
+    song.inAlbum = songProperty.inAlbum
+    song.nameEP = songProperty.nameEP
+    song.nameAlbum = songProperty.nameAlbum
+    //---------------------------------v
+    //-------- Statistics Data --------|
+    //---------------------------------^
+    song.playsSpotify = songProperty.playsSpotify
+    song.playsYouTube = songProperty.playsYouTube
+    song.playsSoundCloud = songProperty.playsSoundCloud
+    //---------------------------------v
+    //---------- Feature Data ---------|
+    //---------------------------------^
+    song.coVocalist1 = songProperty.coVocalist1
+    song.coVocalist2 = songProperty.coVocalist2
+    //---------------------------------v
+    //---------- Collab Data ----------|
+    //---------------------------------^
+    song.coProducer1 = songProperty.coProducer1
+    song.coProducer2 = songProperty.coProducer2
+    //---------------------------------v
+    //--------- Copyright Data --------|
+    //---------------------------------^
+    song.isProtected = songProperty.isProtected
+    song.containsCRMaterial = songProperty.containsCRMaterial
+    song.containsExplicitLyrics = songProperty.containsExplicitLyrics
+    //---------------------------------v
+    //----------- Misc Data -----------|
+    //---------------------------------^
+    song.inspiredByArtist = songProperty.inspiredByArtist
+    song.inspiredBySong = songProperty.inspiredBySong
+    song.dawUsed = songProperty.dawUsed
+    song.micUsed = songProperty.micUsed
+    song.comment = songProperty.comment
+    song.byteSize = songProperty.byteSize
+    return song
+}
+
+//Template
+/*
+    //---------------------------------v
+    //----------- Main Data -----------|
+    //---------------------------------^
+    song.vocalist                   = "?"
+    song.producer                   = "?"
+    song.mixing                     = "?"
+    song.mastering                  = "?"
+    song.genre                      = "?"
+    song.subgenre                   = "?"
+    song.songLength                 = "??:??"
+    song.vibe                       = "?"
+    //----------------------------------v
+    //------- State of Completion ------|
+    //----------------------------------^
+    song.songState                  = "?"
+    song.instruState                = "?"
+    song.lyricsState                = "?"
+    song.vocalsState                = "?"
+    song.mixingState                = "?"
+    song.masteringState             = "?"
+    //---------------------------------v
+    //--------- Promotion Data --------|
+    //---------------------------------^
+    song.isPromoted                 = false
+    song.distributed                = false
+    song.isExclusiveRelease         = false
+    song.exclusiveChannel           = "?"
+    //---------------------------------v
+    //--------- Financial Data --------|
+    //---------------------------------^
+    song.moneySpent                 = 0.0
+    song.moneyGainedStreams         = 0.0
+    song.moneyGainedSponsor         = 0.0
+    //---------------------------------v
+    //------- Availability Data -------|
+    //---------------------------------^
+    song.isPublic                   = false
+    song.releaseDate                = "??.??.????"
+    song.onSpotify                  = false
+    song.onYouTube                  = false
+    song.onSoundCloud               = false
+    //---------------------------------v
+    //------- Visualization Data ------|
+    //---------------------------------^
+    song.hasVisualizer              = false
+    song.hasAnimeMV                 = false
+    song.hasRealMV                  = false
+    //---------------------------------v
+    //---------- Album/EP Data --------|
+    //---------------------------------^
+    song.inEP                       = false
+    song.inAlbum                    = false
+    song.nameEP                     = "?"
+    song.nameAlbum                  = "?"
+    //---------------------------------v
+    //-------- Statistics Data --------|
+    //---------------------------------^
+    song.playsSpotify               = 0
+    song.playsYouTube               = 0
+    song.playsSoundCloud            = 0
+    //---------------------------------v
+    //---------- Feature Data ---------|
+    //---------------------------------^
+    song.coVocalist1                = "?"
+    song.coVocalist2                = "?"
+    //---------------------------------v
+    //---------- Collab Data ----------|
+    //---------------------------------^
+    song.coProducer1                = "?"
+    song.coProducer2                = "?"
+    //---------------------------------v
+    //--------- Copyright Data --------|
+    //---------------------------------^
+    song.isProtected                = false
+    song.containsCRMaterial         = false
+    song.containsExplicitLyrics     = false
+    //---------------------------------v
+    //----------- Misc Data -----------|
+    //---------------------------------^
+    song.inspiredByArtist           = "?"
+    song.inspiredBySong             = "?"
+    song.dawUsed                    = "?"
+    song.micUsed                    = "?"
+    song.comment                    = "?"
+    song.byteSize                   = 0L
+ */
