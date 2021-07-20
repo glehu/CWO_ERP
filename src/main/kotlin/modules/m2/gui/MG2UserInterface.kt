@@ -22,51 +22,6 @@ import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class ContactController : IModule, Controller()
-{
-    override fun moduleName() = "MG2UserInterface"
-
-    private val wizard = find<ContactConfiguratorWizard>()
-    val db: CwODB by inject()
-    val indexManager: M2IndexManager by inject(Scope(db))
-    
-    fun openWizardNewContact()
-    {
-        wizard.contact.item = ContactProperty()
-        wizard.isComplete = false
-        wizard.onComplete {
-            if (wizard.contact.item !== null)
-            {
-                val raf = db.openRandomFileAccess("M2", "rw")
-                M2DBManager().saveEntry(getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, indexManager)
-                db.closeRandomFileAccess(raf)
-                wizard.contact.item = ContactProperty()
-                wizard.isComplete = false
-                wizard.close()
-            }
-        }
-        wizard.openModal()
-    }
-
-    @ExperimentalSerializationApi
-    fun openWizardFindContact()
-    {
-        find(ContactFinder::class, Scope(indexManager)).openModal()
-    }
-
-    fun openAnalytics()
-    {
-        //TODO: Add multiple analytics modes
-        find(MG2Analytics::class, Scope(indexManager)).openModal()
-    }
-
-    fun openDataImport()
-    {
-        find(MG2Import::class, Scope(indexManager)).openModal()
-    }
-}
-
-@ExperimentalSerializationApi
 class ContactFinder : IModule, View("Find Contact")
 {
     override fun moduleName() = "MG2UserInterface"

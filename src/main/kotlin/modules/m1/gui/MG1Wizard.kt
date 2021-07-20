@@ -4,6 +4,7 @@ import db.CwODB
 import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.getGenreList
+import modules.m1.logic.M1Controller
 import modules.m1.misc.SongModel
 import tornadofx.*
 
@@ -57,8 +58,7 @@ class SongViewerWizard : Wizard("View a song")
 class NewSongMainData : Fragment("Main")
 {
     private val song: SongModel by inject()
-    private val db: CwODB by inject()
-    private val m1controller: SongController by inject()
+    private val m1controller: M1Controller by inject()
 
     //----------------------------------v
     //----------- Main Data ------------|
