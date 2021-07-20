@@ -61,6 +61,8 @@ class MXGUserInterface : View("CWO ERP")
     private val m1Controller: SongController by inject()
     private val m2Controller: ContactController by inject()
 
+    private val buttonWidth = 150.0
+
     override val root = borderpane {
         top = menubar {
             menu("Misc") {
@@ -93,11 +95,13 @@ class MXGUserInterface : View("CWO ERP")
                                 action { m1Controller.openWizardNewSong() }
                                 tooltip("Add a new song to the database.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
                             }
                             button("Find Song") {
                                 action { m1Controller.openWizardFindSong() }
                                 tooltip("Find a song in the database.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
                             }
                         }
                         //Analytics functions
@@ -106,6 +110,7 @@ class MXGUserInterface : View("CWO ERP")
                                 action { m1Controller.openAnalytics() }
                                 tooltip("Display a chart to show the distribution of genres.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
                             }
                         }
                         //Maintenance functions
@@ -113,7 +118,8 @@ class MXGUserInterface : View("CWO ERP")
                             button("Rebuild indices") {
                                 //TODO: Not yet implemented
                                 tooltip("Rebuilds all indices in case of faulty indices.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 40.0 }
+                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
                             }
                         }
                     }
@@ -129,11 +135,13 @@ class MXGUserInterface : View("CWO ERP")
                                 action { m2Controller.openWizardNewContact() }
                                 tooltip("Add a new song to the database.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
                             }
                             button("Find Contact") {
                                 action { m2Controller.openWizardFindContact() }
                                 tooltip("Find a song in the database.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
                             }
                         }
                         //Analytics functions
@@ -142,6 +150,16 @@ class MXGUserInterface : View("CWO ERP")
                                 action { m2Controller.openAnalytics() }
                                 tooltip("Display a chart to show the distribution of genres.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
+                            }
+                        }
+                        //Maintenance functions
+                        vbox {
+                            button("Rebuild indices") {
+                                //TODO: Not yet implemented
+                                tooltip("Rebuilds all indices in case of faulty indices.")
+                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
                             }
                         }
                         //Data import
@@ -150,6 +168,7 @@ class MXGUserInterface : View("CWO ERP")
                                 action { m2Controller.openDataImport() }
                                 tooltip("Import contact data from a .csv file.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
                             }
                         }
                     }
@@ -164,6 +183,7 @@ class MXGUserInterface : View("CWO ERP")
                             action { find(MXGUserManager::class).openModal() }
                             tooltip("Opens the user management.")
                             vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                            prefWidth = buttonWidth
                         }
                     }
                 }
