@@ -59,13 +59,13 @@ class M2IndexManager: IModule, IIndexManager, Controller()
     override fun buildIndex0(entry: Any, posDB: Long, byteSize: Int)
     {
         entry as Contact
-        indexList[0]!!.indexMap[entry.uID] = IndexContent("${entry.uID}", posDB, byteSize)
+        indexList[0]!!.indexMap[entry.uID] = IndexContent(entry.uID, "${entry.uID}", posDB, byteSize)
     }
     
     //Index 1 (Contact.name)
     private fun buildIndex1(contact: Contact, posDB: Long, byteSize: Int)
     {
         val formatted = indexFormat(contact.name).uppercase()
-        indexList[1]!!.indexMap[contact.uID] = IndexContent(formatted, posDB, byteSize)
+        indexList[1]!!.indexMap[contact.uID] = IndexContent(contact.uID, formatted, posDB, byteSize)
     }
 }

@@ -63,34 +63,34 @@ class M1IndexManager: IModule, IIndexManager, Controller()
     override fun buildIndex0(entry: Any, posDB: Long, byteSize: Int)
     {
         entry as Song
-        indexList[0]!!.indexMap[entry.uID] = IndexContent("${entry.uID}", posDB, byteSize)
+        indexList[0]!!.indexMap[entry.uID] = IndexContent(entry.uID, "${entry.uID}", posDB, byteSize)
     }
 
     //Index 1 (Song.name)
-    private fun buildIndex1(entry: Song, posDB: Long, byteSize: Int)
+    private fun buildIndex1(song: Song, posDB: Long, byteSize: Int)
     {
-        val formatted = indexFormat(entry.name).uppercase()
-        indexList[1]!!.indexMap[entry.uID] = IndexContent(formatted, posDB, byteSize)
+        val formatted = indexFormat(song.name).uppercase()
+        indexList[1]!!.indexMap[song.uID] = IndexContent(song.uID, formatted, posDB, byteSize)
     }
 
     //Index 2 (Song.vocalist)
     private fun buildIndex2(song: Song, posDB: Long, byteSize: Int)
     {
         val formatted = indexFormat(song.vocalist)
-        indexList[2]!!.indexMap[song.uID] = IndexContent(formatted, posDB, byteSize)
+        indexList[2]!!.indexMap[song.uID] = IndexContent(song.uID, formatted, posDB, byteSize)
     }
 
     //Index 3 (Song.producer)
     private fun buildIndex3(song: Song, posDB: Long, byteSize: Int)
     {
         val formatted = indexFormat(song.producer)
-        indexList[3]!!.indexMap[song.uID] = IndexContent(formatted, posDB, byteSize)
+        indexList[3]!!.indexMap[song.uID] = IndexContent(song.uID, formatted, posDB, byteSize)
     }
 
     //Index 4 (Song.genre)
     private fun buildIndex4(song: Song, posDB: Long, byteSize: Int)
     {
         val formatted = indexFormat(song.genre)
-        indexList[4]!!.indexMap[song.uID] = IndexContent(formatted, posDB, byteSize)
+        indexList[4]!!.indexMap[song.uID] = IndexContent(song.uID, formatted, posDB, byteSize)
     }
 }
