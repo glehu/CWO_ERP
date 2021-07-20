@@ -34,8 +34,10 @@ class M1Benchmark : IModule, Controller()
             {
                 val song = Song(-1, getRandomString(10L))
                 //Fill it with data
-                song.vocalist = getRandomString(10L)
-                song.producer = getRandomString(10L)
+                //song.vocalist = getRandomString(10L)
+                song.vocalistUID = 123
+                //song.producer = getRandomString(10L)
+                song.producerUID = 123
                 song.genre = getRandomGenre()
 
                 song.releaseDate = "01.01.1000"

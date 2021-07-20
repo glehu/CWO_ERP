@@ -5,7 +5,6 @@ import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.getGenreList
 import modules.m1.misc.SongModel
-import modules.m2.logic.M2IndexManager
 import tornadofx.*
 
 //This Wizard is used to create new songs

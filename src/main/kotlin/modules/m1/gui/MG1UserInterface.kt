@@ -81,6 +81,17 @@ class SongController : IModule, Controller()
         } else Contact(-1, "")
         return contact
     }
+
+    fun getContactName(uID: Int, default: String): String
+    {
+        return if (uID != -1)
+        {
+            val contact = M2DBManager().getEntry(
+                uID, db, m2indexManager.indexList[0]!!
+            ) as Contact
+            contact.name
+        } else default
+    }
 }
 
 @ExperimentalSerializationApi
@@ -88,7 +99,8 @@ class SongFinder : IModule, View("Find Song")
 {
     override fun moduleName() = "MG1UserInterface"
     val db: CwODB by inject()
-    val indexManager: M1IndexManager by inject()
+    val indexManager: M1IndexManager by inject(Scope(db))
+    private val m1Controller: SongController by inject()
     private var songName: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
     private var songsFound: ObservableList<Song> = observableList(Song(-1, ""))
@@ -124,8 +136,14 @@ class SongFinder : IModule, View("Find Song")
             tableview(songsFound) {
                 readonlyColumn("ID", Song::uID).prefWidth(65.0)
                 readonlyColumn("Name", Song::name).prefWidth(310.0)
-                readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0)
-                readonlyColumn("Producer", Song::producer).prefWidth(200.0)
+                readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0).cellFormat {
+                    text = m1Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
+                    rowItem.vocalist = text
+                }
+                readonlyColumn("Producer", Song::producer).prefWidth(200.0).cellFormat {
+                    text = m1Controller.getContactName(rowItem.producerUID, rowItem.producer)
+                    rowItem.producer = text
+                }
                 readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                 onUserSelect(1) {
                     showSong(it)

@@ -32,7 +32,7 @@ class M2DBManager : IModule, IDBManager
     @ExperimentalSerializationApi
     override fun getEntry(uID: Int, cwodb: CwODB, index: Index): Any
     {
-        return decodeEntry(cwodb.getEntryFromUniqueID(uID, "M2", index))
+        return decodeEntry(cwodb.getEntryFromUniqueID(uID, "M2", index)) as Contact
     }
 
     @ExperimentalSerializationApi

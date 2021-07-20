@@ -33,7 +33,7 @@ class M1DBManager : IModule, IDBManager
     @ExperimentalSerializationApi
     override fun getEntry(uID: Int, cwodb: CwODB, index: Index): Any
     {
-        return decodeEntry(cwodb.getEntryFromUniqueID(uID, "M1", index))
+        return decodeEntry(cwodb.getEntryFromUniqueID(uID, "M1", index)) as Song
     }
 
     @ExperimentalSerializationApi
