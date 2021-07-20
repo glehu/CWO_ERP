@@ -4,47 +4,36 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
 import modules.mx.logic.MXUserManager
 import modules.mx.misc.MXUser
+import modules.mx.misc.MXUserModel
+import modules.mx.misc.getUserFromUserProperty
+import modules.mx.misc.getUserPropertyFromUser
 import modules.mx.token
 import tornadofx.*
 
 class MXGUser(user: MXUser) : Fragment("User")
 {
     private val userManager: MXUserManager by inject()
-
-    //ToDo: Replace this mess with a UserModel (binds)
-    private val passwordProperty = SimpleStringProperty()
-    private val usernameProperty = SimpleStringProperty()
-    private val canAccessMX = SimpleBooleanProperty()
-    private val canAccessM1Songs = SimpleBooleanProperty()
-    private val canAccessM2Contacts = SimpleBooleanProperty()
-
+    private val userModel = MXUserModel(getUserPropertyFromUser(user))
     private val originalUser = user.copy()
     override val root = form {
-        usernameProperty.value = user.username
-        passwordProperty.value = userManager.decrypt(user.password, token)
-        canAccessMX.value = user.canAccessMX
-        canAccessM1Songs.value = user.canAccessM1Song
-        canAccessM2Contacts.value = user.canAccessM2Contact
+        userModel.password.value = userManager.decrypt(userModel.password.value, token)
         fieldset("Credentials") {
-            field("Username") { textfield(usernameProperty) }
-            field("Password") { textfield(passwordProperty) }
+            field("Username") { textfield(userModel.username).required() }
+            field("Password") { textfield(userModel.password).required() }
         }
         fieldset("Rights (Attention! Changes to rights are active only after a restart!)") {
             fieldset("Access to...") {
-                field("MX") { checkbox("", canAccessMX) }
-                field("M1Songs") { checkbox("", canAccessM1Songs) }
-                field("M2Contacts") { checkbox("", canAccessM2Contacts) }
+                field("MX") { checkbox("", userModel.canAccessMX) }
+                field("M1Songs") { checkbox("", userModel.canAccessM1) }
+                field("M2Contacts") { checkbox("", userModel.canAccessM2) }
             }
         }
         button("Save") {
             shortcut("Enter")
             action {
-                user.username = usernameProperty.value
-                user.password = userManager.encrypt(passwordProperty.value, token)
-                user.canAccessMX = canAccessMX.value
-                user.canAccessM1Song = canAccessM1Songs.value
-                user.canAccessM2Contact = canAccessM2Contacts.value
-                userManager.updateUser(user, originalUser)
+                userModel.password.value = userManager.encrypt(userModel.password.value, token)
+                userModel.commit()
+                userManager.updateUser(getUserFromUserProperty(userModel.item), originalUser)
                 close()
             }
         }

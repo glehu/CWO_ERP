@@ -33,7 +33,7 @@ fun checkIniFile(iniFile: File)
             maxSearchResults = 10_000
         )))
     }
-    val iniValuesLoad = Json.decodeFromString<IniValues>(iniFile.readText())
+    val iniValuesLoad = Json.decodeFromString<IniValues>(iniFile.readText().replace("\\", "\\\\"))
     dataPath = iniValuesLoad.dataPath
     token = iniValuesLoad.token
     maxSearchResultsGlobal = iniValuesLoad.maxSearchResults

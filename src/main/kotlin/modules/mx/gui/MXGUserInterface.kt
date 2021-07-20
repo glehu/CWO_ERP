@@ -9,7 +9,6 @@ import modules.m2.gui.ContactController
 import modules.mx.gui.MXGUserManager
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
-import modules.mx.misc.MXUser
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -84,7 +83,7 @@ class MXGUserInterface : View("CWO ERP")
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             tab("M1Songs") {
-                if (!activeUser.canAccessM1Song) this.isDisable = true
+                if (!activeUser.canAccessM1) this.isDisable = true
                 vbox {
                     hbox {
                         //Main functions
@@ -120,7 +119,7 @@ class MXGUserInterface : View("CWO ERP")
                 }
             }
             tab("M2Contacts") {
-                if (!activeUser.canAccessM2Contact) this.isDisable = true
+                if (!activeUser.canAccessM2) this.isDisable = true
                 vbox {
                     hbox {
                         //Main functions
