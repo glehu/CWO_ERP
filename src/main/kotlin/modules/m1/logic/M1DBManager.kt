@@ -8,7 +8,6 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import modules.IDBManager
 import modules.IModule
 import modules.m1.Song
-import modules.mx.logic.MXLog
 import java.io.RandomAccessFile
 
 class M1DBManager : IModule, IDBManager
@@ -24,11 +23,9 @@ class M1DBManager : IModule, IDBManager
     {
         entry as Song
         indexManager as M1IndexManager
-        MXLog.log("M1", MXLog.LogType.INFO, "Serializing \"${entry.name}\"", moduleName())
         entry.initialize()
         val songSerialized = ProtoBuf.encodeToByteArray(entry)
         val (posDBX, byteSizeX) = cwodb.saveEntry(songSerialized, entry.uID, posDB, byteSize, "M1", raf)
-        MXLog.log("M1", MXLog.LogType.INFO, "Serialization End", moduleName())
         indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk)
     }
 
