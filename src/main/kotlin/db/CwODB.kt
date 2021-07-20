@@ -149,25 +149,27 @@ class CwODB : IModule, Controller()
         val searchString = indexFormat(searchText)
         var entryBytes: ByteArray
 
-        //TODO: Might have to change this again in case of file blockage while trying to read/write twice simultaneously
-        val raf: RandomAccessFile = openRandomFileAccess(module, "r")
-        //Determines the type of search that will be done depending on the search string
-        val filteredMap: Map<Int, IndexContent> = if (searchString != "*" && searchString != "")
+        if (getDatabaseFile(module).isFile)
         {
-            //Search text -> Search for specific entries
-            indexManager.indexList[ixNr]!!.indexMap.filterValues { it.content.contains(searchString) }
-        } else
-        {
-            //No search text -> Show all entries
-            indexManager.indexList[ixNr]!!.indexMap
-        }
-        for ((key, indexContent) in filteredMap)
-        {
-            entryBytes = getDBEntry(indexContent.pos, indexContent.byteSize, raf)
-            counter++
-            //Callback
-            updateProgress(key, entryBytes)
-            if (maxSearchResults > -1 && counter >= maxSearchResults) break
+            val raf: RandomAccessFile = openRandomFileAccess(module, "r")
+            //Determines the type of search that will be done depending on the search string
+            val filteredMap: Map<Int, IndexContent> = if (searchString != "*" && searchString != "")
+            {
+                //Search text -> Search for specific entries
+                indexManager.indexList[ixNr]!!.indexMap.filterValues { it.content.contains(searchString) }
+            } else
+            {
+                //No search text -> Show all entries
+                indexManager.indexList[ixNr]!!.indexMap
+            }
+            for ((key, indexContent) in filteredMap)
+            {
+                entryBytes = getDBEntry(indexContent.pos, indexContent.byteSize, raf)
+                counter++
+                //Callback
+                updateProgress(key, entryBytes)
+                if (maxSearchResults > -1 && counter >= maxSearchResults) break
+            }
         }
     }
 
