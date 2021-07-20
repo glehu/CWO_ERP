@@ -145,7 +145,7 @@ class ContactFinder : IModule, View("Find Contact")
                 //Add the contacts to the table
                 if (threadID >= threadIDCurrent.value)
                 {
-                    contactsFound.add(dbManager.getEntry(bytes) as Contact)
+                    contactsFound.add(dbManager.decodeEntry(bytes) as Contact)
                     entriesFound++
                 }
             }

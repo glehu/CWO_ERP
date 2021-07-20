@@ -66,10 +66,7 @@ class CwODB : IModule, Controller()
                 posDBNew = indexPosInDB
                 //Now add the current entry's byteSize to the previous posInDatabase
                 posDBNew += previousByteSize
-            } else
-            {
-                posDBNew = 0L
-            }
+            } else posDBNew = 0L
         } else
         {
             //Old entry can be overridden since the byteSize is less or equal to the old one
@@ -95,10 +92,7 @@ class CwODB : IModule, Controller()
                 val indexContent = IndexContent(uID, "", posDBNew, byteSizeNew)
                 getLastEntryFile(module).writeText(Json.encodeToString(indexContent))
             }
-        } else
-        {
-            MXLog.log(module, MXLog.LogType.ERROR, "Serialization failed!", moduleName())
-        }
+        } else MXLog.log(module, MXLog.LogType.ERROR, "Serialization failed!", moduleName())
         return Pair(posDBNew, byteSizeNew)
     }
 
@@ -130,7 +124,7 @@ class CwODB : IModule, Controller()
             }
             for ((key, indexContent) in filteredMap)
             {
-                entryBytes = getDBEntry(indexContent.pos, indexContent.byteSize, raf)
+                entryBytes = readDBEntry(indexContent.pos, indexContent.byteSize, raf)
                 counter++
                 //Callback
                 updateProgress(key, entryBytes)
@@ -139,21 +133,28 @@ class CwODB : IModule, Controller()
         }
     }
 
-    fun openRandomFileAccess(module: String, mode: String) = RandomAccessFile(getDatabaseFile(module), mode)
-    fun closeRandomFileAccess(randAccessFile: RandomAccessFile)
+    @ExperimentalSerializationApi
+    fun getEntryFromUniqueID(uID: Int, module: String, index: Index): ByteArray
     {
-        randAccessFile.close()
+        lateinit var entryBytes: ByteArray
+        if (getDatabaseFile(module).isFile)
+        {
+            val raf: RandomAccessFile = openRandomFileAccess(module, "r")
+            val indexContent = index.indexMap[uID]
+            entryBytes = readDBEntry(indexContent!!.pos, indexContent.byteSize, raf)
+        }
+        return entryBytes
     }
 
+    fun openRandomFileAccess(module: String, mode: String) = RandomAccessFile(getDatabaseFile(module), mode)
+    fun closeRandomFileAccess(randAccessFile: RandomAccessFile) = randAccessFile.close()
+
     @ExperimentalSerializationApi
-    fun getDBEntry(posInDatabase: Long, byteSize: Int, randAccessFile: RandomAccessFile): ByteArray
+    fun readDBEntry(posInDatabase: Long, byteSize: Int, randAccessFile: RandomAccessFile): ByteArray
     {
         //We now read from the file
         val entry = ByteArray(byteSize)
-        if (posInDatabase > 0)
-        {
-            randAccessFile.seek(posInDatabase)
-        }
+        if (posInDatabase > 0) randAccessFile.seek(posInDatabase)
         randAccessFile.readFully(entry)
         return entry
     }
@@ -161,10 +162,7 @@ class CwODB : IModule, Controller()
     @ExperimentalSerializationApi
     fun writeDBEntry(entry: ByteArray, posInDatabase: Long, raf: RandomAccessFile)
     {
-        if (posInDatabase > 0)
-        {
-            raf.seek(posInDatabase)
-        }
+        if (posInDatabase > 0) raf.seek(posInDatabase)
         raf.write(entry)
     }
 
@@ -192,10 +190,7 @@ class CwODB : IModule, Controller()
         lastUniqueIDNumber = if (lastUniqueIDString.isNotEmpty())
         {
             Integer.parseInt(lastUniqueIDString)
-        } else
-        {
-            0
-        }
+        } else 0
         return lastUniqueIDNumber
     }
 
@@ -203,10 +198,7 @@ class CwODB : IModule, Controller()
     {
         var ok = false
         val nuPath = File(getModulePath(module))
-        if (!nuPath.isDirectory)
-        {
-            nuPath.mkdirs()
-        }
+        if (!nuPath.isDirectory) nuPath.mkdirs()
         val nuFile = getNuFile(module)
         if (!nuFile.isFile)
         {
@@ -221,10 +213,7 @@ class CwODB : IModule, Controller()
     {
         var ok = false
         val nuPath = File(getModulePath(module))
-        if (!nuPath.isDirectory)
-        {
-            nuPath.mkdirs()
-        }
+        if (!nuPath.isDirectory) nuPath.mkdirs()
         val nuFile = getLastEntryFile(module)
         if (!nuFile.isFile)
         {
@@ -240,10 +229,7 @@ class CwODB : IModule, Controller()
     {
         var ok = false
         val nuPath = File(getModulePath(module))
-        if (!nuPath.isDirectory)
-        {
-            nuPath.mkdirs()
-        }
+        if (!nuPath.isDirectory) nuPath.mkdirs()
         val nuFile = getIndexFile(module, ixNr)
         if (!nuFile.isFile)
         {

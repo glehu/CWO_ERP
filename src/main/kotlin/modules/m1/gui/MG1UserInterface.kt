@@ -128,7 +128,7 @@ class SongFinder : IModule, View("Find Song")
                 if (threadID >= threadIDCurrent)
                 {
                     if (entriesFound == 0) songsFound.clear()
-                    songsFound.add(dbManager.getEntry(bytes) as Song)
+                    songsFound.add(dbManager.decodeEntry(bytes) as Song)
                     entriesFound++
                 }
             }

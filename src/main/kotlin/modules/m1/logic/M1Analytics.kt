@@ -29,7 +29,7 @@ class M1Analytics : IModule, Controller()
             )
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping genre data..."))
-                val song: Song = dbManager.getEntry(entryBytes) as Song
+                val song: Song = dbManager.decodeEntry(entryBytes) as Song
                 if (song.uID != -1)
                 {
                     songCount += 1.0

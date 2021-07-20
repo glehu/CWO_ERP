@@ -34,7 +34,7 @@ class M2Analytics : IModule, Controller()
             )
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping city data..."))
-                val contact: Contact = dbManager.getEntry(entryBytes) as Contact
+                val contact: Contact = dbManager.decodeEntry(entryBytes) as Contact
                 if (contact.uID != -1)
                 {
                     city = contact.city.uppercase()

@@ -1,6 +1,7 @@
 package modules.m1.logic
 
 import db.CwODB
+import db.Index
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
@@ -30,7 +31,13 @@ class M1DBManager : IModule, IDBManager
     }
 
     @ExperimentalSerializationApi
-    override fun getEntry(entry: ByteArray): Any
+    override fun getEntry(uID: Int, cwodb: CwODB, index: Index): Any
+    {
+        return decodeEntry(cwodb.getEntryFromUniqueID(uID, "M1", index))
+    }
+
+    @ExperimentalSerializationApi
+    override fun decodeEntry(entry: ByteArray): Any
     {
         return ProtoBuf.decodeFromByteArray(entry) as Song
     }
