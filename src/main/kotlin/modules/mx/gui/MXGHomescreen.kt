@@ -81,6 +81,7 @@ class MXGUserInterface : View("CWO ERP")
                     menu("Delete Logfile") {
                         item("M1 Songs").action { MXLog.deleteLogFile("M1") }
                         item("M2 Contacts").action { MXLog.deleteLogFile("M2") }
+                        item("MX").action { MXLog.deleteLogFile("MX") }
                     }
                 }
                 menu("Benchmark") {
