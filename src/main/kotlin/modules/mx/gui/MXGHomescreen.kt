@@ -3,9 +3,9 @@ package modules.mx.gui
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.gui.SongController
+import modules.m1.logic.M1Controller
 import modules.m1.misc.M1Benchmark
-import modules.m2.gui.ContactController
+import modules.m2.logic.M2Controller
 import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
@@ -63,8 +63,8 @@ class MXGLogin : View("Login")
 @ExperimentalSerializationApi
 class MXGUserInterface : View("CWO ERP")
 {
-    private val m1Controller: SongController by inject()
-    private val m2Controller: ContactController by inject()
+    private val m1Controller: M1Controller by inject()
+    private val m2Controller: M2Controller by inject()
 
     private val buttonWidth = 150.0
 
