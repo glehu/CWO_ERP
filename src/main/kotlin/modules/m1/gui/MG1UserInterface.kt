@@ -10,11 +10,16 @@ import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.Song
-import modules.m1.misc.SongProperty
 import modules.m1.logic.M1DBManager
 import modules.m1.logic.M1IndexManager
+import modules.m1.misc.SongModel
+import modules.m1.misc.SongProperty
 import modules.m1.misc.getSongFromProperty
 import modules.m1.misc.getSongPropertyFromSong
+import modules.m2.Contact
+import modules.m2.gui.ContactFinder
+import modules.m2.logic.M2DBManager
+import modules.m2.logic.M2IndexManager
 import modules.mx.logic.MXLog
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
@@ -28,6 +33,7 @@ class SongController : IModule, Controller()
     private val wizard = find<SongConfiguratorWizard>()
     val db: CwODB by inject()
     val indexManager: M1IndexManager by inject(Scope(db))
+    private val m2indexManager: M2IndexManager by inject(Scope(db))
 
     fun openWizardNewSong()
     {
@@ -56,6 +62,24 @@ class SongController : IModule, Controller()
     {
         //TODO: Add multiple analytics modes
         find(MG1Analytics::class, Scope(indexManager)).openModal()
+    }
+
+    fun selectContact(): Contact
+    {
+        val contact: Contact
+        val newScope = Scope()
+        val dataTransfer = SongModel()
+        dataTransfer.uID.value = -2
+        setInScope(dataTransfer, newScope)
+        setInScope(m2indexManager, newScope)
+        find<ContactFinder>(newScope).openModal(block = true)
+        contact = if (dataTransfer.name.value != null)
+        {
+            M2DBManager().getEntry(
+                dataTransfer.uID.value, db, m2indexManager.indexList[0]!!
+            ) as Contact
+        } else Contact(-1, "")
+        return contact
     }
 }
 

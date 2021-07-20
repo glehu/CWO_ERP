@@ -5,9 +5,7 @@ import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.getGenreList
 import modules.m1.misc.SongModel
-import modules.m2.Contact
-import modules.m2.gui.ContactFinder
-import modules.m2.logic.M2DBManager
+import modules.m2.logic.M2IndexManager
 import tornadofx.*
 
 //This Wizard is used to create new songs
@@ -61,6 +59,7 @@ class NewSongMainData : Fragment("Main")
 {
     private val song: SongModel by inject()
     private val db: CwODB by inject()
+    private val m1controller: SongController by inject()
 
     //----------------------------------v
     //----------- Main Data ------------|
@@ -76,19 +75,9 @@ class NewSongMainData : Fragment("Main")
                 button("<") {
                     tooltip("Load an address")
                     action {
-                        val dataTransfer = SongModel()
-                        dataTransfer.uID.value = -2
-                        val newScope = Scope(dataTransfer)
-                        find<ContactFinder>(newScope).openModal(block = true)
-                        if (dataTransfer.name.value != null)
-                        {
-                            song.vocalistUID.value = dataTransfer.uID.value
-                            val contact =
-                                M2DBManager().getEntry(
-                                    dataTransfer.uID.value, db, db.getIndex("M2", 0)
-                                ) as Contact
-                            song.vocalist.value = contact.name
-                        }
+                        val contact = m1controller.selectContact()
+                        song.vocalistUID.value = contact.uID
+                        song.vocalist.value = contact.name
                     }
                 }
             }
@@ -98,19 +87,9 @@ class NewSongMainData : Fragment("Main")
                 button("<") {
                     tooltip("Load an address")
                     action {
-                        val dataTransfer = SongModel()
-                        dataTransfer.uID.value = -2
-                        val newScope = Scope(dataTransfer)
-                        find<ContactFinder>(newScope).openModal(block = true)
-                        if (dataTransfer.name.value != null)
-                        {
-                            song.producerUID.value = dataTransfer.uID.value
-                            val contact =
-                                M2DBManager().getEntry(
-                                    dataTransfer.uID.value, db, db.getIndex("M2", 0)
-                                ) as Contact
-                            song.producer.value = contact.name
-                        }
+                        val contact = m1controller.selectContact()
+                        song.producerUID.value = contact.uID
+                        song.producer.value = contact.name
                     }
                 }
             }
