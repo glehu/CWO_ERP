@@ -1,6 +1,7 @@
 package modules.mx.logic
 
 import modules.IModule
+import modules.mx.activeUser
 import modules.mx.getModulePath
 import tornadofx.runAsync
 import java.io.File
@@ -21,7 +22,7 @@ class MXLog
 
         fun log(module: String, type: LogType, text: String, caller: String, write: Boolean = true)
         {
-            val logText = "<${type.toString().padEnd(8)}> ${caller.padEnd(20)} :> $text\n"
+            val logText = "<$type><${activeUser.username}> $caller :> $text\n"
             print(logText)
             if (write)
             {
