@@ -3,25 +3,23 @@ package modules.m2.gui
 import modules.m2.misc.ContactModel
 import tornadofx.*
 
-class ContactConfiguratorWizard : Wizard("Add new contact", "M2CONTACTS DB Version 0.1.0-PreAlpha")
+class ContactConfiguratorWizard : Wizard("Add new contact")
 {
     val contact: ContactModel by inject()
 
     init
     {
-        //graphic         = resources.imageview("/graphics/orochi_logo_red_400_400.png")
         enableStepLinks = true
         add(NewContactMainData::class)
     }
 }
 
-class ContactViewerWizard : Wizard("View a contact", "M2CONTACTS DB Version 0.1.0-PreAlpha")
+class ContactViewerWizard : Wizard("View a contact")
 {
     val contact: ContactModel by inject()
 
     init
     {
-        //graphic         = resources.imageview("/graphics/orochi_logo_red_400_400.png")
         enableStepLinks = true
         add(NewContactMainData::class)
     }

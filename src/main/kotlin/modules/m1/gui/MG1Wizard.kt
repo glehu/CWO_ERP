@@ -9,13 +9,12 @@ import tornadofx.*
 
 //This Wizard is used to create new songs
 @ExperimentalSerializationApi
-class SongConfiguratorWizard : Wizard("Add new song", "M1SONGS DB Version 0.1.5-PreAlpha")
+class SongConfiguratorWizard : Wizard("Add new song")
 {
     val song: SongModel by inject()
 
     init
     {
-        //graphic         = resources.imageview("/graphics/orochi_logo_red_400_400.png")
         enableStepLinks = true
         add(NewSongMainData::class)
         add(NewSongCompletionStateData::class)
@@ -33,13 +32,12 @@ class SongConfiguratorWizard : Wizard("Add new song", "M1SONGS DB Version 0.1.5-
 
 //This Wizard is used to view and/or edit songs
 @ExperimentalSerializationApi
-class SongViewerWizard : Wizard("View a song", "M1SONGS DB Version 0.1.5-PreAlpha")
+class SongViewerWizard : Wizard("View a song")
 {
     val song: SongModel by inject()
 
     init
     {
-        //graphic         = resources.imageview("/graphics/orochi_logo_red_400_400.png")
         enableStepLinks = true
         add(NewSongMainData::class)
         add(NewSongCompletionStateData::class)

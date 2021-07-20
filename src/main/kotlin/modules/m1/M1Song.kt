@@ -7,25 +7,6 @@ import modules.IEntry
 @Serializable
 data class Song(var uID: Int, var name: String): IEntry
 {
-    /*  M1SONGS DB Version 0.1.5-PreAlpha
-
-            Changelog:
-                12.10.2020 V0.1.0-PreAlpha
-                    Module created
-                13.10.2020 V0.1.1-PreAlpha
-                    Added more information
-                14.10.2020 V0.1.2-PreAlpha
-                    Added template
-                    Added init() function including Regex
-                    Added more information
-                15.10.2020 V0.1.3-PreAlpha
-                    Moved some information to auto generated data
-                    More auto generated data
-                01.12.2020 V0.1.4-PreAlpha
-                    Added byteSize
-                17.04.2021 V0.1.5-PreAlpha
-                    Added completion state
-    */
     //*************************************************
     //********************** User Input Data **********
     //*************************************************
@@ -156,11 +137,7 @@ data class Song(var uID: Int, var name: String): IEntry
 
     fun initialize()
     {
-        if (uID == -1)
-        {
-            val indexer = CwODB()
-            uID = indexer.getUniqueID("M1")
-        }
+        if (uID == -1) uID = CwODB().getUniqueID("M1")
 
         val sTmp1: String
         val sTmp2: String
@@ -174,10 +151,7 @@ data class Song(var uID: Int, var name: String): IEntry
             songLengthHours = ((seconds / 60) / 60)
             songLengthMinutes = (seconds / 60)
             songLengthSeconds = seconds
-        } else
-        {
-            songLengthHours = 0.0; songLengthMinutes = 0.0; songLengthSeconds = 0.0
-        }
+        } else songLengthHours = 0.0; songLengthMinutes = 0.0; songLengthSeconds = 0.0
         //----------------- Money
         moneyGainedTotal = moneyGainedStreams + moneyGainedSponsor
         if (songLengthMinutes > 0.0)
@@ -188,18 +162,9 @@ data class Song(var uID: Int, var name: String): IEntry
         //----------------- Statistics
         totalPlays = 0
         var nTmp1 = 0
-        if (onSpotify)
-        {
-            nTmp1 += 1; totalPlays += playsSpotify
-        }
-        if (onYouTube)
-        {
-            nTmp1 += 1; totalPlays += playsYouTube
-        }
-        if (onSoundCloud)
-        {
-            nTmp1 += 1; totalPlays += playsSoundCloud
-        }
+        if (onSpotify) nTmp1 += 1; totalPlays += playsSpotify
+        if (onYouTube) nTmp1 += 1; totalPlays += playsYouTube
+        if (onSoundCloud) nTmp1 += 1; totalPlays += playsSoundCloud
         averagePlays = totalPlays.toDouble() / nTmp1
         //----------------- Single/EP/Album
         isSingle = !(inEP || inAlbum)

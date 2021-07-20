@@ -9,12 +9,6 @@ import java.time.format.DateTimeFormatter
 @Serializable
 data class Contact(var uID: Int, var name: String)
 {
-    /*  M2CONTACTS DB Version 0.1.0-PreAlpha
-
-            Changelog:
-                19.06.2021 V0.1.0-PreAlpha
-                    Module created
-    */
     //*************************************************
     //********************** User Input Data **********
     //*************************************************
@@ -46,11 +40,7 @@ data class Contact(var uID: Int, var name: String)
 
     fun initialize()
     {
-        if (uID == -1)
-        {
-            val indexer = CwODB()
-            uID = indexer.getUniqueID("M2")
-        }
+        if (uID == -1) uID = CwODB().getUniqueID("M2")
     }
 }
 
