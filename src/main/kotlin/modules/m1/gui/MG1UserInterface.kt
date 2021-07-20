@@ -159,8 +159,8 @@ class SongFinder : IModule, View("Find Song")
                 M1DBManager().saveEntry(
                     entry = getSongFromProperty(wizard.song.item),
                     cwodb = db,
-                    posDB = indexManager.indexList[0]!!.indexMap[wizard.song.item.uniqueID]!!.pos,
-                    byteSize = indexManager.indexList[0]!!.indexMap[wizard.song.item.uniqueID]!!.byteSize,
+                    posDB = indexManager.indexList[0]!!.indexMap[wizard.song.item.uID]!!.pos,
+                    byteSize = indexManager.indexList[0]!!.indexMap[wizard.song.item.uID]!!.byteSize,
                     raf = raf,
                     indexManager = indexManager
                 )

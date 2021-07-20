@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import modules.IEntry
 
 @Serializable
-data class Song(var uID: Int, var name: String): IEntry
+data class Song(override var uID: Int, override var name: String): IEntry
 {
     //*************************************************
     //********************** User Input Data **********
@@ -15,9 +15,13 @@ data class Song(var uID: Int, var name: String): IEntry
     //----------- Main Data ------------|
     //----------------------------------^
     var vocalist: String = "?"
+    var vocalistUID: Int = -1
     var producer: String = "?"
+    var producerUID: Int = -1
     var mixing: String = "?"
+    var mixingUID: Int = -1
     var mastering: String = "?"
+    var masteringUID: Int = -1
     var genre: String = "?"
     var subgenre: String = "?"
     var songLength: String = "??:??"

@@ -2,8 +2,8 @@ package modules.m1.gui
 
 import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.misc.SongModel
 import modules.m1.getGenreList
+import modules.m1.misc.SongModel
 import modules.m2.gui.ContactFinder
 import tornadofx.*
 
@@ -68,33 +68,37 @@ class NewSongMainData : Fragment("Main")
             field("Name") { textfield(song.name).required() }
             field("Vocalist") {
                 textfield(song.vocalist).required()
+                label(song.vocalistUID)
                 button("<") {
                     tooltip("Load an address")
                     action {
-                        val newSong = SongModel()
-                        newSong.uniqueID.value = -2
-                        val newScope = Scope(newSong)
+                        val dataTransfer = SongModel()
+                        dataTransfer.uID.value = -2
+                        val newScope = Scope(dataTransfer)
                         find<ContactFinder>(newScope).openModal(block = true)
-                        if (newSong.name.value != null)
+                        if (dataTransfer.name.value != null)
                         {
-                            song.vocalist.value = newSong.name.value
+                            song.vocalistUID.value = dataTransfer.uID.value
+                            song.vocalist.value = dataTransfer.name.value
                         }
                     }
                 }
             }
             field("Producer") {
                 textfield(song.producer).required()
+                label(song.producerUID)
                 button("<") {
                     tooltip("Load an address")
                     action {
                         action {
-                            val newSong = SongModel()
-                            newSong.uniqueID.value = -2
-                            val newScope = Scope(newSong)
+                            val dataTransfer = SongModel()
+                            dataTransfer.uID.value = -2
+                            val newScope = Scope(dataTransfer)
                             find<ContactFinder>(newScope).openModal(block = true)
-                            if (newSong.name.value != null)
+                            if (dataTransfer.name.value != null)
                             {
-                                song.producer.value = newSong.name.value
+                                song.producerUID.value = dataTransfer.uID.value
+                                song.producer.value = dataTransfer.name.value
                             }
                         }
                     }
@@ -114,9 +118,13 @@ class NewSongMainData : Fragment("Main")
         isComplete = song.commit(
             song.name,
             song.vocalist,
+            song.vocalistUID,
             song.producer,
+            song.producerUID,
             song.mixing,
+            song.mixingUID,
             song.mastering,
+            song.masteringUID,
             song.genre,
             song.subgenre,
             song.songLength,

@@ -2,12 +2,13 @@ package modules.m2
 
 import db.CwODB
 import kotlinx.serialization.Serializable
+import modules.IEntry
 import modules.m2.misc.ContactProperty
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Serializable
-data class Contact(var uID: Int, var name: String)
+data class Contact(override var uID: Int, override var name: String): IEntry
 {
     //*************************************************
     //********************** User Input Data **********

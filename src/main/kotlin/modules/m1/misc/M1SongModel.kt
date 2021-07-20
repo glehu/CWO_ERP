@@ -10,8 +10,8 @@ import java.time.format.DateTimeFormatter
 
 class SongProperty
 {
-    val uniqueIDProperty = SimpleIntegerProperty(-1)
-    var uniqueID by uniqueIDProperty
+    val uIDProperty = SimpleIntegerProperty(-1)
+    var uID by uIDProperty
     val nameProperty = SimpleStringProperty()
     var name: String by nameProperty
 
@@ -19,13 +19,21 @@ class SongProperty
     //----------- Main Data ------------|
     //----------------------------------^
     val vocalistProperty = SimpleStringProperty()
+    val vocalistUIDProperty = SimpleIntegerProperty(-1)
     var vocalist: String by vocalistProperty
+    var vocalistUID: Int by vocalistUIDProperty
     val producerProperty = SimpleStringProperty()
+    val producerUIDProperty = SimpleIntegerProperty(-1)
     var producer: String by producerProperty
+    var producerUID: Int by producerUIDProperty
     val mixingProperty = SimpleStringProperty("?")
+    val mixingUIDProperty = SimpleIntegerProperty(-1)
     var mixing: String by mixingProperty
+    var mixingUID: Int by mixingUIDProperty
     val masteringProperty = SimpleStringProperty("?")
+    val masteringUIDProperty = SimpleIntegerProperty(-1)
     var mastering: String by masteringProperty
+    var masteringUID: Int by masteringUIDProperty
     val genreProperty = SimpleStringProperty("?")
     var genre: String by genreProperty
     val subgenreProperty = SimpleStringProperty("?")
@@ -164,12 +172,16 @@ class SongProperty
 
 class SongModel : ItemViewModel<SongProperty>(SongProperty())
 {
-    val uniqueID = bind(SongProperty::uniqueIDProperty)
+    val uID = bind(SongProperty::uIDProperty)
     val name = bind(SongProperty::nameProperty)
     val vocalist = bind(SongProperty::vocalistProperty)
+    val vocalistUID = bind(SongProperty::vocalistUIDProperty)
     val producer = bind(SongProperty::producerProperty)
+    val producerUID = bind(SongProperty::producerUIDProperty)
     val mixing = bind(SongProperty::mixingProperty)
+    val mixingUID = bind(SongProperty::mixingUIDProperty)
     val mastering = bind(SongProperty::masteringProperty)
+    val masteringUID = bind(SongProperty::masteringUIDProperty)
     val genre = bind(SongProperty::genreProperty)
     val subgenre = bind(SongProperty::subgenreProperty)
     val songLength = bind(SongProperty::songLengthProperty)
@@ -224,12 +236,16 @@ fun getSongPropertyFromSong(song: Song): SongProperty
     //---------------------------------v
     //----------- Main Data -----------|
     //---------------------------------^
-    songProperty.uniqueID = song.uID
+    songProperty.uID = song.uID
     songProperty.name = song.name
     songProperty.vocalist = song.vocalist
+    songProperty.vocalistUID = song.vocalistUID
     songProperty.producer = song.producer
+    songProperty.producerUID = song.producerUID
     songProperty.mixing = song.mixing
+    songProperty.mixingUID = song.mixingUID
     songProperty.mastering = song.mastering
+    songProperty.masteringUID = song.masteringUID
     songProperty.genre = song.genre
     songProperty.subgenre = song.subgenre
     songProperty.songLength = song.songLength
@@ -318,11 +334,15 @@ fun getSongFromProperty(songProperty: SongProperty): Song
     //---------------------------------v
     //----------- Main Data -----------|
     //---------------------------------^
-    song.uID = songProperty.uniqueID
+    song.uID = songProperty.uID
     song.vocalist = songProperty.vocalist
+    song.vocalistUID = songProperty.vocalistUID
     song.producer = songProperty.producer
+    song.producerUID = songProperty.producerUID
     song.mixing = songProperty.mixing
+    song.mixingUID = songProperty.mixingUID
     song.mastering = songProperty.mastering
+    song.masteringUID = songProperty.masteringUID
     song.genre = songProperty.genre
     song.subgenre = songProperty.subgenre
     song.songLength = songProperty.songLength

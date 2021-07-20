@@ -110,8 +110,10 @@ class ContactFinder : IModule, View("Find Contact")
                 readonlyColumn("F.Name", Contact::firstName).prefWidth(250.0)
                 readonlyColumn("City", Contact::city).prefWidth(200.0)
                 onUserSelect(1) {
-                    if (song.uniqueID.value == -2)
+                    if (song.uID.value == -2)
                     {
+                        //Data transfer
+                        song.uID.value = it.uID
                         song.name.value = it.name
                         song.commit()
                     } else
