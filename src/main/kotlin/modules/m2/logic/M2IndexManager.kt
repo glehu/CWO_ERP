@@ -3,6 +3,8 @@ package modules.m2.logic
 import db.CwODB
 import db.Index
 import db.IndexContent
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -36,18 +38,14 @@ class M2IndexManager: IModule, IIndexManager, Controller()
     }
 
     @ExperimentalSerializationApi
-    override fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean)
-    {
+    override fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean) = runBlocking {
         entry as Contact
         buildIndex0(entry, posDB, byteSize)
         buildIndex1(entry, posDB, byteSize)
-        if (writeToDisk)
-        {
-            writeIndexData()
-        }
+        if (writeToDisk) launch { writeIndexData() }
     }
 
-    override fun writeIndexData()
+    override suspend fun writeIndexData()
     {
         db.getIndexFile("M2", 0).writeText(Json.encodeToString(indexList[0]))
         db.getIndexFile("M2", 1).writeText(Json.encodeToString(indexList[1]))

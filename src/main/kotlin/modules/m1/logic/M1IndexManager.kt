@@ -3,6 +3,8 @@ package modules.m1.logic
 import db.CwODB
 import db.Index
 import db.IndexContent
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import modules.IIndexManager
@@ -37,22 +39,17 @@ class M1IndexManager: IModule, IIndexManager, Controller()
     }
 
     @ExperimentalSerializationApi
-    override fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean)
-    {
+    override fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean) = runBlocking {
         entry as Song
         buildIndex0(entry, posDB, byteSize)
         buildIndex1(entry, posDB, byteSize)
         buildIndex2(entry, posDB, byteSize)
         buildIndex3(entry, posDB, byteSize)
         buildIndex4(entry, posDB, byteSize)
-        if (writeToDisk)
-        {
-            writeIndexData()
-        }
-        MXLog.log("M1", MXLog.LogType.INFO, "Indexing End", moduleName())
+        if (writeToDisk) launch { writeIndexData() }
     }
 
-    override fun writeIndexData()
+    override suspend fun writeIndexData()
     {
         db.getIndexFile("M1", 0).writeText(Json.encodeToString(indexList[0]))
         db.getIndexFile("M1", 1).writeText(Json.encodeToString(indexList[1]))

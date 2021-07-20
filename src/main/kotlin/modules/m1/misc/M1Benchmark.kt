@@ -1,6 +1,8 @@
 package modules.m1.misc
 
 import db.CwODB
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.Song
@@ -43,7 +45,7 @@ class M1Benchmark : IModule, Controller()
                 if (i % 5000 == 0)
                 {
                     MXLog.log("M1", MXLog.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}", moduleName())
-                    indexManager.writeIndexData()
+                    runBlocking { launch { indexManager.writeIndexData() } }
                 }
             }
         }

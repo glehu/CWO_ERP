@@ -2,6 +2,8 @@ package modules.m2.logic
 
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import db.CwODB
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m2.Contact
@@ -49,7 +51,7 @@ class M2Import : IModule, Controller()
                     if (counter % 5000 == 0)
                     {
                         MXLog.log("M2", MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}", moduleName())
-                        indexManager.writeIndexData()
+                        runBlocking { launch { indexManager.writeIndexData() } }
                     }
                 }
             }
