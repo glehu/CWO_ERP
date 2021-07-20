@@ -10,14 +10,16 @@ class MXGUserManager : Fragment("User Management")
     private val userManager: MXUserManager by inject()
     private val credentials = userManager.getCredentials()
     private var users: ObservableList<MXUser> = observableList(MXUser("", ""))
-    override val root = form {
-        getUsers()
-        button("Add user") {
-            action {
-                addUser(MXUser("",""))
+    override val root = borderpane {
+        left = vbox {
+            button("Add user") {
+                action {
+                    addUser(MXUser("", ""))
+                }
             }
         }
-        tableview(users) {
+        getUsers()
+        center = tableview(users) {
             readonlyColumn("Username", MXUser::username).prefWidth(200.0)
             readonlyColumn("Password (encrypted)", MXUser::password)
             readonlyColumn("Access MX", MXUser::canAccessMX)
