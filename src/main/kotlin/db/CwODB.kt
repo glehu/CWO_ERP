@@ -6,10 +6,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IIndexManager
 import modules.IModule
-import modules.mx.misc.extractNumbers
 import modules.mx.getModulePath
-import modules.mx.misc.indexFormat
 import modules.mx.logic.MXLog
+import modules.mx.misc.indexFormat
 import tornadofx.Controller
 import java.io.File
 import java.io.RandomAccessFile
@@ -49,9 +48,9 @@ class CwODB : IModule, Controller()
         checkLastEntryFile(module)
         val lastEntryFile = getLastEntryFile(module)
         val indexText: String
-        var posDBNew = 0L
+        var posDBNew: Long
         val previousByteSize: Long
-        var indexError = false
+        val indexError = false
 
         //If the byteSize of the new entry is greater than the old one we have to attach the new entry at the end
         if (!canOverride)
@@ -59,39 +58,14 @@ class CwODB : IModule, Controller()
             indexText = lastEntryFile.readText()
             if (indexText.isNotEmpty())
             {
-                //First we separate the index' information [uniqueID;PosInDatabase;ByteSize] from the index' content {...}
-                val indexInfoSeparator = "\\[[0-9]+;[0-9]+;[0-9]+]".toRegex()
-                val indexInfo = indexInfoSeparator.find(indexText)
-                if (indexInfo != null)
-                {
-                    //Now we get the previous PosInDatabase and ByteSize
-                    val indexPosInDBSeparator = ";[0-9]+;".toRegex()
-                    val indexPosInDB = indexPosInDBSeparator.find(indexInfo.value)
-                    if (indexPosInDB != null)
-                    {
-                        val indexByteSizeSeparator = ";[0-9]+]".toRegex()
-                        val indexByteSize = indexByteSizeSeparator.find(indexInfo.value)
-                        if (indexByteSize != null)
-                        {
-                            previousByteSize = indexByteSize.value.extractNumbers().toLong()
-                            posDBNew = indexPosInDB.value.extractNumbers().toLong()
-                            //Now add the current entry's byteSize to the previous posInDatabase
-                            posDBNew += previousByteSize
-                        } else
-                        {
-                            MXLog.log(module, MXLog.LogType.ERROR, "Index error!", moduleName())
-                            indexError = true
-                        }
-                    } else
-                    {
-                        MXLog.log(module, MXLog.LogType.ERROR, "Index error!", moduleName())
-                        indexError = true
-                    }
-                } else
-                {
-                    MXLog.log(module, MXLog.LogType.ERROR, "Index error!", moduleName())
-                    indexError = true
-                }
+                val lastEntryIndex = Json.decodeFromString<IndexContent>(indexText)
+                //Now we get the previous PosInDatabase and ByteSize
+                val indexPosInDB = lastEntryIndex.pos
+                val indexByteSize = lastEntryIndex.byteSize
+                previousByteSize = indexByteSize.toLong()
+                posDBNew = indexPosInDB
+                //Now add the current entry's byteSize to the previous posInDatabase
+                posDBNew += previousByteSize
             } else
             {
                 posDBNew = 0L
@@ -115,25 +89,17 @@ class CwODB : IModule, Controller()
                 val emptyRaf = openRandomFileAccess(module, "rw")
                 writeDBEntry(emptyEntry, posDB, emptyRaf)
                 closeRandomFileAccess(emptyRaf)
-                MXLog.log(module, MXLog.LogType.INFO, "OLD_ENTRY_OVERRIDDEN", moduleName())
             }
-            val indexContent = buildDBIndex(uID, posDBNew, byteSizeNew, false)
-            getLastEntryFile(module).writeText(indexContent)
+            if (!canOverride)
+            {
+                val indexContent = IndexContent(uID, "", posDBNew, byteSizeNew)
+                getLastEntryFile(module).writeText(Json.encodeToString(indexContent))
+            }
         } else
         {
             MXLog.log(module, MXLog.LogType.ERROR, "Serialization failed!", moduleName())
         }
         return Pair(posDBNew, byteSizeNew)
-    }
-
-    private fun buildDBIndex(uID: Int, posInDB: Long, byteSize: Int, extend: Boolean): String
-    {
-        var indexContent = "IX[$uID;$posInDB;$byteSize]"
-        if (!extend)
-        {
-            indexContent += "\n"
-        }
-        return indexContent
     }
 
     @ExperimentalSerializationApi
