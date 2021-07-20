@@ -41,9 +41,14 @@ class MXGLogin : View("Login")
             button("Login") {
                 shortcut("Enter")
                 action {
-                    if (usernameProperty.value != null && passwordProperty.value != null)
-                    {
-                        if (userManager.login(usernameProperty.value, passwordProperty.value))
+                    var loginSuccess = false
+                    runAsyncWithProgress {
+                        if (usernameProperty.value != null && passwordProperty.value != null)
+                        {
+                            loginSuccess = userManager.login(usernameProperty.value, passwordProperty.value)
+                        }
+                    } ui {
+                        if (loginSuccess)
                         {
                             close()
                             find(MXGUserInterface::class).openModal()
