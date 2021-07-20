@@ -1,5 +1,6 @@
 package modules.mx.gui
 
+import javafx.scene.paint.Color
 import modules.mx.logic.MXUserManager
 import modules.mx.misc.MXUser
 import modules.mx.misc.MXUserModel
@@ -34,6 +35,16 @@ class MXGUser(user: MXUser) : Fragment("User")
                 userManager.updateUser(getUserFromUserProperty(userModel.item), originalUser)
                 close()
             }
+            prefWidth = 100.0
+        }
+        button("Delete") {
+            textFill = Color.RED
+            action {
+                userManager.deleteUser(originalUser)
+                close()
+            }
+            prefWidth = 100.0
+            vboxConstraints { marginTop = 25.0}
         }
     }
 }

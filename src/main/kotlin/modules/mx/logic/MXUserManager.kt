@@ -42,6 +42,13 @@ class MXUserManager : IModule, Controller()
         writeCredentials(c)
     }
 
+    fun deleteUser(user: MXUser)
+    {
+        val c = getCredentials()
+        c.credentials.remove(user.username)
+        writeCredentials(c)
+    }
+
     fun getCredentials(): MXCredentials
     {
         val credentialsFile = getCredentialsFile()
