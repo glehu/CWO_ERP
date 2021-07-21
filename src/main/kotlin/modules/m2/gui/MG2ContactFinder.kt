@@ -24,7 +24,7 @@ import kotlin.system.measureTimeMillis
 @ExperimentalSerializationApi
 class MG2ContactFinder : IModule, View("Find Contact")
 {
-    override fun moduleName() = "MG2UserInterface"
+    override fun moduleName() = "MG2ContactFinder"
     val db: CwODB by inject()
     val indexManager: M2IndexManager by inject()
     private val song: SongModel by inject()
