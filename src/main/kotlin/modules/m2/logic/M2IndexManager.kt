@@ -48,9 +48,6 @@ class M2IndexManager : IModule, IIndexManager, Controller()
     {
         db.getIndexFile("M2", 0).writeText(Json.encodeToString(indexList[0]))
         db.getIndexFile("M2", 1).writeText(Json.encodeToString(indexList[1]))
-        db.getIndexFile("M2", 2).writeText(Json.encodeToString(indexList[2]))
-        db.getIndexFile("M2", 3).writeText(Json.encodeToString(indexList[3]))
-        db.getIndexFile("M2", 4).writeText(Json.encodeToString(indexList[4]))
     }
 
     //**** **** **** **** **** INDICES **** **** **** **** ****
