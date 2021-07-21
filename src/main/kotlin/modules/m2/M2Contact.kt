@@ -39,6 +39,11 @@ data class Contact(override var uID: Int, var name: String) : IEntry
     var isManager: Boolean = false
     var isFan: Boolean = false
 
+    var dateOfCreation: String = "??.??.????"
+    var createdByUser: String = "?"
+    var dateOfChange: String = "??.??.????"
+    var changedByUser: String = "?"
+
     fun initialize()
     {
         if (uID == -1) uID = CwODB().getUniqueID("M2")

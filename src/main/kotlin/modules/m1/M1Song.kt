@@ -3,6 +3,9 @@ package modules.m1
 import db.CwODB
 import kotlinx.serialization.Serializable
 import modules.IEntry
+import modules.mx.activeUser
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Serializable
 data class Song(override var uID: Int, var name: String) : IEntry
@@ -111,8 +114,10 @@ data class Song(override var uID: Int, var name: String) : IEntry
     var micUsed: String = "?"
     var comment: String = "?"
 
-    //Database relevant information
-    var byteSize: Long = 0L
+    var dateOfCreation: String = "??.??.????"
+    var createdByUser: String = "?"
+    var dateOfChange: String = "??.??.????"
+    var changedByUser: String = "?"
 
     //*************************************************
     //****************** Auto Generated Data **********
@@ -141,7 +146,14 @@ data class Song(override var uID: Int, var name: String) : IEntry
 
     fun initialize()
     {
-        if (uID == -1) uID = CwODB().getUniqueID("M1")
+        if (uID == -1)
+        {
+            uID = CwODB().getUniqueID("M1")
+            dateOfCreation = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+            createdByUser = activeUser.username
+            dateOfChange = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+            changedByUser = activeUser.username
+        }
 
         val sTmp1: String
         val sTmp2: String

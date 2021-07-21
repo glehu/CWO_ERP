@@ -166,8 +166,6 @@ class SongProperty
     var micUsed: String by micUsedProperty
     val commentProperty = SimpleStringProperty("?")
     var comment: String by commentProperty
-    val byteSizeProperty = SimpleLongProperty(0L)
-    var byteSize by byteSizeProperty
 }
 
 class SongModel : ItemViewModel<SongProperty>(SongProperty())
@@ -226,7 +224,6 @@ class SongModel : ItemViewModel<SongProperty>(SongProperty())
     val dawUsed = bind(SongProperty::dawUsedProperty)
     val micUsed = bind(SongProperty::micUsedProperty)
     val comment = bind(SongProperty::commentProperty)
-    val byteSize = bind(SongProperty::byteSizeProperty)
 }
 
 fun getSongPropertyFromSong(song: Song): SongProperty
@@ -323,7 +320,6 @@ fun getSongPropertyFromSong(song: Song): SongProperty
     songProperty.dawUsed = song.dawUsed
     songProperty.micUsed = song.micUsed
     songProperty.comment = song.comment
-    songProperty.byteSize = song.byteSize
     return songProperty
 }
 
@@ -420,7 +416,6 @@ fun getSongFromProperty(songProperty: SongProperty): Song
     song.dawUsed = songProperty.dawUsed
     song.micUsed = songProperty.micUsed
     song.comment = songProperty.comment
-    song.byteSize = songProperty.byteSize
     return song
 }
 
@@ -510,5 +505,4 @@ fun getSongFromProperty(songProperty: SongProperty): Song
     song.dawUsed                    = "?"
     song.micUsed                    = "?"
     song.comment                    = "?"
-    song.byteSize                   = 0L
  */
