@@ -11,11 +11,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.misc.SongModel
 import modules.m2.Contact
-import modules.m2.getContactFromProperty
-import modules.m2.getContactPropertyFromContact
 import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
 import modules.m2.misc.ContactProperty
+import modules.m2.misc.getContactFromProperty
+import modules.m2.misc.getContactPropertyFromContact
 import modules.mx.logic.MXLog
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.*

@@ -3,12 +3,12 @@ package modules.m2.logic
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
-import modules.m2.getContactFromProperty
 import modules.m2.gui.ContactConfiguratorWizard
 import modules.m2.gui.ContactFinder
 import modules.m2.gui.MG2Analytics
 import modules.m2.gui.MG2Import
 import modules.m2.misc.ContactProperty
+import modules.m2.misc.getContactFromProperty
 import tornadofx.Controller
 import tornadofx.Scope
 
