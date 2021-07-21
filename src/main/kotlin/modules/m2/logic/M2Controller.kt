@@ -29,7 +29,9 @@ class M2Controller : IModule, Controller()
             if (wizard.contact.item !== null)
             {
                 val raf = db.openRandomFileAccess("M2", "rw")
-                M2DBManager().saveEntry(getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, indexManager)
+                M2DBManager().saveEntry(
+                    getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, indexManager
+                )
                 db.closeRandomFileAccess(raf)
                 wizard.contact.item = ContactProperty()
                 wizard.isComplete = false

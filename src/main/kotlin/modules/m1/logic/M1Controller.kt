@@ -34,7 +34,9 @@ class M1Controller : IModule, Controller()
             if (wizard.song.item.nameProperty.value !== null)
             {
                 val raf = db.openRandomFileAccess("M1", "rw")
-                M1DBManager().saveEntry(getSongFromProperty(wizard.song.item), db, -1L, -1, raf, indexManager)
+                M1DBManager().saveEntry(
+                    getSongFromProperty(wizard.song.item), db, -1L, -1, raf, indexManager
+                )
                 db.closeRandomFileAccess(raf)
                 wizard.song.item = SongProperty()
                 wizard.isComplete = false
