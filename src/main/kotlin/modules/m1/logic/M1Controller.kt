@@ -5,12 +5,12 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.gui.MG1Analytics
 import modules.m1.gui.SongConfiguratorWizard
-import modules.m1.gui.SongFinder
+import modules.m1.gui.MG1SongFinder
 import modules.m1.misc.SongModel
 import modules.m1.misc.SongProperty
 import modules.m1.misc.getSongFromProperty
 import modules.m2.Contact
-import modules.m2.gui.ContactFinder
+import modules.m2.gui.MG2ContactFinder
 import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
 import tornadofx.Controller
@@ -48,7 +48,7 @@ class M1Controller : IModule, Controller()
 
     fun openWizardFindSong()
     {
-        tornadofx.find(SongFinder::class, Scope(indexManager)).openModal()
+        tornadofx.find(MG1SongFinder::class, Scope(indexManager)).openModal()
     }
 
     fun openAnalytics()
@@ -65,7 +65,7 @@ class M1Controller : IModule, Controller()
         dataTransfer.uID.value = -2
         setInScope(dataTransfer, newScope)
         setInScope(m2indexManager, newScope)
-        tornadofx.find<ContactFinder>(newScope).openModal(block = true)
+        tornadofx.find<MG2ContactFinder>(newScope).openModal(block = true)
         contact = if (dataTransfer.name.value != null)
         {
             M2DBManager().getEntry(

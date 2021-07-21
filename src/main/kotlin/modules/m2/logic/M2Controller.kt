@@ -4,7 +4,7 @@ import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m2.gui.ContactConfiguratorWizard
-import modules.m2.gui.ContactFinder
+import modules.m2.gui.MG2ContactFinder
 import modules.m2.gui.MG2Analytics
 import modules.m2.gui.MG2Import
 import modules.m2.misc.ContactProperty
@@ -44,7 +44,7 @@ class M2Controller : IModule, Controller()
     @ExperimentalSerializationApi
     fun openWizardFindContact()
     {
-        tornadofx.find(ContactFinder::class, Scope(indexManager)).openModal()
+        tornadofx.find(MG2ContactFinder::class, Scope(indexManager)).openModal()
     }
 
     fun openAnalytics()

@@ -22,7 +22,7 @@ import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class ContactFinder : IModule, View("Find Contact")
+class MG2ContactFinder : IModule, View("Find Contact")
 {
     override fun moduleName() = "MG2UserInterface"
     val db: CwODB by inject()
