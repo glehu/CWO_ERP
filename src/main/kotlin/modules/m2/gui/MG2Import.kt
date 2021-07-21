@@ -2,7 +2,9 @@ package modules.m2.gui
 
 import db.CwODB
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.scene.text.FontWeight
+import javafx.stage.FileChooser
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Import
 import modules.m2.logic.M2IndexManager
@@ -16,22 +18,39 @@ class MG2Import : Fragment("Genre distribution")
     val indexManager: M2IndexManager by inject(Scope(db))
     private val m2controller: M2Import by inject()
     private val progressProperty = SimpleIntegerProperty()
+    private val filenameProperty = SimpleStringProperty()
+    private lateinit var file: File
     private var progressN by progressProperty
-    private var maxEntries = 0
+    private val buttonWidth = 150.0
     override val root = form {
         vbox {
+            hbox {
+                button("Choose file") {
+                    action {
+                        file = chooseFile(
+                            "Choose file",
+                            arrayOf(FileChooser.ExtensionFilter("CSV file (*.csv)", "*.csv")),
+                            FileChooserMode.Single
+                        )[0]
+                        if (file.isFile) filenameProperty.value = file.name
+                    }
+                    prefWidth = buttonWidth
+                }
+                label(filenameProperty) {
+                    paddingHorizontal = 20
+                }
+            }
             button("Start") {
                 action {
-                    maxEntries = 110_000
                     runAsync {
-                        m2controller.importData(File(
-                            "C:\\Users\\duffy\\Documents\\TopM\\gbdaten.csv")) {
+                        m2controller.importData(file) {
                             progressN = it.first
-                            updateProgress(it.first.toDouble(), maxEntries.toDouble())
-                            updateMessage("${it.second} (${it.first} / $maxEntries)")
+                            updateProgress(it.first.toDouble(), it.first.toDouble())
+                            updateMessage("${it.second} ${it.first}")
                         }
                     }
                 }
+                prefWidth = buttonWidth
             }
             add<ProgressView>()
         }
