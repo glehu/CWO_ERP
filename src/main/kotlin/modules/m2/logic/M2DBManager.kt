@@ -14,6 +14,7 @@ import java.io.RandomAccessFile
 class M2DBManager : IModule, IDBManager
 {
     override fun moduleName() = "M2DBManager"
+
     @ExperimentalSerializationApi
     override fun saveEntry(
         entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,

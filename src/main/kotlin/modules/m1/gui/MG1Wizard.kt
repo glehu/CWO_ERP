@@ -1,6 +1,5 @@
 package modules.m1.gui
 
-import db.CwODB
 import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.getGenreList

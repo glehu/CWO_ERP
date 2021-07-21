@@ -5,17 +5,18 @@ import db.Index
 import db.IndexContent
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.*
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IIndexManager
 import modules.IModule
+import modules.m1.Song
 import modules.mx.logic.MXLog
 import modules.mx.misc.indexFormat
 import tornadofx.Controller
-import modules.m1.Song as Song
 
 @ExperimentalSerializationApi
-class M1IndexManager: IModule, IIndexManager, Controller()
+class M1IndexManager : IModule, IIndexManager, Controller()
 {
     override fun moduleName() = "M1IndexManager"
     override val indexList = mutableMapOf<Int, Index>()

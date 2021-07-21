@@ -2,7 +2,9 @@ package modules.mx.misc
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
-import tornadofx.*
+import tornadofx.ItemViewModel
+import tornadofx.getValue
+import tornadofx.setValue
 
 class MXUserModelProperty
 {
@@ -11,6 +13,7 @@ class MXUserModelProperty
     var username: String by usernameProperty
     val passwordProperty = SimpleStringProperty("")
     var password: String by passwordProperty
+
     //Rights... Access to modules
     val canAccessMXProperty = SimpleBooleanProperty(false)
     var canAccessMX by canAccessMXProperty

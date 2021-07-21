@@ -8,7 +8,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Serializable
-data class Contact(override var uID: Int, override var name: String): IEntry
+data class Contact(override var uID: Int, override var name: String) : IEntry
 {
     //*************************************************
     //********************** User Input Data **********

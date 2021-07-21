@@ -13,7 +13,8 @@ class MXLog
     {
         INFO, WARNING, ERROR
     }
-    companion object Logger: IModule
+
+    companion object Logger : IModule
     {
         override fun moduleName() = "MXLog"
 

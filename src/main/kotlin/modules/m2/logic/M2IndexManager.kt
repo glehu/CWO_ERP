@@ -14,10 +14,9 @@ import modules.m2.Contact
 import modules.mx.logic.MXLog
 import modules.mx.misc.indexFormat
 import tornadofx.Controller
-import kotlin.collections.ArrayList
 
 @ExperimentalSerializationApi
-class M2IndexManager: IModule, IIndexManager, Controller()
+class M2IndexManager : IModule, IIndexManager, Controller()
 {
     override fun moduleName() = "M2IndexManager"
     override val indexList = mutableMapOf<Int, Index>()
@@ -31,7 +30,7 @@ class M2IndexManager: IModule, IIndexManager, Controller()
         indexList[1] = db.getIndex("M2", 1)
         MXLog.log("M2", MXLog.LogType.INFO, "Index manager ready", moduleName())
     }
-    
+
     override fun getIndexUserSelection(): ArrayList<String>
     {
         return arrayListOf("1-Name")
@@ -61,7 +60,7 @@ class M2IndexManager: IModule, IIndexManager, Controller()
         entry as Contact
         indexList[0]!!.indexMap[entry.uID] = IndexContent(entry.uID, "${entry.uID}", posDB, byteSize)
     }
-    
+
     //Index 1 (Contact.name)
     private fun buildIndex1(contact: Contact, posDB: Long, byteSize: Int)
     {

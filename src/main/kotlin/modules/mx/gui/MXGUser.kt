@@ -44,7 +44,7 @@ class MXGUser(user: MXUser) : Fragment("User")
                 close()
             }
             prefWidth = 100.0
-            vboxConstraints { marginTop = 25.0}
+            vboxConstraints { marginTop = 25.0 }
         }
     }
 }

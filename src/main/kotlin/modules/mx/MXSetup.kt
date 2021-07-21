@@ -9,7 +9,7 @@ import modules.mx.misc.MXUser
 import java.io.File
 
 //Active user
-var activeUser: MXUser = MXUser("","")
+var activeUser: MXUser = MXUser("", "")
 
 //Token for encryption/decryption
 var token: String = ""
@@ -28,11 +28,15 @@ fun checkIniFile(iniFile: File)
     {
         iniFile.createNewFile()
         //Now we have to initialize it
-        iniFile.writeText(Json.encodeToString(IniValues(
-            token = "8265726400192847",
-            dataPath = System.getProperty("user.dir"),
-            maxSearchResults = 10_000
-        )))
+        iniFile.writeText(
+            Json.encodeToString(
+                IniValues(
+                    token = "8265726400192847",
+                    dataPath = System.getProperty("user.dir"),
+                    maxSearchResults = 10_000
+                )
+            )
+        )
     }
     val iniValuesLoad = Json.decodeFromString<IniValues>(iniFile.readText().replace("\\", "\\\\"))
     dataPath = iniValuesLoad.dataPath
@@ -44,4 +48,5 @@ fun checkIniFile(iniFile: File)
 private data class IniValues(
     @SerialName("encryption key") var token: String,
     @SerialName("data path") var dataPath: String,
-    @SerialName("max search results") var maxSearchResults: Int)
+    @SerialName("max search results") var maxSearchResults: Int
+)
