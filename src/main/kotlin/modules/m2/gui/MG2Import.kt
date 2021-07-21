@@ -8,6 +8,7 @@ import javafx.stage.FileChooser
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Import
 import modules.m2.logic.M2IndexManager
+import modules.mx.gui.MXGProgressbar
 import tornadofx.*
 import java.io.File
 
@@ -52,22 +53,7 @@ class MG2Import : Fragment("Genre distribution")
                 }
                 prefWidth = buttonWidth
             }
-            add<ProgressView>()
-        }
-    }
-
-    class ProgressView : View()
-    {
-        private val status: TaskStatus by inject()
-
-        override val root = vbox(4) {
-            visibleWhen { status.running }
-            label(status.title).style { fontWeight = FontWeight.BOLD }
-            vbox(4) {
-                label(status.message)
-                progressbar(status.progress)
-                visibleWhen { status.running }
-            }
+            add<MXGProgressbar>()
         }
     }
 }
