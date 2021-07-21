@@ -11,11 +11,13 @@ import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import tornadofx.Controller
 import tornadofx.Scope
+import tornadofx.find
 
 @ExperimentalSerializationApi
 class M2Controller : IModule, Controller()
 {
-    override fun moduleName() = "MG2UserInterface"
+    override fun moduleNameLong() = "M2Controller"
+    override fun module() = "M2"
 
     private val wizard = find<ContactConfiguratorWizard>()
     val db: CwODB by inject()
@@ -44,17 +46,17 @@ class M2Controller : IModule, Controller()
     @ExperimentalSerializationApi
     fun openWizardFindContact()
     {
-        tornadofx.find(MG2ContactFinder::class, Scope(indexManager)).openModal()
+        find(MG2ContactFinder::class, Scope(indexManager)).openModal()
     }
 
     fun openAnalytics()
     {
         //TODO: Add multiple analytics modes
-        tornadofx.find(MG2Analytics::class, Scope(indexManager)).openModal()
+        find(MG2Analytics::class, Scope(indexManager)).openModal()
     }
 
     fun openDataImport()
     {
-        tornadofx.find(MG2Import::class, Scope(indexManager)).openModal()
+        find(MG2Import::class, Scope(indexManager)).openModal()
     }
 }

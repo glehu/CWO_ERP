@@ -25,6 +25,7 @@ class MXGUserManager : Fragment("User Management")
             readonlyColumn("Access MX", MXUser::canAccessMX)
             readonlyColumn("Access M1", MXUser::canAccessM1)
             readonlyColumn("Access M2", MXUser::canAccessM2)
+            readonlyColumn("Access M3", MXUser::canAccessM3)
             onUserSelect(1) {
                 showUser(it)
                 close()

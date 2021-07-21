@@ -10,7 +10,8 @@ import kotlin.system.measureTimeMillis
 
 class M1Analytics : IModule, Controller()
 {
-    override fun moduleName() = "M1Analytics"
+    override fun moduleNameLong() = "M1Analytics"
+    override fun module() = "M1"
     val db: CwODB by inject()
 
     @ExperimentalSerializationApi
@@ -22,10 +23,10 @@ class M1Analytics : IModule, Controller()
         var songCount = 0.0
         val map = mutableMapOf<String, Double>()
         val dbManager = M1DBManager()
-        MXLog.log("M1", MXLog.LogType.INFO, "Genre distribution analysis start ${MXLog.timestamp()}", moduleName())
+        MXLog.log(module(), MXLog.LogType.INFO, "Genre distribution analysis start ${MXLog.timestamp()}", moduleNameLong())
         val timeInMS = measureTimeMillis {
             db.getEntriesFromSearchString(
-                "", 0, false, "M1", -1, indexManager
+                "", 0, false, module(), -1, indexManager
             )
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping genre data..."))
@@ -44,7 +45,7 @@ class M1Analytics : IModule, Controller()
             }
             map["[amount]"] = songCount
         }
-        MXLog.log("M1", MXLog.LogType.INFO, "Genre distribution analysis end (${timeInMS / 1000} sec)", moduleName())
+        MXLog.log(module(), MXLog.LogType.INFO, "Genre distribution analysis end (${timeInMS / 1000} sec)", moduleNameLong())
         return map.toSortedMap()
     }
 }

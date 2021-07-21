@@ -6,6 +6,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Controller
 import modules.m1.misc.M1Benchmark
 import modules.m2.logic.M2Controller
+import modules.m3.logic.M3Controller
 import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
@@ -65,6 +66,7 @@ class MXGUserInterface : View("CWO ERP")
 {
     private val m1Controller: M1Controller by inject()
     private val m2Controller: M2Controller by inject()
+    private val m3Controller: M3Controller by inject()
 
     private val buttonWidth = 150.0
 
@@ -125,7 +127,19 @@ class MXGUserInterface : View("CWO ERP")
                         vbox {
                             button("Rebuild indices") {
                                 //TODO: Not yet implemented
+                                isDisable = true
                                 tooltip("Rebuilds all indices in case of faulty indices.")
+                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
+                            }
+                        }
+                        //Data import
+                        vbox {
+                            button("Data Import") {
+                                //TODO: Not yet implemented
+                                isDisable = true
+                                //action { m1Controller.openDataImport() }
+                                tooltip("Import contact data from a .csv file.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
@@ -141,13 +155,13 @@ class MXGUserInterface : View("CWO ERP")
                         vbox {
                             button("New Contact") {
                                 action { m2Controller.openWizardNewContact() }
-                                tooltip("Add a new song to the database.")
+                                tooltip("Add a new contact to the database.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
                             button("Find Contact") {
                                 action { m2Controller.openWizardFindContact() }
-                                tooltip("Find a song in the database.")
+                                tooltip("Find a contact in the database.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
@@ -165,6 +179,7 @@ class MXGUserInterface : View("CWO ERP")
                         vbox {
                             button("Rebuild indices") {
                                 //TODO: Not yet implemented
+                                isDisable = true
                                 tooltip("Rebuilds all indices in case of faulty indices.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
@@ -174,6 +189,58 @@ class MXGUserInterface : View("CWO ERP")
                         vbox {
                             button("Data Import") {
                                 action { m2Controller.openDataImport() }
+                                tooltip("Import contact data from a .csv file.")
+                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
+                            }
+                        }
+                    }
+                }
+            }
+            tab("M3Invoices") {
+                if (!activeUser.canAccessM3) this.isDisable = true
+                vbox {
+                    hbox {
+                        //Main functions
+                        vbox {
+                            button("New Invoice") {
+                                action { m3Controller.openWizardNewInvoice() }
+                                tooltip("Add a new song to the database.")
+                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
+                            }
+                            button("Find Invoice") {
+                                action { m3Controller.openWizardFindInvoice() }
+                                tooltip("Find a song in the database.")
+                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
+                            }
+                        }
+                        //Analytics functions
+                        vbox {
+                            button("Analytics") {
+                                //action { m3Controller.openAnalytics() }
+                                tooltip("Display a chart to show the distribution of genres.")
+                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
+                            }
+                        }
+                        //Maintenance functions
+                        vbox {
+                            button("Rebuild indices") {
+                                //TODO: Not yet implemented
+                                isDisable = true
+                                tooltip("Rebuilds all indices in case of faulty indices.")
+                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                                prefWidth = buttonWidth
+                            }
+                        }
+                        //Data import
+                        vbox {
+                            button("Data Import") {
+                                //TODO: Not yet implemented
+                                isDisable = true
+                                //action { m3Controller.openDataImport() }
                                 tooltip("Import contact data from a .csv file.")
                                 vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth

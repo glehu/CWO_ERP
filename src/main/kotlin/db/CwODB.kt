@@ -15,7 +15,8 @@ import java.io.RandomAccessFile
 
 class CwODB : IModule, Controller()
 {
-    override fun moduleName() = "CwODB"
+    override fun moduleNameLong() = "CwODB"
+    override fun module() = "DB"
 
     //Settings
     private val finalMaxSearchResults = 2000
@@ -92,7 +93,7 @@ class CwODB : IModule, Controller()
                 val indexContent = IndexContent(uID, "", posDBNew, byteSizeNew)
                 getLastEntryFile(module).writeText(Json.encodeToString(indexContent))
             }
-        } else MXLog.log(module, MXLog.LogType.ERROR, "Serialization failed!", moduleName())
+        } else MXLog.log(module, MXLog.LogType.ERROR, "Serialization failed!", moduleNameLong())
         return Pair(posDBNew, byteSizeNew)
     }
 
@@ -245,7 +246,7 @@ class CwODB : IModule, Controller()
     @ExperimentalSerializationApi
     fun getIndex(module: String, ixNr: Int): Index
     {
-        MXLog.log(module, MXLog.LogType.INFO, "Deserializing index $ixNr for $module...", moduleName())
+        MXLog.log(module, MXLog.LogType.INFO, "Deserializing index $ixNr for $module...", moduleNameLong())
         checkIndexFile(module, ixNr)
         return Json.decodeFromString(getIndexFile(module, ixNr).readText())
     }

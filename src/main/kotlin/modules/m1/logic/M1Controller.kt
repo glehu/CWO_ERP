@@ -19,7 +19,8 @@ import tornadofx.Scope
 @ExperimentalSerializationApi
 class M1Controller : IModule, Controller()
 {
-    override fun moduleName() = "MG1UserInterface"
+    override fun moduleNameLong() = "M1Controller"
+    override fun module() = "M1"
 
     private val wizard = find<SongConfiguratorWizard>()
     val db: CwODB by inject()
@@ -33,7 +34,7 @@ class M1Controller : IModule, Controller()
         wizard.onComplete {
             if (wizard.song.item.nameProperty.value !== null)
             {
-                val raf = db.openRandomFileAccess("M1", "rw")
+                val raf = db.openRandomFileAccess(module(), "rw")
                 M1DBManager().saveEntry(
                     getSongFromProperty(wizard.song.item), db, -1L, -1, raf, indexManager
                 )

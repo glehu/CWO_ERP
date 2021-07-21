@@ -16,7 +16,8 @@ class MXLog
 
     companion object Logger : IModule
     {
-        override fun moduleName() = "MXLog"
+        override fun moduleNameLong() = "MXLog"
+        override fun module() = "MX"
 
         private fun getLogPath(module: String) = "${getModulePath(module)}\\log"
         private fun getLogFile(module: String) = File("${getLogPath(module)}\\${module}_log.txt")
@@ -53,7 +54,7 @@ class MXLog
                     logFile.createNewFile()
                     if (logFile.isFile)
                     {
-                        if (log) log(module, LogType.INFO, "Log file created: $module", moduleName())
+                        if (log) log(module, LogType.INFO, "Log file created: $module", moduleNameLong())
                         return true
                     }
                 } else return false
@@ -66,7 +67,7 @@ class MXLog
             if (checkLogFile(module, false))
             {
                 getLogFile(module).delete()
-                log(module, LogType.INFO, "Log file cleared: $module", moduleName())
+                log(module, LogType.INFO, "Log file cleared: $module", moduleNameLong())
                 checkLogFile(module, createIfMissing = true, log = false)
             }
         }

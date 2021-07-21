@@ -24,7 +24,8 @@ import kotlin.system.measureTimeMillis
 @ExperimentalSerializationApi
 class MG1SongFinder : IModule, View("Find Song")
 {
-    override fun moduleName() = "MG1SongFinder"
+    override fun moduleNameLong() = "MG1SongFinder"
+    override fun module() = "M1"
     val db: CwODB by inject()
     val indexManager: M1IndexManager by inject(Scope(db))
     private val m1Controller: M1Controller by inject()
@@ -90,7 +91,7 @@ class MG1SongFinder : IModule, View("Find Song")
                 songName.text.uppercase(),
                 ixNr.value.substring(0, 1).toInt(),
                 exactSearch.isSelected,
-                "M1",
+                module(),
                 maxSearchResultsGlobal,
                 indexManager
             ) { _, bytes ->
@@ -110,8 +111,8 @@ class MG1SongFinder : IModule, View("Find Song")
             } else
             {
                 MXLog.log(
-                    "M1", MXLog.LogType.INFO, "$entriesFound songs loaded (in $timeInMillis ms)",
-                    moduleName()
+                    module(), MXLog.LogType.INFO, "$entriesFound songs loaded (in $timeInMillis ms)",
+                    moduleNameLong()
                 )
             }
         }
@@ -124,7 +125,7 @@ class MG1SongFinder : IModule, View("Find Song")
         wizard.onComplete {
             if (wizard.song.item !== null)
             {
-                val raf = db.openRandomFileAccess("M1", "rw")
+                val raf = db.openRandomFileAccess(module(), "rw")
                 M1DBManager().saveEntry(
                     entry = getSongFromProperty(wizard.song.item),
                     cwodb = db,

@@ -13,7 +13,8 @@ import java.io.RandomAccessFile
 
 class M1DBManager : IModule, IDBManager
 {
-    override fun moduleName() = "M1DBManager"
+    override fun moduleNameLong() = "M1DBManager"
+    override fun module() = "M1"
 
     @ExperimentalSerializationApi
     override fun saveEntry(
@@ -26,14 +27,14 @@ class M1DBManager : IModule, IDBManager
         indexManager as M1IndexManager
         entry.initialize()
         val songSerialized = ProtoBuf.encodeToByteArray(entry)
-        val (posDBX, byteSizeX) = cwodb.saveEntry(songSerialized, entry.uID, posDB, byteSize, "M1", raf)
+        val (posDBX, byteSizeX) = cwodb.saveEntry(songSerialized, entry.uID, posDB, byteSize, module(), raf)
         indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk)
     }
 
     @ExperimentalSerializationApi
     override fun getEntry(uID: Int, cwodb: CwODB, index: Index): Any
     {
-        return decodeEntry(cwodb.getEntryFromUniqueID(uID, "M1", index)) as Song
+        return decodeEntry(cwodb.getEntryFromUniqueID(uID, module(), index)) as Song
     }
 
     @ExperimentalSerializationApi

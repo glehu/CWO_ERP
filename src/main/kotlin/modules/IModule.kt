@@ -2,5 +2,6 @@ package modules
 
 interface IModule
 {
-    fun moduleName(): String
+    fun moduleNameLong(): String
+    fun module(): String
 }

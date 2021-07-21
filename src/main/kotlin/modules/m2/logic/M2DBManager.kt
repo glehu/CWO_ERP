@@ -13,7 +13,8 @@ import java.io.RandomAccessFile
 
 class M2DBManager : IModule, IDBManager
 {
-    override fun moduleName() = "M2DBManager"
+    override fun moduleNameLong() = "M2DBManager"
+    override fun module() = "M2"
 
     @ExperimentalSerializationApi
     override fun saveEntry(

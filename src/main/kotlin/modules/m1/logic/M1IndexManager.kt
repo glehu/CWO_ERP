@@ -18,20 +18,21 @@ import tornadofx.Controller
 @ExperimentalSerializationApi
 class M1IndexManager : IModule, IIndexManager, Controller()
 {
-    override fun moduleName() = "M1IndexManager"
+    override fun moduleNameLong() = "M1IndexManager"
+    override fun module() = "M1"
     override val indexList = mutableMapOf<Int, Index>()
 
     val db: CwODB by inject()
 
     init
     {
-        MXLog.log("M1", MXLog.LogType.INFO, "Initializing index manager...", moduleName())
-        indexList[0] = db.getIndex("M1", 0)
-        indexList[1] = db.getIndex("M1", 1)
-        indexList[2] = db.getIndex("M1", 2)
-        indexList[3] = db.getIndex("M1", 3)
-        indexList[4] = db.getIndex("M1", 4)
-        MXLog.log("M1", MXLog.LogType.INFO, "Index manager ready", moduleName())
+        MXLog.log(module(), MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
+        indexList[0] = db.getIndex(module(), 0)
+        indexList[1] = db.getIndex(module(), 1)
+        indexList[2] = db.getIndex(module(), 2)
+        indexList[3] = db.getIndex(module(), 3)
+        indexList[4] = db.getIndex(module(), 4)
+        MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
     }
 
     override fun getIndexUserSelection(): ArrayList<String>
@@ -52,11 +53,11 @@ class M1IndexManager : IModule, IIndexManager, Controller()
 
     override suspend fun writeIndexData()
     {
-        db.getIndexFile("M1", 0).writeText(Json.encodeToString(indexList[0]))
-        db.getIndexFile("M1", 1).writeText(Json.encodeToString(indexList[1]))
-        db.getIndexFile("M1", 2).writeText(Json.encodeToString(indexList[2]))
-        db.getIndexFile("M1", 3).writeText(Json.encodeToString(indexList[3]))
-        db.getIndexFile("M1", 4).writeText(Json.encodeToString(indexList[4]))
+        db.getIndexFile(module(), 0).writeText(Json.encodeToString(indexList[0]))
+        db.getIndexFile(module(), 1).writeText(Json.encodeToString(indexList[1]))
+        db.getIndexFile(module(), 2).writeText(Json.encodeToString(indexList[2]))
+        db.getIndexFile(module(), 3).writeText(Json.encodeToString(indexList[3]))
+        db.getIndexFile(module(), 4).writeText(Json.encodeToString(indexList[4]))
     }
 
     //**** **** **** **** **** INDICES **** **** **** **** ****

@@ -19,15 +19,16 @@ import kotlin.system.measureTimeMillis
 @ExperimentalSerializationApi
 class M1Benchmark : IModule, Controller()
 {
-    override fun moduleName() = "M1Benchmark"
+    override fun moduleNameLong() = "M1Benchmark"
+    override fun module() = "M1"
 
     val db: CwODB by inject()
     val indexManager: M1IndexManager by inject(Scope(db))
 
     fun insertRandomEntries(amount: Int)
     {
-        MXLog.log("M1", MXLog.LogType.INFO, "Benchmark entry insertion start ${MXLog.timestamp()}", moduleName())
-        val raf = db.openRandomFileAccess("M1", "rw")
+        MXLog.log(module(), MXLog.LogType.INFO, "Benchmark entry insertion start ${MXLog.timestamp()}", moduleNameLong())
+        val raf = db.openRandomFileAccess(module(), "rw")
         val dbManager = M1DBManager()
         val timeInMillis = measureTimeMillis {
             for (i in 1..amount)
@@ -41,17 +42,17 @@ class M1Benchmark : IModule, Controller()
                 dbManager.saveEntry(song, db, -1L, -1, raf, indexManager, false)
                 if (i % 5000 == 0)
                 {
-                    MXLog.log("M1", MXLog.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}", moduleName())
+                    MXLog.log(module(), MXLog.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}", moduleNameLong())
                     runBlocking { launch { indexManager.writeIndexData() } }
                 }
             }
         }
         db.closeRandomFileAccess(raf)
         MXLog.log(
-            "M1",
+            module(),
             MXLog.LogType.INFO,
             "Benchmark entry insertion end ${MXLog.timestamp()} (${timeInMillis / 1000} sec)",
-            moduleName()
+            moduleNameLong()
         )
     }
 

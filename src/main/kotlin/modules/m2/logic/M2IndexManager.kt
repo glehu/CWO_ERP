@@ -18,17 +18,18 @@ import tornadofx.Controller
 @ExperimentalSerializationApi
 class M2IndexManager : IModule, IIndexManager, Controller()
 {
-    override fun moduleName() = "M2IndexManager"
+    override fun moduleNameLong() = "M2IndexManager"
+    override fun module() = "M2"
     override val indexList = mutableMapOf<Int, Index>()
 
     val db: CwODB by inject()
 
     init
     {
-        MXLog.log("M2", MXLog.LogType.INFO, "Initializing index manager...", moduleName())
+        MXLog.log("M2", MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
         indexList[0] = db.getIndex("M2", 0)
         indexList[1] = db.getIndex("M2", 1)
-        MXLog.log("M2", MXLog.LogType.INFO, "Index manager ready", moduleName())
+        MXLog.log("M2", MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
     }
 
     override fun getIndexUserSelection(): ArrayList<String>

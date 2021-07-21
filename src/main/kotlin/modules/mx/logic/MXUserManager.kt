@@ -17,7 +17,8 @@ import javax.crypto.spec.SecretKeySpec
 
 class MXUserManager : IModule, Controller()
 {
-    override fun moduleName() = "MXPasswordManager"
+    override fun moduleNameLong() = "MXPasswordManager"
+    override fun module() = "MX"
 
     fun login(username: String, password: String): Boolean
     {
@@ -59,7 +60,7 @@ class MXUserManager : IModule, Controller()
     private fun writeCredentials(credentials: MXCredentials)
     {
         getCredentialsFile().writeText(Json.encodeToString(credentials))
-        MXLog.log("MX", MXLog.LogType.INFO, "Credentials updated", moduleName())
+        MXLog.log("MX", MXLog.LogType.INFO, "Credentials updated", moduleNameLong())
     }
 
     private fun getCredentialsFile() = File("${getModulePath("MX")}\\credentials.dat")
@@ -73,10 +74,10 @@ class MXUserManager : IModule, Controller()
             successful = true
             startupRoutines(user)
             MXLog.log(
-                "MX", MXLog.LogType.INFO, "User \"$username\" login successful", moduleName()
+                "MX", MXLog.LogType.INFO, "User \"$username\" login successful", moduleNameLong()
             )
         } else MXLog.log(
-            "MX", MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials", moduleName()
+            "MX", MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials", moduleNameLong()
         )
         return successful
     }

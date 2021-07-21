@@ -9,4 +9,5 @@ data class MXUser(@SerialName("u") var username: String, @SerialName("p") var pa
     var canAccessMX: Boolean = false
     var canAccessM1: Boolean = true
     var canAccessM2: Boolean = true
+    var canAccessM3: Boolean = true
 }

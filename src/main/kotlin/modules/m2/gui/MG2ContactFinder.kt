@@ -24,7 +24,8 @@ import kotlin.system.measureTimeMillis
 @ExperimentalSerializationApi
 class MG2ContactFinder : IModule, View("Find Contact")
 {
-    override fun moduleName() = "MG2ContactFinder"
+    override fun moduleNameLong() = "MG2ContactFinder"
+    override fun module() = "M2"
     val db: CwODB by inject()
     val indexManager: M2IndexManager by inject()
     private val song: SongModel by inject()
@@ -93,7 +94,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
                 contactName.text.uppercase(),
                 ixNr.value.substring(0, 1).toInt(),
                 exactSearch.isSelected,
-                "M2",
+                module(),
                 maxSearchResultsGlobal,
                 indexManager
             ) { _, bytes ->
@@ -108,8 +109,8 @@ class MG2ContactFinder : IModule, View("Find Contact")
         if (threadID >= threadIDCurrent.value)
         {
             MXLog.log(
-                "M2", MXLog.LogType.INFO, "$entriesFound contacts loaded (in $timeInMillis ms)",
-                moduleName()
+                module(), MXLog.LogType.INFO, "$entriesFound contacts loaded (in $timeInMillis ms)",
+                moduleNameLong()
             )
         }
     }
@@ -121,7 +122,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
         wizard.onComplete {
             if (wizard.contact.item !== null)
             {
-                val raf = db.openRandomFileAccess("M2", "rw")
+                val raf = db.openRandomFileAccess(module(), "rw")
                 M2DBManager().saveEntry(
                     entry = getContactFromProperty(wizard.contact.item),
                     cwodb = db,

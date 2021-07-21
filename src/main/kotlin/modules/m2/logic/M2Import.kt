@@ -17,7 +17,8 @@ import kotlin.system.measureTimeMillis
 @ExperimentalSerializationApi
 class M2Import : IModule, Controller()
 {
-    override fun moduleName() = "M2Import"
+    override fun moduleNameLong() = "M2Import"
+    override fun module() = "M2"
 
     val db: CwODB by inject()
     val indexManager: M2IndexManager by inject(Scope(db))
@@ -29,7 +30,7 @@ class M2Import : IModule, Controller()
         updateProgress: (Pair<Int, String>) -> Unit
     )
     {
-        MXLog.log("M2", MXLog.LogType.INFO, "Data Import Start", moduleName())
+        MXLog.log("M2", MXLog.LogType.INFO, "Data Import Start", moduleNameLong())
         val raf = db.openRandomFileAccess("M2", "rw")
         val dbManager = M2DBManager()
         var counter = 0
@@ -54,7 +55,7 @@ class M2Import : IModule, Controller()
                     updateProgress(Pair(counter, "Importing data..."))
                     if (counter % 5000 == 0)
                     {
-                        MXLog.log("M2", MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}", moduleName())
+                        MXLog.log("M2", MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}", moduleNameLong())
                         runBlocking { launch { indexManager.writeIndexData() } }
                     }
                 }
@@ -65,7 +66,7 @@ class M2Import : IModule, Controller()
             "M2",
             MXLog.LogType.INFO,
             "Data Import end (${timeInMillis / 1000} sec)",
-            moduleName()
+            moduleNameLong()
         )
     }
 
