@@ -84,8 +84,10 @@ class MXGUserInterface : View("CWO ERP")
                         item("MX").action { MXLog.deleteLogFile("MX") }
                     }
                 }
-                menu("Benchmark") {
-                    item("Insert entries").action { M1Benchmark().insertRandomEntries(1000000) }
+            }
+            menu("Dev-Tools") {
+                menu("Benchmark (M1)") {
+                    item("Insert random songs").action { M1Benchmark().insertRandomEntries(1000000) }
                 }
             }
         }
