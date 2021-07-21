@@ -15,7 +15,7 @@ class ContactProperty
 {
 
     val uIDProperty = SimpleIntegerProperty(-1)
-    var uniqueID by uIDProperty
+    var uID: Int by uIDProperty
     val nameProperty = SimpleStringProperty()
     var name: String by nameProperty
 
@@ -60,21 +60,21 @@ class ContactProperty
 
 class ContactModel : ItemViewModel<ContactProperty>(ContactProperty())
 {
-    val uniqueID = bind(ContactProperty::uIDProperty)
+    val uID = bind(ContactProperty::uIDProperty)
     val name = bind(ContactProperty::nameProperty)
     val firstName = bind(ContactProperty::firstNameProperty)
     val lastName = bind(ContactProperty::lastNameProperty)
     val birthdate = bind(ContactProperty::birthdateProperty)
-    var street = bind(ContactProperty::streetProperty)
-    var houseNr = bind(ContactProperty::houseNrProperty)
-    var city = bind(ContactProperty::cityProperty)
-    var postCode = bind(ContactProperty::postCodeProperty)
-    var country = bind(ContactProperty::countryProperty)
-    var isVocalist = bind(ContactProperty::isVocalistProperty)
-    var isProducer = bind(ContactProperty::isProducerProperty)
-    var isInstrumentalist = bind(ContactProperty::isInstrumentalistProperty)
-    var isManager = bind(ContactProperty::isManagerProperty)
-    var isFan = bind(ContactProperty::isFanProperty)
+    val street = bind(ContactProperty::streetProperty)
+    val houseNr = bind(ContactProperty::houseNrProperty)
+    val city = bind(ContactProperty::cityProperty)
+    val postCode = bind(ContactProperty::postCodeProperty)
+    val country = bind(ContactProperty::countryProperty)
+    val isVocalist = bind(ContactProperty::isVocalistProperty)
+    val isProducer = bind(ContactProperty::isProducerProperty)
+    val isInstrumentalist = bind(ContactProperty::isInstrumentalistProperty)
+    val isManager = bind(ContactProperty::isManagerProperty)
+    val isFan = bind(ContactProperty::isFanProperty)
 }
 
 fun getContactPropertyFromContact(contact: Contact): ContactProperty
@@ -84,7 +84,7 @@ fun getContactPropertyFromContact(contact: Contact): ContactProperty
     //---------------------------------v
     //----------- Main Data -----------|
     //---------------------------------^
-    contactProperty.uniqueID = contact.uID
+    contactProperty.uID = contact.uID
     contactProperty.name = contact.name
     //----------------------------------v
     //--------- Personal Data ----------|
@@ -117,11 +117,11 @@ fun getContactPropertyFromContact(contact: Contact): ContactProperty
 fun getContactFromProperty(contactProperty: ContactProperty): Contact
 {
     val contact = Contact(-1, contactProperty.name)
-    //For songModel to be serialized, it has to be inserted into song
+    //For contactModel to be serialized, it has to be inserted into contact
     //---------------------------------v
     //----------- Main Data -----------|
     //---------------------------------^
-    contact.uID = contactProperty.uniqueID
+    contact.uID = contactProperty.uID
     //----------------------------------v
     //--------- Personal Data ----------|
     //----------------------------------^

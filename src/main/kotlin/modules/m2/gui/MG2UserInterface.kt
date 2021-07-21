@@ -125,8 +125,8 @@ class ContactFinder : IModule, View("Find Contact")
                 M2DBManager().saveEntry(
                     entry = getContactFromProperty(wizard.contact.item),
                     cwodb = db,
-                    posDB = indexManager.indexList[0]!!.indexMap[wizard.contact.item.uniqueID]!!.pos,
-                    byteSize = indexManager.indexList[0]!!.indexMap[wizard.contact.item.uniqueID]!!.byteSize,
+                    posDB = indexManager.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.pos,
+                    byteSize = indexManager.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.byteSize,
                     raf = raf,
                     indexManager = indexManager
                 )
