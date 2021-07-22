@@ -35,7 +35,7 @@ class M3IndexManager : IModule, IIndexManager, Controller()
 
     override fun getIndexUserSelection(): ArrayList<String>
     {
-        return arrayListOf("1-Name", "2-Seller", "3-Buyer")
+        return arrayListOf("1-Seller", "2-Buyer")
     }
 
     @ExperimentalSerializationApi
