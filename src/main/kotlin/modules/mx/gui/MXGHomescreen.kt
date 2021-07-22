@@ -77,12 +77,14 @@ class MXGUserInterface : View("CWO ERP")
                     menu("Show Logfile") {
                         item("M1 Songs").isDisable = true //Not yet implemented
                         item("M2 Contacts").isDisable = true //Not yet implemented
+                        item("M3 Invoice").isDisable = true //Not yet implemented
                     }
                     separator()
                     item("Clear Logfiles").action { MXLog.deleteLogFiles() }
                     menu("Delete Logfile") {
                         item("M1 Songs").action { MXLog.deleteLogFile("M1") }
                         item("M2 Contacts").action { MXLog.deleteLogFile("M2") }
+                        item("M3 Invoice").action { MXLog.deleteLogFile("M3") }
                         item("MX").action { MXLog.deleteLogFile("MX") }
                     }
                 }
