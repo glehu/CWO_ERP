@@ -1,8 +1,10 @@
 package modules.mx.gui
 
 import javafx.collections.ObservableList
-import modules.mx.logic.MXUserManager
+import javafx.scene.paint.Color
+import javafx.scene.paint.Paint
 import modules.mx.MXUser
+import modules.mx.logic.MXUserManager
 import tornadofx.*
 
 class MXGUserManager : Fragment("User Management")
@@ -22,16 +24,23 @@ class MXGUserManager : Fragment("User Management")
         center = tableview(users) {
             readonlyColumn("Username", MXUser::username).prefWidth(200.0)
             readonlyColumn("Password (encrypted)", MXUser::password)
-            readonlyColumn("Access MX", MXUser::canAccessMX)
-            readonlyColumn("Access M1", MXUser::canAccessM1)
-            readonlyColumn("Access M2", MXUser::canAccessM2)
-            readonlyColumn("Access M3", MXUser::canAccessM3)
+            readonlyColumn("MX", MXUser::canAccessMX)
+                .cellFormat { text = ""; style { backgroundColor = getRightsCellColor(it) } }
+            readonlyColumn("M1", MXUser::canAccessM1)
+                .cellFormat { text = ""; style { backgroundColor = getRightsCellColor(it) } }
+            readonlyColumn("M2", MXUser::canAccessM2)
+                .cellFormat { text = ""; style { backgroundColor = getRightsCellColor(it) } }
+            readonlyColumn("M3", MXUser::canAccessM3)
+                .cellFormat { text = ""; style { backgroundColor = getRightsCellColor(it) } }
             onUserSelect(1) {
                 showUser(it)
                 close()
             }
         }
     }
+
+    private fun getRightsCellColor(hasRight: Boolean): MultiValue<Paint> =
+        if (hasRight) MultiValue(arrayOf(Color.GREEN)) else MultiValue(arrayOf(Color.RED))
 
     private fun addUser(user: MXUser)
     {
