@@ -97,8 +97,7 @@ class MXGUserInterface : View("CWO ERP")
         }
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            tab("M1Songs") {
-                if (!activeUser.canAccessM1) this.isDisable = true
+            if (activeUser.canAccessM1) tab("M1Songs") {
                 vbox {
                     hbox {
                         //Main functions
@@ -149,8 +148,7 @@ class MXGUserInterface : View("CWO ERP")
                     }
                 }
             }
-            tab("M2Contacts") {
-                if (!activeUser.canAccessM2) this.isDisable = true
+            if (activeUser.canAccessM2) tab("M2Contacts") {
                 vbox {
                     hbox {
                         //Main functions
@@ -199,8 +197,7 @@ class MXGUserInterface : View("CWO ERP")
                     }
                 }
             }
-            tab("M3Invoices") {
-                if (!activeUser.canAccessM3) this.isDisable = true
+            if (activeUser.canAccessM3) tab("M3Invoices") {
                 vbox {
                     hbox {
                         //Main functions
@@ -251,8 +248,7 @@ class MXGUserInterface : View("CWO ERP")
                     }
                 }
             }
-            tab("MX") {
-                if (!activeUser.canAccessMX) this.isDisable = true
+            if (activeUser.canAccessMX) tab("MX") {
                 hbox {
                     //User Management
                     vbox {
