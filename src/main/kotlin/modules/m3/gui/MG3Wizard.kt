@@ -18,7 +18,7 @@ class InvoiceConfiguratorWizard : Wizard("Add new invoice")
 }
 
 @ExperimentalSerializationApi
-class InvoiceViewerWizard : Wizard("View a contact")
+class InvoiceViewerWizard : Wizard("View an invoice")
 {
     val invoice: InvoiceModel by inject()
 
@@ -39,7 +39,7 @@ class NewInvoiceMainData : Fragment("Main")
     //----------- Main Data ------------|
     //----------------------------------^
     override val root = form {
-        fieldset {
+        fieldset("Invoice") {
             field("Seller") {
                 textfield(invoice.seller).required()
                 label(invoice.sellerUID)
@@ -66,7 +66,14 @@ class NewInvoiceMainData : Fragment("Main")
             }
             field("Date") { datepicker(invoice.date).required() }
             field("Text") { textfield(invoice.text).required() }
-            field("Price") { textfield(invoice.price).required() }
+            field("Price") {
+                hbox {
+                    textfield(invoice.price) {
+                        prefWidth = 100.0
+                    }.required()
+                    label("EUR") { paddingHorizontal = 20 }
+                }
+            }
         }
     }
 
