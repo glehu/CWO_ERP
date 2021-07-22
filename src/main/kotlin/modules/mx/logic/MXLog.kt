@@ -1,8 +1,6 @@
 package modules.mx.logic
 
 import modules.IModule
-import modules.mx.activeUser
-import modules.mx.getModulePath
 import tornadofx.runAsync
 import java.io.File
 import java.time.LocalDateTime

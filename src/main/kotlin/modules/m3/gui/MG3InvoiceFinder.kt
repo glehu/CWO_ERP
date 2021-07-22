@@ -17,7 +17,7 @@ import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.mx.logic.MXLog
-import modules.mx.maxSearchResultsGlobal
+import modules.mx.logic.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 

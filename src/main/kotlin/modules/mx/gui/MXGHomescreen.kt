@@ -7,9 +7,9 @@ import modules.m1.logic.M1Controller
 import modules.m1.misc.M1Benchmark
 import modules.m2.logic.M2Controller
 import modules.m3.logic.M3Controller
-import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
+import modules.mx.logic.activeUser
 import modules.mx.loginRoutines
 import tornadofx.*
 

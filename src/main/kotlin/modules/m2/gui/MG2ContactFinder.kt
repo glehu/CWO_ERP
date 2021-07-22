@@ -17,7 +17,7 @@ import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import modules.m2.misc.getContactPropertyFromContact
 import modules.mx.logic.MXLog
-import modules.mx.maxSearchResultsGlobal
+import modules.mx.logic.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 

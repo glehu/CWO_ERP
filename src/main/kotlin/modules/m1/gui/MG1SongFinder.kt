@@ -17,7 +17,7 @@ import modules.m1.misc.getSongFromProperty
 import modules.m1.misc.getSongPropertyFromSong
 import modules.m2.logic.M2Controller
 import modules.mx.logic.MXLog
-import modules.mx.maxSearchResultsGlobal
+import modules.mx.logic.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
