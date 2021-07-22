@@ -14,11 +14,7 @@ class MXGUserManager : Fragment("User Management")
     private var users: ObservableList<MXUser> = observableList(MXUser("", ""))
     override val root = borderpane {
         left = vbox {
-            button("Add user") {
-                action {
-                    addUser(MXUser("", ""))
-                }
-            }
+            button("Add user") { action { addUser(MXUser("", "")) } }
         }
         getUsers()
         center = tableview(users) {
@@ -51,14 +47,8 @@ class MXGUserManager : Fragment("User Management")
     private fun getUsers()
     {
         users.clear()
-        for ((_, v) in credentials.credentials)
-        {
-            users.add(v)
-        }
+        for ((_, v) in credentials.credentials) users.add(v)
     }
 
-    private fun showUser(user: MXUser)
-    {
-        MXGUser(user).openModal()
-    }
+    private fun showUser(user: MXUser) = MXGUser(user).openModal()
 }
