@@ -2,6 +2,7 @@ package modules.mx.misc
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
+import modules.mx.MXUser
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue
@@ -21,6 +22,8 @@ class MXUserModelProperty
     var canAccessM1 by canAccessM1Property
     val canAccessM2Property = SimpleBooleanProperty(true)
     var canAccessM2 by canAccessM2Property
+    val canAccessM3Property = SimpleBooleanProperty(true)
+    var canAccessM3 by canAccessM3Property
 }
 
 class MXUserModel(user: MXUserModelProperty) : ItemViewModel<MXUserModelProperty>(user)
@@ -30,6 +33,7 @@ class MXUserModel(user: MXUserModelProperty) : ItemViewModel<MXUserModelProperty
     val canAccessMX = bind(MXUserModelProperty::canAccessMXProperty)
     val canAccessM1 = bind(MXUserModelProperty::canAccessM1Property)
     val canAccessM2 = bind(MXUserModelProperty::canAccessM2Property)
+    val canAccessM3 = bind(MXUserModelProperty::canAccessM3Property)
 }
 
 fun getUserPropertyFromUser(user: MXUser): MXUserModelProperty
@@ -40,6 +44,7 @@ fun getUserPropertyFromUser(user: MXUser): MXUserModelProperty
     userProperty.canAccessMX = user.canAccessMX
     userProperty.canAccessM1 = user.canAccessM1
     userProperty.canAccessM2 = user.canAccessM2
+    userProperty.canAccessM3 = user.canAccessM3
     return userProperty
 }
 
@@ -49,5 +54,6 @@ fun getUserFromUserProperty(userProperty: MXUserModelProperty): MXUser
     user.canAccessMX = userProperty.canAccessMX
     user.canAccessM1 = userProperty.canAccessM1
     user.canAccessM2 = userProperty.canAccessM2
+    user.canAccessM3 = userProperty.canAccessM3
     return user
 }

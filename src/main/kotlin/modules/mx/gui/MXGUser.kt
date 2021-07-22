@@ -2,11 +2,11 @@ package modules.mx.gui
 
 import javafx.scene.paint.Color
 import modules.mx.logic.MXUserManager
-import modules.mx.misc.MXUser
+import modules.mx.MXUser
+import modules.mx.logic.token
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserFromUserProperty
 import modules.mx.misc.getUserPropertyFromUser
-import modules.mx.token
 import tornadofx.*
 
 class MXGUser(user: MXUser) : Fragment("User")
@@ -25,6 +25,7 @@ class MXGUser(user: MXUser) : Fragment("User")
                 field("MX") { checkbox("", userModel.canAccessMX) }
                 field("M1Songs") { checkbox("", userModel.canAccessM1) }
                 field("M2Contacts") { checkbox("", userModel.canAccessM2) }
+                field("M3Invoice") { checkbox("", userModel.canAccessM3) }
             }
         }
         button("Save") {
