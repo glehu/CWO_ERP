@@ -57,33 +57,4 @@ class M1Controller : IModule, Controller()
         //TODO: Add multiple analytics modes
         tornadofx.find(MG1Analytics::class, Scope(indexManager)).openModal()
     }
-
-    fun selectContact(): Contact
-    {
-        val contact: Contact
-        val newScope = Scope()
-        val dataTransfer = SongModel()
-        dataTransfer.uID.value = -2
-        setInScope(dataTransfer, newScope)
-        setInScope(m2indexManager, newScope)
-        tornadofx.find<MG2ContactFinder>(newScope).openModal(block = true)
-        contact = if (dataTransfer.name.value != null)
-        {
-            M2DBManager().getEntry(
-                dataTransfer.uID.value, db, m2indexManager.indexList[0]!!
-            ) as Contact
-        } else Contact(-1, "")
-        return contact
-    }
-
-    fun getContactName(uID: Int, default: String): String
-    {
-        return if (uID != -1)
-        {
-            val contact = M2DBManager().getEntry(
-                uID, db, m2indexManager.indexList[0]!!
-            ) as Contact
-            contact.name
-        } else default
-    }
 }

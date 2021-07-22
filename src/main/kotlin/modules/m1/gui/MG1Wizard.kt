@@ -3,8 +3,8 @@ package modules.m1.gui
 import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.getGenreList
-import modules.m1.logic.M1Controller
 import modules.m1.misc.SongModel
+import modules.m2.logic.M2Controller
 import tornadofx.*
 
 //This Wizard is used to create new songs
@@ -57,7 +57,7 @@ class SongViewerWizard : Wizard("View a song")
 class NewSongMainData : Fragment("Main")
 {
     private val song: SongModel by inject()
-    private val m1controller: M1Controller by inject()
+    private val m2controller: M2Controller by inject()
 
     //----------------------------------v
     //----------- Main Data ------------|
@@ -73,7 +73,7 @@ class NewSongMainData : Fragment("Main")
                 button("<") {
                     tooltip("Load an address")
                     action {
-                        val contact = m1controller.selectContact()
+                        val contact = m2controller.selectContact()
                         song.vocalistUID.value = contact.uID
                         song.vocalist.value = contact.name
                     }
@@ -85,7 +85,7 @@ class NewSongMainData : Fragment("Main")
                 button("<") {
                     tooltip("Load an address")
                     action {
-                        val contact = m1controller.selectContact()
+                        val contact = m2controller.selectContact()
                         song.producerUID.value = contact.uID
                         song.producer.value = contact.name
                     }

@@ -16,6 +16,7 @@ import modules.m1.logic.M1IndexManager
 import modules.m1.misc.SongProperty
 import modules.m1.misc.getSongFromProperty
 import modules.m1.misc.getSongPropertyFromSong
+import modules.m2.logic.M2Controller
 import modules.mx.logic.MXLog
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
@@ -28,7 +29,7 @@ class MG1SongFinder : IModule, View("Find Song")
     override fun module() = "M1"
     val db: CwODB by inject()
     val indexManager: M1IndexManager by inject(Scope(db))
-    private val m1Controller: M1Controller by inject()
+    private val m2Controller: M2Controller by inject()
     private var songName: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
     private var songsFound: ObservableList<Song> = observableList(Song(-1, ""))
@@ -65,11 +66,11 @@ class MG1SongFinder : IModule, View("Find Song")
                 readonlyColumn("ID", Song::uID).prefWidth(65.0)
                 readonlyColumn("Name", Song::name).prefWidth(310.0)
                 readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0).cellFormat {
-                    text = m1Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
+                    text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
                     rowItem.vocalist = text
                 }
                 readonlyColumn("Producer", Song::producer).prefWidth(200.0).cellFormat {
-                    text = m1Controller.getContactName(rowItem.producerUID, rowItem.producer)
+                    text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer)
                     rowItem.producer = text
                 }
                 readonlyColumn("Genre", Song::genre).prefWidth(200.0)
