@@ -1,4 +1,4 @@
-package modules.mx.misc
+package modules.mx
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
