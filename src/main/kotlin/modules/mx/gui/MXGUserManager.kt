@@ -2,7 +2,7 @@ package modules.mx.gui
 
 import javafx.collections.ObservableList
 import modules.mx.logic.MXUserManager
-import modules.mx.misc.MXUser
+import modules.mx.MXUser
 import tornadofx.*
 
 class MXGUserManager : Fragment("User Management")

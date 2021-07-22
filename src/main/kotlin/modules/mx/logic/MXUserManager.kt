@@ -4,11 +4,9 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IModule
-import modules.mx.getModulePath
-import modules.mx.misc.MXCredentials
-import modules.mx.misc.MXUser
+import modules.mx.MXCredentials
+import modules.mx.MXUser
 import modules.mx.startupRoutines
-import modules.mx.token
 import tornadofx.Controller
 import java.io.File
 import java.util.*
