@@ -113,11 +113,6 @@ class MXGUserInterface : View("CWO ERP")
                                 tooltip("Add a new song to the database.")
                                 prefWidth = buttonWidth
                             }
-                            button("Find Song") {
-                                action { m1Controller.openWizardFindSong() }
-                                tooltip("Find a song in the database.")
-                                prefWidth = buttonWidth
-                            }
                             //Analytics functions
                             button("Analytics") {
                                 action { m1Controller.openAnalytics() }
@@ -156,14 +151,6 @@ class MXGUserInterface : View("CWO ERP")
                                 tooltip("Add a new contact to the database.")
                                 prefWidth = buttonWidth
                             }
-                            /*
-                        button("Find Contact") {
-                            action { m2Controller.openWizardFindContact() }
-                            tooltip("Find a contact in the database.")
-                            vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
-                            prefWidth = buttonWidth
-                        }
-                         */
                             //Analytics functions
                             button("Analytics") {
                                 action { m2Controller.openAnalytics() }
@@ -199,12 +186,6 @@ class MXGUserInterface : View("CWO ERP")
                                         tooltip("Add a new song to the database.")
                                         prefWidth = buttonWidth
                                     }
-                                    /*
-                                    button("Find Invoice") {
-                                        action { m3Controller.openWizardFindInvoice() }
-                                        tooltip("Find a song in the database.")
-                                    }
-                                     */
                                     //Analytics functions
                                     button("Analytics") {
                                         //action { m3Controller.openAnalytics() }
