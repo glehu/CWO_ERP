@@ -3,9 +3,6 @@ package modules.m2
 import db.CwODB
 import kotlinx.serialization.Serializable
 import modules.IEntry
-import modules.m2.misc.ContactProperty
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Serializable
 data class Contact(override var uID: Int, var name: String) : IEntry
@@ -38,11 +35,6 @@ data class Contact(override var uID: Int, var name: String) : IEntry
     var isInstrumentalist: Boolean = false
     var isManager: Boolean = false
     var isFan: Boolean = false
-
-    var dateOfCreation: String = "??.??.????"
-    var createdByUser: String = "?"
-    var dateOfChange: String = "??.??.????"
-    var changedByUser: String = "?"
 
     fun initialize()
     {

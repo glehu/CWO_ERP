@@ -10,7 +10,6 @@ import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.Song
-import modules.m1.logic.M1Controller
 import modules.m1.logic.M1DBManager
 import modules.m1.logic.M1IndexManager
 import modules.m1.misc.SongProperty

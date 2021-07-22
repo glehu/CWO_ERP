@@ -11,7 +11,6 @@ import modules.m2.gui.MG2Analytics
 import modules.m2.gui.MG2Import
 import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
-import modules.m3.logic.M3DBManager
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find

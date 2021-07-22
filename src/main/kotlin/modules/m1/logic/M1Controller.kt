@@ -4,17 +4,13 @@ import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.gui.MG1Analytics
-import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.gui.MG1SongFinder
-import modules.m1.misc.SongModel
+import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.misc.SongProperty
 import modules.m1.misc.getSongFromProperty
-import modules.m2.Contact
-import modules.m2.gui.MG2ContactFinder
-import modules.m2.logic.M2DBManager
-import modules.m2.logic.M2IndexManager
 import tornadofx.Controller
 import tornadofx.Scope
+import tornadofx.find
 
 @ExperimentalSerializationApi
 class M1Controller : IModule, Controller()
@@ -25,7 +21,6 @@ class M1Controller : IModule, Controller()
     private val wizard = find<SongConfiguratorWizard>()
     val db: CwODB by inject()
     val indexManager: M1IndexManager by inject(Scope(db))
-    private val m2indexManager: M2IndexManager by inject(Scope(db))
 
     fun openWizardNewSong()
     {
@@ -49,12 +44,12 @@ class M1Controller : IModule, Controller()
 
     fun openWizardFindSong()
     {
-        tornadofx.find(MG1SongFinder::class, Scope(indexManager)).openModal()
+        find(MG1SongFinder::class, Scope(indexManager)).openModal()
     }
 
     fun openAnalytics()
     {
         //TODO: Add multiple analytics modes
-        tornadofx.find(MG1Analytics::class, Scope(indexManager)).openModal()
+        find(MG1Analytics::class, Scope(indexManager)).openModal()
     }
 }

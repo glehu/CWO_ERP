@@ -3,10 +3,6 @@ package modules.m3.logic
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
-import modules.m1.misc.SongModel
-import modules.m2.Contact
-import modules.m2.gui.MG2ContactFinder
-import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
@@ -25,7 +21,6 @@ class M3Controller : IModule, Controller()
     private val wizard = find<InvoiceConfiguratorWizard>()
     val db: CwODB by inject()
     val indexManager: M3IndexManager by inject(Scope(db))
-    private val m2indexManager: M2IndexManager by inject(Scope(db))
 
     fun openWizardNewInvoice()
     {
