@@ -29,7 +29,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
     val db: CwODB by inject()
     val indexManager: M2IndexManager by inject()
     private val song: SongModel by inject()
-    private var contactName: TextField by singleAssign()
+    private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
     private var contactsFound: ObservableList<Contact> = observableList(Contact(-1, ""))
     private var ixNr = SimpleStringProperty()
@@ -40,7 +40,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
         threadIDCurrent.value = 0
         fieldset {
             field("Contact Name") {
-                contactName = textfield {
+                searchText = textfield {
                     textProperty().addListener { _, _, _ ->
                         runAsync {
                             threadIDCurrent.value++
@@ -76,9 +76,8 @@ class MG2ContactFinder : IModule, View("Find Contact")
                     {
                         showContact(it)
                         contactsFound.clear()
-                        contactName.text = ""
+                        searchText.text = ""
                     }
-                    close()
                 }
             }
         }
@@ -91,7 +90,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
             val dbManager = M2DBManager()
             contactsFound.clear()
             db.getEntriesFromSearchString(
-                contactName.text.uppercase(),
+                searchText.text.uppercase(),
                 ixNr.value.substring(0, 1).toInt(),
                 exactSearch.isSelected,
                 module(),

@@ -29,7 +29,7 @@ class MG1SongFinder : IModule, View("Find Song")
     val db: CwODB by inject()
     val indexManager: M1IndexManager by inject(Scope(db))
     private val m2Controller: M2Controller by inject()
-    private var songName: TextField by singleAssign()
+    private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
     private var songsFound: ObservableList<Song> = observableList(Song(-1, ""))
     private var ixNr = SimpleStringProperty()
@@ -41,7 +41,7 @@ class MG1SongFinder : IModule, View("Find Song")
         threadIDCurrent = 0
         fieldset {
             field("Song Name") {
-                songName = textfield {
+                searchText = textfield {
                     textProperty().addListener { _, _, _ ->
                         runAsync {
                             threadIDCurrent++
@@ -76,7 +76,6 @@ class MG1SongFinder : IModule, View("Find Song")
                 onUserSelect(1) {
                     showSong(it)
                     songsFound.clear()
-                    close()
                 }
             }
         }
@@ -88,7 +87,7 @@ class MG1SongFinder : IModule, View("Find Song")
         val timeInMillis = measureTimeMillis {
             val dbManager = M1DBManager()
             db.getEntriesFromSearchString(
-                songName.text.uppercase(),
+                searchText.text.uppercase(),
                 ixNr.value.substring(0, 1).toInt(),
                 exactSearch.isSelected,
                 module(),

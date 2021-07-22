@@ -3,7 +3,6 @@ package modules.m3.logic
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
-import modules.m2.logic.M2IndexManager
 import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.misc.InvoiceProperty

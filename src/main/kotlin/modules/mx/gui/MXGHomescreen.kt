@@ -3,9 +3,12 @@ package modules.mx.gui
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
+import modules.m1.gui.MG1SongFinder
 import modules.m1.logic.M1Controller
 import modules.m1.misc.M1Benchmark
+import modules.m2.gui.MG2ContactFinder
 import modules.m2.logic.M2Controller
+import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.logic.M3Controller
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
@@ -20,8 +23,8 @@ class StyleMain : Stylesheet()
     init
     {
         Companion.root {
-            prefHeight = 600.px
-            prefWidth = 1000.px
+            prefHeight = 700.px
+            prefWidth = 1300.px
         }
     }
 }
@@ -98,50 +101,42 @@ class MXGUserInterface : View("CWO ERP")
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             if (activeUser.canAccessM1) tab("M1Songs") {
-                vbox {
-                    hbox {
-                        //Main functions
+                borderpane {
+                    center {
+                        add<MG1SongFinder>()
+                    }
+                    right {
                         vbox {
+                            //Main functions
                             button("New Song") {
                                 action { m1Controller.openWizardNewSong() }
                                 tooltip("Add a new song to the database.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
                             button("Find Song") {
                                 action { m1Controller.openWizardFindSong() }
                                 tooltip("Find a song in the database.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
-                        }
-                        //Analytics functions
-                        vbox {
+                            //Analytics functions
                             button("Analytics") {
                                 action { m1Controller.openAnalytics() }
                                 tooltip("Display a chart to show the distribution of genres.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
-                        }
-                        //Maintenance functions
-                        vbox {
+                            //Maintenance functions
                             button("Rebuild indices") {
                                 //TODO: Not yet implemented
                                 isDisable = true
                                 tooltip("Rebuilds all indices in case of faulty indices.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
-                        }
-                        //Data import
-                        vbox {
+                            //Data import
                             button("Data Import") {
                                 //TODO: Not yet implemented
                                 isDisable = true
                                 //action { m1Controller.openDataImport() }
                                 tooltip("Import contact data from a .csv file.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
                         }
@@ -149,106 +144,95 @@ class MXGUserInterface : View("CWO ERP")
                 }
             }
             if (activeUser.canAccessM2) tab("M2Contacts") {
-                vbox {
-                    hbox {
-                        //Main functions
+                borderpane {
+                    center {
+                        add<MG2ContactFinder>()
+                    }
+                    right {
                         vbox {
+                            //Main functions
                             button("New Contact") {
                                 action { m2Controller.openWizardNewContact() }
                                 tooltip("Add a new contact to the database.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
-                            button("Find Contact") {
-                                action { m2Controller.openWizardFindContact() }
-                                tooltip("Find a contact in the database.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
-                                prefWidth = buttonWidth
-                            }
+                            /*
+                        button("Find Contact") {
+                            action { m2Controller.openWizardFindContact() }
+                            tooltip("Find a contact in the database.")
+                            vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
+                            prefWidth = buttonWidth
                         }
-                        //Analytics functions
-                        vbox {
+                         */
+                            //Analytics functions
                             button("Analytics") {
                                 action { m2Controller.openAnalytics() }
                                 tooltip("Display a chart to show the distribution of genres.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
-                        }
-                        //Maintenance functions
-                        vbox {
+                            //Maintenance functions
                             button("Rebuild indices") {
                                 //TODO: Not yet implemented
                                 isDisable = true
                                 tooltip("Rebuilds all indices in case of faulty indices.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
-                        }
-                        //Data import
-                        vbox {
+                            //Data import
                             button("Data Import") {
                                 action { m2Controller.openDataImport() }
                                 tooltip("Import contact data from a .csv file.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
                                 prefWidth = buttonWidth
                             }
                         }
                     }
-                }
-            }
-            if (activeUser.canAccessM3) tab("M3Invoices") {
-                vbox {
-                    hbox {
-                        //Main functions
-                        vbox {
-                            button("New Invoice") {
-                                action { m3Controller.openWizardNewInvoice() }
-                                tooltip("Add a new song to the database.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
-                                prefWidth = buttonWidth
+                    if (activeUser.canAccessM3) tab("M3Invoices")
+                    {
+                        borderpane {
+                            center {
+                                add<MG3InvoiceFinder>()
                             }
-                            button("Find Invoice") {
-                                action { m3Controller.openWizardFindInvoice() }
-                                tooltip("Find a song in the database.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
-                                prefWidth = buttonWidth
+                            right {
+                                //Main functions
+                                vbox {
+                                    button("New Invoice") {
+                                        action { m3Controller.openWizardNewInvoice() }
+                                        tooltip("Add a new song to the database.")
+                                        prefWidth = buttonWidth
+                                    }
+                                    /*
+                                    button("Find Invoice") {
+                                        action { m3Controller.openWizardFindInvoice() }
+                                        tooltip("Find a song in the database.")
+                                    }
+                                     */
+                                    //Analytics functions
+                                    button("Analytics") {
+                                        //action { m3Controller.openAnalytics() }
+                                        tooltip("Display a chart to show the distribution of genres.")
+                                        prefWidth = buttonWidth
+                                    }
+                                    //Maintenance functions
+                                    button("Rebuild indices") {
+                                        //TODO: Not yet implemented
+                                        isDisable = true
+                                        tooltip("Rebuilds all indices in case of faulty indices.")
+                                        prefWidth = buttonWidth
+                                    }
+                                    //Data import
+                                    button("Data Import") {
+                                        //TODO: Not yet implemented
+                                        isDisable = true
+                                        //action { m3Controller.openDataImport() }
+                                        tooltip("Import contact data from a .csv file.")
+                                        prefWidth = buttonWidth
+                                    }
+                                }
                             }
-                        }
-                        //Analytics functions
-                        vbox {
-                            button("Analytics") {
-                                //action { m3Controller.openAnalytics() }
-                                tooltip("Display a chart to show the distribution of genres.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
-                                prefWidth = buttonWidth
-                            }
-                        }
-                        //Maintenance functions
-                        vbox {
-                            button("Rebuild indices") {
-                                //TODO: Not yet implemented
-                                isDisable = true
-                                tooltip("Rebuilds all indices in case of faulty indices.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
-                                prefWidth = buttonWidth
-                            }
-                        }
-                        //Data import
-                        vbox {
-                            button("Data Import") {
-                                //TODO: Not yet implemented
-                                isDisable = true
-                                //action { m3Controller.openDataImport() }
-                                tooltip("Import contact data from a .csv file.")
-                                vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
-                                prefWidth = buttonWidth
-                            }
+                            if (activeUser.canAccessMX) tab("MX") { add<MXGUserManager>() }
                         }
                     }
                 }
             }
-            if (activeUser.canAccessMX) tab("MX") { add<MXGUserManager>() }
         }
     }
 }

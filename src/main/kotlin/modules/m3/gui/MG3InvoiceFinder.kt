@@ -29,7 +29,7 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
     val db: CwODB by inject()
     val indexManager: M3IndexManager by inject()
     private val m2Controller: M2Controller by inject()
-    private var contactName: TextField by singleAssign()
+    private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
     private var contactsFound: ObservableList<Invoice> = observableList(Invoice(-1))
     private var ixNr = SimpleStringProperty()
@@ -40,7 +40,7 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
         threadIDCurrent.value = 0
         fieldset {
             field("Search text") {
-                contactName = textfield {
+                searchText = textfield {
                     textProperty().addListener { _, _, _ ->
                         runAsync {
                             threadIDCurrent.value++
@@ -74,8 +74,7 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
                 onUserSelect(1) {
                     showInvoice(it)
                     contactsFound.clear()
-                    contactName.text = ""
-                    close()
+                    searchText.text = ""
                 }
             }
         }
@@ -88,7 +87,7 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
             val dbManager = M3DBManager()
             contactsFound.clear()
             db.getEntriesFromSearchString(
-                contactName.text.uppercase(),
+                searchText.text.uppercase(),
                 ixNr.value.substring(0, 1).toInt(),
                 exactSearch.isSelected,
                 module(),
