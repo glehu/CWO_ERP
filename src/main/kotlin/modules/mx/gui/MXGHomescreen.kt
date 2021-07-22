@@ -248,19 +248,7 @@ class MXGUserInterface : View("CWO ERP")
                     }
                 }
             }
-            if (activeUser.canAccessMX) tab("MX") {
-                hbox {
-                    //User Management
-                    vbox {
-                        button("User Management") {
-                            action { find(MXGUserManager::class).openModal() }
-                            tooltip("Opens the user management.")
-                            vboxConstraints { marginTop = 10.0; marginLeft = 10.0 }
-                            prefWidth = buttonWidth
-                        }
-                    }
-                }
-            }
+            if (activeUser.canAccessMX) tab("MX") { add<MXGUserManager>() }
         }
     }
 }

@@ -13,9 +13,6 @@ class MXGUserManager : Fragment("User Management")
     private val credentials = userManager.getCredentials()
     private var users: ObservableList<MXUser> = observableList(MXUser("", ""))
     override val root = borderpane {
-        left = vbox {
-            button("Add user") { action { addUser(MXUser("", "")) } }
-        }
         getUsers()
         center = tableview(users) {
             readonlyColumn("Username", MXUser::username).prefWidth(200.0)
@@ -31,6 +28,14 @@ class MXGUserManager : Fragment("User Management")
             onUserSelect(1) {
                 showUser(it)
                 close()
+            }
+        }
+        right = vbox {
+            button("Add user") {
+                action {
+                    addUser(MXUser("", ""))
+                }
+                prefHeight = 50.0
             }
         }
     }
