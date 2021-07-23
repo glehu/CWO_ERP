@@ -29,13 +29,13 @@ class MG2Analytics : Fragment("City distribution")
                     action {
                         maxEntries = m2controller.db.getLastUniqueID("M2")
                         runAsync {
-                            val genreDist = m2controller.getChartDataOnCityDistribution(indexManager, numberOfCities)
+                            val cityDist = m2controller.getChartDataOnCityDistribution(indexManager, numberOfCities)
                             {
                                 progressN = it.first
                                 updateProgress(it.first.toDouble(), maxEntries.toDouble())
                                 updateMessage("${it.second} (${it.first} / $maxEntries)")
                             }
-                            ui { showPiechart(genreDist) }
+                            ui { showPiechart(cityDist) }
                         }
                     }
                 }
@@ -48,11 +48,11 @@ class MG2Analytics : Fragment("City distribution")
         }
     }
 
-    private fun showPiechart(genreDist: MutableMap<String, Double>)
+    private fun showPiechart(cityDist: MutableMap<String, Double>)
     {
-        piechart("City distribution for ${genreDist["[amount]"]!!.toInt()} contacts") {
+        piechart("City distribution for ${cityDist["[amount]"]!!.toInt()} contacts") {
             data.clear()
-            for ((k, v) in genreDist)
+            for ((k, v) in cityDist)
             {
                 if (k != "[amount]")
                 {
