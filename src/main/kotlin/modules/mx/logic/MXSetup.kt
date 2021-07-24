@@ -31,7 +31,7 @@ fun checkIniFile(iniFile: File)
         iniFile.writeText(
             Json.encodeToString(
                 IniValues(
-                    token = "8265726400192847",
+                    token = getRandomString(16, true),
                     dataPath = System.getProperty("user.dir"),
                     maxSearchResults = 10_000
                 )
