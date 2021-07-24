@@ -1,7 +1,6 @@
 package modules.mx.gui
 
 import db.CwODB
-import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.MG1SongFinder
@@ -11,63 +10,48 @@ import modules.m2.gui.MG2ContactFinder
 import modules.m2.logic.M2IndexManager
 import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.logic.M3IndexManager
+import modules.mx.MXUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.logic.activeUser
 import modules.mx.loginRoutines
+import modules.mx.misc.MXUserModel
+import modules.mx.misc.getUserPropertyFromUser
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class CWOMainGUI : App(MXGLogin::class, StyleMain::class)
-class StyleMain : Stylesheet()
-{
-    init
-    {
-        Companion.root {
-            prefHeight = 900.px
-            prefWidth = 1800.px
-        }
-    }
-}
+class CWOMainGUI : App(MXGLogin::class)
 
 @ExperimentalSerializationApi
 class MXGLogin : View("Login")
 {
+    private val loginUser = MXUserModel(getUserPropertyFromUser(MXUser("", "")))
     private val userManager: MXUserManager by inject()
-    private val usernameProperty = SimpleStringProperty()
-    private val passwordProperty = SimpleStringProperty()
     override val root = form {
+        setPrefSize(300.0, 200.0)
         loginRoutines()
         vbox {
             fieldset {
-                field("Username") {
-                    textfield(usernameProperty) {
-                        prefWidth = 100.0
-                    }
-                }
-                field("Password")
-                {
-                    passwordfield(passwordProperty) {
-                        prefWidth = 100.0
-                    }
-                }
+                field("Username") { textfield(loginUser.username).required() }
+                field("Password") { passwordfield(loginUser.password).required() }
             }
         }
         button("Login") {
+            enableWhen(loginUser.dirty)
             shortcut("Enter")
             action {
                 var loginSuccess = false
                 runAsyncWithProgress {
-                    if (usernameProperty.value != null && passwordProperty.value != null)
+                    if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty())
                     {
-                        loginSuccess = userManager.login(usernameProperty.value, passwordProperty.value)
+                        loginSuccess = userManager.login(loginUser.username.value, loginUser.password.value)
                     }
                 } ui {
                     if (loginSuccess)
                     {
                         close()
                         find(MXGUserInterface::class).openModal()
-                    } else passwordProperty.value = ""
+                    } else loginUser.password.value = ""
                 }
             }
         }

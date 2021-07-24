@@ -32,7 +32,7 @@ class MXGUserManager : Fragment("User Management")
         right = vbox {
             button("Add user") {
                 action {
-                    addUser(MXUser("", ""))
+                    showUser(MXUser("", ""))
                 }
                 prefHeight = 50.0
             }
@@ -41,11 +41,6 @@ class MXGUserManager : Fragment("User Management")
 
     private fun getRightsCellColor(hasRight: Boolean): MultiValue<Paint> =
         if (hasRight) MultiValue(arrayOf(Color.GREEN)) else MultiValue(arrayOf(Color.RED))
-
-    private fun addUser(user: MXUser)
-    {
-        showUser(user)
-    }
 
     private fun getUsers()
     {
