@@ -8,7 +8,7 @@ import modules.mx.MXUser
 import modules.mx.logic.MXUserManager
 import tornadofx.*
 
-class MXGUserManager : Fragment("User Management")
+class MXGUserManager : Fragment("MX Management")
 {
     private val userManager: MXUserManager by inject()
     private val credentials = userManager.getCredentials()

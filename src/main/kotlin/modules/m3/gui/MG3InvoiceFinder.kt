@@ -24,7 +24,7 @@ import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class MG3InvoiceFinder : IModule, View("Find Invoice")
+class MG3InvoiceFinder : IModule, View("M3 Invoices")
 {
     override fun moduleNameLong() = "MG3InvoiceFinder"
     override fun module() = "M3"

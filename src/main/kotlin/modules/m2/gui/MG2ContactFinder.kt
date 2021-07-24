@@ -23,7 +23,7 @@ import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class MG2ContactFinder : IModule, View("Find Contact")
+class MG2ContactFinder : IModule, View("M2 Contacts")
 {
     override fun moduleNameLong() = "MG2ContactFinder"
     override fun module() = "M2"
