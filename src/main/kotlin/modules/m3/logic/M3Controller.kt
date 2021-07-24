@@ -4,12 +4,9 @@ import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m3.gui.InvoiceConfiguratorWizard
-import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import tornadofx.Controller
-import tornadofx.Scope
-import tornadofx.find
 
 @ExperimentalSerializationApi
 class M3Controller : IModule, Controller()

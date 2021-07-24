@@ -1,4 +1,4 @@
-package modules.mx.misc
+package modules.mx.logic
 
 import java.util.*
 

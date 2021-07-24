@@ -2,7 +2,6 @@ package modules.mx
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import modules.mx.MXUser
 import modules.mx.logic.MXUserManager
 
 @Serializable

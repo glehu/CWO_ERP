@@ -8,7 +8,7 @@ import modules.IIndexManager
 import modules.IModule
 import modules.mx.logic.MXLog
 import modules.mx.logic.getModulePath
-import modules.mx.misc.indexFormat
+import modules.mx.logic.indexFormat
 import tornadofx.Controller
 import java.io.File
 import java.io.RandomAccessFile
