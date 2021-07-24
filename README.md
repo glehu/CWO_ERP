@@ -12,9 +12,9 @@ The configuration file can be edited if e.g....
 In any case, here is a tiny description on how to set up the configuration file:
 ```
 {
-	"encryption key": "<Specify a key for encryption and depcryption. It has to consist out of 16 numbers>",
-	"data path": "<Specify the folder in which the database will be saved>",
-	"max search results": <Specify the maximum amount of results to be shown when searching for entries>
+    "encryption key": "<Specify a key for encryption and depcryption. It has to consist out of 16 numbers>",
+    "data path": "<Specify the folder in which the database will be saved>",
+    "max search results": <Specify the maximum amount of results to be shown when searching for entries>
 }
 ```
 
