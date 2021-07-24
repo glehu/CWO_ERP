@@ -11,6 +11,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.misc.SongModel
 import modules.m2.Contact
+import modules.m2.logic.M2Controller
 import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
 import modules.m2.misc.ContactProperty
@@ -28,6 +29,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
     override fun module() = "M2"
     val db: CwODB by inject()
     val indexManager: M2IndexManager by inject()
+    private val m2Controller: M2Controller by inject()
     private val song: SongModel by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
@@ -35,50 +37,80 @@ class MG2ContactFinder : IModule, View("Find Contact")
     private var ixNr = SimpleStringProperty()
     private val ixNrList = FXCollections.observableArrayList(indexManager.getIndexUserSelection())!!
     private val threadIDCurrent = SimpleIntegerProperty()
-    override val root = form {
-        contactsFound.clear()
-        threadIDCurrent.value = 0
-        fieldset {
-            field("Contact Name") {
-                searchText = textfield {
-                    textProperty().addListener { _, _, _ ->
-                        runAsync {
-                            threadIDCurrent.value++
-                            searchForContacts(threadIDCurrent.value)
+    private val buttonWidth = 150.0
+    override val root = borderpane {
+        center = form {
+            contactsFound.clear()
+            threadIDCurrent.value = 0
+            fieldset {
+                field("Contact Name") {
+                    searchText = textfield {
+                        textProperty().addListener { _, _, _ ->
+                            runAsync {
+                                threadIDCurrent.value++
+                                searchForContacts(threadIDCurrent.value)
+                            }
+                        }
+                        tooltip("Contains the search text that will be used to find an entry.")
+                    }
+                    exactSearch = checkbox("Exact Search") {
+                        tooltip("If checked, a literal search will be done.")
+                    }
+                }
+                fieldset("Index")
+                {
+                    ixNr.value = "1-Name"
+                    combobox(ixNr, ixNrList) {
+                        tooltip("Selects the index file that will be searched in.")
+                    }
+                }
+                tableview(contactsFound) {
+                    readonlyColumn("ID", Contact::uID).prefWidth(65.0)
+                    readonlyColumn("Name", Contact::name).prefWidth(350.0)
+                    readonlyColumn("F.Name", Contact::firstName).prefWidth(250.0)
+                    readonlyColumn("City", Contact::city).prefWidth(200.0)
+                    onUserSelect(1) {
+                        if (song.uID.value == -2)
+                        {
+                            //Data transfer
+                            song.uID.value = it.uID
+                            song.name.value = it.name
+                            song.commit()
+                        } else
+                        {
+                            showContact(it)
+                            contactsFound.clear()
+                            searchText.text = ""
                         }
                     }
-                    tooltip("Contains the search text that will be used to find an entry.")
-                }
-                exactSearch = checkbox("Exact Search") {
-                    tooltip("If checked, a literal search will be done.")
                 }
             }
-            fieldset("Index")
-            {
-                ixNr.value = "1-Name"
-                combobox(ixNr, ixNrList) {
-                    tooltip("Selects the index file that will be searched in.")
-                }
+        }
+        right = vbox {
+            //Main functions
+            button("New Contact") {
+                action { m2Controller.openWizardNewContact() }
+                tooltip("Add a new contact to the database.")
+                prefWidth = buttonWidth
             }
-            tableview(contactsFound) {
-                readonlyColumn("ID", Contact::uID).prefWidth(65.0)
-                readonlyColumn("Name", Contact::name).prefWidth(350.0)
-                readonlyColumn("F.Name", Contact::firstName).prefWidth(250.0)
-                readonlyColumn("City", Contact::city).prefWidth(200.0)
-                onUserSelect(1) {
-                    if (song.uID.value == -2)
-                    {
-                        //Data transfer
-                        song.uID.value = it.uID
-                        song.name.value = it.name
-                        song.commit()
-                    } else
-                    {
-                        showContact(it)
-                        contactsFound.clear()
-                        searchText.text = ""
-                    }
-                }
+            //Analytics functions
+            button("Analytics") {
+                action { m2Controller.openAnalytics() }
+                tooltip("Display a chart to show the distribution of genres.")
+                prefWidth = buttonWidth
+            }
+            //Maintenance functions
+            button("Rebuild indices") {
+                //TODO: Not yet implemented
+                isDisable = true
+                tooltip("Rebuilds all indices in case of faulty indices.")
+                prefWidth = buttonWidth
+            }
+            //Data import
+            button("Data Import") {
+                action { m2Controller.openDataImport() }
+                tooltip("Import contact data from a .csv file.")
+                prefWidth = buttonWidth
             }
         }
     }

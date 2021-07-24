@@ -11,6 +11,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m2.logic.M2Controller
 import modules.m3.Invoice
+import modules.m3.logic.M3Controller
 import modules.m3.logic.M3DBManager
 import modules.m3.logic.M3IndexManager
 import modules.m3.misc.InvoiceProperty
@@ -28,6 +29,7 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
     override fun module() = "M3"
     val db: CwODB by inject()
     val indexManager: M3IndexManager by inject()
+    private val m3Controller: M3Controller by inject()
     private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
@@ -35,47 +37,79 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
     private var ixNr = SimpleStringProperty()
     private val ixNrList = FXCollections.observableArrayList(indexManager.getIndexUserSelection())!!
     private val threadIDCurrent = SimpleIntegerProperty()
-    override val root = form {
-        contactsFound.clear()
-        threadIDCurrent.value = 0
-        fieldset {
-            field("Search text") {
-                searchText = textfield {
-                    textProperty().addListener { _, _, _ ->
-                        runAsync {
-                            threadIDCurrent.value++
-                            searchForInvoices(threadIDCurrent.value)
+    private val buttonWidth = 150.0
+    override val root = borderpane {
+        center = form {
+            contactsFound.clear()
+            threadIDCurrent.value = 0
+            fieldset {
+                field("Search text") {
+                    searchText = textfield {
+                        textProperty().addListener { _, _, _ ->
+                            runAsync {
+                                threadIDCurrent.value++
+                                searchForInvoices(threadIDCurrent.value)
+                            }
                         }
+                        tooltip("Contains the search text that will be used to find an entry.")
                     }
-                    tooltip("Contains the search text that will be used to find an entry.")
+                    exactSearch = checkbox("Exact Search") {
+                        tooltip("If checked, a literal search will be done.")
+                    }
                 }
-                exactSearch = checkbox("Exact Search") {
-                    tooltip("If checked, a literal search will be done.")
+                fieldset("Index")
+                {
+                    ixNr.value = "1-Name"
+                    combobox(ixNr, ixNrList) {
+                        tooltip("Selects the index file that will be searched in.")
+                    }
+                }
+                tableview(contactsFound) {
+                    readonlyColumn("ID", Invoice::uID).prefWidth(65.0)
+                    readonlyColumn("Seller", Invoice::seller).prefWidth(350.0).cellFormat {
+                        text = m2Controller.getContactName(rowItem.sellerUID, rowItem.seller)
+                        rowItem.seller = text
+                    }
+                    readonlyColumn("Buyer", Invoice::buyer).prefWidth(350.0).cellFormat {
+                        text = m2Controller.getContactName(rowItem.buyerUID, rowItem.buyer)
+                        rowItem.buyer = text
+                    }
+                    readonlyColumn("Text", Invoice::text).prefWidth(200.0)
+                    onUserSelect(1) {
+                        showInvoice(it)
+                        contactsFound.clear()
+                        searchText.text = ""
+                    }
                 }
             }
-            fieldset("Index")
-            {
-                ixNr.value = "1-Name"
-                combobox(ixNr, ixNrList) {
-                    tooltip("Selects the index file that will be searched in.")
-                }
+        }
+        right = vbox {
+            //Main functions
+            button("New Invoice") {
+                action { m3Controller.openWizardNewInvoice() }
+                tooltip("Add a new song to the database.")
+                prefWidth = buttonWidth
             }
-            tableview(contactsFound) {
-                readonlyColumn("ID", Invoice::uID).prefWidth(65.0)
-                readonlyColumn("Seller", Invoice::seller).prefWidth(350.0).cellFormat {
-                    text = m2Controller.getContactName(rowItem.sellerUID, rowItem.seller)
-                    rowItem.seller = text
-                }
-                readonlyColumn("Buyer", Invoice::buyer).prefWidth(350.0).cellFormat {
-                    text = m2Controller.getContactName(rowItem.buyerUID, rowItem.buyer)
-                    rowItem.buyer = text
-                }
-                readonlyColumn("Text", Invoice::text).prefWidth(200.0)
-                onUserSelect(1) {
-                    showInvoice(it)
-                    contactsFound.clear()
-                    searchText.text = ""
-                }
+            //Analytics functions
+            button("Analytics") {
+                //action { m3Controller.openAnalytics() }
+                tooltip("Display a chart to show the distribution of genres.")
+                prefWidth = buttonWidth
+            }
+            //Maintenance functions
+            button("Rebuild indices") {
+                //TODO: Not yet implemented
+                isDisable = true
+                tooltip("Rebuilds all indices in case of faulty indices.")
+                prefWidth = buttonWidth
+            }
+            //Data import
+            button("Data Import") {
+                //TODO: Not yet implemented
+                isDisable = true
+                //action { m3Controller.openDataImport() }
+                tooltip("Import contact data from a .csv file.")
+                prefWidth = buttonWidth
             }
         }
     }

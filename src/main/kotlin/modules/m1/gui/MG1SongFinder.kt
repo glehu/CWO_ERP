@@ -10,6 +10,7 @@ import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.Song
+import modules.m1.logic.M1Controller
 import modules.m1.logic.M1DBManager
 import modules.m1.logic.M1IndexManager
 import modules.m1.misc.SongProperty
@@ -28,6 +29,7 @@ class MG1SongFinder : IModule, View("Find Song")
     override fun module() = "M1"
     val db: CwODB by inject()
     val indexManager: M1IndexManager by inject(Scope(db))
+    private val m1Controller: M1Controller by inject()
     private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
@@ -36,47 +38,79 @@ class MG1SongFinder : IModule, View("Find Song")
     private val ixNrList = FXCollections.observableArrayList(indexManager.getIndexUserSelection())!!
     private val threadIDCurrentProperty = SimpleIntegerProperty()
     private var threadIDCurrent by threadIDCurrentProperty
-    override val root = form {
-        songsFound.clear()
-        threadIDCurrent = 0
-        fieldset {
-            field("Song Name") {
-                searchText = textfield {
-                    textProperty().addListener { _, _, _ ->
-                        runAsync {
-                            threadIDCurrent++
-                            searchForSongs(threadIDCurrent, indexManager)
+    private val buttonWidth = 150.0
+    override val root = borderpane {
+        center = form {
+            songsFound.clear()
+            threadIDCurrent = 0
+            fieldset {
+                field("Song Name") {
+                    searchText = textfield {
+                        textProperty().addListener { _, _, _ ->
+                            runAsync {
+                                threadIDCurrent++
+                                searchForSongs(threadIDCurrent, indexManager)
+                            }
                         }
+                        tooltip("Contains the search text that will be used to find an entry.")
                     }
-                    tooltip("Contains the search text that will be used to find an entry.")
+                    exactSearch = checkbox("Exact Search") {
+                        tooltip("If checked, a literal search will be done.")
+                    }
                 }
-                exactSearch = checkbox("Exact Search") {
-                    tooltip("If checked, a literal search will be done.")
+                fieldset("Index")
+                {
+                    ixNr.value = "1-Name"
+                    combobox(ixNr, ixNrList) {
+                        tooltip("Selects the index file that will be searched in.")
+                    }
+                }
+                tableview(songsFound) {
+                    readonlyColumn("ID", Song::uID).prefWidth(65.0)
+                    readonlyColumn("Name", Song::name).prefWidth(310.0)
+                    readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0).cellFormat {
+                        text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
+                        rowItem.vocalist = text
+                    }
+                    readonlyColumn("Producer", Song::producer).prefWidth(200.0).cellFormat {
+                        text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer)
+                        rowItem.producer = text
+                    }
+                    readonlyColumn("Genre", Song::genre).prefWidth(200.0)
+                    onUserSelect(1) {
+                        showSong(it)
+                        songsFound.clear()
+                    }
                 }
             }
-            fieldset("Index")
-            {
-                ixNr.value = "1-Name"
-                combobox(ixNr, ixNrList) {
-                    tooltip("Selects the index file that will be searched in.")
-                }
+        }
+        right = vbox {
+            //Main functions
+            button("New Song") {
+                action { m1Controller.openWizardNewSong() }
+                tooltip("Add a new song to the database.")
+                prefWidth = buttonWidth
             }
-            tableview(songsFound) {
-                readonlyColumn("ID", Song::uID).prefWidth(65.0)
-                readonlyColumn("Name", Song::name).prefWidth(310.0)
-                readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0).cellFormat {
-                    text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
-                    rowItem.vocalist = text
-                }
-                readonlyColumn("Producer", Song::producer).prefWidth(200.0).cellFormat {
-                    text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer)
-                    rowItem.producer = text
-                }
-                readonlyColumn("Genre", Song::genre).prefWidth(200.0)
-                onUserSelect(1) {
-                    showSong(it)
-                    songsFound.clear()
-                }
+            //Analytics functions
+            button("Analytics") {
+                action { m1Controller.openAnalytics() }
+                tooltip("Display a chart to show the distribution of genres.")
+                prefWidth = buttonWidth
+            }
+            //Maintenance functions
+            button("Rebuild indices") {
+                //TODO: Not yet implemented
+                isDisable = true
+                tooltip("Rebuilds all indices in case of faulty indices.")
+                prefWidth = buttonWidth
+            }
+            //Data import
+            button("Data Import") {
+                //TODO: Not yet implemented
+                isDisable = true
+                //action { m1Controller.openDataImport() }
+                tooltip("Import contact data from a .csv file.")
+                prefWidth = buttonWidth
             }
         }
     }
