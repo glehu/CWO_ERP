@@ -21,6 +21,7 @@ class MG2Analytics : Fragment("City distribution")
     private val numberOfCitiesProperty = SimpleIntegerProperty()
     private var numberOfCities by numberOfCitiesProperty
     override val root = form {
+        setPrefSize(800.0, 600.0)
         //Default value
         numberOfCities = 1
         vbox {

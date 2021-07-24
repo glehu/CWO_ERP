@@ -19,6 +19,7 @@ class MG1Analytics : Fragment("Genre distribution")
     private var progressN by progressProperty
     private var maxEntries = 0
     override val root = form {
+        setPrefSize(800.0, 600.0)
         vbox {
             button("Start") {
                 action {
