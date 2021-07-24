@@ -4,7 +4,6 @@ import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.gui.MG1Analytics
-import modules.m1.gui.MG1SongFinder
 import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.misc.SongProperty
 import modules.m1.misc.getSongFromProperty
@@ -40,11 +39,6 @@ class M1Controller : IModule, Controller()
             }
         }
         wizard.openModal()
-    }
-
-    fun openWizardFindSong()
-    {
-        find(MG1SongFinder::class, Scope(indexManager)).openModal()
     }
 
     fun openAnalytics()

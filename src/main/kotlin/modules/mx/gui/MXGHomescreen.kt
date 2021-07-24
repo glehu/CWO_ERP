@@ -1,12 +1,16 @@
 package modules.mx.gui
 
+import db.CwODB
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.MG1SongFinder
+import modules.m1.logic.M1IndexManager
 import modules.m1.misc.M1Benchmark
 import modules.m2.gui.MG2ContactFinder
+import modules.m2.logic.M2IndexManager
 import modules.m3.gui.MG3InvoiceFinder
+import modules.m3.logic.M3IndexManager
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.logic.activeUser
@@ -100,10 +104,10 @@ class MXGUserInterface : View("CWO ERP")
         }
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            if (activeUser.canAccessM1) tab("M1Songs") { add<MG1SongFinder>() }
-            if (activeUser.canAccessM2) tab("M2Contacts") { add<MG2ContactFinder>() }
-            if (activeUser.canAccessM3) tab("M3Invoices") { add<MG3InvoiceFinder>() }
-            if (activeUser.canAccessMX) tab("MX") { add<MXGUserManager>() }
+            if (activeUser.canAccessM1) tab<MG1SongFinder>()
+            if (activeUser.canAccessM2) tab<MG2ContactFinder>()
+            if (activeUser.canAccessM3) tab<MG3InvoiceFinder>()
+            if (activeUser.canAccessMX) tab<MXGUserManager>()
         }
     }
 }

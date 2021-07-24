@@ -151,7 +151,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
         val wizard = find<ContactViewerWizard>()
         wizard.contact.item = getContactPropertyFromContact(contact)
         wizard.onComplete {
-            if (wizard.contact.item !== null)
+            if (wizard.contact.uID.value != -1)
             {
                 val raf = db.openRandomFileAccess(module(), "rw")
                 M2DBManager().saveEntry(

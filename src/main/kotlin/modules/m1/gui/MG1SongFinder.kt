@@ -23,13 +23,13 @@ import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class MG1SongFinder : IModule, View("Find Song")
+class MG1SongFinder : IModule, View("M1Songs")
 {
     override fun moduleNameLong() = "MG1SongFinder"
     override fun module() = "M1"
     val db: CwODB by inject()
     val indexManager: M1IndexManager by inject(Scope(db))
-    private val m1Controller: M1Controller by inject()
+    private val m1Controller: M1Controller by inject(Scope(indexManager))
     private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
@@ -156,7 +156,7 @@ class MG1SongFinder : IModule, View("Find Song")
         val wizard = find<SongViewerWizard>()
         wizard.song.item = getSongPropertyFromSong(song)
         wizard.onComplete {
-            if (wizard.song.item !== null)
+            if (wizard.song.uID.value != -1)
             {
                 val raf = db.openRandomFileAccess(module(), "rw")
                 M1DBManager().saveEntry(

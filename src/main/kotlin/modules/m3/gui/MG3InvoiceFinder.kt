@@ -150,7 +150,7 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
         val wizard = find<InvoiceViewerWizard>()
         wizard.invoice.item = getInvoicePropertyFromInvoice(invoice)
         wizard.onComplete {
-            if (wizard.invoice.item !== null)
+            if (wizard.invoice.uID.value != -1)
             {
                 val raf = db.openRandomFileAccess(module(), "rw")
                 M3DBManager().saveEntry(
