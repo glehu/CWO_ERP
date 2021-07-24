@@ -23,9 +23,8 @@ class M2Controller : IModule, Controller()
 
     private val wizard = find<ContactConfiguratorWizard>()
     val db: CwODB by inject()
-    val indexManager: M2IndexManager by inject(Scope(db))
 
-    fun openWizardNewContact()
+    fun openWizardNewContact(indexManager: M2IndexManager)
     {
         wizard.contact.item = ContactProperty()
         wizard.isComplete = false
@@ -45,24 +44,18 @@ class M2Controller : IModule, Controller()
         wizard.openModal()
     }
 
-    @ExperimentalSerializationApi
-    fun openWizardFindContact()
-    {
-        find(MG2ContactFinder::class, Scope(indexManager)).openModal()
-    }
-
-    fun openAnalytics()
+    fun openAnalytics(indexManager: M2IndexManager)
     {
         //TODO: Add multiple analytics modes
         find(MG2Analytics::class, Scope(indexManager)).openModal()
     }
 
-    fun openDataImport()
+    fun openDataImport(indexManager: M2IndexManager)
     {
         find(MG2Import::class, Scope(indexManager)).openModal()
     }
 
-    fun selectContact(): Contact
+    fun selectContact(indexManager: M2IndexManager = M2IndexManager()): Contact
     {
         val contact: Contact
         val newScope = Scope()
@@ -80,7 +73,7 @@ class M2Controller : IModule, Controller()
         return contact
     }
 
-    fun getContactName(uID: Int, default: String): String
+    fun getContactName(uID: Int, default: String, indexManager: M2IndexManager = M2IndexManager()): String
     {
         return if (uID != -1)
         {

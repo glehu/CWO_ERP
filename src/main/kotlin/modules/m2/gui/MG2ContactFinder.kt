@@ -28,7 +28,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
     override fun moduleNameLong() = "MG2ContactFinder"
     override fun module() = "M2"
     val db: CwODB by inject()
-    val indexManager: M2IndexManager by inject()
+    val indexManager: M2IndexManager by inject(Scope(db))
     private val m2Controller: M2Controller by inject()
     private val song: SongModel by inject()
     private var searchText: TextField by singleAssign()
@@ -76,6 +76,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
                             song.uID.value = it.uID
                             song.name.value = it.name
                             song.commit()
+                            close()
                         } else
                         {
                             showContact(it)
@@ -89,13 +90,13 @@ class MG2ContactFinder : IModule, View("Find Contact")
         right = vbox {
             //Main functions
             button("New Contact") {
-                action { m2Controller.openWizardNewContact() }
+                action { m2Controller.openWizardNewContact(indexManager) }
                 tooltip("Add a new contact to the database.")
                 prefWidth = buttonWidth
             }
             //Analytics functions
             button("Analytics") {
-                action { m2Controller.openAnalytics() }
+                action { m2Controller.openAnalytics(indexManager) }
                 tooltip("Display a chart to show the distribution of genres.")
                 prefWidth = buttonWidth
             }
@@ -108,7 +109,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
             }
             //Data import
             button("Data Import") {
-                action { m2Controller.openDataImport() }
+                action { m2Controller.openDataImport(indexManager) }
                 tooltip("Import contact data from a .csv file.")
                 prefWidth = buttonWidth
             }
