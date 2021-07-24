@@ -51,7 +51,9 @@ class NewInvoiceMainData : Fragment("Main")
                 hbox {
                     textfield(invoice.seller) {
                         contextmenu {
-                            item("Show contact").action {
+                            item("Show contact") {
+                                if (invoice.sellerUID.value == -1) isDisable = true
+                            }.action {
                                 m2controller.showContact(
                                     M2DBManager().getEntry(
                                         invoice.sellerUID.value, db, m2IndexManager.indexList[0]!!
@@ -79,7 +81,9 @@ class NewInvoiceMainData : Fragment("Main")
                 hbox {
                     textfield(invoice.buyer) {
                         contextmenu {
-                            item("Show contact").action {
+                            item("Show contact") {
+                                if (invoice.buyerUID.value == -1) isDisable = true
+                            }.action {
                                 m2controller.showContact(
                                     M2DBManager().getEntry(
                                         invoice.buyerUID.value, db, m2IndexManager.indexList[0]!!

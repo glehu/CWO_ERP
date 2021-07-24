@@ -79,7 +79,9 @@ class NewSongMainData : Fragment("Main")
                 hbox {
                     textfield(song.vocalist) {
                         contextmenu {
-                            item("Show contact").action {
+                            item("Show contact") {
+                                if (song.vocalistUID.value == -1) isDisable = true
+                            }.action {
                                 m2controller.showContact(
                                     M2DBManager().getEntry(
                                         song.vocalistUID.value, db, m2IndexManager.indexList[0]!!
@@ -107,7 +109,9 @@ class NewSongMainData : Fragment("Main")
                 hbox {
                     textfield(song.producer) {
                         contextmenu {
-                            item("Show contact").action {
+                            item("Show contact") {
+                                if (song.producerUID.value == -1) isDisable = true
+                            }.action {
                                 m2controller.showContact(
                                     M2DBManager().getEntry(
                                         song.producerUID.value, db, m2IndexManager.indexList[0]!!
