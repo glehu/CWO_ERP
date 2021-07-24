@@ -23,7 +23,7 @@ import tornadofx.*
 class CWOMainGUI : App(MXGLogin::class)
 
 @ExperimentalSerializationApi
-class MXGLogin : View("Login")
+class MXGLogin : View("CWO ERP")
 {
     private val loginUser = MXUserModel(getUserPropertyFromUser(MXUser("", "")))
     private val userManager: MXUserManager by inject()
