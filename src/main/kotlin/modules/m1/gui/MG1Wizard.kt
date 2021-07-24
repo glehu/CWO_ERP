@@ -1,10 +1,13 @@
 package modules.m1.gui
 
+import db.CwODB
 import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.getGenreList
 import modules.m1.misc.SongModel
+import modules.m2.Contact
 import modules.m2.logic.M2Controller
+import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
 import tornadofx.*
 
@@ -59,6 +62,7 @@ class SongViewerWizard : Wizard("View a song")
 @ExperimentalSerializationApi
 class NewSongMainData : Fragment("Main")
 {
+    val db: CwODB by inject()
     private val song: SongModel by inject()
     private val m2controller: M2Controller by inject()
     private val m2IndexManager: M2IndexManager by inject()
@@ -72,32 +76,59 @@ class NewSongMainData : Fragment("Main")
         fieldset {
             field("Name") { textfield(song.name).required() }
             field("Vocalist") {
-                textfield(song.vocalist).required()
-                label(song.vocalistUID)
-                button("<") {
-                    tooltip("Load an address")
-                    action {
-                        val contact = m2controller.selectContact(m2IndexManager)
-                        song.vocalistUID.value = contact.uID
-                        song.vocalist.value = contact.name
+                hbox {
+                    textfield(song.vocalist) {
+                        contextmenu {
+                            item("Show contact").action {
+                                m2controller.showContact(
+                                    M2DBManager().getEntry(
+                                        song.vocalistUID.value, db, m2IndexManager.indexList[0]!!
+                                    ) as Contact, m2IndexManager, false
+                                )
+                                song.vocalist.value =
+                                    m2controller.getContactName(
+                                        song.vocalistUID.value, song.vocalist.value, m2IndexManager
+                                    )
+                            }
+                        }
+                    }.required()
+                    button("<") {
+                        tooltip("Load an address")
+                        action {
+                            val contact = m2controller.selectContact(m2IndexManager)
+                            song.vocalistUID.value = contact.uID
+                            song.vocalist.value = contact.name
+                        }
                     }
-                }
-                contextmenu {
-                    item("Show contact").action {
-
-                    }
+                    label(song.vocalistUID) { paddingHorizontal = 20 }
                 }
             }
             field("Producer") {
-                textfield(song.producer).required()
-                label(song.producerUID)
-                button("<") {
-                    tooltip("Load an address")
-                    action {
-                        val contact = m2controller.selectContact(m2IndexManager)
-                        song.producerUID.value = contact.uID
-                        song.producer.value = contact.name
+                hbox {
+                    textfield(song.producer) {
+                        contextmenu {
+                            item("Show contact").action {
+                                m2controller.showContact(
+                                    M2DBManager().getEntry(
+                                        song.producerUID.value, db, m2IndexManager.indexList[0]!!
+                                    ) as Contact, m2IndexManager, false
+                                )
+                                song.producer.value =
+                                    m2controller.getContactName(
+                                        song.producerUID.value, song.producer.value, m2IndexManager
+                                    )
+                            }
+                        }
+                    }.required()
+                    button("<") {
+                        tooltip("Load an address")
+                        action {
+                            val contact = m2controller.selectContact(m2IndexManager)
+                            song.producerUID.value = contact.uID
+                            song.producer.value = contact.name
+                        }
                     }
+                    label(song.producerUID) { paddingHorizontal = 20 }
                 }
             }
             field("Mixing") { textfield(song.mixing) }
