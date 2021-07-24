@@ -3,6 +3,7 @@ package modules.mx.gui
 import javafx.collections.ObservableList
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
+import modules.mx.MXCredentials
 import modules.mx.MXUser
 import modules.mx.logic.MXUserManager
 import tornadofx.*
@@ -26,13 +27,13 @@ class MXGUserManager : Fragment("User Management")
             readonlyColumn("M3", MXUser::canAccessM3)
                 .cellFormat { text = ""; style { backgroundColor = getRightsCellColor(it) } }
             onUserSelect(1) {
-                showUser(it)
+                showUser(it, credentials)
             }
         }
         right = vbox {
             button("Add user") {
                 action {
-                    showUser(MXUser("", ""))
+                    addUser(credentials)
                 }
                 prefHeight = 50.0
             }
@@ -48,5 +49,11 @@ class MXGUserManager : Fragment("User Management")
         for ((_, v) in credentials.credentials) users.add(v)
     }
 
-    private fun showUser(user: MXUser) = MXGUser(user).openModal()
+    private fun addUser(credentials: MXCredentials) = showUser(MXUser("", ""), credentials)
+
+    private fun showUser(user: MXUser, credentials: MXCredentials)
+    {
+        MXGUser(user, credentials).openModal(block = true)
+        getUsers()
+    }
 }

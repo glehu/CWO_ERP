@@ -1,6 +1,7 @@
 package modules.mx.gui
 
 import javafx.scene.paint.Color
+import modules.mx.MXCredentials
 import modules.mx.logic.MXUserManager
 import modules.mx.MXUser
 import modules.mx.logic.token
@@ -9,7 +10,7 @@ import modules.mx.misc.getUserFromUserProperty
 import modules.mx.misc.getUserPropertyFromUser
 import tornadofx.*
 
-class MXGUser(user: MXUser) : Fragment("User")
+class MXGUser(user: MXUser, credentials: MXCredentials) : Fragment("User")
 {
     private val userManager: MXUserManager by inject()
     private val userModel = MXUserModel(getUserPropertyFromUser(user))
@@ -33,7 +34,7 @@ class MXGUser(user: MXUser) : Fragment("User")
             action {
                 userModel.password.value = userManager.encrypt(userModel.password.value, token)
                 userModel.commit()
-                userManager.updateUser(getUserFromUserProperty(userModel.item), originalUser)
+                userManager.updateUser(getUserFromUserProperty(userModel.item), originalUser, credentials)
                 close()
             }
             prefWidth = 100.0
@@ -41,7 +42,7 @@ class MXGUser(user: MXUser) : Fragment("User")
         button("Delete") {
             textFill = Color.RED
             action {
-                userManager.deleteUser(originalUser)
+                userManager.deleteUser(originalUser, credentials)
                 close()
             }
             prefWidth = 100.0

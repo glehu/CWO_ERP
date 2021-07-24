@@ -28,24 +28,22 @@ class MXUserManager : IModule, Controller()
         return getCredentials().credentials[username]
     }
 
-    fun updateUser(userNew: MXUser, userOriginal: MXUser)
+    fun updateUser(userNew: MXUser, userOriginal: MXUser, credentials: MXCredentials)
     {
-        val c = getCredentials()
         //Check if username changed
         if (userNew.username != userOriginal.username)
         {
             //Username changed => Recreate user entry in map since keys are constant
-            c.credentials.remove(userOriginal.username)
+            credentials.credentials.remove(userOriginal.username)
         }
-        c.credentials[userNew.username] = userNew
-        writeCredentials(c)
+        credentials.credentials[userNew.username] = userNew
+        writeCredentials(credentials)
     }
 
-    fun deleteUser(user: MXUser)
+    fun deleteUser(user: MXUser, credentials: MXCredentials)
     {
-        val c = getCredentials()
-        c.credentials.remove(user.username)
-        writeCredentials(c)
+        credentials.credentials.remove(user.username)
+        writeCredentials(credentials)
     }
 
     fun getCredentials(): MXCredentials
