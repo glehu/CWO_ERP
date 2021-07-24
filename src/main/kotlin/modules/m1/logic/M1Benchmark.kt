@@ -8,10 +8,10 @@ import modules.IModule
 import modules.m1.Song
 import modules.m1.getGenreList
 import modules.mx.logic.MXLog
+import modules.mx.logic.getRandomString
 import tornadofx.Controller
 import tornadofx.Scope
 import kotlin.random.Random
-import kotlin.streams.asSequence
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
@@ -58,14 +58,5 @@ class M1Benchmark : IModule, Controller()
     {
         val genres = getGenreList()
         return genres[Random.nextInt(0, genres.size)]
-    }
-
-    private fun getRandomString(size: Long): String
-    {
-        val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        return java.util.Random().ints(size, 0, letters.length)
-            .asSequence()
-            .map(letters::get)
-            .joinToString("")
     }
 }

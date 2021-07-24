@@ -1,6 +1,7 @@
 package modules.mx.logic
 
 import java.util.*
+import kotlin.streams.asSequence
 
 //-------------------------------------v
 //---------- USEFUL FUNCTIONS ---------|
@@ -26,4 +27,13 @@ fun indexFormat(text: String): String
         }
     }
     return formatted
+}
+
+fun getRandomString(size: Long, numbers: Boolean = false): String
+{
+    val dictionary = if (!numbers) "ABCDEFGHIJKLMNOPQRSTUVWXYZ" else "123456789"
+    return Random().ints(size, 0, dictionary.length)
+        .asSequence()
+        .map(dictionary::get)
+        .joinToString("")
 }
