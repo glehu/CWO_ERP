@@ -12,7 +12,7 @@ The configuration file can be edited if e.g....
 In any case, here is a tiny description on how to set up the configuration file:
 ```
 {
-    "encryption key": "<Specify a key for encryption and depcryption. It has to consist out of 16 numbers>",
+    "encryption key": "<Specify a key for encryption and decryption. It has to consist out of 16 numbers>",
     "data path": "<Specify the folder in which the database will be saved>",
     "max search results": <Specify the maximum amount of results to be shown when searching for entries>
 }
@@ -22,7 +22,7 @@ If you are ok with the configuration file you can proceed to log into the softwa
 
 Username: "**admin**" password: "**admin**"
 
-It is highly recommended to change the default user's password as it posesses all rights in the software, e.g. creating, editing and deleting users and full access to all modules.
+It is highly recommended to change the default user's password as it possesses all rights in the software, e.g. creating, editing and deleting users and full access to all modules.
 
 ## Modules
 This section names and describes the modules that are currently implemented
