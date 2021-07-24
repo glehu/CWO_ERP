@@ -78,7 +78,7 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
                     }
                     readonlyColumn("Text", Invoice::text).prefWidth(200.0)
                     onUserSelect(1) {
-                        showInvoice(it)
+                        showInvoice(it, m2IndexManager)
                         contactsFound.clear()
                         searchText.text = ""
                     }
@@ -147,9 +147,9 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
         }
     }
 
-    private fun showInvoice(invoice: Invoice)
+    private fun showInvoice(invoice: Invoice, m2IndexManager: M2IndexManager)
     {
-        val wizard = find<InvoiceViewerWizard>()
+        val wizard = find<InvoiceViewerWizard>(Scope(m2IndexManager))
         wizard.invoice.item = getInvoicePropertyFromInvoice(invoice)
         wizard.onComplete {
             if (wizard.invoice.uID.value != -1)

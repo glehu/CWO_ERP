@@ -22,6 +22,7 @@ class InvoiceConfiguratorWizard : Wizard("Add new invoice")
 class InvoiceViewerWizard : Wizard("View an invoice")
 {
     val invoice: InvoiceModel by inject()
+    val m2IndexManager: M2IndexManager by inject()
 
     init
     {
