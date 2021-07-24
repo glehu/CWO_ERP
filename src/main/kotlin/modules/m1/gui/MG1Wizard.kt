@@ -82,6 +82,11 @@ class NewSongMainData : Fragment("Main")
                         song.vocalist.value = contact.name
                     }
                 }
+                contextmenu {
+                    item("Show contact").action {
+
+                    }
+                }
             }
             field("Producer") {
                 textfield(song.producer).required()

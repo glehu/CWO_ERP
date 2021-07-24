@@ -80,7 +80,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                     }
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
-                        showSong(it, m2IndexManager)
+                        m1Controller.showSong(it, indexManager, m2IndexManager)
                         songsFound.clear()
                     }
                 }
@@ -151,30 +151,5 @@ class MG1SongFinder : IModule, View("M1 Songs")
                 )
             }
         }
-    }
-
-    private fun showSong(song: Song, m2IndexManager: M2IndexManager)
-    {
-        val wizard = find<SongViewerWizard>(Scope(m2IndexManager))
-        wizard.song.item = getSongPropertyFromSong(song)
-        wizard.onComplete {
-            if (wizard.song.uID.value != -1)
-            {
-                val raf = db.openRandomFileAccess(module(), "rw")
-                M1DBManager().saveEntry(
-                    entry = getSongFromProperty(wizard.song.item),
-                    cwodb = db,
-                    posDB = indexManager.indexList[0]!!.indexMap[wizard.song.item.uID]!!.pos,
-                    byteSize = indexManager.indexList[0]!!.indexMap[wizard.song.item.uID]!!.byteSize,
-                    raf = raf,
-                    indexManager = indexManager
-                )
-                db.closeRandomFileAccess(raf)
-                wizard.song.item = SongProperty()
-                wizard.isComplete = false
-                wizard.close()
-            }
-        }
-        wizard.openModal()
     }
 }

@@ -78,7 +78,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                     }
                     readonlyColumn("Text", Invoice::text).prefWidth(200.0)
                     onUserSelect(1) {
-                        showInvoice(it, m2IndexManager)
+                        m3Controller.showInvoice(it, indexManager, m2IndexManager)
                         contactsFound.clear()
                         searchText.text = ""
                     }
@@ -145,31 +145,5 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                 moduleNameLong()
             )
         }
-    }
-
-    private fun showInvoice(invoice: Invoice, m2IndexManager: M2IndexManager)
-    {
-        val wizard = find<InvoiceViewerWizard>(Scope(m2IndexManager))
-        wizard.invoice.item = getInvoicePropertyFromInvoice(invoice)
-        wizard.onComplete {
-            if (wizard.invoice.uID.value != -1)
-            {
-                val raf = db.openRandomFileAccess(module(), "rw")
-                M3DBManager().saveEntry(
-                    entry = getInvoiceFromInvoiceProperty(wizard.invoice.item),
-                    cwodb = db,
-                    posDB = indexManager.indexList[0]!!.indexMap[wizard.invoice.item.uID]!!.pos,
-                    byteSize = indexManager.indexList[0]!!.indexMap[wizard.invoice.item.uID]!!.byteSize,
-                    raf = raf,
-                    indexManager = indexManager
-                )
-                this.db.closeRandomFileAccess(raf)
-                wizard.invoice.item = InvoiceProperty()
-                wizard.isComplete = false
-                wizard.close()
-            }
-        }
-
-        wizard.openModal()
     }
 }

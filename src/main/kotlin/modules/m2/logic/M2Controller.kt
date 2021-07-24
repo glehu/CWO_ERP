@@ -5,12 +5,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.misc.SongModel
 import modules.m2.Contact
-import modules.m2.gui.ContactConfiguratorWizard
-import modules.m2.gui.MG2ContactFinder
-import modules.m2.gui.MG2Analytics
-import modules.m2.gui.MG2Import
+import modules.m2.gui.*
 import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
+import modules.m2.misc.getContactPropertyFromContact
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
@@ -82,5 +80,30 @@ class M2Controller : IModule, Controller()
             ) as Contact
             contact.name
         } else default
+    }
+
+    fun showContact(contact: Contact, indexManager: M2IndexManager)
+    {
+        val wizard = find<ContactViewerWizard>()
+        wizard.contact.item = getContactPropertyFromContact(contact)
+        wizard.onComplete {
+            if (wizard.contact.uID.value != -1)
+            {
+                val raf = db.openRandomFileAccess(module(), "rw")
+                M2DBManager().saveEntry(
+                    entry = getContactFromProperty(wizard.contact.item),
+                    cwodb = db,
+                    posDB = indexManager.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.pos,
+                    byteSize = indexManager.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.byteSize,
+                    raf = raf,
+                    indexManager = indexManager
+                )
+                this.db.closeRandomFileAccess(raf)
+                wizard.contact.item = ContactProperty()
+                wizard.isComplete = false
+                wizard.close()
+            }
+        }
+        wizard.openModal()
     }
 }

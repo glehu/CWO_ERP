@@ -79,7 +79,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                             close()
                         } else
                         {
-                            showContact(it)
+                            m2Controller.showContact(it, indexManager)
                             contactsFound.clear()
                             searchText.text = ""
                         }
@@ -145,31 +145,5 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                 moduleNameLong()
             )
         }
-    }
-
-    private fun showContact(contact: Contact)
-    {
-        val wizard = find<ContactViewerWizard>()
-        wizard.contact.item = getContactPropertyFromContact(contact)
-        wizard.onComplete {
-            if (wizard.contact.uID.value != -1)
-            {
-                val raf = db.openRandomFileAccess(module(), "rw")
-                M2DBManager().saveEntry(
-                    entry = getContactFromProperty(wizard.contact.item),
-                    cwodb = db,
-                    posDB = indexManager.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.pos,
-                    byteSize = indexManager.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.byteSize,
-                    raf = raf,
-                    indexManager = indexManager
-                )
-                this.db.closeRandomFileAccess(raf)
-                wizard.contact.item = ContactProperty()
-                wizard.isComplete = false
-                wizard.close()
-            }
-        }
-
-        wizard.openModal()
     }
 }
