@@ -10,6 +10,7 @@ import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m2.logic.M2Controller
+import modules.m2.logic.M2IndexManager
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
 import modules.m3.logic.M3DBManager
@@ -29,6 +30,7 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
     override fun module() = "M3"
     val db: CwODB by inject()
     val indexManager: M3IndexManager by inject()
+    val m2IndexManager: M2IndexManager by inject()
     private val m3Controller: M3Controller by inject()
     private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
@@ -67,11 +69,11 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
                 tableview(contactsFound) {
                     readonlyColumn("ID", Invoice::uID).prefWidth(65.0)
                     readonlyColumn("Seller", Invoice::seller).prefWidth(350.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.sellerUID, rowItem.seller)
+                        text = m2Controller.getContactName(rowItem.sellerUID, rowItem.seller, m2IndexManager)
                         rowItem.seller = text
                     }
                     readonlyColumn("Buyer", Invoice::buyer).prefWidth(350.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.buyerUID, rowItem.buyer)
+                        text = m2Controller.getContactName(rowItem.buyerUID, rowItem.buyer, m2IndexManager)
                         rowItem.buyer = text
                     }
                     readonlyColumn("Text", Invoice::text).prefWidth(200.0)

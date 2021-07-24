@@ -55,7 +55,7 @@ class M2Controller : IModule, Controller()
         find(MG2Import::class, Scope(indexManager)).openModal()
     }
 
-    fun selectContact(indexManager: M2IndexManager = M2IndexManager()): Contact
+    fun selectContact(indexManager: M2IndexManager): Contact
     {
         val contact: Contact
         val newScope = Scope()
@@ -73,7 +73,7 @@ class M2Controller : IModule, Controller()
         return contact
     }
 
-    fun getContactName(uID: Int, default: String, indexManager: M2IndexManager = M2IndexManager()): String
+    fun getContactName(uID: Int, default: String, indexManager: M2IndexManager): String
     {
         return if (uID != -1)
         {

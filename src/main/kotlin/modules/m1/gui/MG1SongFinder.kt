@@ -17,6 +17,7 @@ import modules.m1.misc.SongProperty
 import modules.m1.misc.getSongFromProperty
 import modules.m1.misc.getSongPropertyFromSong
 import modules.m2.logic.M2Controller
+import modules.m2.logic.M2IndexManager
 import modules.mx.logic.MXLog
 import modules.mx.logic.maxSearchResultsGlobal
 import tornadofx.*
@@ -28,7 +29,8 @@ class MG1SongFinder : IModule, View("M1Songs")
     override fun moduleNameLong() = "MG1SongFinder"
     override fun module() = "M1"
     val db: CwODB by inject()
-    val indexManager: M1IndexManager by inject(Scope(db))
+    val indexManager: M1IndexManager by inject()
+    val m2IndexManager: M2IndexManager by inject()
     private val m1Controller: M1Controller by inject(Scope(indexManager))
     private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
@@ -69,16 +71,16 @@ class MG1SongFinder : IModule, View("M1Songs")
                     readonlyColumn("ID", Song::uID).prefWidth(65.0)
                     readonlyColumn("Name", Song::name).prefWidth(310.0)
                     readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
+                        text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist, m2IndexManager)
                         rowItem.vocalist = text
                     }
                     readonlyColumn("Producer", Song::producer).prefWidth(200.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer)
+                        text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer, m2IndexManager)
                         rowItem.producer = text
                     }
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
-                        showSong(it)
+                        showSong(it, m2IndexManager)
                         songsFound.clear()
                     }
                 }
@@ -87,7 +89,7 @@ class MG1SongFinder : IModule, View("M1Songs")
         right = vbox {
             //Main functions
             button("New Song") {
-                action { m1Controller.openWizardNewSong(indexManager) }
+                action { m1Controller.openWizardNewSong(indexManager, m2IndexManager) }
                 tooltip("Add a new song to the database.")
                 prefWidth = buttonWidth
             }
@@ -151,9 +153,9 @@ class MG1SongFinder : IModule, View("M1Songs")
         }
     }
 
-    private fun showSong(song: Song)
+    private fun showSong(song: Song, m2IndexManager: M2IndexManager)
     {
-        val wizard = find<SongViewerWizard>()
+        val wizard = find<SongViewerWizard>(Scope(m2IndexManager))
         wizard.song.item = getSongPropertyFromSong(song)
         wizard.onComplete {
             if (wizard.song.uID.value != -1)

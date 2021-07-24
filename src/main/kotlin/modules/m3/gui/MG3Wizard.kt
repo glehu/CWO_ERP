@@ -2,6 +2,7 @@ package modules.m3.gui
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Controller
+import modules.m2.logic.M2IndexManager
 import modules.m3.misc.InvoiceModel
 import tornadofx.*
 
@@ -34,6 +35,7 @@ class NewInvoiceMainData : Fragment("Main")
 {
     private val invoice: InvoiceModel by inject()
     private val m2controller: M2Controller by inject()
+    private val m2IndexManager: M2IndexManager by inject()
 
     //----------------------------------v
     //----------- Main Data ------------|
@@ -46,7 +48,7 @@ class NewInvoiceMainData : Fragment("Main")
                 button("<") {
                     tooltip("Load an address")
                     action {
-                        val contact = m2controller.selectContact()
+                        val contact = m2controller.selectContact(m2IndexManager)
                         invoice.sellerUID.value = contact.uID
                         invoice.seller.value = contact.name
                     }
@@ -58,7 +60,7 @@ class NewInvoiceMainData : Fragment("Main")
                 button("<") {
                     tooltip("Load an address")
                     action {
-                        val contact = m2controller.selectContact()
+                        val contact = m2controller.selectContact(m2IndexManager)
                         invoice.buyerUID.value = contact.uID
                         invoice.buyer.value = contact.name
                     }

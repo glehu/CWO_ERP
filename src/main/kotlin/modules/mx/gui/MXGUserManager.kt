@@ -27,7 +27,6 @@ class MXGUserManager : Fragment("User Management")
                 .cellFormat { text = ""; style { backgroundColor = getRightsCellColor(it) } }
             onUserSelect(1) {
                 showUser(it)
-                close()
             }
         }
         right = vbox {
@@ -46,7 +45,6 @@ class MXGUserManager : Fragment("User Management")
     private fun addUser(user: MXUser)
     {
         showUser(user)
-        close()
     }
 
     private fun getUsers()

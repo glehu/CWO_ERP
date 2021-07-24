@@ -28,7 +28,7 @@ class MG2ContactFinder : IModule, View("Find Contact")
     override fun moduleNameLong() = "MG2ContactFinder"
     override fun module() = "M2"
     val db: CwODB by inject()
-    val indexManager: M2IndexManager by inject(Scope(db))
+    val indexManager: M2IndexManager by inject()
     private val m2Controller: M2Controller by inject()
     private val song: SongModel by inject()
     private var searchText: TextField by singleAssign()

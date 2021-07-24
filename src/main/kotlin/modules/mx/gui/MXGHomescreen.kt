@@ -77,6 +77,11 @@ class MXGLogin : View("Login")
 @ExperimentalSerializationApi
 class MXGUserInterface : View("CWO ERP")
 {
+    val db: CwODB by inject()
+    private val m1IndexManager: M1IndexManager by inject(Scope(db))
+    private val m2IndexManager: M2IndexManager by inject(Scope(db))
+    private val m3IndexManager: M3IndexManager by inject(Scope(db))
+    private val indexScope = Scope()
     override val root = borderpane {
         top = menubar {
             menu("Misc") {
@@ -104,9 +109,13 @@ class MXGUserInterface : View("CWO ERP")
         }
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            if (activeUser.canAccessM1) tab<MG1SongFinder>()
-            if (activeUser.canAccessM2) tab<MG2ContactFinder>()
-            if (activeUser.canAccessM3) tab<MG3InvoiceFinder>()
+
+            setInScope(m1IndexManager, indexScope)
+            setInScope(m2IndexManager, indexScope)
+            setInScope(m3IndexManager, indexScope)
+            if (activeUser.canAccessM1) tab<MG1SongFinder>(indexScope)
+            if (activeUser.canAccessM2) tab<MG2ContactFinder>(indexScope)
+            if (activeUser.canAccessM3) tab<MG3InvoiceFinder>(indexScope)
             if (activeUser.canAccessMX) tab<MXGUserManager>()
         }
     }

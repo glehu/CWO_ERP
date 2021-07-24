@@ -7,6 +7,7 @@ import modules.m1.gui.MG1Analytics
 import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.misc.SongProperty
 import modules.m1.misc.getSongFromProperty
+import modules.m2.logic.M2IndexManager
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
@@ -17,11 +18,11 @@ class M1Controller : IModule, Controller()
     override fun moduleNameLong() = "M1Controller"
     override fun module() = "M1"
 
-    private val wizard = find<SongConfiguratorWizard>()
     val db: CwODB by inject()
 
-    fun openWizardNewSong(indexManager: M1IndexManager)
+    fun openWizardNewSong(indexManager: M1IndexManager, m2IndexManager: M2IndexManager)
     {
+        val wizard = find<SongConfiguratorWizard>(Scope(m2IndexManager))
         wizard.song.item = SongProperty()
         wizard.isComplete = false
         wizard.onComplete {
