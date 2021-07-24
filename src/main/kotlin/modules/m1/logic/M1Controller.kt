@@ -19,9 +19,8 @@ class M1Controller : IModule, Controller()
 
     private val wizard = find<SongConfiguratorWizard>()
     val db: CwODB by inject()
-    val indexManager: M1IndexManager by inject(Scope(db))
 
-    fun openWizardNewSong()
+    fun openWizardNewSong(indexManager: M1IndexManager)
     {
         wizard.song.item = SongProperty()
         wizard.isComplete = false
@@ -41,7 +40,7 @@ class M1Controller : IModule, Controller()
         wizard.openModal()
     }
 
-    fun openAnalytics()
+    fun openAnalytics(indexManager: M1IndexManager)
     {
         //TODO: Add multiple analytics modes
         find(MG1Analytics::class, Scope(indexManager)).openModal()

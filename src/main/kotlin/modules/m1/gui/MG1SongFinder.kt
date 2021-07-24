@@ -87,13 +87,13 @@ class MG1SongFinder : IModule, View("M1Songs")
         right = vbox {
             //Main functions
             button("New Song") {
-                action { m1Controller.openWizardNewSong() }
+                action { m1Controller.openWizardNewSong(indexManager) }
                 tooltip("Add a new song to the database.")
                 prefWidth = buttonWidth
             }
             //Analytics functions
             button("Analytics") {
-                action { m1Controller.openAnalytics() }
+                action { m1Controller.openAnalytics(indexManager) }
                 tooltip("Display a chart to show the distribution of genres.")
                 prefWidth = buttonWidth
             }
