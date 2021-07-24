@@ -14,9 +14,6 @@ import modules.m2.Contact
 import modules.m2.logic.M2Controller
 import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
-import modules.m2.misc.ContactProperty
-import modules.m2.misc.getContactFromProperty
-import modules.m2.misc.getContactPropertyFromContact
 import modules.mx.logic.MXLog
 import modules.mx.logic.maxSearchResultsGlobal
 import tornadofx.*

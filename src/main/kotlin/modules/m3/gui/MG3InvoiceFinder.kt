@@ -15,9 +15,6 @@ import modules.m3.Invoice
 import modules.m3.logic.M3Controller
 import modules.m3.logic.M3DBManager
 import modules.m3.logic.M3IndexManager
-import modules.m3.misc.InvoiceProperty
-import modules.m3.misc.getInvoiceFromInvoiceProperty
-import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.mx.logic.MXLog
 import modules.mx.logic.maxSearchResultsGlobal
 import tornadofx.*
