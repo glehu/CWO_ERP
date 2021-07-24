@@ -5,7 +5,7 @@ import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.MG1SongFinder
 import modules.m1.logic.M1IndexManager
-import modules.m1.misc.M1Benchmark
+import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2ContactFinder
 import modules.m2.logic.M2IndexManager
 import modules.m3.gui.MG3InvoiceFinder
