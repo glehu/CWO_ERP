@@ -88,7 +88,7 @@ class MG3InvoiceFinder : IModule, View("Find Invoice")
         right = vbox {
             //Main functions
             button("New Invoice") {
-                action { m3Controller.openWizardNewInvoice() }
+                action { m3Controller.openWizardNewInvoice(indexManager) }
                 tooltip("Add a new song to the database.")
                 prefWidth = buttonWidth
             }

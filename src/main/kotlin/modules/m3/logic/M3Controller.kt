@@ -19,9 +19,8 @@ class M3Controller : IModule, Controller()
 
     private val wizard = find<InvoiceConfiguratorWizard>()
     val db: CwODB by inject()
-    val indexManager: M3IndexManager by inject(Scope(db))
 
-    fun openWizardNewInvoice()
+    fun openWizardNewInvoice(indexManager: M3IndexManager)
     {
         wizard.invoice.item = InvoiceProperty()
         wizard.isComplete = false
@@ -39,11 +38,5 @@ class M3Controller : IModule, Controller()
             }
         }
         wizard.openModal()
-    }
-
-    @ExperimentalSerializationApi
-    fun openWizardFindInvoice()
-    {
-        find(MG3InvoiceFinder::class, Scope(indexManager)).openModal()
     }
 }
