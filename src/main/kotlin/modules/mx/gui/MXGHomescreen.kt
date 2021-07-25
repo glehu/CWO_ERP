@@ -1,8 +1,10 @@
 package modules.mx.gui
 
 import db.CwODB
+import javafx.collections.FXCollections
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
+import modules.m1.getGenreList
 import modules.m1.gui.MG1SongFinder
 import modules.m1.logic.M1IndexManager
 import modules.m1.logic.M1Benchmark
@@ -32,8 +34,8 @@ class MXGLogin : View("CWO ERP")
         loginRoutines()
         vbox {
             fieldset {
-                field("Username") { textfield(loginUser.username).required() }
-                field("Password") { passwordfield(loginUser.password).required() }
+                field("Username") { textfield(loginUser.username) { prefWidth = 200.0 }.required() }
+                field("Password") { passwordfield(loginUser.password) { prefWidth = 200.0 }.required() }
             }
         }
         button("Login") {
