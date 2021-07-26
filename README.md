@@ -37,8 +37,7 @@ showing the distribution of genres across all stored songs.
 
 #### M2 Contacts
 This module is designed to store contacts.
-
-Contacts can be loaded by clicking on the `[<]` button next to contact fields to avoid typos and to load more data with less user actions.
+Contacts can be loaded into songs and invoices.
 
 Next to inserting and looking up entries, there is also an analytics module, that allows the user to generate a pie chart,
 showing the distribution of cities across all stored contacts.
