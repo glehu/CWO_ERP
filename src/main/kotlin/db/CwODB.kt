@@ -8,7 +8,6 @@ import modules.IIndexManager
 import modules.IModule
 import modules.mx.logic.MXLog
 import modules.mx.logic.getModulePath
-import modules.mx.logic.indexFormat
 import tornadofx.Controller
 import java.io.File
 import java.io.RandomAccessFile
@@ -107,17 +106,28 @@ class CwODB : IModule, Controller()
     )
     {
         var counter = 0
-        val searchString = indexFormat(searchText)
         var entryBytes: ByteArray
 
         if (getDatabaseFile(module).isFile)
         {
             val raf: RandomAccessFile = openRandomFileAccess(module, "r")
             //Determines the type of search that will be done depending on the search string
-            val filteredMap: Map<Int, IndexContent> = if (searchString != "*" && searchString != "")
+            val filteredMap: Map<Int, IndexContent> = if (searchText != "*" && searchText != "")
             {
                 //Search text -> Search for specific entries
-                indexManager.indexList[ixNr]!!.indexMap.filterValues { it.content.contains(searchString) }
+                if (exactSearch)
+                {
+                    //Literal search
+                    indexManager.indexList[ixNr]!!.indexMap.filterValues {
+                        it.content.contains(searchText)
+                    }
+                } else
+                {
+                    //Regex search
+                    indexManager.indexList[ixNr]!!.indexMap.filterValues {
+                        it.content.contains(searchText.toRegex())
+                    }
+                }
             } else
             {
                 //No search text -> Show all entries
