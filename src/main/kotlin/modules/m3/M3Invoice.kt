@@ -31,8 +31,15 @@ data class Invoice(override var uID: Int) : IEntry, IInvoice
     var text: String = "?"
     var price: Double = 0.0
 
+    //*************************************************
+    //****************** Auto Generated Data **********
+    //*************************************************
+
+    var isIncome: Boolean = false
+
     fun initialize()
     {
         if (uID == -1) uID = CwODB().getUniqueID("M3")
+        if (price > 0) isIncome = true
     }
 }
