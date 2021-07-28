@@ -6,7 +6,7 @@ import javafx.scene.chart.PieChart
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Analytics
 import modules.m1.logic.M1IndexManager
-import modules.mx.gui.MXGProgressbar
+import modules.mx.gui.MGXProgressbar
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -34,7 +34,7 @@ class MG1Analytics : Fragment("Genre distribution")
                     }
                 }
             }
-            add<MXGProgressbar>()
+            add<MGXProgressbar>()
         }
     }
 

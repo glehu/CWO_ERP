@@ -6,7 +6,7 @@ import javafx.stage.FileChooser
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Import
 import modules.m2.misc.ContactModel
-import modules.mx.gui.MXGProgressbar
+import modules.mx.gui.MGXProgressbar
 import tornadofx.*
 import java.io.File
 
@@ -51,7 +51,7 @@ class MG2Import : Fragment("Contact Data Import")
                 }
                 prefWidth = buttonWidth
             }
-            add<MXGProgressbar>()
+            add<MGXProgressbar>()
 
             //Custom import scheme
             contactSchema.name.value = "name"

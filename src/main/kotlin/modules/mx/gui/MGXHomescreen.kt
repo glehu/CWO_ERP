@@ -1,10 +1,8 @@
 package modules.mx.gui
 
 import db.CwODB
-import javafx.collections.FXCollections
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.getGenreList
 import modules.m1.gui.MG1SongFinder
 import modules.m1.logic.M1IndexManager
 import modules.m1.logic.M1Benchmark
@@ -102,7 +100,7 @@ class MXGUserInterface : View("CWO ERP")
             if (activeUser.canAccessM1) tab<MG1SongFinder>(indexScope)
             if (activeUser.canAccessM2) tab<MG2ContactFinder>(indexScope)
             if (activeUser.canAccessM3) tab<MG3InvoiceFinder>(indexScope)
-            if (activeUser.canAccessMX) tab<MXGUserManager>()
+            if (activeUser.canAccessMX) tab<MGXUserManager>()
         }
     }
 }

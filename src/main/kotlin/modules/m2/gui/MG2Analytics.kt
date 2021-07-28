@@ -6,7 +6,7 @@ import javafx.scene.chart.PieChart
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Analytics
 import modules.m2.logic.M2IndexManager
-import modules.mx.gui.MXGProgressbar
+import modules.mx.gui.MGXProgressbar
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -45,7 +45,7 @@ class MG2Analytics : Fragment("City distribution")
                     tooltip("Sets the amount of cities to show.")
                 }
             }
-            add<MXGProgressbar>()
+            add<MGXProgressbar>()
         }
     }
 

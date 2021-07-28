@@ -10,7 +10,7 @@ import modules.mx.misc.getUserFromUserProperty
 import modules.mx.misc.getUserPropertyFromUser
 import tornadofx.*
 
-class MXGUser(user: MXUser, credentials: MXCredentials) : Fragment("User")
+class MGXUser(user: MXUser, credentials: MXCredentials) : Fragment("User")
 {
     private val userManager: MXUserManager by inject()
     private val userModel = MXUserModel(getUserPropertyFromUser(user))
