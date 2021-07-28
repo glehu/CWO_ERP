@@ -8,7 +8,6 @@ import modules.m1.misc.SongModel
 import modules.m2.Contact
 import modules.m2.logic.M2Controller
 import modules.m2.logic.M2DBManager
-import modules.m2.logic.M2IndexManager
 import modules.mx.m2GlobalIndex
 import tornadofx.*
 
@@ -17,7 +16,6 @@ import tornadofx.*
 class SongConfiguratorWizard : Wizard("Add new song")
 {
     val song: SongModel by inject()
-    val m2IndexManager: M2IndexManager by inject()
 
     init
     {
@@ -41,7 +39,6 @@ class SongConfiguratorWizard : Wizard("Add new song")
 class SongViewerWizard : Wizard("View a song")
 {
     val song: SongModel by inject()
-    val m2IndexManager: M2IndexManager by inject()
 
     init
     {
