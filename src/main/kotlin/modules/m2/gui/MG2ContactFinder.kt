@@ -13,9 +13,9 @@ import modules.m1.misc.SongModel
 import modules.m2.Contact
 import modules.m2.logic.M2Controller
 import modules.m2.logic.M2DBManager
-import modules.m2.logic.M2IndexManager
 import modules.mx.logic.MXLog
-import modules.mx.logic.maxSearchResultsGlobal
+import modules.mx.m2GlobalIndex
+import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
@@ -25,14 +25,13 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
     override fun moduleNameLong() = "MG2ContactFinder"
     override fun module() = "M2"
     val db: CwODB by inject()
-    val indexManager: M2IndexManager by inject()
     private val m2Controller: M2Controller by inject()
     private val song: SongModel by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
     private var contactsFound: ObservableList<Contact> = observableList(Contact(-1, ""))
     private var ixNr = SimpleStringProperty()
-    private val ixNrList = FXCollections.observableArrayList(indexManager.getIndexUserSelection())!!
+    private val ixNrList = FXCollections.observableArrayList(m2GlobalIndex.getIndexUserSelection())!!
     private val threadIDCurrent = SimpleIntegerProperty()
     private val buttonWidth = 150.0
     override val root = borderpane {
@@ -76,7 +75,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                             close()
                         } else
                         {
-                            m2Controller.showContact(it, indexManager)
+                            m2Controller.showContact(it)
                             contactsFound.clear()
                             searchText.text = ""
                         }
@@ -87,13 +86,13 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
         right = vbox {
             //Main functions
             button("New Contact") {
-                action { m2Controller.openWizardNewContact(indexManager) }
+                action { m2Controller.openWizardNewContact() }
                 tooltip("Add a new contact to the database.")
                 prefWidth = buttonWidth
             }
             //Analytics functions
             button("Analytics") {
-                action { m2Controller.openAnalytics(indexManager) }
+                action { m2Controller.openAnalytics() }
                 tooltip("Display a chart to show the distribution of genres.")
                 prefWidth = buttonWidth
             }
@@ -106,7 +105,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
             }
             //Data import
             button("Data Import") {
-                action { m2Controller.openDataImport(indexManager) }
+                action { m2Controller.openDataImport() }
                 tooltip("Import contact data from a .csv file.")
                 prefWidth = buttonWidth
             }
@@ -125,7 +124,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                 exactSearch.isSelected,
                 module(),
                 maxSearchResultsGlobal,
-                indexManager
+                m2GlobalIndex
             ) { _, bytes ->
                 //Add the contacts to the table
                 if (threadID >= threadIDCurrent.value)

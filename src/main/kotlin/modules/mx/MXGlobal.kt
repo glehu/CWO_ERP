@@ -1,12 +1,27 @@
-package modules.mx.logic
+package modules.mx
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
-import modules.mx.MXUser
+import modules.m1.logic.M1IndexManager
+import modules.m2.logic.M2IndexManager
+import modules.m3.logic.M3IndexManager
+import modules.mx.logic.getRandomString
 import java.io.File
+
+//*************************************************
+//********************** INDEX MANAGERS ***********
+//*************************************************
+
+@ExperimentalSerializationApi
+lateinit var m1GlobalIndex: M1IndexManager
+@ExperimentalSerializationApi
+lateinit var m2GlobalIndex: M2IndexManager
+@ExperimentalSerializationApi
+lateinit var m3GlobalIndex: M3IndexManager
+
+//*************************************************
+//********************** MISCELLANEOUS ************
+//*************************************************
 
 //Active user
 var activeUser: MXUser = MXUser("", "")

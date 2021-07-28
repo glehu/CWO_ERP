@@ -9,8 +9,8 @@ import modules.IModule
 import modules.m2.Contact
 import modules.m2.misc.ContactModel
 import modules.mx.logic.MXLog
+import modules.mx.m2GlobalIndex
 import tornadofx.Controller
-import tornadofx.Scope
 import java.io.File
 import kotlin.system.measureTimeMillis
 
@@ -21,7 +21,6 @@ class M2Import : IModule, Controller()
     override fun module() = "M2"
 
     val db: CwODB by inject()
-    val indexManager: M2IndexManager by inject(Scope(db))
 
     fun importData(
         file: File,
@@ -51,15 +50,20 @@ class M2Import : IModule, Controller()
                     contact.birthdate = import(row[birthdayHeaderName].toString(), "01.01.1980")
                     contact.country = import(row[contactSchema.country.value].toString())
 
-                    dbManager.saveEntry(contact, db, -1L, -1, raf, indexManager, false)
+                    dbManager.saveEntry(contact, db, -1L, -1, raf, m2GlobalIndex, false)
                     updateProgress(Pair(counter, "Importing data..."))
                     if (counter % 5000 == 0)
                     {
                         MXLog.log("M2", MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}", moduleNameLong())
-                        runBlocking { launch { indexManager.writeIndexData() } }
+                        runBlocking { launch { m2GlobalIndex.writeIndexData() } }
                     }
                 }
             }
+            MXLog.log(
+                "M2", MXLog.LogType.INFO,
+                "Data Insertion uID ${db.getLastUniqueID(module())}", moduleNameLong()
+            )
+            runBlocking { launch { m2GlobalIndex.writeIndexData() } }
         }
         db.closeRandomFileAccess(raf)
         MXLog.log(

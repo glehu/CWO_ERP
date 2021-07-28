@@ -10,10 +10,8 @@ import modules.m1.gui.SongViewerWizard
 import modules.m1.misc.SongProperty
 import modules.m1.misc.getSongFromProperty
 import modules.m1.misc.getSongPropertyFromSong
-import modules.m2.logic.M2IndexManager
+import modules.mx.m1GlobalIndex
 import tornadofx.Controller
-import tornadofx.Scope
-import tornadofx.find
 
 @ExperimentalSerializationApi
 class M1Controller : IModule, Controller()
@@ -23,9 +21,9 @@ class M1Controller : IModule, Controller()
 
     val db: CwODB by inject()
 
-    fun openWizardNewSong(indexManager: M1IndexManager, m2IndexManager: M2IndexManager)
+    fun openWizardNewSong()
     {
-        val wizard = find<SongConfiguratorWizard>(Scope(m2IndexManager))
+        val wizard = find<SongConfiguratorWizard>()
         wizard.song.item = SongProperty()
         wizard.isComplete = false
         wizard.onComplete {
@@ -33,7 +31,7 @@ class M1Controller : IModule, Controller()
             {
                 val raf = db.openRandomFileAccess(module(), "rw")
                 M1DBManager().saveEntry(
-                    getSongFromProperty(wizard.song.item), db, -1L, -1, raf, indexManager
+                    getSongFromProperty(wizard.song.item), db, -1L, -1, raf, m1GlobalIndex
                 )
                 db.closeRandomFileAccess(raf)
                 wizard.song.item = SongProperty()
@@ -44,15 +42,15 @@ class M1Controller : IModule, Controller()
         wizard.openModal()
     }
 
-    fun openAnalytics(indexManager: M1IndexManager)
+    fun openAnalytics()
     {
         //TODO: Add multiple analytics modes
-        find(MG1Analytics::class, Scope(indexManager)).openModal()
+        find<MG1Analytics>().openModal()
     }
 
-    fun showSong(song: Song, indexManager: M1IndexManager, m2IndexManager: M2IndexManager)
+    fun showSong(song: Song)
     {
-        val wizard = find<SongViewerWizard>(Scope(m2IndexManager))
+        val wizard = find<SongViewerWizard>()
         wizard.song.item = getSongPropertyFromSong(song)
         wizard.onComplete {
             if (wizard.song.uID.value != -1)
@@ -61,10 +59,10 @@ class M1Controller : IModule, Controller()
                 M1DBManager().saveEntry(
                     entry = getSongFromProperty(wizard.song.item),
                     cwodb = db,
-                    posDB = indexManager.indexList[0]!!.indexMap[wizard.song.item.uID]!!.pos,
-                    byteSize = indexManager.indexList[0]!!.indexMap[wizard.song.item.uID]!!.byteSize,
+                    posDB = m1GlobalIndex.indexList[0]!!.indexMap[wizard.song.item.uID]!!.pos,
+                    byteSize = m1GlobalIndex.indexList[0]!!.indexMap[wizard.song.item.uID]!!.byteSize,
                     raf = raf,
-                    indexManager = indexManager
+                    indexManager = m1GlobalIndex
                 )
                 db.closeRandomFileAccess(raf)
                 wizard.song.item = SongProperty()

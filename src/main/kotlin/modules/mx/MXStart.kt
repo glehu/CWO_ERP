@@ -1,6 +1,9 @@
 package modules.mx
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import modules.m1.logic.M1IndexManager
+import modules.m2.logic.M2IndexManager
+import modules.m3.logic.M3IndexManager
 import modules.mx.gui.CWOMainGUI
 import modules.mx.logic.*
 import tornadofx.launch
@@ -18,6 +21,7 @@ fun loginRoutines()
     checkIniFile(File("$programPath\\cwo_erp.ini"))
 }
 
+@ExperimentalSerializationApi
 fun startupRoutines(user: MXUser)
 {
     checkIniFile(File("$programPath\\cwo_erp.ini"))
@@ -33,4 +37,8 @@ fun startupRoutines(user: MXUser)
     MXLog.checkLogFile("M1", true)
     MXLog.checkLogFile("M2", true)
     MXLog.checkLogFile("M3", true)
+    //Load IndexManagers
+    m1GlobalIndex = M1IndexManager()
+    m2GlobalIndex = M2IndexManager()
+    m3GlobalIndex = M3IndexManager()
 }

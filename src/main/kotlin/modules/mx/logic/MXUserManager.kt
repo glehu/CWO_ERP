@@ -1,12 +1,11 @@
 package modules.mx.logic
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IModule
-import modules.mx.MXCredentials
-import modules.mx.MXUser
-import modules.mx.startupRoutines
+import modules.mx.*
 import tornadofx.Controller
 import java.io.File
 import java.util.*
@@ -18,11 +17,13 @@ class MXUserManager : IModule, Controller()
     override fun moduleNameLong() = "MXPasswordManager"
     override fun module() = "MX"
 
+    @ExperimentalSerializationApi
     fun login(username: String, password: String): Boolean
     {
         return compareCredentials(username, password, getCredentials())
     }
 
+    @ExperimentalSerializationApi
     fun getUser(username: String): MXUser?
     {
         return getCredentials().credentials[username]
@@ -46,6 +47,7 @@ class MXUserManager : IModule, Controller()
         writeCredentials(credentials)
     }
 
+    @ExperimentalSerializationApi
     fun getCredentials(): MXCredentials
     {
         val credentialsFile = getCredentialsFile()
@@ -61,6 +63,7 @@ class MXUserManager : IModule, Controller()
 
     private fun getCredentialsFile() = File("${getModulePath("MX")}\\credentials.dat")
 
+    @ExperimentalSerializationApi
     private fun compareCredentials(username: String, password: String, credentials: MXCredentials): Boolean
     {
         var successful = false
@@ -78,6 +81,7 @@ class MXUserManager : IModule, Controller()
         return successful
     }
 
+    @ExperimentalSerializationApi
     private fun initializeCredentials(credentialsFile: File)
     {
         val user = MXUser("admin", encrypt("admin", token))

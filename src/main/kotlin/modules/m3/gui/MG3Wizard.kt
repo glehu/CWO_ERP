@@ -55,11 +55,11 @@ class NewInvoiceMainData : Fragment("Main")
                                 if (invoice.sellerUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
                                         invoice.sellerUID.value, db, m2IndexManager.indexList[0]!!
-                                    ) as Contact, m2IndexManager, false
+                                    ) as Contact, false
                                 )
                                 invoice.seller.value =
                                     m2controller.getContactName(
-                                        invoice.sellerUID.value, invoice.seller.value, m2IndexManager
+                                        invoice.sellerUID.value, invoice.seller.value
                                     )
                             }
                         }
@@ -67,7 +67,7 @@ class NewInvoiceMainData : Fragment("Main")
                     button("<") {
                         tooltip("Load an address")
                         action {
-                            val contact = m2controller.selectContact(m2IndexManager)
+                            val contact = m2controller.selectContact()
                             invoice.sellerUID.value = contact.uID
                             invoice.seller.value = contact.name
                         }
@@ -83,11 +83,11 @@ class NewInvoiceMainData : Fragment("Main")
                                 if (invoice.buyerUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
                                         invoice.buyerUID.value, db, m2IndexManager.indexList[0]!!
-                                    ) as Contact, m2IndexManager, false
+                                    ) as Contact, false
                                 )
                                 invoice.seller.value =
                                     m2controller.getContactName(
-                                        invoice.buyerUID.value, invoice.buyer.value, m2IndexManager
+                                        invoice.buyerUID.value, invoice.buyer.value
                                     )
                             }
                         }
@@ -95,7 +95,7 @@ class NewInvoiceMainData : Fragment("Main")
                     button("<") {
                         tooltip("Load an address")
                         action {
-                            val contact = m2controller.selectContact(m2IndexManager)
+                            val contact = m2controller.selectContact()
                             invoice.buyerUID.value = contact.uID
                             invoice.buyer.value = contact.name
                         }

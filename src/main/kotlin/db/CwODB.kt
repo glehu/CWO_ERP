@@ -6,8 +6,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IIndexManager
 import modules.IModule
+import modules.mx.getModulePath
 import modules.mx.logic.MXLog
-import modules.mx.logic.getModulePath
 import tornadofx.Controller
 import java.io.File
 import java.io.RandomAccessFile

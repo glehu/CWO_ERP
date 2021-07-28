@@ -9,6 +9,7 @@ import modules.m2.gui.*
 import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import modules.m2.misc.getContactPropertyFromContact
+import modules.mx.m2GlobalIndex
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
@@ -22,7 +23,7 @@ class M2Controller : IModule, Controller()
     private val wizard = find<ContactConfiguratorWizard>()
     val db: CwODB by inject()
 
-    fun openWizardNewContact(indexManager: M2IndexManager)
+    fun openWizardNewContact()
     {
         wizard.contact.item = ContactProperty()
         wizard.isComplete = false
@@ -31,7 +32,7 @@ class M2Controller : IModule, Controller()
             {
                 val raf = db.openRandomFileAccess(module(), "rw")
                 M2DBManager().saveEntry(
-                    getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, indexManager
+                    getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, m2GlobalIndex
                 )
                 db.closeRandomFileAccess(raf)
                 wizard.contact.item = ContactProperty()
@@ -42,47 +43,47 @@ class M2Controller : IModule, Controller()
         wizard.openModal()
     }
 
-    fun openAnalytics(indexManager: M2IndexManager)
+    fun openAnalytics()
     {
         //TODO: Add multiple analytics modes
-        find(MG2Analytics::class, Scope(indexManager)).openModal()
+        find<MG2Analytics>().openModal()
     }
 
-    fun openDataImport(indexManager: M2IndexManager)
+    fun openDataImport()
     {
-        find(MG2Import::class, Scope(indexManager)).openModal()
+        find<MG2Import>().openModal()
     }
 
-    fun selectContact(indexManager: M2IndexManager): Contact
+    fun selectContact(): Contact
     {
         val contact: Contact
         val newScope = Scope()
         val dataTransfer = SongModel()
         dataTransfer.uID.value = -2
         setInScope(dataTransfer, newScope)
-        setInScope(indexManager, newScope)
+        setInScope(m2GlobalIndex, newScope)
         find<MG2ContactFinder>(newScope).openModal(block = true)
         contact = if (dataTransfer.name.value != null)
         {
             M2DBManager().getEntry(
-                dataTransfer.uID.value, db, indexManager.indexList[0]!!
+                dataTransfer.uID.value, db, m2GlobalIndex.indexList[0]!!
             ) as Contact
         } else Contact(-1, "")
         return contact
     }
 
-    fun getContactName(uID: Int, default: String, indexManager: M2IndexManager): String
+    fun getContactName(uID: Int, default: String): String
     {
         return if (uID != -1)
         {
             val contact = M2DBManager().getEntry(
-                uID, db, indexManager.indexList[0]!!
+                uID, db, m2GlobalIndex.indexList[0]!!
             ) as Contact
             contact.name
         } else default
     }
 
-    fun showContact(contact: Contact, indexManager: M2IndexManager, asModal: Boolean = true)
+    fun showContact(contact: Contact, asModal: Boolean = true)
     {
         val wizard = find<ContactViewerWizard>()
         wizard.contact.item = getContactPropertyFromContact(contact)
@@ -93,10 +94,10 @@ class M2Controller : IModule, Controller()
                 M2DBManager().saveEntry(
                     entry = getContactFromProperty(wizard.contact.item),
                     cwodb = db,
-                    posDB = indexManager.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.pos,
-                    byteSize = indexManager.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.byteSize,
+                    posDB = m2GlobalIndex.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.pos,
+                    byteSize = m2GlobalIndex.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.byteSize,
                     raf = raf,
-                    indexManager = indexManager
+                    indexManager = m2GlobalIndex
                 )
                 this.db.closeRandomFileAccess(raf)
                 wizard.contact.item = ContactProperty()

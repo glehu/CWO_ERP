@@ -1,19 +1,15 @@
 package modules.mx.gui
 
-import db.CwODB
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.MG1SongFinder
-import modules.m1.logic.M1IndexManager
 import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2ContactFinder
-import modules.m2.logic.M2IndexManager
 import modules.m3.gui.MG3InvoiceFinder
-import modules.m3.logic.M3IndexManager
 import modules.mx.MXUser
+import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
-import modules.mx.logic.activeUser
 import modules.mx.loginRoutines
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
@@ -61,11 +57,6 @@ class MXGLogin : View("CWO ERP")
 @ExperimentalSerializationApi
 class MXGUserInterface : View("CWO ERP")
 {
-    val db: CwODB by inject()
-    private val m1IndexManager: M1IndexManager by inject(Scope(db))
-    private val m2IndexManager: M2IndexManager by inject(Scope(db))
-    private val m3IndexManager: M3IndexManager by inject(Scope(db))
-    private val indexScope = Scope()
     override val root = borderpane {
         top = menubar {
             menu("Misc") {
@@ -94,12 +85,9 @@ class MXGUserInterface : View("CWO ERP")
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
-            setInScope(m1IndexManager, indexScope)
-            setInScope(m2IndexManager, indexScope)
-            setInScope(m3IndexManager, indexScope)
-            if (activeUser.canAccessM1) tab<MG1SongFinder>(indexScope)
-            if (activeUser.canAccessM2) tab<MG2ContactFinder>(indexScope)
-            if (activeUser.canAccessM3) tab<MG3InvoiceFinder>(indexScope)
+            if (activeUser.canAccessM1) tab<MG1SongFinder>()
+            if (activeUser.canAccessM2) tab<MG2ContactFinder>()
+            if (activeUser.canAccessM3) tab<MG3InvoiceFinder>()
             if (activeUser.canAccessMX) tab<MGXUserManager>()
         }
     }

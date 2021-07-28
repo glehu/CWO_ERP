@@ -9,6 +9,7 @@ import modules.m2.Contact
 import modules.m2.logic.M2Controller
 import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
+import modules.mx.m2GlobalIndex
 import tornadofx.*
 
 //This Wizard is used to create new songs
@@ -65,7 +66,6 @@ class NewSongMainData : Fragment("Main")
     val db: CwODB by inject()
     private val song: SongModel by inject()
     private val m2controller: M2Controller by inject()
-    private val m2IndexManager: M2IndexManager by inject()
 
     //----------------------------------v
     //----------- Main Data ------------|
@@ -82,12 +82,12 @@ class NewSongMainData : Fragment("Main")
                             item("Show contact").action {
                                 if (song.vocalistUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
-                                        song.vocalistUID.value, db, m2IndexManager.indexList[0]!!
-                                    ) as Contact, m2IndexManager, false
+                                        song.vocalistUID.value, db, m2GlobalIndex.indexList[0]!!
+                                    ) as Contact, false
                                 )
                                 song.vocalist.value =
                                     m2controller.getContactName(
-                                        song.vocalistUID.value, song.vocalist.value, m2IndexManager
+                                        song.vocalistUID.value, song.vocalist.value
                                     )
                             }
                         }
@@ -95,7 +95,7 @@ class NewSongMainData : Fragment("Main")
                     button("<") {
                         tooltip("Load an address")
                         action {
-                            val contact = m2controller.selectContact(m2IndexManager)
+                            val contact = m2controller.selectContact()
                             song.vocalistUID.value = contact.uID
                             song.vocalist.value = contact.name
                         }
@@ -110,12 +110,12 @@ class NewSongMainData : Fragment("Main")
                             item("Show contact").action {
                                 if (song.producerUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
-                                        song.producerUID.value, db, m2IndexManager.indexList[0]!!
-                                    ) as Contact, m2IndexManager, false
+                                        song.producerUID.value, db, m2GlobalIndex.indexList[0]!!
+                                    ) as Contact, false
                                 )
                                 song.producer.value =
                                     m2controller.getContactName(
-                                        song.producerUID.value, song.producer.value, m2IndexManager
+                                        song.producerUID.value, song.producer.value
                                     )
                             }
                         }
@@ -123,7 +123,7 @@ class NewSongMainData : Fragment("Main")
                     button("<") {
                         tooltip("Load an address")
                         action {
-                            val contact = m2controller.selectContact(m2IndexManager)
+                            val contact = m2controller.selectContact()
                             song.producerUID.value = contact.uID
                             song.producer.value = contact.name
                         }

@@ -4,10 +4,10 @@ import javafx.scene.paint.Color
 import modules.mx.MXCredentials
 import modules.mx.logic.MXUserManager
 import modules.mx.MXUser
-import modules.mx.logic.token
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserFromUserProperty
 import modules.mx.misc.getUserPropertyFromUser
+import modules.mx.token
 import tornadofx.*
 
 class MGXUser(user: MXUser, credentials: MXCredentials) : Fragment("User")

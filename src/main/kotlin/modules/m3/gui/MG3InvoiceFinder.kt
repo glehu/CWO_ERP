@@ -10,13 +10,12 @@ import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m2.logic.M2Controller
-import modules.m2.logic.M2IndexManager
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
 import modules.m3.logic.M3DBManager
-import modules.m3.logic.M3IndexManager
 import modules.mx.logic.MXLog
-import modules.mx.logic.maxSearchResultsGlobal
+import modules.mx.m3GlobalIndex
+import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
@@ -26,15 +25,13 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
     override fun moduleNameLong() = "MG3InvoiceFinder"
     override fun module() = "M3"
     val db: CwODB by inject()
-    val indexManager: M3IndexManager by inject()
-    val m2IndexManager: M2IndexManager by inject()
     private val m3Controller: M3Controller by inject()
     private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
     private var contactsFound: ObservableList<Invoice> = observableList(Invoice(-1))
     private var ixNr = SimpleStringProperty()
-    private val ixNrList = FXCollections.observableArrayList(indexManager.getIndexUserSelection())!!
+    private val ixNrList = FXCollections.observableArrayList(m3GlobalIndex.getIndexUserSelection())!!
     private val threadIDCurrent = SimpleIntegerProperty()
     private val buttonWidth = 150.0
     override val root = borderpane {
@@ -66,16 +63,16 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                 tableview(contactsFound) {
                     readonlyColumn("ID", Invoice::uID).prefWidth(65.0)
                     readonlyColumn("Seller", Invoice::seller).prefWidth(350.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.sellerUID, rowItem.seller, m2IndexManager)
+                        text = m2Controller.getContactName(rowItem.sellerUID, rowItem.seller)
                         rowItem.seller = text
                     }
                     readonlyColumn("Buyer", Invoice::buyer).prefWidth(350.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.buyerUID, rowItem.buyer, m2IndexManager)
+                        text = m2Controller.getContactName(rowItem.buyerUID, rowItem.buyer)
                         rowItem.buyer = text
                     }
                     readonlyColumn("Text", Invoice::text).prefWidth(200.0)
                     onUserSelect(1) {
-                        m3Controller.showInvoice(it, indexManager, m2IndexManager)
+                        m3Controller.showInvoice(it)
                         contactsFound.clear()
                         searchText.text = ""
                     }
@@ -85,7 +82,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
         right = vbox {
             //Main functions
             button("New Invoice") {
-                action { m3Controller.openWizardNewInvoice(indexManager) }
+                action { m3Controller.openWizardNewInvoice() }
                 tooltip("Add a new song to the database.")
                 prefWidth = buttonWidth
             }
@@ -125,7 +122,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                 exactSearch.isSelected,
                 module(),
                 maxSearchResultsGlobal,
-                indexManager
+                m3GlobalIndex
             ) { _, bytes ->
                 //Add the contacts to the table
                 if (threadID >= threadIDCurrent.value)

@@ -14,9 +14,9 @@ import modules.m1.logic.M1Controller
 import modules.m1.logic.M1DBManager
 import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2Controller
-import modules.m2.logic.M2IndexManager
 import modules.mx.logic.MXLog
-import modules.mx.logic.maxSearchResultsGlobal
+import modules.mx.m1GlobalIndex
+import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
@@ -26,15 +26,13 @@ class MG1SongFinder : IModule, View("M1 Songs")
     override fun moduleNameLong() = "MG1SongFinder"
     override fun module() = "M1"
     val db: CwODB by inject()
-    val indexManager: M1IndexManager by inject()
-    val m2IndexManager: M2IndexManager by inject()
-    private val m1Controller: M1Controller by inject(Scope(indexManager))
+    private val m1Controller: M1Controller by inject()
     private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
     private var songsFound: ObservableList<Song> = observableList(Song(-1, ""))
     private var ixNr = SimpleStringProperty()
-    private val ixNrList = FXCollections.observableArrayList(indexManager.getIndexUserSelection())!!
+    private val ixNrList = FXCollections.observableArrayList(m1GlobalIndex.getIndexUserSelection())!!
     private val threadIDCurrentProperty = SimpleIntegerProperty()
     private var threadIDCurrent by threadIDCurrentProperty
     private val buttonWidth = 150.0
@@ -48,7 +46,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                         textProperty().addListener { _, _, _ ->
                             runAsync {
                                 threadIDCurrent++
-                                searchForSongs(threadIDCurrent, indexManager)
+                                searchForSongs(threadIDCurrent, m1GlobalIndex)
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
@@ -68,16 +66,16 @@ class MG1SongFinder : IModule, View("M1 Songs")
                     readonlyColumn("ID", Song::uID).prefWidth(65.0)
                     readonlyColumn("Name", Song::name).prefWidth(310.0)
                     readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist, m2IndexManager)
+                        text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
                         rowItem.vocalist = text
                     }
                     readonlyColumn("Producer", Song::producer).prefWidth(200.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer, m2IndexManager)
+                        text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer)
                         rowItem.producer = text
                     }
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
-                        m1Controller.showSong(it, indexManager, m2IndexManager)
+                        m1Controller.showSong(it)
                         songsFound.clear()
                     }
                 }
@@ -86,13 +84,13 @@ class MG1SongFinder : IModule, View("M1 Songs")
         right = vbox {
             //Main functions
             button("New Song") {
-                action { m1Controller.openWizardNewSong(indexManager, m2IndexManager) }
+                action { m1Controller.openWizardNewSong() }
                 tooltip("Add a new song to the database.")
                 prefWidth = buttonWidth
             }
             //Analytics functions
             button("Analytics") {
-                action { m1Controller.openAnalytics(indexManager) }
+                action { m1Controller.openAnalytics() }
                 tooltip("Display a chart to show the distribution of genres.")
                 prefWidth = buttonWidth
             }
@@ -114,7 +112,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
         }
     }
 
-    private fun searchForSongs(threadID: Int, indexManager: M1IndexManager)
+    private fun searchForSongs(threadID: Int, m1GlobalIndex: M1IndexManager)
     {
         var entriesFound = 0
         val timeInMillis = measureTimeMillis {
@@ -125,7 +123,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                 exactSearch.isSelected,
                 module(),
                 maxSearchResultsGlobal,
-                indexManager
+                m1GlobalIndex
             ) { _, bytes ->
                 if (threadID >= threadIDCurrent)
                 {
