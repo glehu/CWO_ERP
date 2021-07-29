@@ -8,7 +8,7 @@ import tornadofx.setValue
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class SongProperty
+class SongPropertyP1
 {
     val uIDProperty = SimpleIntegerProperty(-1)
     var uID by uIDProperty
@@ -80,7 +80,10 @@ class SongProperty
     var moneyGainedStreams by moneyGainedStreamsProperty
     val moneyGainedSponsorProperty = SimpleDoubleProperty(0.0)
     var moneyGainedSponsor by moneyGainedSponsorProperty
+}
 
+class SongPropertyP2
+{
     //----------------------------------v
     //------- Availability Data --------|
     //----------------------------------^
@@ -146,7 +149,7 @@ class SongProperty
     //----------------------------------v
     //--------- Copyright Data ---------|
     //----------------------------------^
-    private val isProtectedProperty = SimpleBooleanProperty(false)
+    val isProtectedProperty = SimpleBooleanProperty(false)
     var isProtected by isProtectedProperty
     val containsCRMaterialProperty = SimpleBooleanProperty(false)
     var containsCRMaterial by containsCRMaterialProperty
@@ -168,254 +171,270 @@ class SongProperty
     var comment: String by commentProperty
 }
 
-class SongModel : ItemViewModel<SongProperty>(SongProperty())
+class SongModelP1 : ItemViewModel<SongPropertyP1>(SongPropertyP1())
 {
-    val uID = bind(SongProperty::uIDProperty)
-    val name = bind(SongProperty::nameProperty)
-    val vocalist = bind(SongProperty::vocalistProperty)
-    val vocalistUID = bind(SongProperty::vocalistUIDProperty)
-    val producer = bind(SongProperty::producerProperty)
-    val producerUID = bind(SongProperty::producerUIDProperty)
-    val mixing = bind(SongProperty::mixingProperty)
-    val mixingUID = bind(SongProperty::mixingUIDProperty)
-    val mastering = bind(SongProperty::masteringProperty)
-    val masteringUID = bind(SongProperty::masteringUIDProperty)
-    val genre = bind(SongProperty::genreProperty)
-    val subgenre = bind(SongProperty::subgenreProperty)
-    val songLength = bind(SongProperty::songLengthProperty)
-    val vibe = bind(SongProperty::vibeProperty)
-    val songState = bind(SongProperty::songStateProperty)
-    val instruState = bind(SongProperty::instruStateProperty)
-    val lyricsState = bind(SongProperty::lyricsStateProperty)
-    val vocalsState = bind(SongProperty::vocalsStateProperty)
-    val mixingState = bind(SongProperty::mixingStateProperty)
-    val masteringState = bind(SongProperty::masteringStateProperty)
-    val isPromoted = bind(SongProperty::isPromotedProperty)
-    val distributed = bind(SongProperty::distributedProperty)
-    val isExclusiveRelease = bind(SongProperty::isExclusiveReleaseProperty)
-    val exclusiveChannel = bind(SongProperty::exclusiveChannelProperty)
-    val moneySpent = bind(SongProperty::moneySpentProperty)
-    val moneyGainedStreams = bind(SongProperty::moneyGainedStreamsProperty)
-    val moneyGainedSponsor = bind(SongProperty::moneyGainedSponsorProperty)
-    val isPublic = bind(SongProperty::isPublicProperty)
-    val releaseDate = bind(SongProperty::releaseDateProperty)
-    val onSpotify = bind(SongProperty::onSpotifyProperty)
-    val onYouTube = bind(SongProperty::onYouTubeProperty)
-    val onSoundCloud = bind(SongProperty::onSoundcloudProperty)
-    val hasVisualizer = bind(SongProperty::hasVisualizerProperty)
-    val hasAnimeMV = bind(SongProperty::hasAnimeMVProperty)
-    val hasRealMV = bind(SongProperty::hasRealMVProperty)
-    val inEP = bind(SongProperty::inEPProperty)
-    val inAlbum = bind(SongProperty::inAlbumProperty)
-    val nameEP = bind(SongProperty::nameEPProperty)
-    val nameAlbum = bind(SongProperty::nameAlbumProperty)
-    val playsSpotify = bind(SongProperty::playsSpotifyProperty)
-    val playsYouTube = bind(SongProperty::playsYouTubeProperty)
-    val playsSoundCloud = bind(SongProperty::playsSoundCloudProperty)
-    val coVocalist1 = bind(SongProperty::coVocalist1Property)
-    val coVocalist2 = bind(SongProperty::coVocalist2Property)
-    val coProducer1 = bind(SongProperty::coProducer1Property)
-    val coProducer2 = bind(SongProperty::coProducer2Property)
-    val isProtected = bind(SongProperty::isPromotedProperty)
-    val containsCRMaterial = bind(SongProperty::containsCRMaterialProperty)
-    val containsExplicitLyrics = bind(SongProperty::containsExplicitLyricsProperty)
-    val inspiredByArtist = bind(SongProperty::inspiredByArtistProperty)
-    val inspiredBySong = bind(SongProperty::inspiredBySongProperty)
-    val dawUsed = bind(SongProperty::dawUsedProperty)
-    val micUsed = bind(SongProperty::micUsedProperty)
-    val comment = bind(SongProperty::commentProperty)
+    val uID = bind(SongPropertyP1::uIDProperty)
+    val name = bind(SongPropertyP1::nameProperty)
+    val vocalist = bind(SongPropertyP1::vocalistProperty)
+    val vocalistUID = bind(SongPropertyP1::vocalistUIDProperty)
+    val producer = bind(SongPropertyP1::producerProperty)
+    val producerUID = bind(SongPropertyP1::producerUIDProperty)
+    val mixing = bind(SongPropertyP1::mixingProperty)
+    val mixingUID = bind(SongPropertyP1::mixingUIDProperty)
+    val mastering = bind(SongPropertyP1::masteringProperty)
+    val masteringUID = bind(SongPropertyP1::masteringUIDProperty)
+    val genre = bind(SongPropertyP1::genreProperty)
+    val subgenre = bind(SongPropertyP1::subgenreProperty)
+    val songLength = bind(SongPropertyP1::songLengthProperty)
+    val vibe = bind(SongPropertyP1::vibeProperty)
+    val songState = bind(SongPropertyP1::songStateProperty)
+    val instruState = bind(SongPropertyP1::instruStateProperty)
+    val lyricsState = bind(SongPropertyP1::lyricsStateProperty)
+    val vocalsState = bind(SongPropertyP1::vocalsStateProperty)
+    val mixingState = bind(SongPropertyP1::mixingStateProperty)
+    val masteringState = bind(SongPropertyP1::masteringStateProperty)
+    val isPromoted = bind(SongPropertyP1::isPromotedProperty)
+    val distributed = bind(SongPropertyP1::distributedProperty)
+    val isExclusiveRelease = bind(SongPropertyP1::isExclusiveReleaseProperty)
+    val exclusiveChannel = bind(SongPropertyP1::exclusiveChannelProperty)
+    val moneySpent = bind(SongPropertyP1::moneySpentProperty)
+    val moneyGainedStreams = bind(SongPropertyP1::moneyGainedStreamsProperty)
+    val moneyGainedSponsor = bind(SongPropertyP1::moneyGainedSponsorProperty)
 }
 
-fun getSongPropertyFromSong(song: Song): SongProperty
+class SongModelP2 : ItemViewModel<SongPropertyP2>(SongPropertyP2())
 {
-    val songProperty = SongProperty()
+    val isPublic = bind(SongPropertyP2::isPublicProperty)
+    val releaseDate = bind(SongPropertyP2::releaseDateProperty)
+    val onSpotify = bind(SongPropertyP2::onSpotifyProperty)
+    val onYouTube = bind(SongPropertyP2::onYouTubeProperty)
+    val onSoundCloud = bind(SongPropertyP2::onSoundcloudProperty)
+    val hasVisualizer = bind(SongPropertyP2::hasVisualizerProperty)
+    val hasAnimeMV = bind(SongPropertyP2::hasAnimeMVProperty)
+    val hasRealMV = bind(SongPropertyP2::hasRealMVProperty)
+    val inEP = bind(SongPropertyP2::inEPProperty)
+    val inAlbum = bind(SongPropertyP2::inAlbumProperty)
+    val nameEP = bind(SongPropertyP2::nameEPProperty)
+    val nameAlbum = bind(SongPropertyP2::nameAlbumProperty)
+    val playsSpotify = bind(SongPropertyP2::playsSpotifyProperty)
+    val playsYouTube = bind(SongPropertyP2::playsYouTubeProperty)
+    val playsSoundCloud = bind(SongPropertyP2::playsSoundCloudProperty)
+    val coVocalist1 = bind(SongPropertyP2::coVocalist1Property)
+    val coVocalist2 = bind(SongPropertyP2::coVocalist2Property)
+    val coProducer1 = bind(SongPropertyP2::coProducer1Property)
+    val coProducer2 = bind(SongPropertyP2::coProducer2Property)
+    val isProtected = bind(SongPropertyP2::isProtectedProperty)
+    val containsCRMaterial = bind(SongPropertyP2::containsCRMaterialProperty)
+    val containsExplicitLyrics = bind(SongPropertyP2::containsExplicitLyricsProperty)
+    val inspiredByArtist = bind(SongPropertyP2::inspiredByArtistProperty)
+    val inspiredBySong = bind(SongPropertyP2::inspiredBySongProperty)
+    val dawUsed = bind(SongPropertyP2::dawUsedProperty)
+    val micUsed = bind(SongPropertyP2::micUsedProperty)
+    val comment = bind(SongPropertyP2::commentProperty)
+}
+
+fun getSongPropertyP1FromSong(song: Song): SongPropertyP1
+{
+    val songPropertyP1 = SongPropertyP1()
     //For songModel to be serialized, it has to be inserted into song
     //---------------------------------v
     //----------- Main Data -----------|
     //---------------------------------^
-    songProperty.uID = song.uID
-    songProperty.name = song.name
-    songProperty.vocalist = song.vocalist
-    songProperty.vocalistUID = song.vocalistUID
-    songProperty.producer = song.producer
-    songProperty.producerUID = song.producerUID
-    songProperty.mixing = song.mixing
-    songProperty.mixingUID = song.mixingUID
-    songProperty.mastering = song.mastering
-    songProperty.masteringUID = song.masteringUID
-    songProperty.genre = song.genre
-    songProperty.subgenre = song.subgenre
-    songProperty.songLength = song.songLength
-    songProperty.vibe = song.vibe
+    songPropertyP1.uID = song.uID
+    songPropertyP1.name = song.name
+    songPropertyP1.vocalist = song.vocalist
+    songPropertyP1.vocalistUID = song.vocalistUID
+    songPropertyP1.producer = song.producer
+    songPropertyP1.producerUID = song.producerUID
+    songPropertyP1.mixing = song.mixing
+    songPropertyP1.mixingUID = song.mixingUID
+    songPropertyP1.mastering = song.mastering
+    songPropertyP1.masteringUID = song.masteringUID
+    songPropertyP1.genre = song.genre
+    songPropertyP1.subgenre = song.subgenre
+    songPropertyP1.songLength = song.songLength
+    songPropertyP1.vibe = song.vibe
     //----------------------------------v
     //------- State of Completion ------|
     //----------------------------------^
-    songProperty.songState = song.songState
-    songProperty.instruState = song.instruState
-    songProperty.lyricsState = song.lyricsState
-    songProperty.vocalsState = song.vocalsState
-    songProperty.mixingState = song.mixingState
-    songProperty.masteringState = song.masteringState
+    songPropertyP1.songState = song.songState
+    songPropertyP1.instruState = song.instruState
+    songPropertyP1.lyricsState = song.lyricsState
+    songPropertyP1.vocalsState = song.vocalsState
+    songPropertyP1.mixingState = song.mixingState
+    songPropertyP1.masteringState = song.masteringState
     //---------------------------------v
     //--------- Promotion Data --------|
     //---------------------------------^
-    songProperty.isPromoted = song.isPromoted
-    songProperty.distributed = song.distributed
-    songProperty.isExclusiveRelease = song.isExclusiveRelease
-    songProperty.exclusiveChannel = song.exclusiveChannel
+    songPropertyP1.isPromoted = song.isPromoted
+    songPropertyP1.distributed = song.distributed
+    songPropertyP1.isExclusiveRelease = song.isExclusiveRelease
+    songPropertyP1.exclusiveChannel = song.exclusiveChannel
     //---------------------------------v
     //--------- Financial Data --------|
     //---------------------------------^
-    songProperty.moneySpent = song.moneySpent
-    songProperty.moneyGainedStreams = song.moneyGainedStreams
-    songProperty.moneyGainedSponsor = song.moneyGainedSponsor
+    songPropertyP1.moneySpent = song.moneySpent
+    songPropertyP1.moneyGainedStreams = song.moneyGainedStreams
+    songPropertyP1.moneyGainedSponsor = song.moneyGainedSponsor
+    return songPropertyP1
+}
+
+fun getSongPropertyP2FromSong(song: Song): SongPropertyP2
+{
+    val songPropertyP2 = SongPropertyP2()
+    //For songModel to be serialized, it has to be inserted into song
     //---------------------------------v
     //------- Availability Data -------|
     //---------------------------------^
-    songProperty.isPublic = song.isPublic
-    songProperty.releaseDate = LocalDate.parse(song.releaseDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-    songProperty.onSpotify = song.onSpotify
-    songProperty.onYouTube = song.onYouTube
-    songProperty.onSoundCloud = song.onSoundCloud
+    songPropertyP2.isPublic = song.isPublic
+    songPropertyP2.releaseDate = LocalDate.parse(song.releaseDate, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+    songPropertyP2.onSpotify = song.onSpotify
+    songPropertyP2.onYouTube = song.onYouTube
+    songPropertyP2.onSoundCloud = song.onSoundCloud
     //---------------------------------v
     //------- Visualization Data ------|
     //---------------------------------^
-    songProperty.hasVisualizer = song.hasVisualizer
-    songProperty.hasAnimeMV = song.hasAnimeMV
-    songProperty.hasRealMV = song.hasRealMV
+    songPropertyP2.hasVisualizer = song.hasVisualizer
+    songPropertyP2.hasAnimeMV = song.hasAnimeMV
+    songPropertyP2.hasRealMV = song.hasRealMV
     //---------------------------------v
     //---------- Album/EP Data --------|
     //---------------------------------^
-    songProperty.inEP = song.inEP
-    songProperty.inAlbum = song.inAlbum
-    songProperty.nameEP = song.nameEP
-    songProperty.nameAlbum = song.nameAlbum
+    songPropertyP2.inEP = song.inEP
+    songPropertyP2.inAlbum = song.inAlbum
+    songPropertyP2.nameEP = song.nameEP
+    songPropertyP2.nameAlbum = song.nameAlbum
     //---------------------------------v
     //-------- Statistics Data --------|
     //---------------------------------^
-    songProperty.playsSpotify = song.playsSpotify
-    songProperty.playsYouTube = song.playsYouTube
-    songProperty.playsSoundCloud = song.playsSoundCloud
+    songPropertyP2.playsSpotify = song.playsSpotify
+    songPropertyP2.playsYouTube = song.playsYouTube
+    songPropertyP2.playsSoundCloud = song.playsSoundCloud
     //---------------------------------v
     //---------- Feature Data ---------|
     //---------------------------------^
-    songProperty.coVocalist1 = song.coVocalist1
-    songProperty.coVocalist2 = song.coVocalist2
+    songPropertyP2.coVocalist1 = song.coVocalist1
+    songPropertyP2.coVocalist2 = song.coVocalist2
     //---------------------------------v
     //---------- Collab Data ----------|
     //---------------------------------^
-    songProperty.coProducer1 = song.coProducer1
-    songProperty.coProducer2 = song.coProducer2
+    songPropertyP2.coProducer1 = song.coProducer1
+    songPropertyP2.coProducer2 = song.coProducer2
     //---------------------------------v
     //--------- Copyright Data --------|
     //---------------------------------^
-    songProperty.isProtected = song.isProtected
-    songProperty.containsCRMaterial = song.containsCRMaterial
-    songProperty.containsExplicitLyrics = song.containsExplicitLyrics
+    songPropertyP2.isProtected = song.isProtected
+    songPropertyP2.containsCRMaterial = song.containsCRMaterial
+    songPropertyP2.containsExplicitLyrics = song.containsExplicitLyrics
     //---------------------------------v
     //----------- Misc Data -----------|
     //---------------------------------^
-    songProperty.inspiredByArtist = song.inspiredByArtist
-    songProperty.inspiredBySong = song.inspiredBySong
-    songProperty.dawUsed = song.dawUsed
-    songProperty.micUsed = song.micUsed
-    songProperty.comment = song.comment
-    return songProperty
+    songPropertyP2.inspiredByArtist = song.inspiredByArtist
+    songPropertyP2.inspiredBySong = song.inspiredBySong
+    songPropertyP2.dawUsed = song.dawUsed
+    songPropertyP2.micUsed = song.micUsed
+    songPropertyP2.comment = song.comment
+    return songPropertyP2
 }
 
-fun getSongFromProperty(songProperty: SongProperty): Song
+fun getSongFromPropertyP1(songPropertyP1: SongPropertyP1): Song
 {
-    val song = Song(-1, songProperty.name)
+    val song = Song(-1, songPropertyP1.name)
     //For songModel to be serialized, it has to be inserted into song
     //---------------------------------v
     //----------- Main Data -----------|
     //---------------------------------^
-    song.uID = songProperty.uID
-    song.vocalist = songProperty.vocalist
-    song.vocalistUID = songProperty.vocalistUID
-    song.producer = songProperty.producer
-    song.producerUID = songProperty.producerUID
-    song.mixing = songProperty.mixing
-    song.mixingUID = songProperty.mixingUID
-    song.mastering = songProperty.mastering
-    song.masteringUID = songProperty.masteringUID
-    song.genre = songProperty.genre
-    song.subgenre = songProperty.subgenre
-    song.songLength = songProperty.songLength
-    song.vibe = songProperty.vibe
+    song.uID = songPropertyP1.uID
+    song.vocalist = songPropertyP1.vocalist
+    song.vocalistUID = songPropertyP1.vocalistUID
+    song.producer = songPropertyP1.producer
+    song.producerUID = songPropertyP1.producerUID
+    song.mixing = songPropertyP1.mixing
+    song.mixingUID = songPropertyP1.mixingUID
+    song.mastering = songPropertyP1.mastering
+    song.masteringUID = songPropertyP1.masteringUID
+    song.genre = songPropertyP1.genre
+    song.subgenre = songPropertyP1.subgenre
+    song.songLength = songPropertyP1.songLength
+    song.vibe = songPropertyP1.vibe
     //----------------------------------v
     //------- State of Completion ------|
     //----------------------------------^
-    song.songState = songProperty.songState
-    song.instruState = songProperty.instruState
-    song.lyricsState = songProperty.lyricsState
-    song.vocalsState = songProperty.vocalsState
-    song.mixingState = songProperty.mixingState
-    song.masteringState = songProperty.masteringState
+    song.songState = songPropertyP1.songState
+    song.instruState = songPropertyP1.instruState
+    song.lyricsState = songPropertyP1.lyricsState
+    song.vocalsState = songPropertyP1.vocalsState
+    song.mixingState = songPropertyP1.mixingState
+    song.masteringState = songPropertyP1.masteringState
     //---------------------------------v
     //--------- Promotion Data --------|
     //---------------------------------^
-    song.isPromoted = songProperty.isPromoted
-    song.distributed = songProperty.distributed
-    song.isExclusiveRelease = songProperty.isExclusiveRelease
-    song.exclusiveChannel = songProperty.exclusiveChannel
+    song.isPromoted = songPropertyP1.isPromoted
+    song.distributed = songPropertyP1.distributed
+    song.isExclusiveRelease = songPropertyP1.isExclusiveRelease
+    song.exclusiveChannel = songPropertyP1.exclusiveChannel
     //---------------------------------v
     //--------- Financial Data --------|
     //---------------------------------^
-    song.moneySpent = songProperty.moneySpent
-    song.moneyGainedStreams = songProperty.moneyGainedStreams
-    song.moneyGainedSponsor = songProperty.moneyGainedSponsor
+    song.moneySpent = songPropertyP1.moneySpent
+    song.moneyGainedStreams = songPropertyP1.moneyGainedStreams
+    song.moneyGainedSponsor = songPropertyP1.moneyGainedSponsor
+    return song
+}
+
+fun getSongFromPropertyP2(song: Song, songPropertyP2: SongPropertyP2): Song
+{
     //---------------------------------v
     //------- Availability Data -------|
     //---------------------------------^
-    song.isPublic = songProperty.isPublic
-    song.releaseDate = songProperty.releaseDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-    song.onSpotify = songProperty.onSpotify
-    song.onYouTube = songProperty.onYouTube
-    song.onSoundCloud = songProperty.onSoundCloud
+    song.isPublic = songPropertyP2.isPublic
+    song.releaseDate = songPropertyP2.releaseDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+    song.onSpotify = songPropertyP2.onSpotify
+    song.onYouTube = songPropertyP2.onYouTube
+    song.onSoundCloud = songPropertyP2.onSoundCloud
     //---------------------------------v
     //------- Visualization Data ------|
     //---------------------------------^
-    song.hasVisualizer = songProperty.hasVisualizer
-    song.hasAnimeMV = songProperty.hasAnimeMV
-    song.hasRealMV = songProperty.hasRealMV
+    song.hasVisualizer = songPropertyP2.hasVisualizer
+    song.hasAnimeMV = songPropertyP2.hasAnimeMV
+    song.hasRealMV = songPropertyP2.hasRealMV
     //---------------------------------v
     //---------- Album/EP Data --------|
     //---------------------------------^
-    song.inEP = songProperty.inEP
-    song.inAlbum = songProperty.inAlbum
-    song.nameEP = songProperty.nameEP
-    song.nameAlbum = songProperty.nameAlbum
+    song.inEP = songPropertyP2.inEP
+    song.inAlbum = songPropertyP2.inAlbum
+    song.nameEP = songPropertyP2.nameEP
+    song.nameAlbum = songPropertyP2.nameAlbum
     //---------------------------------v
     //-------- Statistics Data --------|
     //---------------------------------^
-    song.playsSpotify = songProperty.playsSpotify
-    song.playsYouTube = songProperty.playsYouTube
-    song.playsSoundCloud = songProperty.playsSoundCloud
+    song.playsSpotify = songPropertyP2.playsSpotify
+    song.playsYouTube = songPropertyP2.playsYouTube
+    song.playsSoundCloud = songPropertyP2.playsSoundCloud
     //---------------------------------v
     //---------- Feature Data ---------|
     //---------------------------------^
-    song.coVocalist1 = songProperty.coVocalist1
-    song.coVocalist2 = songProperty.coVocalist2
+    song.coVocalist1 = songPropertyP2.coVocalist1
+    song.coVocalist2 = songPropertyP2.coVocalist2
     //---------------------------------v
     //---------- Collab Data ----------|
     //---------------------------------^
-    song.coProducer1 = songProperty.coProducer1
-    song.coProducer2 = songProperty.coProducer2
+    song.coProducer1 = songPropertyP2.coProducer1
+    song.coProducer2 = songPropertyP2.coProducer2
     //---------------------------------v
     //--------- Copyright Data --------|
     //---------------------------------^
-    song.isProtected = songProperty.isProtected
-    song.containsCRMaterial = songProperty.containsCRMaterial
-    song.containsExplicitLyrics = songProperty.containsExplicitLyrics
+    song.isProtected = songPropertyP2.isProtected
+    song.containsCRMaterial = songPropertyP2.containsCRMaterial
+    song.containsExplicitLyrics = songPropertyP2.containsExplicitLyrics
     //---------------------------------v
     //----------- Misc Data -----------|
     //---------------------------------^
-    song.inspiredByArtist = songProperty.inspiredByArtist
-    song.inspiredBySong = songProperty.inspiredBySong
-    song.dawUsed = songProperty.dawUsed
-    song.micUsed = songProperty.micUsed
-    song.comment = songProperty.comment
+    song.inspiredByArtist = songPropertyP2.inspiredByArtist
+    song.inspiredBySong = songPropertyP2.inspiredBySong
+    song.dawUsed = songPropertyP2.dawUsed
+    song.micUsed = songPropertyP2.micUsed
+    song.comment = songPropertyP2.comment
     return song
 }
 

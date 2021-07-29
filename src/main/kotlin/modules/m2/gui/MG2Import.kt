@@ -29,7 +29,7 @@ class MG2Import : Fragment("Contact Data Import")
                         file = chooseFile(
                             "Choose file",
                             arrayOf(FileChooser.ExtensionFilter("CSV file (*.csv)", "*.csv")),
-                            FileChooserMode.Single
+                            mode = FileChooserMode.Single
                         )[0]
                         if (file.isFile) filenameProperty.value = file.name
                     }

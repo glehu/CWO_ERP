@@ -7,9 +7,7 @@ import modules.m1.Song
 import modules.m1.gui.MG1Analytics
 import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.gui.SongViewerWizard
-import modules.m1.misc.SongProperty
-import modules.m1.misc.getSongFromProperty
-import modules.m1.misc.getSongPropertyFromSong
+import modules.m1.misc.*
 import modules.mx.m1GlobalIndex
 import tornadofx.Controller
 
@@ -24,17 +22,21 @@ class M1Controller : IModule, Controller()
     fun openWizardNewSong()
     {
         val wizard = find<SongConfiguratorWizard>()
-        wizard.song.item = SongProperty()
+        wizard.songP1.item = SongPropertyP1()
+        wizard.songP2.item = SongPropertyP2()
         wizard.isComplete = false
         wizard.onComplete {
-            if (wizard.song.item.nameProperty.value !== null)
+            if (wizard.songP1.item.nameProperty.value !== null)
             {
                 val raf = db.openRandomFileAccess(module(), "rw")
                 M1DBManager().saveEntry(
-                    getSongFromProperty(wizard.song.item), db, -1L, -1, raf, m1GlobalIndex
+                    getSongFromPropertyP2(
+                        getSongFromPropertyP1(wizard.songP1.item),
+                        wizard.songP2.item
+                    ), db, -1L, -1, raf, m1GlobalIndex
                 )
                 db.closeRandomFileAccess(raf)
-                wizard.song.item = SongProperty()
+                wizard.songP1.item = SongPropertyP1()
                 wizard.isComplete = false
                 wizard.close()
             }
@@ -51,21 +53,26 @@ class M1Controller : IModule, Controller()
     fun showSong(song: Song)
     {
         val wizard = find<SongViewerWizard>()
-        wizard.song.item = getSongPropertyFromSong(song)
+        wizard.songP1.item = getSongPropertyP1FromSong(song)
+        wizard.songP2.item = getSongPropertyP2FromSong(song)
         wizard.onComplete {
-            if (wizard.song.uID.value != -1)
+            if (wizard.songP1.uID.value != -1)
             {
                 val raf = db.openRandomFileAccess(module(), "rw")
                 M1DBManager().saveEntry(
-                    entry = getSongFromProperty(wizard.song.item),
+                    entry = getSongFromPropertyP2(
+                        getSongFromPropertyP1(wizard.songP1.item),
+                        wizard.songP2.item
+                    ),
                     cwodb = db,
-                    posDB = m1GlobalIndex.indexList[0]!!.indexMap[wizard.song.item.uID]!!.pos,
-                    byteSize = m1GlobalIndex.indexList[0]!!.indexMap[wizard.song.item.uID]!!.byteSize,
+                    posDB = m1GlobalIndex.indexList[0]!!.indexMap[wizard.songP1.item.uID]!!.pos,
+                    byteSize = m1GlobalIndex.indexList[0]!!.indexMap[wizard.songP1.item.uID]!!.byteSize,
                     raf = raf,
                     indexManager = m1GlobalIndex
                 )
                 db.closeRandomFileAccess(raf)
-                wizard.song.item = SongProperty()
+                wizard.songP1.item = getSongPropertyP1FromSong(song)
+                wizard.songP2.item = getSongPropertyP2FromSong(song)
                 wizard.isComplete = false
                 wizard.close()
             }

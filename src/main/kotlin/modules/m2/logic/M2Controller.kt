@@ -3,7 +3,7 @@ package modules.m2.logic
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
-import modules.m1.misc.SongModel
+import modules.m1.misc.SongModelP1
 import modules.m2.Contact
 import modules.m2.gui.*
 import modules.m2.misc.ContactProperty
@@ -58,7 +58,7 @@ class M2Controller : IModule, Controller()
     {
         val contact: Contact
         val newScope = Scope()
-        val dataTransfer = SongModel()
+        val dataTransfer = SongModelP1()
         dataTransfer.uID.value = -2
         setInScope(dataTransfer, newScope)
         find<MG2ContactFinder>(newScope).openModal(block = true)
