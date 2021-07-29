@@ -20,9 +20,14 @@ class M1IndexManager : IModule, IIndexManager, Controller()
 {
     override fun moduleNameLong() = "M1IndexManager"
     override fun module() = "M1"
-    override val indexList = mutableMapOf<Int, Index>()
-
     val db: CwODB by inject()
+
+    //*************************************************
+    //********************** Global Data **************
+    //*************************************************
+
+    override val indexList = mutableMapOf<Int, Index>()
+    override var lastUID = -1
 
     init
     {
@@ -32,7 +37,15 @@ class M1IndexManager : IModule, IIndexManager, Controller()
         indexList[2] = db.getIndex(module(), 2)
         indexList[3] = db.getIndex(module(), 3)
         indexList[4] = db.getIndex(module(), 4)
+        lastUID = db.getLastUniqueID(module())
         MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
+    }
+
+    override fun getUID(): Int
+    {
+        lastUID++
+        runBlocking { launch { db.setLastUniqueID(lastUID, module()) } }
+        return lastUID
     }
 
     override fun getIndexUserSelection(): ArrayList<String>

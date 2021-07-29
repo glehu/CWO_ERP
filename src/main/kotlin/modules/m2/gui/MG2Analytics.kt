@@ -7,13 +7,13 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Analytics
 import modules.m2.logic.M2IndexManager
 import modules.mx.gui.MGXProgressbar
+import modules.mx.m2GlobalIndex
 import tornadofx.*
 
 @ExperimentalSerializationApi
 class MG2Analytics : Fragment("City distribution")
 {
     val db: CwODB by inject()
-    val indexManager: M2IndexManager by inject(Scope(db))
     private val m2controller: M2Analytics by inject()
     private val progressProperty = SimpleIntegerProperty()
     private var progressN by progressProperty
@@ -30,7 +30,7 @@ class MG2Analytics : Fragment("City distribution")
                     action {
                         maxEntries = m2controller.db.getLastUniqueID("M2")
                         runAsync {
-                            val cityDist = m2controller.getChartDataOnCityDistribution(indexManager, numberOfCities)
+                            val cityDist = m2controller.getChartDataOnCityDistribution(m2GlobalIndex, numberOfCities)
                             {
                                 progressN = it.first
                                 updateProgress(it.first.toDouble(), maxEntries.toDouble())

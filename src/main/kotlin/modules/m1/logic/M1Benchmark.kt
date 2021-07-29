@@ -9,6 +9,7 @@ import modules.m1.Song
 import modules.m1.getGenreList
 import modules.mx.logic.MXLog
 import modules.mx.logic.getRandomString
+import modules.mx.m1GlobalIndex
 import tornadofx.Controller
 import tornadofx.Scope
 import kotlin.random.Random
@@ -21,7 +22,6 @@ class M1Benchmark : IModule, Controller()
     override fun module() = "M1"
 
     val db: CwODB by inject()
-    val indexManager: M1IndexManager by inject(Scope(db))
 
     fun insertRandomEntries(amount: Int)
     {
@@ -37,11 +37,11 @@ class M1Benchmark : IModule, Controller()
                 song.producer = getRandomString(10L)
                 song.genre = getRandomGenre()
                 song.releaseDate = "01.01.1000"
-                dbManager.saveEntry(song, db, -1L, -1, raf, indexManager, false)
+                dbManager.saveEntry(song, db, -1L, -1, raf, m1GlobalIndex, false)
                 if (i % 5000 == 0)
                 {
                     MXLog.log(module(), MXLog.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}", moduleNameLong())
-                    runBlocking { launch { indexManager.writeIndexData() } }
+                    runBlocking { launch { m1GlobalIndex.writeIndexData() } }
                 }
             }
         }

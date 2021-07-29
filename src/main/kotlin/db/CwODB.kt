@@ -186,7 +186,7 @@ class CwODB : IModule, Controller()
         return uniqueID
     }
 
-    private fun setLastUniqueID(uniqueID: Int, module: String)
+    fun setLastUniqueID(uniqueID: Int, module: String)
     {
         val nuFile = getNuFile(module)
         val uniqueIDString = uniqueID.toString()
@@ -195,6 +195,7 @@ class CwODB : IModule, Controller()
 
     fun getLastUniqueID(module: String): Int
     {
+        checkNuFile(module)
         val nuFile = getNuFile(module)
         val lastUniqueIDNumber: Int
         val lastUniqueIDString: String = nuFile.readText()

@@ -7,13 +7,13 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Analytics
 import modules.m1.logic.M1IndexManager
 import modules.mx.gui.MGXProgressbar
+import modules.mx.m1GlobalIndex
 import tornadofx.*
 
 @ExperimentalSerializationApi
 class MG1Analytics : Fragment("Genre distribution")
 {
     val db: CwODB by inject()
-    val indexManager: M1IndexManager by inject(Scope(db))
     private val m1controller: M1Analytics by inject()
     private val progressProperty = SimpleIntegerProperty()
     private var progressN by progressProperty
@@ -25,7 +25,7 @@ class MG1Analytics : Fragment("Genre distribution")
                 action {
                     maxEntries = m1controller.db.getLastUniqueID("M1")
                     runAsync {
-                        val genreDist = m1controller.getChartDataOnGenreDistribution(indexManager) {
+                        val genreDist = m1controller.getChartDataOnGenreDistribution(m1GlobalIndex) {
                             progressN = it.first
                             updateProgress(it.first.toDouble(), maxEntries.toDouble())
                             updateMessage("${it.second} (${it.first} / $maxEntries)")

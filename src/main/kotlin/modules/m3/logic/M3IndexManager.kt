@@ -20,7 +20,9 @@ class M3IndexManager : IModule, IIndexManager, Controller()
 {
     override fun moduleNameLong() = "M3IndexManager"
     override fun module() = "M3"
+
     override val indexList = mutableMapOf<Int, Index>()
+    override var lastUID = -1
 
     val db: CwODB by inject()
 
@@ -31,6 +33,11 @@ class M3IndexManager : IModule, IIndexManager, Controller()
         indexList[1] = db.getIndex(module(), 1)
         indexList[2] = db.getIndex(module(), 2)
         MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
+    }
+
+    override fun getUID(): Int
+    {
+        TODO("Not yet implemented")
     }
 
     override fun getIndexUserSelection(): ArrayList<String>

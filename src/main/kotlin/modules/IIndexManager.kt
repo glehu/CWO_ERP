@@ -5,6 +5,8 @@ import db.Index
 interface IIndexManager : IModule
 {
     val indexList: Map<Int, Index>
+    var lastUID: Int
+    fun getUID(): Int
     fun getIndexUserSelection(): ArrayList<String>
     fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean = true)
     fun buildIndex0(entry: Any, posDB: Long, byteSize: Int)

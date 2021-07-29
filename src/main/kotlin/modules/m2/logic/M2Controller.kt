@@ -61,7 +61,6 @@ class M2Controller : IModule, Controller()
         val dataTransfer = SongModel()
         dataTransfer.uID.value = -2
         setInScope(dataTransfer, newScope)
-        setInScope(m2GlobalIndex, newScope)
         find<MG2ContactFinder>(newScope).openModal(block = true)
         contact = if (dataTransfer.name.value != null)
         {

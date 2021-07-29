@@ -7,6 +7,7 @@ import modules.m2.logic.M2Controller
 import modules.m2.logic.M2DBManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.misc.InvoiceModel
+import modules.mx.m2GlobalIndex
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -25,7 +26,6 @@ class InvoiceConfiguratorWizard : Wizard("Add new invoice")
 class InvoiceViewerWizard : Wizard("View an invoice")
 {
     val invoice: InvoiceModel by inject()
-    val m2IndexManager: M2IndexManager by inject()
 
     init
     {
@@ -40,7 +40,6 @@ class NewInvoiceMainData : Fragment("Main")
     private val db: CwODB by inject()
     private val invoice: InvoiceModel by inject()
     private val m2controller: M2Controller by inject()
-    private val m2IndexManager: M2IndexManager by inject()
 
     //----------------------------------v
     //----------- Main Data ------------|
@@ -54,7 +53,7 @@ class NewInvoiceMainData : Fragment("Main")
                             item("Show contact").action {
                                 if (invoice.sellerUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
-                                        invoice.sellerUID.value, db, m2IndexManager.indexList[0]!!
+                                        invoice.sellerUID.value, db, m2GlobalIndex.indexList[0]!!
                                     ) as Contact, false
                                 )
                                 invoice.seller.value =
@@ -82,7 +81,7 @@ class NewInvoiceMainData : Fragment("Main")
                             item("Show contact").action {
                                 if (invoice.buyerUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
-                                        invoice.buyerUID.value, db, m2IndexManager.indexList[0]!!
+                                        invoice.buyerUID.value, db, m2GlobalIndex.indexList[0]!!
                                     ) as Contact, false
                                 )
                                 invoice.seller.value =

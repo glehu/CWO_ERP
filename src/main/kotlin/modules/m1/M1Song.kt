@@ -1,8 +1,9 @@
 package modules.m1
 
-import db.CwODB
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import modules.IEntry
+import modules.mx.m1GlobalIndex
 
 @Serializable
 data class Song(override var uID: Int, var name: String) : IEntry
@@ -136,9 +137,10 @@ data class Song(override var uID: Int, var name: String) : IEntry
     private var hasFeature: Boolean = false
     private var isCollab: Boolean = false
 
+    @ExperimentalSerializationApi
     fun initialize()
     {
-        if (uID == -1) uID = CwODB().getUniqueID("M1")
+        if (uID == -1) uID = m1GlobalIndex.getUID()
 
         val sTmp1: String
         val sTmp2: String

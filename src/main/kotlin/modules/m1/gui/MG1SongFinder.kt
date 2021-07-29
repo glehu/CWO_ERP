@@ -46,7 +46,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                         textProperty().addListener { _, _, _ ->
                             runAsync {
                                 threadIDCurrent++
-                                searchForSongs(threadIDCurrent, m1GlobalIndex)
+                                searchForSongs(threadIDCurrent)
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
@@ -112,7 +112,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
         }
     }
 
-    private fun searchForSongs(threadID: Int, m1GlobalIndex: M1IndexManager)
+    private fun searchForSongs(threadID: Int)
     {
         var entriesFound = 0
         val timeInMillis = measureTimeMillis {
