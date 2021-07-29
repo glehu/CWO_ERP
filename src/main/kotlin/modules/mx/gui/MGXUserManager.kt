@@ -6,6 +6,7 @@ import javafx.scene.paint.Paint
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.MXCredentials
 import modules.mx.MXUser
+import modules.mx.rightButtonsWidth
 import modules.mx.logic.MXUserManager
 import tornadofx.*
 
@@ -38,7 +39,7 @@ class MGXUserManager : Fragment("MX Management")
                 action {
                     addUser(credentials)
                 }
-                prefHeight = 50.0
+                prefWidth = rightButtonsWidth
             }
         }
     }

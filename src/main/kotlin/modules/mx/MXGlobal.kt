@@ -37,3 +37,6 @@ fun getIniFile() = File("$programPath\\cwo_erp.ini")
 
 //Search settings
 var maxSearchResultsGlobal: Int = 0
+
+//GUI settings
+const val rightButtonsWidth = 150.0

@@ -13,6 +13,7 @@ import modules.m2.logic.M2Controller
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
 import modules.m3.logic.M3DBManager
+import modules.mx.rightButtonsWidth
 import modules.mx.logic.MXLog
 import modules.mx.m3GlobalIndex
 import modules.mx.maxSearchResultsGlobal
@@ -33,7 +34,6 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
     private var ixNr = SimpleStringProperty()
     private val ixNrList = FXCollections.observableArrayList(m3GlobalIndex.getIndexUserSelection())!!
     private val threadIDCurrent = SimpleIntegerProperty()
-    private val buttonWidth = 150.0
     override val root = borderpane {
         center = form {
             contactsFound.clear()
@@ -83,20 +83,20 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                     startSearch()
                 }
                 tooltip("Add a new song to the database.")
-                prefWidth = buttonWidth
+                prefWidth = rightButtonsWidth
             }
             //Analytics functions
             button("Analytics") {
                 //action { m3Controller.openAnalytics() }
                 tooltip("Display a chart to show the distribution of genres.")
-                prefWidth = buttonWidth
+                prefWidth = rightButtonsWidth
             }
             //Maintenance functions
             button("Rebuild indices") {
                 //TODO: Not yet implemented
                 isDisable = true
                 tooltip("Rebuilds all indices in case of faulty indices.")
-                prefWidth = buttonWidth
+                prefWidth = rightButtonsWidth
             }
             //Data import
             button("Data Import") {
@@ -104,7 +104,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                 isDisable = true
                 //action { m3Controller.openDataImport() }
                 tooltip("Import contact data from a .csv file.")
-                prefWidth = buttonWidth
+                prefWidth = rightButtonsWidth
             }
         }
     }
