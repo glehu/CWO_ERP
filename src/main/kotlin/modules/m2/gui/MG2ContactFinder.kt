@@ -82,7 +82,10 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
         right = vbox {
             //Main functions
             button("New Contact") {
-                action { m2Controller.openWizardNewContact() }
+                action {
+                    m2Controller.openWizardNewContact()
+                    startSearch()
+                }
                 tooltip("Add a new contact to the database.")
                 prefWidth = buttonWidth
             }

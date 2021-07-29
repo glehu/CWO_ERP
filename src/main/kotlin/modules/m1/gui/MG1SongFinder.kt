@@ -80,7 +80,10 @@ class MG1SongFinder : IModule, View("M1 Songs")
         right = vbox {
             //Main functions
             button("New Song") {
-                action { m1Controller.openWizardNewSong() }
+                action {
+                    m1Controller.openWizardNewSong()
+                    startSearch()
+                }
                 tooltip("Add a new song to the database.")
                 prefWidth = buttonWidth
             }
