@@ -2,6 +2,7 @@ package modules.m2.gui
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.scene.control.Button
 import javafx.stage.FileChooser
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Import
@@ -21,6 +22,7 @@ class MG2Import : Fragment("Contact Data Import")
     private var progressN by progressProperty
     private val buttonWidth = 150.0
     private val birthdayHeaderName = SimpleStringProperty()
+    private lateinit var startButton: Button
     override val root = form {
         setPrefSize(400.0, 600.0)
         vbox {
@@ -32,7 +34,10 @@ class MG2Import : Fragment("Contact Data Import")
                             arrayOf(FileChooser.ExtensionFilter("CSV file (*.csv)", "*.csv")),
                             mode = FileChooserMode.Single
                         )[0]
-                        if (file.isFile) filenameProperty.value = file.name
+                        if (file.isFile) {
+                            filenameProperty.value = file.name
+                            startButton.isDisable = false
+                        }
                     }
                     prefWidth = buttonWidth
                 }
@@ -40,7 +45,8 @@ class MG2Import : Fragment("Contact Data Import")
                     paddingHorizontal = 20
                 }
             }
-            button("Start") {
+            startButton = button("Start") {
+                isDisable = (filenameProperty.value == null || filenameProperty.value.isEmpty())
                 action {
                     runAsync {
                         m2controller.importData(file, contactSchema, birthdayHeaderName.value) {
