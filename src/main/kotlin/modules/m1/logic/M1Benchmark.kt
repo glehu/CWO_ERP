@@ -11,7 +11,6 @@ import modules.mx.logic.MXLog
 import modules.mx.logic.getRandomString
 import modules.mx.m1GlobalIndex
 import tornadofx.Controller
-import tornadofx.Scope
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 

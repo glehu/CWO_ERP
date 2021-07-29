@@ -4,8 +4,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
-import modules.mx.gui.MGXPreferences
-import tornadofx.FX.Companion.find
 import java.io.File
 
 //*************************************************

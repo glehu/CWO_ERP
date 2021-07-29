@@ -12,7 +12,6 @@ import modules.IModule
 import modules.m1.Song
 import modules.m1.logic.M1Controller
 import modules.m1.logic.M1DBManager
-import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2Controller
 import modules.mx.logic.MXLog
 import modules.mx.m1GlobalIndex
@@ -30,7 +29,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
     private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
-    private var songsFound: ObservableList<Song> = observableList(Song(-1, ""))
+    private var songsFound: ObservableList<Song> = observableListOf(Song(-1, ""))
     private var ixNr = SimpleStringProperty()
     private val ixNrList = FXCollections.observableArrayList(m1GlobalIndex.getIndexUserSelection())!!
     private val threadIDCurrentProperty = SimpleIntegerProperty()

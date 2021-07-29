@@ -5,7 +5,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
 import modules.m2.logic.M2Controller
 import modules.m2.logic.M2DBManager
-import modules.m2.logic.M2IndexManager
 import modules.m3.misc.InvoiceModel
 import modules.mx.m2GlobalIndex
 import tornadofx.*

@@ -39,6 +39,7 @@ class NewContactMainData : Fragment("Main")
             field("Last Name") { textfield(contact.lastName) }
             field("Birthdate") { datepicker(contact.birthdate) }
             field("Street") { textfield(contact.street) }
+            field("Number") { textfield(contact.houseNr) }
             field("City") { textfield(contact.city) }
             field("Postcode") { textfield(contact.postCode) }
             field("Country") { textfield(contact.country) }

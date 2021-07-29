@@ -5,7 +5,6 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.chart.PieChart
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Analytics
-import modules.m2.logic.M2IndexManager
 import modules.mx.gui.MGXProgressbar
 import modules.mx.m2GlobalIndex
 import tornadofx.*

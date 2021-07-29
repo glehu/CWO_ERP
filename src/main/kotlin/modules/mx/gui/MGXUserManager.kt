@@ -3,6 +3,7 @@ package modules.mx.gui
 import javafx.collections.ObservableList
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.MXCredentials
 import modules.mx.MXUser
 import modules.mx.logic.MXUserManager
@@ -11,8 +12,10 @@ import tornadofx.*
 class MGXUserManager : Fragment("MX Management")
 {
     private val userManager: MXUserManager by inject()
+    @ExperimentalSerializationApi
     private val credentials = userManager.getCredentials()
-    private var users: ObservableList<MXUser> = observableList(MXUser("", ""))
+    private var users: ObservableList<MXUser> = observableListOf(MXUser("", ""))
+    @ExperimentalSerializationApi
     override val root = borderpane {
         getUsers()
         center = tableview(users) {
@@ -43,14 +46,17 @@ class MGXUserManager : Fragment("MX Management")
     private fun getRightsCellColor(hasRight: Boolean): MultiValue<Paint> =
         if (hasRight) MultiValue(arrayOf(Color.GREEN)) else MultiValue(arrayOf(Color.RED))
 
+    @ExperimentalSerializationApi
     private fun getUsers()
     {
         users.clear()
         for ((_, v) in credentials.credentials) users.add(v)
     }
 
+    @ExperimentalSerializationApi
     private fun addUser(credentials: MXCredentials) = showUser(MXUser("", ""), credentials)
 
+    @ExperimentalSerializationApi
     private fun showUser(user: MXUser, credentials: MXCredentials)
     {
         MGXUser(user, credentials).openModal(block = true)

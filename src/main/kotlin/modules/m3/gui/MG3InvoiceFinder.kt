@@ -29,7 +29,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
     private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
-    private var contactsFound: ObservableList<Invoice> = observableList(Invoice(-1))
+    private var contactsFound: ObservableList<Invoice> = observableListOf(Invoice(-1))
     private var ixNr = SimpleStringProperty()
     private val ixNrList = FXCollections.observableArrayList(m3GlobalIndex.getIndexUserSelection())!!
     private val threadIDCurrent = SimpleIntegerProperty()

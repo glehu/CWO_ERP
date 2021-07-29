@@ -29,7 +29,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
     private val song: SongModelP1 by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
-    private var contactsFound: ObservableList<Contact> = observableList(Contact(-1, ""))
+    private var contactsFound: ObservableList<Contact> = observableListOf(Contact(-1, ""))
     private var ixNr = SimpleStringProperty()
     private val ixNrList = FXCollections.observableArrayList(m2GlobalIndex.getIndexUserSelection())!!
     private val threadIDCurrent = SimpleIntegerProperty()
