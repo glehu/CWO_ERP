@@ -24,24 +24,27 @@ class MG2Analytics : Fragment("City distribution")
         //Default value
         numberOfCities = 1
         vbox {
-            hbox {
-                button("Start") {
-                    action {
-                        maxEntries = m2controller.db.getLastUniqueID("M2")
-                        runAsync {
-                            val cityDist = m2controller.getChartDataOnCityDistribution(m2GlobalIndex, numberOfCities)
-                            {
-                                progressN = it.first
-                                updateProgress(it.first.toDouble(), maxEntries.toDouble())
-                                updateMessage("${it.second} (${it.first} / $maxEntries)")
-                            }
-                            ui { showPiechart(cityDist) }
-                        }
+            fieldset {
+                field("Amount of cities") {
+                    textfield(numberOfCitiesProperty) {
+                        prefWidth = 50.0
+                        maxWidth = 50.0
+                        tooltip("Sets the amount of cities to show.")
                     }
                 }
-                textfield(numberOfCitiesProperty) {
-                    prefWidth = 50.0
-                    tooltip("Sets the amount of cities to show.")
+            }
+            button("Start") {
+                action {
+                    maxEntries = m2controller.db.getLastUniqueID("M2")
+                    runAsync {
+                        val cityDist = m2controller.getChartDataOnCityDistribution(m2GlobalIndex, numberOfCities)
+                        {
+                            progressN = it.first
+                            updateProgress(it.first.toDouble(), maxEntries.toDouble())
+                            updateMessage("${it.second} (${it.first} / $maxEntries)")
+                        }
+                        ui { showPiechart(cityDist) }
+                    }
                 }
             }
             add<MGXProgressbar>()
