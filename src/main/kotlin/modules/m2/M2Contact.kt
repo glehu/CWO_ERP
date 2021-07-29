@@ -1,8 +1,10 @@
 package modules.m2
 
 import db.CwODB
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import modules.IEntry
+import modules.mx.m2GlobalIndex
 
 @Serializable
 data class Contact(override var uID: Int, var name: String) : IEntry
@@ -36,8 +38,9 @@ data class Contact(override var uID: Int, var name: String) : IEntry
     var isManager: Boolean = false
     var isFan: Boolean = false
 
+    @ExperimentalSerializationApi
     fun initialize()
     {
-        if (uID == -1) uID = CwODB().getUniqueID("M2")
+        if (uID == -1) uID = m2GlobalIndex.getUID()
     }
 }

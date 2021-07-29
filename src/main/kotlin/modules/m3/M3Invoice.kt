@@ -1,9 +1,11 @@
 package modules.m3
 
 import db.CwODB
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import modules.IEntry
 import modules.IInvoice
+import modules.mx.m3GlobalIndex
 
 @Serializable
 data class Invoice(override var uID: Int) : IEntry, IInvoice
@@ -37,9 +39,10 @@ data class Invoice(override var uID: Int) : IEntry, IInvoice
 
     var isIncome: Boolean = false
 
+    @ExperimentalSerializationApi
     fun initialize()
     {
-        if (uID == -1) uID = CwODB().getUniqueID("M3")
+        if (uID == -1) uID = m3GlobalIndex.getUID()
         if (price > 0) isIncome = true
     }
 }
