@@ -59,6 +59,9 @@ class MXGUserInterface : View("CWO ERP")
 {
     override val root = borderpane {
         top = menubar {
+            menu("Menu") {
+                item("Preferences").action { showPreferences() }
+            }
             menu("Misc") {
                 menu("Log") {
                     menu("Show Logfile") {

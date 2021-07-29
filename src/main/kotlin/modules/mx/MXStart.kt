@@ -1,11 +1,15 @@
 package modules.mx
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
 import modules.mx.gui.CWOMainGUI
-import modules.mx.logic.*
+import modules.mx.gui.IniValues
+import modules.mx.gui.showPreferences
+import modules.mx.logic.MXLog
 import tornadofx.launch
 import java.io.File
 
@@ -18,7 +22,16 @@ fun main()
 fun loginRoutines()
 {
     //Search for the .ini file to set up the software
-    checkIniFile()
+    if (!getIniFile().isFile) showPreferences()
+    else readAndSetIniValues()
+}
+
+fun readAndSetIniValues()
+{
+    val iniVal = Json.decodeFromString<IniValues>(getIniFile().readText())
+    token = iniVal.token
+    dataPath = iniVal.dataPath
+    maxSearchResultsGlobal = iniVal.maxSearchResults
 }
 
 @ExperimentalSerializationApi
