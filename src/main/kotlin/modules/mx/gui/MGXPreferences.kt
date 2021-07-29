@@ -7,10 +7,12 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.mx.dataPath
 import modules.mx.getIniFile
 import modules.mx.logic.getRandomString
 import modules.mx.readAndSetIniValues
 import tornadofx.*
+import java.io.File
 
 class MGXPreferences : View("Preferences")
 {
@@ -44,7 +46,16 @@ class MGXPreferences : View("Preferences")
         vbox {
             fieldset {
                 field("Encryption Key") { textfield(encryptionKeyProperty) { prefWidth = 200.0 } }
-                field("Data Path") { textfield(dataPathProperty) { prefWidth = 200.0 } }
+                field("Data Path") {
+                    textfield(dataPathProperty) { prefWidth = 200.0 }
+                    button("<") {
+                        tooltip("Choose Path")
+                        action {
+                            val dataPathChosen = chooseDirectory("Choose data path", File(dataPath))
+                            if (dataPathChosen != null) dataPathProperty.value = dataPathChosen.absolutePath
+                        }
+                    }
+                }
                 field("Max Search Results") { textfield(maxSearchResultsProperty) { prefWidth = 200.0 } }
                 button("Save") {
                     shortcut("Enter")
