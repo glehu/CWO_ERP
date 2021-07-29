@@ -168,7 +168,8 @@ data class Song(override var uID: Int, var name: String) : IEntry
         if (onSpotify) nTmp1 += 1; totalPlays += playsSpotify
         if (onYouTube) nTmp1 += 1; totalPlays += playsYouTube
         if (onSoundCloud) nTmp1 += 1; totalPlays += playsSoundCloud
-        averagePlays = totalPlays.toDouble() / nTmp1
+        if (nTmp1 > 0) averagePlays = totalPlays.toDouble() / nTmp1
+        else averagePlays = 0.0
         //----------------- Single/EP/Album
         isSingle = !(inEP || inAlbum)
         //----------------- Collaboration
