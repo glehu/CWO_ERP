@@ -112,7 +112,7 @@ class CwODB : IModule, Controller()
         {
             val raf: RandomAccessFile = openRandomFileAccess(module, "r")
             //Determines the type of search that will be done depending on the search string
-            val filteredMap: Map<Int, IndexContent> = if (searchText != "*" && searchText != "")
+            val filteredMap: Map<Int, IndexContent> = if (isGetAll(searchText))
             {
                 //Search text -> Search for specific entries
                 if (exactSearch)
@@ -142,6 +142,18 @@ class CwODB : IModule, Controller()
                 if (maxSearchResults > -1 && counter >= maxSearchResults) break
             }
         }
+    }
+
+    private fun isGetAll(searchText: String): Boolean
+    {
+        var getAll = false
+        when(searchText)
+        {
+            "" -> getAll = true
+            "*" -> getAll = true
+            " " -> getAll = true
+        }
+        return getAll
     }
 
     @ExperimentalSerializationApi
