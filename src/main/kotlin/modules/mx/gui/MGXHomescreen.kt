@@ -24,13 +24,13 @@ class MXGLogin : View("CWO ERP")
     private val loginUser = MXUserModel(getUserPropertyFromUser(MXUser("", "")))
     private val userManager: MXUserManager by inject()
     override val root = borderpane {
+        setPrefSize(350.0, 250.0)
         top = menubar {
             menu("Menu") {
                 item("Preferences").action { showPreferences() }
             }
         }
         center = form {
-            setPrefSize(300.0, 200.0)
             loginRoutines()
             vbox {
                 fieldset {

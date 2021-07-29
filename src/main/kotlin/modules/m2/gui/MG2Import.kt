@@ -22,6 +22,7 @@ class MG2Import : Fragment("Contact Data Import")
     private val buttonWidth = 150.0
     private val birthdayHeaderName = SimpleStringProperty()
     override val root = form {
+        setPrefSize(400.0, 600.0)
         vbox {
             hbox {
                 button("Choose file") {
