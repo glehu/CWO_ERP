@@ -112,7 +112,7 @@ class CwODB : IModule, Controller()
         {
             val raf: RandomAccessFile = openRandomFileAccess(module, "r")
             //Determines the type of search that will be done depending on the search string
-            val filteredMap: Map<Int, IndexContent> = if (isGetAll(searchText))
+            val filteredMap: Map<Int, IndexContent> = if (!isGetAll(searchText))
             {
                 //Search text -> Search for specific entries
                 if (exactSearch)
