@@ -23,31 +23,38 @@ class MXGLogin : View("CWO ERP")
 {
     private val loginUser = MXUserModel(getUserPropertyFromUser(MXUser("", "")))
     private val userManager: MXUserManager by inject()
-    override val root = form {
-        setPrefSize(300.0, 200.0)
-        loginRoutines()
-        vbox {
-            fieldset {
-                field("Username") { textfield(loginUser.username) { prefWidth = 200.0 }.required() }
-                field("Password") { passwordfield(loginUser.password) { prefWidth = 200.0 }.required() }
+    override val root = borderpane {
+        top = menubar {
+            menu("Menu") {
+                item("Preferences").action { showPreferences() }
             }
         }
-        button("Login") {
-            enableWhen(loginUser.dirty)
-            shortcut("Enter")
-            action {
-                var loginSuccess = false
-                runAsyncWithProgress {
-                    if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty())
-                    {
-                        loginSuccess = userManager.login(loginUser.username.value, loginUser.password.value)
+        center = form {
+            setPrefSize(300.0, 200.0)
+            loginRoutines()
+            vbox {
+                fieldset {
+                    field("Username") { textfield(loginUser.username) { prefWidth = 200.0 }.required() }
+                    field("Password") { passwordfield(loginUser.password) { prefWidth = 200.0 }.required() }
+                }
+            }
+            button("Login") {
+                enableWhen(loginUser.dirty)
+                shortcut("Enter")
+                action {
+                    var loginSuccess = false
+                    runAsyncWithProgress {
+                        if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty())
+                        {
+                            loginSuccess = userManager.login(loginUser.username.value, loginUser.password.value)
+                        }
+                    } ui {
+                        if (loginSuccess)
+                        {
+                            close()
+                            find(MXGUserInterface::class).openModal()
+                        } else loginUser.password.value = ""
                     }
-                } ui {
-                    if (loginSuccess)
-                    {
-                        close()
-                        find(MXGUserInterface::class).openModal()
-                    } else loginUser.password.value = ""
                 }
             }
         }
