@@ -17,14 +17,13 @@ fun main()
 
 fun loginRoutines()
 {
-    //Search for the .ini file to setup the software
-    checkIniFile(File("$programPath\\cwo_erp.ini"))
+    //Search for the .ini file to set up the software
+    checkIniFile()
 }
 
 @ExperimentalSerializationApi
 fun startupRoutines(user: MXUser)
 {
-    checkIniFile(File("$programPath\\cwo_erp.ini"))
     //Set active user
     activeUser = user
     //Check if all data paths and files exist
