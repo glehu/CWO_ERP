@@ -35,7 +35,6 @@ class CwODB : IModule, Controller()
             canOverride = true
         }
         //Loading the database file for the entry to be saved in
-        //log("M1", ":> Indexing...")
         /* Since we are creating a new entry the entry's position in the database will be at the end
            To calculate "the end" we need the position and length of the last entry
 
@@ -78,7 +77,7 @@ class CwODB : IModule, Controller()
             //Save the serialized entry to the determined destination file
             writeDBEntry(entryBytes, posDBNew, raf)
 
-            //If we saved a preexisting entry we have to delete the old entry entry
+            //If we saved a preexisting entry we have to delete the old entry
             //...if the new byteSize is greater than the old one
             if (posDB > -1L && !canOverride)
             {
@@ -89,8 +88,9 @@ class CwODB : IModule, Controller()
             }
             if (!canOverride)
             {
-                val indexContent = IndexContent(uID, "", posDBNew, byteSizeNew)
-                getLastEntryFile(module).writeText(Json.encodeToString(indexContent))
+                getLastEntryFile(module).writeText(
+                    Json.encodeToString(IndexContent(uID, "", posDBNew, byteSizeNew))
+                )
             }
         } else MXLog.log(module, MXLog.LogType.ERROR, "Serialization failed!", moduleNameLong())
         return Pair(posDBNew, byteSizeNew)
@@ -175,15 +175,6 @@ class CwODB : IModule, Controller()
     {
         if (posInDatabase > 0) raf.seek(posInDatabase)
         raf.write(entry)
-    }
-
-    fun getUniqueID(module: String): Int
-    {
-        checkNuFile(module) //Check if <module>.nu exists; create if it doesn't
-        var uniqueID = getLastUniqueID(module)
-        uniqueID += 1
-        setLastUniqueID(uniqueID, module)
-        return uniqueID
     }
 
     fun setLastUniqueID(uniqueID: Int, module: String)
