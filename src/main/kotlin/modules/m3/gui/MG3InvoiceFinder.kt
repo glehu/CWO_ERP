@@ -132,14 +132,14 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                 m3GlobalIndex
             ) { _, bytes ->
                 //Add the contacts to the table
-                if (threadID >= threadIDCurrent.value)
+                if (threadID == threadIDCurrent.value)
                 {
                     contactsFound.add(dbManager.decodeEntry(bytes) as Invoice)
                     entriesFound++
                 }
             }
         }
-        if (threadID >= threadIDCurrent.value)
+        if (threadID == threadIDCurrent.value)
         {
             MXLog.log(
                 module(), MXLog.LogType.INFO, "$entriesFound invoices loaded (in $timeInMillis ms)",

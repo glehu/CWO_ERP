@@ -132,7 +132,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                 maxSearchResultsGlobal,
                 m1GlobalIndex
             ) { _, bytes ->
-                if (threadID >= threadIDCurrent)
+                if (threadID == threadIDCurrent)
                 {
                     if (entriesFound == 0) songsFound.clear()
                     songsFound.add(dbManager.decodeEntry(bytes) as Song)
@@ -140,7 +140,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                 }
             }
         }
-        if (threadID >= threadIDCurrent)
+        if (threadID == threadIDCurrent)
         {
             if (entriesFound == 0)
             {

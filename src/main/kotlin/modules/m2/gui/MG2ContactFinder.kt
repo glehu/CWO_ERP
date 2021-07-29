@@ -134,14 +134,14 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                 m2GlobalIndex
             ) { _, bytes ->
                 //Add the contacts to the table
-                if (threadID >= threadIDCurrent.value)
+                if (threadID == threadIDCurrent.value)
                 {
                     contactsFound.add(dbManager.decodeEntry(bytes) as Contact)
                     entriesFound++
                 }
             }
         }
-        if (threadID >= threadIDCurrent.value)
+        if (threadID == threadIDCurrent.value)
         {
             MXLog.log(
                 module(), MXLog.LogType.INFO, "$entriesFound contacts loaded (in $timeInMillis ms)",
