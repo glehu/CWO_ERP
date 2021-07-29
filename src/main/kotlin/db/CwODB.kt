@@ -151,7 +151,6 @@ class CwODB : IModule, Controller()
         {
             "" -> getAll = true
             "*" -> getAll = true
-            " " -> getAll = true
         }
         return getAll
     }
