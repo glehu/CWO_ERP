@@ -37,6 +37,7 @@ class M1Controller : IModule, Controller()
                 )
                 db.closeRandomFileAccess(raf)
                 wizard.songP1.item = SongPropertyP1()
+                wizard.songP2.item = SongPropertyP2()
                 wizard.isComplete = false
                 wizard.close()
             }
@@ -71,8 +72,8 @@ class M1Controller : IModule, Controller()
                     indexManager = m1GlobalIndex
                 )
                 db.closeRandomFileAccess(raf)
-                wizard.songP1.item = getSongPropertyP1FromSong(song)
-                wizard.songP2.item = getSongPropertyP2FromSong(song)
+                wizard.songP1.item = SongPropertyP1()
+                wizard.songP2.item = SongPropertyP2()
                 wizard.isComplete = false
                 wizard.close()
             }
