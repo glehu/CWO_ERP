@@ -42,10 +42,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                 field("Search text") {
                     searchText = textfield {
                         textProperty().addListener { _, _, _ ->
-                            runAsync {
-                                threadIDCurrent.value++
-                                searchForInvoices(threadIDCurrent.value)
-                            }
+                            startSearch()
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
                     }
@@ -73,8 +70,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                     readonlyColumn("Text", Invoice::text).prefWidth(200.0)
                     onUserSelect(1) {
                         m3Controller.showInvoice(it)
-                        contactsFound.clear()
-                        searchText.text = ""
+                        startSearch()
                     }
                 }
             }
@@ -107,6 +103,14 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                 tooltip("Import contact data from a .csv file.")
                 prefWidth = buttonWidth
             }
+        }
+    }
+
+    private fun startSearch()
+    {
+        runAsync {
+            threadIDCurrent.value++
+            searchForInvoices(threadIDCurrent.value)
         }
     }
 

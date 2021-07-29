@@ -53,7 +53,7 @@ class NewInvoiceMainData : Fragment("Main")
                                 if (invoice.sellerUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
                                         invoice.sellerUID.value, db, m2GlobalIndex.indexList[0]!!
-                                    ) as Contact, false
+                                    ) as Contact
                                 )
                                 invoice.seller.value =
                                     m2controller.getContactName(
@@ -81,7 +81,7 @@ class NewInvoiceMainData : Fragment("Main")
                                 if (invoice.buyerUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
                                         invoice.buyerUID.value, db, m2GlobalIndex.indexList[0]!!
-                                    ) as Contact, false
+                                    ) as Contact
                                 )
                                 invoice.seller.value =
                                     m2controller.getContactName(

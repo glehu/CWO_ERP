@@ -42,10 +42,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                 field("Contact Name") {
                     searchText = textfield {
                         textProperty().addListener { _, _, _ ->
-                            runAsync {
-                                threadIDCurrent.value++
-                                searchForContacts(threadIDCurrent.value)
-                            }
+                            startSearch()
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
                     }
@@ -76,8 +73,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                         } else
                         {
                             m2Controller.showContact(it)
-                            contactsFound.clear()
-                            searchText.text = ""
+                            startSearch()
                         }
                     }
                 }
@@ -109,6 +105,14 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                 tooltip("Import contact data from a .csv file.")
                 prefWidth = buttonWidth
             }
+        }
+    }
+
+    private fun startSearch()
+    {
+        runAsync {
+            threadIDCurrent.value++
+            searchForContacts(threadIDCurrent.value)
         }
     }
 

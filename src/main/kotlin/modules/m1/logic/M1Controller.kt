@@ -77,6 +77,6 @@ class M1Controller : IModule, Controller()
                 wizard.close()
             }
         }
-        wizard.openModal()
+        wizard.openModal(block = true)
     }
 }

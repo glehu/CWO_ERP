@@ -82,7 +82,7 @@ class M2Controller : IModule, Controller()
         } else default
     }
 
-    fun showContact(contact: Contact, asModal: Boolean = true)
+    fun showContact(contact: Contact)
     {
         val wizard = find<ContactViewerWizard>()
         wizard.contact.item = getContactPropertyFromContact(contact)
@@ -104,7 +104,6 @@ class M2Controller : IModule, Controller()
                 wizard.close()
             }
         }
-        if (asModal) wizard.openModal()
-        else wizard.openWindow(block = true)
+        wizard.openWindow(block = true)
     }
 }

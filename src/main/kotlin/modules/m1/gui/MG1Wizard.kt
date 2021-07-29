@@ -83,7 +83,7 @@ class NewSongMainData : Fragment("Main")
                                 if (songP1.vocalistUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
                                         songP1.vocalistUID.value, db, m2GlobalIndex.indexList[0]!!
-                                    ) as Contact, false
+                                    ) as Contact
                                 )
                                 songP1.vocalist.value =
                                     m2controller.getContactName(
@@ -111,7 +111,7 @@ class NewSongMainData : Fragment("Main")
                                 if (songP1.producerUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
                                         songP1.producerUID.value, db, m2GlobalIndex.indexList[0]!!
-                                    ) as Contact, false
+                                    ) as Contact
                                 )
                                 songP1.producer.value =
                                     m2controller.getContactName(

@@ -43,10 +43,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                 field("Song Name") {
                     searchText = textfield {
                         textProperty().addListener { _, _, _ ->
-                            runAsync {
-                                threadIDCurrent++
-                                searchForSongs(threadIDCurrent)
-                            }
+                            startSearch()
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
                     }
@@ -75,7 +72,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
                         m1Controller.showSong(it)
-                        songsFound.clear()
+                        startSearch()
                     }
                 }
             }
@@ -108,6 +105,14 @@ class MG1SongFinder : IModule, View("M1 Songs")
                 tooltip("Import contact data from a .csv file.")
                 prefWidth = buttonWidth
             }
+        }
+    }
+
+    private fun startSearch()
+    {
+        runAsync {
+            threadIDCurrent++
+            searchForSongs(threadIDCurrent)
         }
     }
 

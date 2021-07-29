@@ -63,6 +63,6 @@ class M3Controller : IModule, Controller()
                 wizard.close()
             }
         }
-        wizard.openModal()
+        wizard.openModal(block = true)
     }
 }
