@@ -39,7 +39,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
             contactsFound.clear()
             threadIDCurrent.value = 0
             fieldset {
-                field("Search text") {
+                field("Search") {
                     searchText = textfield {
                         textProperty().addListener { _, _, _ ->
                             startSearch()

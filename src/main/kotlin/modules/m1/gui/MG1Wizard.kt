@@ -14,7 +14,7 @@ import tornadofx.*
 
 //This Wizard is used to create new songs
 @ExperimentalSerializationApi
-class SongConfiguratorWizard : Wizard("Add new songP1")
+class SongConfiguratorWizard : Wizard("Add new song")
 {
     val songP1: SongModelP1 by inject()
     val songP2: SongModelP2 by inject()
@@ -38,7 +38,7 @@ class SongConfiguratorWizard : Wizard("Add new songP1")
 
 //This Wizard is used to view and/or edit songs
 @ExperimentalSerializationApi
-class SongViewerWizard : Wizard("View a songP1")
+class SongViewerWizard : Wizard("View a song")
 {
     val songP1: SongModelP1 by inject()
     val songP2: SongModelP2 by inject()
@@ -168,7 +168,7 @@ class NewSongCompletionStateData : Fragment("Completion State")
     //----------- Main Data ------------|
     //----------------------------------^
     private val songStateList = FXCollections.observableArrayList(
-        "Instrumental", "songP1"
+        "Instrumental", "Song"
     )!!
     private val instruStateList = FXCollections.observableArrayList(
         "Draft", "Polishing", "Finished"
@@ -188,7 +188,7 @@ class NewSongCompletionStateData : Fragment("Completion State")
 
     override val root = form {
         fieldset {
-            fieldset("songP1 state") { combobox(songP1.songState, songStateList) }
+            fieldset("Song state") { combobox(songP1.songState, songStateList) }
             fieldset("Instrumental state") { combobox(songP1.instruState, instruStateList) }
             fieldset("Lyrics state") { combobox(songP1.lyricsState, lyricsStateList) }
             fieldset("Vocals state") { combobox(songP1.vocalsState, vocalsStateList) }
@@ -445,7 +445,7 @@ class NewSongMiscData : Fragment("Misc")
     override val root = form {
         fieldset("Inspired by...") {
             field("Artist") { textfield(songP2.inspiredByArtist) }
-            field("songP2") { textfield(songP2.inspiredBySong) }
+            field("Song") { textfield(songP2.inspiredBySong) }
         }
         fieldset("Soft-/Hardware") {
             field("DAW") { textfield(songP2.dawUsed) }

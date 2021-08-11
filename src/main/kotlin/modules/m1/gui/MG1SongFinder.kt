@@ -40,7 +40,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
             songsFound.clear()
             threadIDCurrent = 0
             fieldset {
-                field("Song Name") {
+                field("Search") {
                     searchText = textfield {
                         textProperty().addListener { _, _, _ ->
                             startSearch()

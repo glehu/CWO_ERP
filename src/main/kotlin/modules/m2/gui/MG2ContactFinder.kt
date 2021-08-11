@@ -39,7 +39,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
             contactsFound.clear()
             threadIDCurrent.value = 0
             fieldset {
-                field("Contact Name") {
+                field("Search") {
                     searchText = textfield {
                         textProperty().addListener { _, _, _ ->
                             startSearch()
