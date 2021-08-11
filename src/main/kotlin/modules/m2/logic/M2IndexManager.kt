@@ -31,12 +31,13 @@ class M2IndexManager : IModule, IIndexManager, Controller()
         MXLog.log("M2", MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
         indexList[0] = db.getIndex("M2", 0)
         indexList[1] = db.getIndex("M2", 1)
+        indexList[2] = db.getIndex("M2", 2)
         MXLog.log("M2", MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
     }
 
     override fun getIndexUserSelection(): ArrayList<String>
     {
-        return arrayListOf("1-Name")
+        return arrayListOf("1-Name", "2-City")
     }
 
     @ExperimentalSerializationApi
@@ -44,6 +45,7 @@ class M2IndexManager : IModule, IIndexManager, Controller()
         entry as Contact
         buildIndex0(entry, posDB, byteSize)
         buildIndex1(entry, posDB, byteSize)
+        buildIndex2(entry, posDB, byteSize)
         if (writeToDisk) launch { writeIndexData() }
     }
 
@@ -51,6 +53,7 @@ class M2IndexManager : IModule, IIndexManager, Controller()
     {
         db.getIndexFile("M2", 0).writeText(Json.encodeToString(indexList[0]))
         db.getIndexFile("M2", 1).writeText(Json.encodeToString(indexList[1]))
+        db.getIndexFile("M2", 2).writeText(Json.encodeToString(indexList[2]))
     }
 
     //**** **** **** **** **** INDICES **** **** **** **** ****
@@ -66,5 +69,12 @@ class M2IndexManager : IModule, IIndexManager, Controller()
     {
         val formatted = indexFormat(contact.name).uppercase()
         indexList[1]!!.indexMap[contact.uID] = IndexContent(contact.uID, formatted, posDB, byteSize)
+    }
+
+    //Index 2 (Contact.city)
+    private fun buildIndex2(contact: Contact, posDB: Long, byteSize: Int)
+    {
+        val formatted = indexFormat(contact.city).uppercase()
+        indexList[2]!!.indexMap[contact.uID] = IndexContent(contact.uID, formatted, posDB, byteSize)
     }
 }
