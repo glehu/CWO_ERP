@@ -98,7 +98,7 @@ class MXGUserInterface : View("CWO ERP")
             if (activeUser.canAccessM1) tab<MG1SongFinder>()
             if (activeUser.canAccessM2) tab<MG2ContactFinder>()
             if (activeUser.canAccessM3) tab<MG3InvoiceFinder>()
-            if (activeUser.canAccessMX) tab<MGXUserManager>()
+            if (activeUser.canAccessMX) tab<MGXManagement>()
         }
     }
 }
