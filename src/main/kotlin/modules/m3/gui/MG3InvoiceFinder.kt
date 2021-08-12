@@ -13,10 +13,10 @@ import modules.m2.logic.M2Controller
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
 import modules.m3.logic.M3DBManager
-import modules.mx.rightButtonsWidth
 import modules.mx.logic.MXLog
 import modules.mx.m3GlobalIndex
 import modules.mx.maxSearchResultsGlobal
+import modules.mx.rightButtonsWidth
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 

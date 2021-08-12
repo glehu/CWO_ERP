@@ -2,6 +2,7 @@ package modules.mx.gui
 
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
+import loginRoutines
 import modules.m1.gui.MG1SongFinder
 import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2ContactFinder
@@ -10,7 +11,6 @@ import modules.mx.MXUser
 import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
-import modules.mx.loginRoutines
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
 import tornadofx.*

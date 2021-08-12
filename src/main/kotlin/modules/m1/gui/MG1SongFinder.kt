@@ -13,10 +13,10 @@ import modules.m1.Song
 import modules.m1.logic.M1Controller
 import modules.m1.logic.M1DBManager
 import modules.m2.logic.M2Controller
-import modules.mx.rightButtonsWidth
 import modules.mx.logic.MXLog
 import modules.mx.m1GlobalIndex
 import modules.mx.maxSearchResultsGlobal
+import modules.mx.rightButtonsWidth
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 

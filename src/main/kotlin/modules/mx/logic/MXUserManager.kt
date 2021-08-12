@@ -1,12 +1,18 @@
 package modules.mx.logic
 
+import javafx.collections.ObservableList
+import javafx.scene.paint.Color
+import javafx.scene.paint.Paint
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IModule
 import modules.mx.*
+import modules.mx.gui.MGXUser
+import startupRoutines
 import tornadofx.Controller
+import tornadofx.MultiValue
 import java.io.File
 import java.util.*
 import javax.crypto.Cipher
@@ -114,5 +120,26 @@ class MXUserManager : IModule, Controller()
         cipher.init(Cipher.DECRYPT_MODE, keySpec)
         val decrypt = cipher.doFinal(Base64.getDecoder().decode(input))
         return String(decrypt)
+    }
+
+    fun getRightsCellColor(hasRight: Boolean): MultiValue<Paint> =
+        if (hasRight) MultiValue(arrayOf(Color.GREEN)) else MultiValue(arrayOf(Color.RED))
+
+    @ExperimentalSerializationApi
+    fun addUser(credentials: MXCredentials, users: ObservableList<MXUser>) = showUser(MXUser("", ""), credentials, users)
+
+    @ExperimentalSerializationApi
+    fun getUsers(users: ObservableList<MXUser>, credentials: MXCredentials): ObservableList<MXUser>
+    {
+        users.clear()
+        for ((_, v) in credentials.credentials) users.add(v)
+        return users
+    }
+
+    @ExperimentalSerializationApi
+    fun showUser(user: MXUser, credentials: MXCredentials, users: ObservableList<MXUser>)
+    {
+        MGXUser(user, credentials).openModal(block = true)
+        getUsers(users, credentials)
     }
 }

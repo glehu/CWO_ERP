@@ -1,11 +1,10 @@
-package modules.mx
-
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
+import modules.mx.*
 import modules.mx.gui.CWOMainGUI
 import modules.mx.gui.IniValues
 import modules.mx.gui.showPreferences
