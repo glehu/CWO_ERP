@@ -60,16 +60,13 @@ class NewInvoiceMainData : Fragment("Main")
                                         invoice.sellerUID.value, invoice.seller.value
                                     )
                             }
+                            item("Load contact").action {
+                                val contact = m2controller.selectContact()
+                                invoice.sellerUID.value = contact.uID
+                                invoice.seller.value = contact.name
+                            }
                         }
                     }.required()
-                    button("<") {
-                        tooltip("Load an address")
-                        action {
-                            val contact = m2controller.selectContact()
-                            invoice.sellerUID.value = contact.uID
-                            invoice.seller.value = contact.name
-                        }
-                    }
                     label(invoice.sellerUID) { paddingHorizontal = 20 }
                 }
             }
@@ -77,27 +74,24 @@ class NewInvoiceMainData : Fragment("Main")
                 hbox {
                     textfield(invoice.buyer) {
                         contextmenu {
+                            item("Load contact").action {
+                                val contact = m2controller.selectContact()
+                                invoice.buyerUID.value = contact.uID
+                                invoice.buyer.value = contact.name
+                            }
                             item("Show contact").action {
                                 if (invoice.buyerUID.value != -1) m2controller.showContact(
                                     M2DBManager().getEntry(
                                         invoice.buyerUID.value, db, m2GlobalIndex.indexList[0]!!
                                     ) as Contact
                                 )
-                                invoice.seller.value =
+                                invoice.buyer.value =
                                     m2controller.getContactName(
                                         invoice.buyerUID.value, invoice.buyer.value
                                     )
                             }
                         }
                     }.required()
-                    button("<") {
-                        tooltip("Load an address")
-                        action {
-                            val contact = m2controller.selectContact()
-                            invoice.buyerUID.value = contact.uID
-                            invoice.buyer.value = contact.name
-                        }
-                    }
                     label(invoice.buyerUID) { paddingHorizontal = 20 }
                 }
             }

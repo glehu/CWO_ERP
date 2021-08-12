@@ -90,16 +90,13 @@ class NewSongMainData : Fragment("Main")
                                         songP1.vocalistUID.value, songP1.vocalist.value
                                     )
                             }
+                            item("Load contact").action {
+                                val contact = m2controller.selectContact()
+                                songP1.vocalistUID.value = contact.uID
+                                songP1.vocalist.value = contact.name
+                            }
                         }
                     }.required()
-                    button("<") {
-                        tooltip("Load an address")
-                        action {
-                            val contact = m2controller.selectContact()
-                            songP1.vocalistUID.value = contact.uID
-                            songP1.vocalist.value = contact.name
-                        }
-                    }
                     label(songP1.vocalistUID) { paddingHorizontal = 20 }
                 }
             }
@@ -118,16 +115,13 @@ class NewSongMainData : Fragment("Main")
                                         songP1.producerUID.value, songP1.producer.value
                                     )
                             }
+                            item("Load contact").action {
+                                val contact = m2controller.selectContact()
+                                songP1.producerUID.value = contact.uID
+                                songP1.producer.value = contact.name
+                            }
                         }
                     }.required()
-                    button("<") {
-                        tooltip("Load an address")
-                        action {
-                            val contact = m2controller.selectContact()
-                            songP1.producerUID.value = contact.uID
-                            songP1.producer.value = contact.name
-                        }
-                    }
                     label(songP1.producerUID) { paddingHorizontal = 20 }
                 }
             }
