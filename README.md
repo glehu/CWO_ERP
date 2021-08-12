@@ -6,9 +6,10 @@ If you run the file `CWO_ERP.jar`, that is included in every release, for the fi
 it will open the preferences' module for you to configure the software's settings.
 
 ```
-"encryption key": "<Specify a key for encryption and decryption. It has to consist out of 16 numbers>",
-"data path": "<Specify the folder in which the database will be saved>",
-"max search results": <Specify the maximum amount of results to be shown when searching for entries>
+"encryption key": "<Key for encryption and decryption. It has to consist out of 16 numbers>",
+"data path": "<The folder in which the database will be saved>",
+"max search results": <The maximum amount of search result entries to be shown>,
+"difference from utc in hours" <The difference from utc in hours>
 ```
 
 If you are ok with the configuration file you can proceed to log into the software. 
