@@ -12,7 +12,6 @@ repositories {
     jcenter()
 }
 dependencies {
-    //testImplementation(kotlin("test-junit"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.2.2")
     implementation("no.tornado:tornadofx:1.7.20")
