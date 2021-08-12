@@ -64,11 +64,7 @@ class MGXManagement : Fragment("MX Management")
                 fieldset("Reset Database") {
                     button("M1 Songs") {
                         action {
-                            if (File(getModulePath("M1")).isDirectory)
-                            {
-                                File(getModulePath("M1")).deleteRecursively()
-                            }
-                            MXLog.checkLogFile("M1", true)
+                            resetModuleData("M1")
                             m1GlobalIndex = M1IndexManager()
                         }
                         prefWidth = rightButtonsWidth * 1.5
@@ -76,11 +72,7 @@ class MGXManagement : Fragment("MX Management")
                     }
                     button("M2 Contacts") {
                         action {
-                            if (File(getModulePath("M2")).isDirectory)
-                            {
-                                File(getModulePath("M2")).deleteRecursively()
-                            }
-                            MXLog.checkLogFile("M2", true)
+                            resetModuleData("M2")
                             m2GlobalIndex = M2IndexManager()
                         }
                         prefWidth = rightButtonsWidth * 1.5
@@ -88,11 +80,7 @@ class MGXManagement : Fragment("MX Management")
                     }
                     button("M3 Invoices") {
                         action {
-                            if (File(getModulePath("M3")).isDirectory)
-                            {
-                                File(getModulePath("M3")).deleteRecursively()
-                            }
-                            MXLog.checkLogFile("M3", true)
+                            resetModuleData("M3")
                             m3GlobalIndex = M3IndexManager()
                         }
                         prefWidth = rightButtonsWidth * 1.5
@@ -100,6 +88,15 @@ class MGXManagement : Fragment("MX Management")
                     }
                 }
             }
+        }
+    }
+
+    private fun resetModuleData(module: String)
+    {
+        if (File(getModulePath(module)).isDirectory)
+        {
+            File(getModulePath(module)).deleteRecursively()
+            MXLog.checkLogFile(module, true)
         }
     }
 
