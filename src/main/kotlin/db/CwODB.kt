@@ -256,6 +256,16 @@ class CwODB : IModule, Controller()
         return ok
     }
 
+    fun resetModuleData(module: String)
+    {
+        if (File(getModulePath(module)).isDirectory)
+        {
+            File(getModulePath(module)).deleteRecursively()
+            MXLog.checkLogFile(module, true)
+            MXLog.log(module, MXLog.LogType.INFO, "Reset database for $module successful", moduleNameLong())
+        }
+    }
+
     @ExperimentalSerializationApi
     fun getIndex(module: String, ixNr: Int): Index
     {

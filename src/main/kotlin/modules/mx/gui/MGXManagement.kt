@@ -1,5 +1,6 @@
 package modules.mx.gui
 
+import db.CwODB
 import javafx.collections.ObservableList
 import javafx.scene.control.TabPane
 import javafx.scene.paint.Color
@@ -62,41 +63,32 @@ class MGXManagement : Fragment("MX Management")
         tab("Databases") {
             form {
                 fieldset("Reset Database") {
-                    button("M1 Songs") {
+                    button("M1") {
                         action {
-                            resetModuleData("M1")
+                            CwODB().resetModuleData("M1")
                             m1GlobalIndex = M1IndexManager()
                         }
-                        prefWidth = rightButtonsWidth * 1.5
+                        prefWidth = rightButtonsWidth
                         textFill = Color.RED
                     }
-                    button("M2 Contacts") {
+                    button("M2") {
                         action {
-                            resetModuleData("M2")
+                            CwODB().resetModuleData("M2")
                             m2GlobalIndex = M2IndexManager()
                         }
-                        prefWidth = rightButtonsWidth * 1.5
+                        prefWidth = rightButtonsWidth
                         textFill = Color.RED
                     }
-                    button("M3 Invoices") {
+                    button("M3") {
                         action {
-                            resetModuleData("M3")
+                            CwODB().resetModuleData("M3")
                             m3GlobalIndex = M3IndexManager()
                         }
-                        prefWidth = rightButtonsWidth * 1.5
+                        prefWidth = rightButtonsWidth
                         textFill = Color.RED
                     }
                 }
             }
-        }
-    }
-
-    private fun resetModuleData(module: String)
-    {
-        if (File(getModulePath(module)).isDirectory)
-        {
-            File(getModulePath(module)).deleteRecursively()
-            MXLog.checkLogFile(module, true)
         }
     }
 
