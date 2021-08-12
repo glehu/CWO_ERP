@@ -7,15 +7,11 @@ import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
 import modules.mx.*
+import modules.mx.gui.CWOMainGUI
 import modules.mx.gui.IniValues
-import modules.mx.gui.MXGLogin
 import modules.mx.gui.showPreferences
-import tornadofx.App
 import tornadofx.launch
 import java.io.File
-
-@ExperimentalSerializationApi
-class CWOMainGUI : App(MXGLogin::class)
 
 @ExperimentalSerializationApi
 fun main()
