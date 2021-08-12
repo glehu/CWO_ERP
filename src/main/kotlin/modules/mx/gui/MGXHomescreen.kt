@@ -16,9 +16,6 @@ import modules.mx.misc.getUserPropertyFromUser
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class CWOMainGUI : App(MXGLogin::class)
-
-@ExperimentalSerializationApi
 class MXGLogin : View("CWO ERP")
 {
     private val loginUser = MXUserModel(getUserPropertyFromUser(MXUser("", "")))
