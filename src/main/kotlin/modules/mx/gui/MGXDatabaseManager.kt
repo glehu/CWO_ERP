@@ -30,7 +30,7 @@ class MGXDatabaseManager : Fragment("Databases")
             }
             button("Reset M1") {
                 action {
-                    CwODB().resetModuleData("M1")
+                    CwODB().resetModuleDatabase("M1")
                     m1GlobalIndex = M1IndexManager()
                     updateStats()
                 }
@@ -39,7 +39,7 @@ class MGXDatabaseManager : Fragment("Databases")
             }
             button("Reset M2") {
                 action {
-                    CwODB().resetModuleData("M2")
+                    CwODB().resetModuleDatabase("M2")
                     m2GlobalIndex = M2IndexManager()
                     updateStats()
                 }
@@ -48,7 +48,7 @@ class MGXDatabaseManager : Fragment("Databases")
             }
             button("Reset M3") {
                 action {
-                    CwODB().resetModuleData("M3")
+                    CwODB().resetModuleDatabase("M3")
                     m3GlobalIndex = M3IndexManager()
                     updateStats()
                 }

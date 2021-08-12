@@ -258,12 +258,13 @@ class CwODB : IModule, Controller()
         return ok
     }
 
-    fun resetModuleData(module: String)
+    fun resetModuleDatabase(module: String)
     {
         if (File(getModulePath(module)).isDirectory)
         {
-            File(getModulePath(module)).deleteRecursively()
-            MXLog.checkLogFile(module, true)
+            File("${getModulePath(module)}\\$module.db").delete()
+            File("${getModulePath(module)}\\$module.nu").delete()
+            for (i in 1..99) File("${getModulePath(module)}\\$module.ix$i").delete()
             MXLog.log(module, MXLog.LogType.INFO, "Reset database for $module successful", moduleNameLong())
         }
     }
