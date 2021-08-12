@@ -20,8 +20,9 @@ class M1IndexManager : IModule, IIndexManager, Controller()
 {
     override fun moduleNameLong() = "M1IndexManager"
     override fun module() = "M1"
+    override var module = module()
+    override var moduleDescription = "Songs"
     override val db: CwODB by inject()
-
     //*************************************************
     //********************** Global Data **************
     //*************************************************
@@ -37,7 +38,7 @@ class M1IndexManager : IModule, IIndexManager, Controller()
         indexList[2] = db.getIndex(module(), 2)
         indexList[3] = db.getIndex(module(), 3)
         indexList[4] = db.getIndex(module(), 4)
-        lastUID = db.getLastUniqueID(module())
+        lastUID = updateLastUID()
         MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
     }
 

@@ -20,19 +20,25 @@ class M2IndexManager : IModule, IIndexManager, Controller()
 {
     override fun moduleNameLong() = "M2IndexManager"
     override fun module() = "M2"
+    override var module = module()
+    override var moduleDescription = "Contacts"
+    override val db: CwODB by inject()
+
+    //*************************************************
+    //********************** Global Data **************
+    //*************************************************
 
     override val indexList = mutableMapOf<Int, Index>()
     override var lastUID = -1
 
-    override val db: CwODB by inject()
-
     init
     {
-        MXLog.log("M2", MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
-        indexList[0] = db.getIndex("M2", 0)
-        indexList[1] = db.getIndex("M2", 1)
-        indexList[2] = db.getIndex("M2", 2)
-        MXLog.log("M2", MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
+        MXLog.log(module(), MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
+        indexList[0] = db.getIndex(module(), 0)
+        indexList[1] = db.getIndex(module(), 1)
+        indexList[2] = db.getIndex(module(), 2)
+        lastUID = updateLastUID()
+        MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
     }
 
     override fun getIndexUserSelection(): ArrayList<String>
@@ -51,9 +57,9 @@ class M2IndexManager : IModule, IIndexManager, Controller()
 
     override suspend fun writeIndexData()
     {
-        db.getIndexFile("M2", 0).writeText(Json.encodeToString(indexList[0]))
-        db.getIndexFile("M2", 1).writeText(Json.encodeToString(indexList[1]))
-        db.getIndexFile("M2", 2).writeText(Json.encodeToString(indexList[2]))
+        db.getIndexFile(module(), 0).writeText(Json.encodeToString(indexList[0]))
+        db.getIndexFile(module(), 1).writeText(Json.encodeToString(indexList[1]))
+        db.getIndexFile(module(), 2).writeText(Json.encodeToString(indexList[2]))
     }
 
     //**** **** **** **** **** INDICES **** **** **** **** ****
