@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import modules.IIndexManager
 import modules.IModule
 import modules.mx.MXLastChange
+import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.logic.MXLog
 import tornadofx.Controller
@@ -282,7 +283,9 @@ class CwODB : IModule, Controller()
         if (!lastChangeFile.isFile)
         {
             lastChangeFile.createNewFile()
-            lastChange = MXLastChange(-1, "0", "")
+            lastChange = MXLastChange(
+                -1, (System.currentTimeMillis() / 1000).toString(16), activeUser.username
+            )
             setLastChangeValues(module, lastChange)
         } else
         {
