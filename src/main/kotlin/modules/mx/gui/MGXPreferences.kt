@@ -10,7 +10,7 @@ import kotlinx.serialization.json.Json
 import modules.mx.dataPath
 import modules.mx.getIniFile
 import modules.mx.logic.getRandomString
-import readAndSetIniValues
+import modules.mx.logic.readAndSetIniValues
 import tornadofx.*
 import java.io.File
 

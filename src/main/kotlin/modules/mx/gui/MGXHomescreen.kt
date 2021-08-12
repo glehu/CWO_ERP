@@ -2,7 +2,7 @@ package modules.mx.gui
 
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
-import loginRoutines
+import modules.mx.logic.loginRoutines
 import modules.m1.gui.MG1SongFinder
 import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2ContactFinder

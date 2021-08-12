@@ -1,3 +1,5 @@
+package modules.mx.logic
+
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -8,7 +10,6 @@ import modules.mx.*
 import modules.mx.gui.IniValues
 import modules.mx.gui.MXGLogin
 import modules.mx.gui.showPreferences
-import modules.mx.logic.MXLog
 import tornadofx.App
 import tornadofx.launch
 import java.io.File

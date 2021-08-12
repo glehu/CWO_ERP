@@ -10,7 +10,6 @@ import kotlinx.serialization.json.Json
 import modules.IModule
 import modules.mx.*
 import modules.mx.gui.MGXUser
-import startupRoutines
 import tornadofx.Controller
 import tornadofx.MultiValue
 import java.io.File
