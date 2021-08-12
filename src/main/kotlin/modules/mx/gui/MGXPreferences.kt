@@ -2,11 +2,10 @@ package modules.mx.gui
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.mx.MXIni
 import modules.mx.dataPath
 import modules.mx.getIniFile
 import modules.mx.logic.getRandomString
@@ -19,6 +18,7 @@ class MGXPreferences : View("Preferences")
     private val encryptionKeyProperty = SimpleStringProperty(getRandomString(16, true))
     private val dataPathProperty = SimpleStringProperty(System.getProperty("user.dir"))
     private val maxSearchResultsProperty = SimpleIntegerProperty(10_000)
+    private val differenceFromUTCProperty = SimpleIntegerProperty(0)
     override val root = form {
         setPrefSize(600.0, 200.0)
         val iniFile = getIniFile()
@@ -28,44 +28,54 @@ class MGXPreferences : View("Preferences")
             iniFile.createNewFile()
             iniFile.writeText(
                 Json.encodeToString(
-                    IniValues(
+                    MXIni(
                         token = encryptionKeyProperty.value,
                         dataPath = dataPathProperty.value,
-                        maxSearchResults = maxSearchResultsProperty.value
+                        maxSearchResults = maxSearchResultsProperty.value,
+                        differenceFromUTC = differenceFromUTCProperty.value
                     )
                 )
             )
         } else
         {
             val iniFileText = iniFile.readText()
-            val iniVal = Json.decodeFromString<IniValues>(iniFileText)
+            val iniVal = Json.decodeFromString<MXIni>(iniFileText)
             encryptionKeyProperty.value = iniVal.token
             dataPathProperty.value = iniVal.dataPath
             maxSearchResultsProperty.value = iniVal.maxSearchResults
+            differenceFromUTCProperty.value = iniVal.differenceFromUTC
         }
         vbox {
             fieldset {
-                field("Encryption Key") { textfield(encryptionKeyProperty) { prefWidth = 200.0 } }
-                field("Data Path") {
+                field("Encryption key") {
+                    textfield(encryptionKeyProperty) { prefWidth = 200.0 }
+                }
+                field("Data path") {
                     textfield(dataPathProperty) { prefWidth = 200.0 }
                     button("<") {
-                        tooltip("Choose Path")
+                        tooltip("Choose path")
                         action {
                             val dataPathChosen = chooseDirectory("Choose data path", File(dataPath))
                             if (dataPathChosen != null) dataPathProperty.value = dataPathChosen.absolutePath
                         }
                     }
                 }
-                field("Max Search Results") { textfield(maxSearchResultsProperty) { prefWidth = 200.0 } }
+                field("Max search results") {
+                    textfield(maxSearchResultsProperty) { prefWidth = 200.0 }
+                }
+                field("Difference from UTC in hours") {
+                    textfield(differenceFromUTCProperty) { prefWidth = 200.0 }
+                }
                 button("Save") {
                     shortcut("Enter")
                 }.action {
                     iniFile.writeText(
                         Json.encodeToString(
-                            IniValues(
+                            MXIni(
                                 token = encryptionKeyProperty.value,
                                 dataPath = dataPathProperty.value,
-                                maxSearchResults = maxSearchResultsProperty.value
+                                maxSearchResults = maxSearchResultsProperty.value,
+                                differenceFromUTC = differenceFromUTCProperty.value
                             )
                         )
                     )
@@ -78,10 +88,3 @@ class MGXPreferences : View("Preferences")
 }
 
 fun showPreferences() = FX.find<MGXPreferences>().openModal(block = true)
-
-@Serializable
-data class IniValues(
-    @SerialName("encryption key") var token: String,
-    @SerialName("data path") var dataPath: String,
-    @SerialName("max search results") var maxSearchResults: Int
-)

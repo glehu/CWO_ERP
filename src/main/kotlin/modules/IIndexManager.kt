@@ -2,9 +2,9 @@ package modules
 
 import db.CwODB
 import db.Index
-import javafx.beans.property.SimpleIntegerProperty
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import modules.mx.MXLastChange
+import modules.mx.MXUser
+import modules.mx.differenceFromUTC
 
 interface IIndexManager : IModule
 {
@@ -13,15 +13,50 @@ interface IIndexManager : IModule
     var lastUID: Int
     var module: String
     var moduleDescription: String
+    var lastChangeDateHex: String
+    var lastChangeDateUTC: String
+    var lastChangeDateLocal: String
+    var lastChangeUser: String
+
     fun getUID(): Int
     {
         lastUID++
-        runBlocking { launch { db.setLastUniqueID(lastUID, module()) } }
+        db.setLastUniqueID(lastUID, module())
         return lastUID
     }
 
-    fun updateLastUID() = db.getLastUniqueID(module())
+    fun setLastChangeData(uID: Int, activeUser: MXUser)
+    {
+        lastChangeDateHex = (System.currentTimeMillis() / 1000).toString(16)
+        val lastChange = MXLastChange(uID, lastChangeDateHex, activeUser.username)
+        db.setLastChangeValues(module, lastChange)
+        getLastChangeDates()
+    }
 
+    fun getLastChangeDates()
+    {
+        val lastChange = updateLastChangeData()
+        lastChangeDateHex = lastChange.unixHex
+        lastChangeUser = lastChange.user
+        val unixLong = java.lang.Long.parseLong(lastChangeDateHex, 16)
+        if (unixLong != 0L)
+        {
+            //UTC
+            lastChangeDateUTC = java.time.format.DateTimeFormatter.ISO_INSTANT
+                .format(java.time.Instant.ofEpochSecond(unixLong))
+            //Local
+            lastChangeDateLocal = java.time.format.DateTimeFormatter.ISO_INSTANT
+                .format(java.time.Instant.ofEpochSecond(unixLong + (differenceFromUTC * 3600)))
+        } else
+        {
+            lastChangeDateHex = ""
+            lastChangeDateUTC = ""
+            lastChangeDateLocal = ""
+        }
+    }
+
+    fun updateLastUID() = db.getLastUniqueID(module())
+    fun updateLastChangeData() = db.getLastChange(module())
     fun getIndexUserSelection(): ArrayList<String>
     fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean = true)
     fun buildIndex0(entry: Any, posDB: Long, byteSize: Int)

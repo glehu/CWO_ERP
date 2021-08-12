@@ -11,6 +11,7 @@ import kotlinx.serialization.json.Json
 import modules.IIndexManager
 import modules.IModule
 import modules.m1.Song
+import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.indexFormat
 import tornadofx.Controller
@@ -22,6 +23,10 @@ class M1IndexManager : IModule, IIndexManager, Controller()
     override fun module() = "M1"
     override var module = module()
     override var moduleDescription = "Songs"
+    override var lastChangeDateHex: String = ""
+    override var lastChangeDateUTC: String = ""
+    override var lastChangeDateLocal: String = ""
+    override var lastChangeUser: String = ""
     override val db: CwODB by inject()
     //*************************************************
     //********************** Global Data **************
@@ -39,6 +44,7 @@ class M1IndexManager : IModule, IIndexManager, Controller()
         indexList[3] = db.getIndex(module(), 3)
         indexList[4] = db.getIndex(module(), 4)
         lastUID = updateLastUID()
+        getLastChangeDates()
         MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
     }
 
@@ -55,7 +61,10 @@ class M1IndexManager : IModule, IIndexManager, Controller()
         buildIndex2(entry, posDB, byteSize)
         buildIndex3(entry, posDB, byteSize)
         buildIndex4(entry, posDB, byteSize)
-        if (writeToDisk) launch { writeIndexData() }
+        if (writeToDisk) launch {
+            writeIndexData()
+            setLastChangeData(entry.uID, activeUser)
+        }
     }
 
     override suspend fun writeIndexData()

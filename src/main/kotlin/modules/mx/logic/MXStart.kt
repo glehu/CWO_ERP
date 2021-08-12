@@ -8,7 +8,6 @@ import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
 import modules.mx.*
 import modules.mx.gui.CWOMainGUI
-import modules.mx.gui.IniValues
 import modules.mx.gui.showPreferences
 import tornadofx.launch
 import java.io.File
@@ -28,10 +27,11 @@ fun loginRoutines()
 
 fun readAndSetIniValues()
 {
-    val iniVal = Json.decodeFromString<IniValues>(getIniFile().readText())
+    val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
     token = iniVal.token
     dataPath = iniVal.dataPath
     maxSearchResultsGlobal = iniVal.maxSearchResults
+    differenceFromUTC = iniVal.differenceFromUTC
 }
 
 @ExperimentalSerializationApi

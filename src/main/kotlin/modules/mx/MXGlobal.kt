@@ -40,3 +40,6 @@ var maxSearchResultsGlobal: Int = 0
 
 //GUI settings
 const val rightButtonsWidth = 150.0
+
+//Time
+var differenceFromUTC: Int = 0

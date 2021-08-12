@@ -6,6 +6,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.IIndexManager
 import modules.IModule
+import modules.mx.MXLastChange
 import modules.mx.getModulePath
 import modules.mx.logic.MXLog
 import tornadofx.Controller
@@ -147,7 +148,7 @@ class CwODB : IModule, Controller()
     private fun isGetAll(searchText: String): Boolean
     {
         var getAll = false
-        when(searchText)
+        when (searchText)
         {
             "" -> getAll = true
             "*" -> getAll = true
@@ -274,8 +275,30 @@ class CwODB : IModule, Controller()
         return Json.decodeFromString(getIndexFile(module, ixNr).readText())
     }
 
+    fun getLastChange(module: String): MXLastChange
+    {
+        val lastChangeFile = getLastChangeDateHexFile(module)
+        val lastChange: MXLastChange
+        if (!lastChangeFile.isFile)
+        {
+            lastChangeFile.createNewFile()
+            lastChange = MXLastChange(-1, "0", "")
+            setLastChangeValues(module, lastChange)
+        } else
+        {
+            lastChange = Json.decodeFromString(lastChangeFile.readText())
+        }
+        return lastChange
+    }
+
+    fun setLastChangeValues(module: String, lastChange: MXLastChange)
+    {
+        getLastChangeDateHexFile(module).writeText(Json.encodeToString(lastChange))
+    }
+
     fun getIndexFile(module: String, ixNr: Int) = File("${getModulePath(module)}\\$module.ix$ixNr")
     private fun getLastEntryFile(module: String) = File("${getModulePath(module)}\\lastentry.db")
     private fun getDatabaseFile(module: String) = File("${getModulePath(module)}\\$module.db")
     private fun getNuFile(module: String) = File("${getModulePath(module)}\\$module.nu")
+    private fun getLastChangeDateHexFile(module: String) = File("${getModulePath(module)}\\lastchange.json")
 }
