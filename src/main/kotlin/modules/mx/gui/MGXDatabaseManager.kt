@@ -22,9 +22,9 @@ class MGXDatabaseManager : Fragment("Databases")
     )
     override val root = borderpane {
         right = vbox {
-            button("Update Stats") {
+            button("Update Databases") {
                 action {
-                    updateStats()
+                    updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
             }
@@ -32,7 +32,7 @@ class MGXDatabaseManager : Fragment("Databases")
                 action {
                     CwODB().resetModuleDatabase("M1")
                     m1GlobalIndex = M1IndexManager()
-                    updateStats()
+                    updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
                 textFill = Color.RED
@@ -41,7 +41,7 @@ class MGXDatabaseManager : Fragment("Databases")
                 action {
                     CwODB().resetModuleDatabase("M2")
                     m2GlobalIndex = M2IndexManager()
-                    updateStats()
+                    updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
                 textFill = Color.RED
@@ -50,7 +50,7 @@ class MGXDatabaseManager : Fragment("Databases")
                 action {
                     CwODB().resetModuleDatabase("M3")
                     m3GlobalIndex = M3IndexManager()
-                    updateStats()
+                    updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
                 textFill = Color.RED
@@ -67,9 +67,12 @@ class MGXDatabaseManager : Fragment("Databases")
         }
     }
 
-    private fun updateStats()
+    private fun updateDatabases()
     {
         indexManagers.clear()
+        m1GlobalIndex = M1IndexManager()
+        m2GlobalIndex = M2IndexManager()
+        m3GlobalIndex = M3IndexManager()
         indexManagers.addAll(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex)
     }
 }
