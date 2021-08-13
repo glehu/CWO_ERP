@@ -8,8 +8,10 @@ import modules.m1.gui.MG1Analytics
 import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.gui.SongViewerWizard
 import modules.m1.misc.*
+import modules.m2.logic.M2Controller
 import modules.mx.m1GlobalIndex
 import tornadofx.Controller
+import tornadofx.rowItem
 
 @ExperimentalSerializationApi
 class M1Controller : IModule, Controller()
@@ -18,6 +20,7 @@ class M1Controller : IModule, Controller()
     override fun module() = "M1"
 
     val db: CwODB by inject()
+    private val m2Controller: M2Controller by inject()
 
     fun openWizardNewSong()
     {
@@ -56,6 +59,21 @@ class M1Controller : IModule, Controller()
         val wizard = find<SongViewerWizard>()
         wizard.songP1.item = getSongPropertyP1FromSong(song)
         wizard.songP2.item = getSongPropertyP2FromSong(song)
+
+        wizard.songP1.item.mixing =
+            m2Controller.getContactName(wizard.songP1.item.mixingUID, wizard.songP1.item.mixing)
+        wizard.songP1.item.mastering =
+            m2Controller.getContactName(wizard.songP1.item.masteringUID, wizard.songP1.item.mastering)
+
+        wizard.songP2.item.coVocalist1 =
+            m2Controller.getContactName(wizard.songP2.item.coVocalist1UID, wizard.songP2.item.coVocalist1)
+        wizard.songP2.item.coVocalist2 =
+            m2Controller.getContactName(wizard.songP2.item.coVocalist2UID, wizard.songP2.item.coVocalist2)
+        wizard.songP2.item.coProducer1 =
+            m2Controller.getContactName(wizard.songP2.item.coProducer1UID, wizard.songP2.item.coProducer1)
+        wizard.songP2.item.coProducer2 =
+            m2Controller.getContactName(wizard.songP2.item.coProducer2UID, wizard.songP2.item.coProducer2)
+
         wizard.onComplete {
             if (wizard.songP1.uID.value != -1)
             {
