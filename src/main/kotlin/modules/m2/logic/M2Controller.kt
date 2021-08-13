@@ -54,7 +54,7 @@ class M2Controller : IModule, Controller()
         find<MG2Import>().openModal()
     }
 
-    fun selectContact(): Contact
+    fun selectAndReturnContact(): Contact
     {
         val contact: Contact
         val newScope = Scope()
@@ -82,8 +82,9 @@ class M2Controller : IModule, Controller()
         } else default
     }
 
-    fun showContact(contact: Contact)
+    fun showContact(uID: Int)
     {
+        val contact = M2DBManager().getEntry(uID, db, m2GlobalIndex.indexList[0]!!) as Contact
         val wizard = find<ContactViewerWizard>()
         wizard.contact.item = getContactPropertyFromContact(contact)
         wizard.onComplete {

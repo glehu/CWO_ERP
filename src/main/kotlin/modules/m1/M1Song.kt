@@ -88,13 +88,17 @@ data class Song(override var uID: Int, var name: String) : IEntry
     //---------- Feature Data ----------|
     //----------------------------------^
     var coVocalist1: String = "?"
+    var coVocalist1UID: Int = -1
     var coVocalist2: String = "?"
+    var coVocalist2UID: Int = -1
 
     //----------------------------------v
     //---------- Collab Data -----------|
     //----------------------------------^
     var coProducer1: String = "?"
+    var coProducer1UID: Int = -1
     var coProducer2: String = "?"
+    var coProducer2UID: Int = -1
 
     //----------------------------------v
     //--------- Copyright Data ---------|

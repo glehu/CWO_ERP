@@ -134,17 +134,25 @@ class SongPropertyP2
     //---------- Feature Data ----------|
     //----------------------------------^
     val coVocalist1Property = SimpleStringProperty("?")
+    val coVocalist1UIDProperty = SimpleIntegerProperty(-1)
     var coVocalist1: String by coVocalist1Property
+    var coVocalist1UID: Int by coVocalist1UIDProperty
     val coVocalist2Property = SimpleStringProperty("?")
+    val coVocalist2UIDProperty = SimpleIntegerProperty(-1)
     var coVocalist2: String by coVocalist2Property
+    var coVocalist2UID: Int by coVocalist2UIDProperty
 
     //----------------------------------v
     //---------- Collab Data -----------|
     //----------------------------------^
     val coProducer1Property = SimpleStringProperty("?")
+    val coProducer1UIDProperty = SimpleIntegerProperty(-1)
     var coProducer1: String by coProducer1Property
+    var coProducer1UID: Int by coProducer1UIDProperty
     val coProducer2Property = SimpleStringProperty("?")
+    val coProducer2UIDProperty = SimpleIntegerProperty(-1)
     var coProducer2: String by coProducer2Property
+    var coProducer2UID: Int by coProducer2UIDProperty
 
     //----------------------------------v
     //--------- Copyright Data ---------|
@@ -220,9 +228,13 @@ class SongModelP2 : ItemViewModel<SongPropertyP2>(SongPropertyP2())
     val playsYouTube = bind(SongPropertyP2::playsYouTubeProperty)
     val playsSoundCloud = bind(SongPropertyP2::playsSoundCloudProperty)
     val coVocalist1 = bind(SongPropertyP2::coVocalist1Property)
+    val coVocalist1UID = bind(SongPropertyP2::coVocalist1UIDProperty)
     val coVocalist2 = bind(SongPropertyP2::coVocalist2Property)
+    val coVocalist2UID = bind(SongPropertyP2::coVocalist2UIDProperty)
     val coProducer1 = bind(SongPropertyP2::coProducer1Property)
+    val coProducer1UID = bind(SongPropertyP2::coProducer1UIDProperty)
     val coProducer2 = bind(SongPropertyP2::coProducer2Property)
+    val coProducer2UID = bind(SongPropertyP2::coProducer2UIDProperty)
     val isProtected = bind(SongPropertyP2::isProtectedProperty)
     val containsCRMaterial = bind(SongPropertyP2::containsCRMaterialProperty)
     val containsExplicitLyrics = bind(SongPropertyP2::containsExplicitLyricsProperty)
@@ -314,12 +326,16 @@ fun getSongPropertyP2FromSong(song: Song): SongPropertyP2
     //---------- Feature Data ---------|
     //---------------------------------^
     songPropertyP2.coVocalist1 = song.coVocalist1
+    songPropertyP2.coVocalist1UID = song.coVocalist1UID
     songPropertyP2.coVocalist2 = song.coVocalist2
+    songPropertyP2.coVocalist2UID = song.coVocalist2UID
     //---------------------------------v
     //---------- Collab Data ----------|
     //---------------------------------^
     songPropertyP2.coProducer1 = song.coProducer1
+    songPropertyP2.coProducer1UID = song.coProducer1UID
     songPropertyP2.coProducer2 = song.coProducer2
+    songPropertyP2.coProducer2UID = song.coProducer2UID
     //---------------------------------v
     //--------- Copyright Data --------|
     //---------------------------------^
@@ -415,12 +431,16 @@ fun getSongFromPropertyP2(song: Song, songPropertyP2: SongPropertyP2): Song
     //---------- Feature Data ---------|
     //---------------------------------^
     song.coVocalist1 = songPropertyP2.coVocalist1
+    song.coVocalist1UID = songPropertyP2.coVocalist1UID
     song.coVocalist2 = songPropertyP2.coVocalist2
+    song.coVocalist2UID = songPropertyP2.coVocalist2UID
     //---------------------------------v
     //---------- Collab Data ----------|
     //---------------------------------^
     song.coProducer1 = songPropertyP2.coProducer1
+    song.coProducer1UID = songPropertyP2.coProducer1UID
     song.coProducer2 = songPropertyP2.coProducer2
+    song.coProducer2UID = songPropertyP2.coProducer2UID
     //---------------------------------v
     //--------- Copyright Data --------|
     //---------------------------------^

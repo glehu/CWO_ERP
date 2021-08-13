@@ -2,11 +2,8 @@ package modules.m3.gui
 
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m2.Contact
 import modules.m2.logic.M2Controller
-import modules.m2.logic.M2DBManager
 import modules.m3.misc.InvoiceModel
-import modules.mx.m2GlobalIndex
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -50,18 +47,12 @@ class NewInvoiceMainData : Fragment("Main")
                     textfield(invoice.seller) {
                         contextmenu {
                             item("Show contact").action {
-                                if (invoice.sellerUID.value != -1) m2controller.showContact(
-                                    M2DBManager().getEntry(
-                                        invoice.sellerUID.value, db, m2GlobalIndex.indexList[0]!!
-                                    ) as Contact
-                                )
+                                if (invoice.sellerUID.value != -1) m2controller.showContact(invoice.sellerUID.value)
                                 invoice.seller.value =
-                                    m2controller.getContactName(
-                                        invoice.sellerUID.value, invoice.seller.value
-                                    )
+                                    m2controller.getContactName(invoice.sellerUID.value, invoice.seller.value)
                             }
                             item("Load contact").action {
-                                val contact = m2controller.selectContact()
+                                val contact = m2controller.selectAndReturnContact()
                                 invoice.sellerUID.value = contact.uID
                                 invoice.seller.value = contact.name
                             }
@@ -75,20 +66,14 @@ class NewInvoiceMainData : Fragment("Main")
                     textfield(invoice.buyer) {
                         contextmenu {
                             item("Load contact").action {
-                                val contact = m2controller.selectContact()
+                                val contact = m2controller.selectAndReturnContact()
                                 invoice.buyerUID.value = contact.uID
                                 invoice.buyer.value = contact.name
                             }
                             item("Show contact").action {
-                                if (invoice.buyerUID.value != -1) m2controller.showContact(
-                                    M2DBManager().getEntry(
-                                        invoice.buyerUID.value, db, m2GlobalIndex.indexList[0]!!
-                                    ) as Contact
-                                )
+                                if (invoice.buyerUID.value != -1) m2controller.showContact(invoice.buyerUID.value)
                                 invoice.buyer.value =
-                                    m2controller.getContactName(
-                                        invoice.buyerUID.value, invoice.buyer.value
-                                    )
+                                    m2controller.getContactName(invoice.buyerUID.value, invoice.buyer.value)
                             }
                         }
                     }.required()

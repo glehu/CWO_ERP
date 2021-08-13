@@ -6,10 +6,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.getGenreList
 import modules.m1.misc.SongModelP1
 import modules.m1.misc.SongModelP2
-import modules.m2.Contact
 import modules.m2.logic.M2Controller
-import modules.m2.logic.M2DBManager
-import modules.mx.m2GlobalIndex
 import tornadofx.*
 
 //This Wizard is used to create new songs
@@ -80,18 +77,12 @@ class NewSongMainData : Fragment("Main")
                     textfield(songP1.vocalist) {
                         contextmenu {
                             item("Show contact").action {
-                                if (songP1.vocalistUID.value != -1) m2controller.showContact(
-                                    M2DBManager().getEntry(
-                                        songP1.vocalistUID.value, db, m2GlobalIndex.indexList[0]!!
-                                    ) as Contact
-                                )
+                                if (songP1.vocalistUID.value != -1) m2controller.showContact(songP1.vocalistUID.value)
                                 songP1.vocalist.value =
-                                    m2controller.getContactName(
-                                        songP1.vocalistUID.value, songP1.vocalist.value
-                                    )
+                                    m2controller.getContactName(songP1.vocalistUID.value, songP1.vocalist.value)
                             }
                             item("Load contact").action {
-                                val contact = m2controller.selectContact()
+                                val contact = m2controller.selectAndReturnContact()
                                 songP1.vocalistUID.value = contact.uID
                                 songP1.vocalist.value = contact.name
                             }
@@ -105,18 +96,12 @@ class NewSongMainData : Fragment("Main")
                     textfield(songP1.producer) {
                         contextmenu {
                             item("Show contact").action {
-                                if (songP1.producerUID.value != -1) m2controller.showContact(
-                                    M2DBManager().getEntry(
-                                        songP1.producerUID.value, db, m2GlobalIndex.indexList[0]!!
-                                    ) as Contact
-                                )
+                                if (songP1.producerUID.value != -1) m2controller.showContact(songP1.producerUID.value)
                                 songP1.producer.value =
-                                    m2controller.getContactName(
-                                        songP1.producerUID.value, songP1.producer.value
-                                    )
+                                    m2controller.getContactName(songP1.producerUID.value, songP1.producer.value)
                             }
                             item("Load contact").action {
-                                val contact = m2controller.selectContact()
+                                val contact = m2controller.selectAndReturnContact()
                                 songP1.producerUID.value = contact.uID
                                 songP1.producer.value = contact.name
                             }
@@ -125,8 +110,44 @@ class NewSongMainData : Fragment("Main")
                     label(songP1.producerUID) { paddingHorizontal = 20 }
                 }
             }
-            field("Mixing") { textfield(songP1.mixing) }
-            field("Mastering") { textfield(songP1.mastering) }
+            field("Mixing") {
+                hbox {
+                    textfield(songP1.mixing) {
+                        contextmenu {
+                            item("Show contact").action {
+                                if (songP1.mixingUID.value != -1) m2controller.showContact(songP1.mixingUID.value)
+                                songP1.mixing.value =
+                                    m2controller.getContactName(songP1.mixingUID.value, songP1.mixing.value)
+                            }
+                            item("Load contact").action {
+                                val contact = m2controller.selectAndReturnContact()
+                                songP1.mixingUID.value = contact.uID
+                                songP1.mixing.value = contact.name
+                            }
+                        }
+                    }
+                    label(songP1.mixingUID) { paddingHorizontal = 20 }
+                }
+            }
+            field("Mastering") {
+                hbox {
+                    textfield(songP1.mastering) {
+                        contextmenu {
+                            item("Show contact").action {
+                                if (songP1.masteringUID.value != -1) m2controller.showContact(songP1.masteringUID.value)
+                                songP1.mastering.value =
+                                    m2controller.getContactName(songP1.masteringUID.value, songP1.mastering.value)
+                            }
+                            item("Load contact").action {
+                                val contact = m2controller.selectAndReturnContact()
+                                songP1.masteringUID.value = contact.uID
+                                songP1.mastering.value = contact.name
+                            }
+                        }
+                    }
+                    label(songP1.masteringUID) { paddingHorizontal = 20 }
+                }
+            }
             fieldset("Genre") { combobox(songP1.genre, genreList) }
             field("Subgenre") { textfield(songP1.subgenre) }
             field("Length") { textfield(songP1.songLength) }
@@ -370,9 +391,12 @@ class NewSongStatisticsData : Fragment("Statistics")
     }
 }
 
+@ExperimentalSerializationApi
 class NewSongCollaborationData : Fragment("Collaboration")
 {
+    private val db: CwODB by inject()
     private val songP2: SongModelP2 by inject()
+    private val m2controller: M2Controller by inject()
 
     //----------------------------------v
     //---------- Feature Data ----------|
@@ -382,12 +406,84 @@ class NewSongCollaborationData : Fragment("Collaboration")
     //----------------------------------^
     override val root = form {
         fieldset("Vocalist Feature") {
-            field("Feat Vox 1") { textfield(songP2.coVocalist1) }
-            field("Feat Vox 2") { textfield(songP2.coVocalist2) }
+            field("Feat Vox 1") {
+                hbox {
+                    textfield(songP2.coVocalist1) {
+                        contextmenu {
+                            item("Show contact").action {
+                                if (songP2.coVocalist1UID.value != -1) m2controller.showContact(songP2.coVocalist1UID.value)
+                                songP2.coVocalist1.value =
+                                    m2controller.getContactName(songP2.coVocalist1UID.value, songP2.coVocalist1.value)
+                            }
+                            item("Load contact").action {
+                                val contact = m2controller.selectAndReturnContact()
+                                songP2.coVocalist1UID.value = contact.uID
+                                songP2.coVocalist1.value = contact.name
+                            }
+                        }
+                    }
+                    label(songP2.coVocalist1UID) { paddingHorizontal = 20 }
+                }
+            }
+            field("Feat Vox 2") {
+                hbox {
+                    textfield(songP2.coVocalist2) {
+                        contextmenu {
+                            item("Show contact").action {
+                                if (songP2.coVocalist2UID.value != -1) m2controller.showContact(songP2.coVocalist2UID.value)
+                                songP2.coVocalist2.value =
+                                    m2controller.getContactName(songP2.coVocalist2UID.value, songP2.coVocalist2.value)
+                            }
+                            item("Load contact").action {
+                                val contact = m2controller.selectAndReturnContact()
+                                songP2.coVocalist2UID.value = contact.uID
+                                songP2.coVocalist2.value = contact.name
+                            }
+                        }
+                    }
+                    label(songP2.coVocalist2UID) { paddingHorizontal = 20 }
+                }
+            }
         }
         fieldset("Producer Collaboration") {
-            field("Coproducer 1") { textfield(songP2.coProducer1) }
-            field("Coproducer 2") { textfield(songP2.coProducer2) }
+            field("Coproducer 1") {
+                hbox {
+                    textfield(songP2.coProducer1) {
+                        contextmenu {
+                            item("Show contact").action {
+                                if (songP2.coProducer1UID.value != -1) m2controller.showContact(songP2.coProducer1UID.value)
+                                songP2.coProducer1.value =
+                                    m2controller.getContactName(songP2.coProducer1UID.value, songP2.coProducer1.value)
+                            }
+                            item("Load contact").action {
+                                val contact = m2controller.selectAndReturnContact()
+                                songP2.coProducer1UID.value = contact.uID
+                                songP2.coProducer1.value = contact.name
+                            }
+                        }
+                    }
+                    label(songP2.coProducer1UID) { paddingHorizontal = 20 }
+                }
+            }
+            field("Coproducer 2") {
+                hbox {
+                    textfield(songP2.coProducer2) {
+                        contextmenu {
+                            item("Show contact").action {
+                                if (songP2.coProducer2UID.value != -1) m2controller.showContact(songP2.coProducer2UID.value)
+                                songP2.coProducer2.value =
+                                    m2controller.getContactName(songP2.coProducer2UID.value, songP2.coProducer2.value)
+                            }
+                            item("Load contact").action {
+                                val contact = m2controller.selectAndReturnContact()
+                                songP2.coProducer2UID.value = contact.uID
+                                songP2.coProducer2.value = contact.name
+                            }
+                        }
+                    }
+                    label(songP2.coProducer2UID) { paddingHorizontal = 20 }
+                }
+            }
         }
     }
 
@@ -395,9 +491,13 @@ class NewSongCollaborationData : Fragment("Collaboration")
     {
         isComplete = songP2.commit(
             songP2.coVocalist1,
+            songP2.coVocalist1UID,
             songP2.coVocalist2,
+            songP2.coVocalist2UID,
             songP2.coProducer1,
-            songP2.coProducer2
+            songP2.coProducer1UID,
+            songP2.coProducer2,
+            songP2.coProducer2UID
         )
     }
 }

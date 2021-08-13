@@ -72,7 +72,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                             close()
                         } else
                         {
-                            m2Controller.showContact(it)
+                            m2Controller.showContact(it.uID)
                             startSearch()
                         }
                     }
