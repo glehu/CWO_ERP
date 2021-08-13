@@ -16,7 +16,12 @@ import modules.mx.misc.getUserPropertyFromUser
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class CWOMainGUI : App(MXGLogin::class)
+class CWOMainGUI : App(MXGLogin::class, Styles::class)
+class Styles : Stylesheet() {
+    init
+    {
+    }
+}
 
 @ExperimentalSerializationApi
 class MXGLogin : View("CWO ERP")
