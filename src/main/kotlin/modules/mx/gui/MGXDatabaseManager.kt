@@ -61,7 +61,7 @@ class MGXDatabaseManager : Fragment("Databases")
                 readonlyColumn("Database", IIndexManager::module).prefWidth(80.0)
                 readonlyColumn("Description", IIndexManager::moduleDescription).prefWidth(150.0)
                 readonlyColumn("# Entries", IIndexManager::lastUID).prefWidth(125.0)
-                readonlyColumn("Last Change", IIndexManager::lastChangeDateLocal).prefWidth(200.0)
+                readonlyColumn("Last Change", IIndexManager::lastChangeDateLocal).prefWidth(175.0)
                 readonlyColumn("by User", IIndexManager::lastChangeUser).prefWidth(200.0)
             }
         }
