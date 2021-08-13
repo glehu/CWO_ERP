@@ -8,10 +8,7 @@ import modules.IIndexManager
 import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
-import modules.mx.m1GlobalIndex
-import modules.mx.m2GlobalIndex
-import modules.mx.m3GlobalIndex
-import modules.mx.rightButtonsWidth
+import modules.mx.*
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -32,6 +29,7 @@ class MGXDatabaseManager : Fragment("Databases")
                 action {
                     CwODB().resetModuleDatabase("M1")
                     m1GlobalIndex = M1IndexManager()
+                    m1GlobalIndex.setLastChangeData(-1, activeUser)
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
@@ -41,6 +39,7 @@ class MGXDatabaseManager : Fragment("Databases")
                 action {
                     CwODB().resetModuleDatabase("M2")
                     m2GlobalIndex = M2IndexManager()
+                    m2GlobalIndex.setLastChangeData(-1, activeUser)
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
@@ -50,6 +49,7 @@ class MGXDatabaseManager : Fragment("Databases")
                 action {
                     CwODB().resetModuleDatabase("M3")
                     m3GlobalIndex = M3IndexManager()
+                    m3GlobalIndex.setLastChangeData(-1, activeUser)
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
