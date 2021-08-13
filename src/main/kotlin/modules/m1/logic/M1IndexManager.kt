@@ -63,8 +63,8 @@ class M1IndexManager : IModule, IIndexManager, Controller()
         buildIndex4(entry, posDB, byteSize)
         if (writeToDisk) launch {
             writeIndexData()
-            setLastChangeData(entry.uID, activeUser)
         }
+        setLastChangeData(entry.uID, activeUser)
     }
 
     override suspend fun writeIndexData()
