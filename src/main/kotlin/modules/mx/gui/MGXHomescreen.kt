@@ -17,11 +17,7 @@ import tornadofx.*
 
 @ExperimentalSerializationApi
 class CWOMainGUI : App(MXGLogin::class, Styles::class)
-class Styles : Stylesheet() {
-    init
-    {
-    }
-}
+class Styles : Stylesheet()
 
 @ExperimentalSerializationApi
 class MXGLogin : View("CWO ERP")
