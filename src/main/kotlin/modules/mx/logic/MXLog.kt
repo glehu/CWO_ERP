@@ -3,7 +3,8 @@ package modules.mx.logic
 import modules.IModule
 import modules.mx.activeUser
 import modules.mx.getModulePath
-import modules.mx.logic.MXTimestamp.MXTimestamp.getTimestamp
+import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestampFromUnix
+import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestamp
 import tornadofx.runAsync
 import java.io.File
 
@@ -29,7 +30,7 @@ class MXLog
             if (write)
             {
                 runAsync {
-                    getLogFile(module).appendText("${getTimestamp()}$logText")
+                    getLogFile(module).appendText("${getUTCTimestampFromUnix(getUnixTimestamp())}$logText")
                 }
             }
         }

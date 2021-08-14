@@ -1,14 +1,13 @@
 package modules.mx.logic
 
 import modules.mx.differenceFromUTC
-import java.time.LocalDateTime
 
 class MXTimestamp
 {
     companion object MXTimestamp
     {
         //Timestamp generation
-        fun getTimestamp(): LocalDateTime = LocalDateTime.now()
+        fun getUnixTimestamp() = (System.currentTimeMillis() / 1000)
         fun getUnixTimestampHex() = getUnixTimestamp().toString(16)
 
         //Timestamp conversion
@@ -17,9 +16,7 @@ class MXTimestamp
         fun getLocalTimestamp(unixLong: Long): String =
             getUTCTimestampFromUnix(unixLong + (differenceFromUTC * 3600))
 
-        //Internal
-        private fun getUnixTimestamp() = (System.currentTimeMillis() / 1000)
-        private fun getUTCTimestampFromUnix(unixLong: Long) =
+        fun getUTCTimestampFromUnix(unixLong: Long): String =
             java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.ofEpochSecond(unixLong))
     }
 }
