@@ -5,6 +5,8 @@ import db.Index
 import modules.mx.MXLastChange
 import modules.mx.MXUser
 import modules.mx.differenceFromUTC
+import java.util.*
+import kotlin.collections.ArrayList
 
 interface IIndexManager : IModule
 {
@@ -53,6 +55,22 @@ interface IIndexManager : IModule
             lastChangeDateUTC = ""
             lastChangeDateLocal = ""
         }
+    }
+
+    fun indexFormat(text: String): String
+    {
+        val songNameArray = text.uppercase(Locale.getDefault()).toCharArray()
+        var formatted = ""
+        for (i in songNameArray.indices)
+        {
+            //Only alphanumerical characters (letters and numbers)
+            val regex = "^[A-Z]?[0-9]?$".toRegex()
+            if (regex.matches(songNameArray[i].toString()))
+            {
+                formatted += songNameArray[i]
+            }
+        }
+        return formatted
     }
 
     fun updateLastUID() = db.getLastUniqueID(module())

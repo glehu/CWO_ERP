@@ -13,7 +13,6 @@ import modules.IModule
 import modules.m2.Contact
 import modules.mx.activeUser
 import modules.mx.logic.MXLog
-import modules.mx.logic.indexFormat
 import tornadofx.Controller
 
 @ExperimentalSerializationApi
