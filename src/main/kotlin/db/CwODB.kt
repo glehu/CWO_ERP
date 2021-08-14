@@ -10,6 +10,7 @@ import modules.mx.MXLastChange
 import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.logic.MXLog
+import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
 import java.io.File
 import java.io.RandomAccessFile
@@ -18,9 +19,6 @@ class CwODB : IModule, Controller()
 {
     override fun moduleNameLong() = "CwODB"
     override fun module() = "DB"
-
-    //Settings
-    private val finalMaxSearchResults = 2000
 
     @ExperimentalSerializationApi
     fun saveEntry(
@@ -102,7 +100,7 @@ class CwODB : IModule, Controller()
     // Returns an array of all entries that fit the search criteria
     fun getEntriesFromSearchString(
         searchText: String, ixNr: Int, exactSearch: Boolean,
-        module: String, maxSearchResults: Int = finalMaxSearchResults,
+        module: String, maxSearchResults: Int = maxSearchResultsGlobal,
         indexManager: IIndexManager,
         updateProgress: (Int, ByteArray) -> Unit
     )
