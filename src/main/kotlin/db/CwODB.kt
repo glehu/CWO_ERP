@@ -40,8 +40,8 @@ class CwODB : IModule, Controller()
         /* Since we are creating a new entry the entry's position in the database will be at the end
            To calculate "the end" we need the position and length of the last entry
 
-           We will index the entry in both the sub indices (e.g. ix1 to index the entry name) and the modules.mx.logic.modules.mx.logic.main index
-           The modules.mx.logic.modules.mx.logic.main index will only contain the most basic data uniqueID, posInDatabase and byteSize
+           We will index the entry in both the sub indices (e.g. ix1 to index the entry name) and the main index
+           The main index will only contain the most basic data uniqueID, posInDatabase and byteSize
 
            We will also store the latest added entry to determine the byteSize for the next added entry
            This will save a huge amount of time when adding new entries to an already big database
