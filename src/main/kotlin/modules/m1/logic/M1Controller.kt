@@ -59,11 +59,11 @@ class M1Controller : IModule, Controller()
         wizard.songP1.item = getSongPropertyP1FromSong(song)
         wizard.songP2.item = getSongPropertyP2FromSong(song)
 
+        //Sync contact data
         wizard.songP1.item.mixing =
             m2Controller.getContactName(wizard.songP1.item.mixingUID, wizard.songP1.item.mixing)
         wizard.songP1.item.mastering =
             m2Controller.getContactName(wizard.songP1.item.masteringUID, wizard.songP1.item.mastering)
-
         wizard.songP2.item.coVocalist1 =
             m2Controller.getContactName(wizard.songP2.item.coVocalist1UID, wizard.songP2.item.coVocalist1)
         wizard.songP2.item.coVocalist2 =
