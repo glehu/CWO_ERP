@@ -52,7 +52,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                 }
                 fieldset("Index")
                 {
-                    ixNr.value = "1-Name"
+                    ixNr.value = "1-Seller"
                     combobox(ixNr, ixNrList) {
                         tooltip("Selects the index file that will be searched in.")
                     }

@@ -27,6 +27,8 @@ class InvoiceProperty
     var text: String by textProperty
     val priceProperty = SimpleDoubleProperty()
     var price: Double by priceProperty
+    val paidProperty = SimpleDoubleProperty()
+    var paid: Double by paidProperty
 }
 
 class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty())
@@ -39,6 +41,7 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty())
     var date = bind(InvoiceProperty::dateProperty)
     var text = bind(InvoiceProperty::textProperty)
     var price = bind(InvoiceProperty::priceProperty)
+    var paid = bind(InvoiceProperty::paidProperty)
 }
 
 fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty
@@ -52,6 +55,7 @@ fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty
     invoiceProperty.date = LocalDate.parse(invoice.date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
     invoiceProperty.text = invoice.text
     invoiceProperty.price = invoice.price
+    invoiceProperty.paid = invoice.paid
     return invoiceProperty
 }
 
@@ -66,5 +70,6 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): Invoice
     invoice.date = invoiceProperty.date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
     invoice.text = invoiceProperty.text
     invoice.price = invoiceProperty.price
+    invoice.paid = invoiceProperty.paid
     return invoice
 }

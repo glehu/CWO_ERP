@@ -31,6 +31,7 @@ data class Invoice(override var uID: Int) : IEntry, IInvoice
     //----------------------------------^
     var text: String = "?"
     var price: Double = 0.0
+    var paid: Double = 0.0
 
     //*************************************************
     //****************** Auto Generated Data **********

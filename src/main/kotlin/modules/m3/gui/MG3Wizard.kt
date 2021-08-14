@@ -1,6 +1,5 @@
 package modules.m3.gui
 
-import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Controller
 import modules.m3.misc.InvoiceModel
@@ -33,7 +32,6 @@ class InvoiceViewerWizard : Wizard("View an invoice")
 @ExperimentalSerializationApi
 class NewInvoiceMainData : Fragment("Main")
 {
-    private val db: CwODB by inject()
     private val invoice: InvoiceModel by inject()
     private val m2controller: M2Controller by inject()
 
@@ -87,6 +85,14 @@ class NewInvoiceMainData : Fragment("Main")
                     textfield(invoice.price) {
                         prefWidth = 100.0
                     }.required()
+                    label("EUR") { paddingHorizontal = 20 }
+                }
+            }
+            field("Paid") {
+                hbox {
+                    textfield(invoice.paid) {
+                        prefWidth = 100.0
+                    }
                     label("EUR") { paddingHorizontal = 20 }
                 }
             }
