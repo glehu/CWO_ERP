@@ -394,7 +394,6 @@ class NewSongStatisticsData : Fragment("Statistics")
 @ExperimentalSerializationApi
 class NewSongCollaborationData : Fragment("Collaboration")
 {
-    private val db: CwODB by inject()
     private val songP2: SongModelP2 by inject()
     private val m2controller: M2Controller by inject()
 
