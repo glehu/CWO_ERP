@@ -11,7 +11,6 @@ import modules.m1.misc.*
 import modules.m2.logic.M2Controller
 import modules.mx.m1GlobalIndex
 import tornadofx.Controller
-import tornadofx.rowItem
 
 @ExperimentalSerializationApi
 class M1Controller : IModule, Controller()
