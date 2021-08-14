@@ -10,6 +10,7 @@ import modules.mx.MXLastChange
 import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.logic.MXLog
+import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
 import java.io.File
@@ -283,7 +284,7 @@ class CwODB : IModule, Controller()
         {
             lastChangeFile.createNewFile()
             lastChange = MXLastChange(
-                -1, (System.currentTimeMillis() / 1000).toString(16), activeUser.username
+                -1, getUnixTimestampHex(), activeUser.username
             )
             setLastChangeValues(module, lastChange)
         } else

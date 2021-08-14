@@ -4,7 +4,10 @@ import db.CwODB
 import db.Index
 import modules.mx.MXLastChange
 import modules.mx.MXUser
-import modules.mx.differenceFromUTC
+import modules.mx.logic.MXTimestamp.MXTimestamp.convUnixHexToUnixTimestamp
+import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
+import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
+import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -29,7 +32,7 @@ interface IIndexManager : IModule
 
     fun setLastChangeData(uID: Int, activeUser: MXUser)
     {
-        lastChangeDateHex = (System.currentTimeMillis() / 1000).toString(16)
+        lastChangeDateHex = getUnixTimestampHex()
         val lastChange = MXLastChange(uID, lastChangeDateHex, activeUser.username)
         db.setLastChangeValues(module, lastChange)
         getLastChangeDates()
@@ -40,15 +43,13 @@ interface IIndexManager : IModule
         val lastChange = updateLastChangeData()
         lastChangeDateHex = lastChange.unixHex
         lastChangeUser = lastChange.user
-        val unixLong = java.lang.Long.parseLong(lastChangeDateHex, 16)
+        val unixLong = convUnixHexToUnixTimestamp(lastChangeDateHex)
         if (unixLong != 0L)
         {
             //UTC
-            lastChangeDateUTC = java.time.format.DateTimeFormatter.ISO_INSTANT
-                .format(java.time.Instant.ofEpochSecond(unixLong))
+            lastChangeDateUTC = getUTCTimestamp(unixLong)
             //Local
-            lastChangeDateLocal = java.time.format.DateTimeFormatter.ISO_INSTANT
-                .format(java.time.Instant.ofEpochSecond(unixLong + (differenceFromUTC * 3600)))
+            lastChangeDateLocal = getLocalTimestamp(unixLong)
         } else
         {
             lastChangeDateHex = ""

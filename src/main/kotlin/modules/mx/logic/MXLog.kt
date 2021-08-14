@@ -3,9 +3,9 @@ package modules.mx.logic
 import modules.IModule
 import modules.mx.activeUser
 import modules.mx.getModulePath
+import modules.mx.logic.MXTimestamp.MXTimestamp.getTimestamp
 import tornadofx.runAsync
 import java.io.File
-import java.time.LocalDateTime
 
 class MXLog
 {
@@ -14,7 +14,7 @@ class MXLog
         INFO, WARNING, ERROR
     }
 
-    companion object Logger : IModule
+    companion object MXLog : IModule
     {
         override fun moduleNameLong() = "MXLog"
         override fun module() = "MX"
@@ -29,12 +29,10 @@ class MXLog
             if (write)
             {
                 runAsync {
-                    getLogFile(module).appendText("${timestamp()}$logText")
+                    getLogFile(module).appendText("${getTimestamp()}$logText")
                 }
             }
         }
-
-        fun timestamp(): LocalDateTime = LocalDateTime.now()
 
         fun checkLogFile(module: String, createIfMissing: Boolean, log: Boolean = true): Boolean
         {
