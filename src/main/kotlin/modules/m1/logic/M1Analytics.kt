@@ -23,7 +23,7 @@ class M1Analytics : IModule, Controller()
         var songCount = 0.0
         val map = mutableMapOf<String, Double>()
         val dbManager = M1DBManager()
-        MXLog.log(module(), MXLog.LogType.INFO, "Genre distribution analysis start ${MXLog.timestamp()}", moduleNameLong())
+        MXLog.log(module(), MXLog.LogType.INFO, "Genre distribution analysis start", moduleNameLong())
         val timeInMS = measureTimeMillis {
             db.getEntriesFromSearchString(
                 "", 0, false, module(), -1, indexManager

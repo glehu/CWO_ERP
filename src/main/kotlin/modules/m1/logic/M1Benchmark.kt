@@ -24,7 +24,7 @@ class M1Benchmark : IModule, Controller()
 
     fun insertRandomEntries(amount: Int)
     {
-        MXLog.log(module(), MXLog.LogType.INFO, "Benchmark entry insertion start ${MXLog.timestamp()}", moduleNameLong())
+        MXLog.log(module(), MXLog.LogType.INFO, "Benchmark entry insertion start", moduleNameLong())
         val raf = db.openRandomFileAccess(module(), "rw")
         val dbManager = M1DBManager()
         val timeInMillis = measureTimeMillis {
@@ -48,7 +48,7 @@ class M1Benchmark : IModule, Controller()
         MXLog.log(
             module(),
             MXLog.LogType.INFO,
-            "Benchmark entry insertion end ${MXLog.timestamp()} (${timeInMillis / 1000} sec)",
+            "Benchmark entry insertion end (${timeInMillis / 1000} sec)",
             moduleNameLong()
         )
     }
