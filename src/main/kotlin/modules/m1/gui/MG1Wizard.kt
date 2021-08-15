@@ -19,11 +19,11 @@ class SongConfiguratorWizard : Wizard("Add new song")
     init
     {
         enableStepLinks = true
-        add(NewSongMainData::class)
-        add(NewSongCompletionStateData::class)
-        add(NewSongPromotionData::class)
-        add(NewSongFinancialData::class)
-        add(NewSongAvailabilityData::class)
+        add(SongMainData::class)
+        add(SongCompletionStateData::class)
+        add(SongPromotionData::class)
+        add(SongFinancialData::class)
+        add(SongAvailabilityData::class)
         add(NewSongVisualizationData::class)
         add(NewSongAlbumEPData::class)
         add(NewSongStatisticsData::class)
@@ -43,11 +43,11 @@ class SongViewerWizard : Wizard("View a song")
     init
     {
         enableStepLinks = true
-        add(NewSongMainData::class)
-        add(NewSongCompletionStateData::class)
-        add(NewSongPromotionData::class)
-        add(NewSongFinancialData::class)
-        add(NewSongAvailabilityData::class)
+        add(SongMainData::class)
+        add(SongCompletionStateData::class)
+        add(SongPromotionData::class)
+        add(SongFinancialData::class)
+        add(SongAvailabilityData::class)
         add(NewSongVisualizationData::class)
         add(NewSongAlbumEPData::class)
         add(NewSongStatisticsData::class)
@@ -58,7 +58,7 @@ class SongViewerWizard : Wizard("View a song")
 }
 
 @ExperimentalSerializationApi
-class NewSongMainData : Fragment("Main")
+class SongMainData : Fragment("Main")
 {
     val db: CwODB by inject()
     private val songP1: SongModelP1 by inject()
@@ -148,7 +148,7 @@ class NewSongMainData : Fragment("Main")
                     label(songP1.masteringUID) { paddingHorizontal = 20 }
                 }
             }
-            fieldset("Genre") { combobox(songP1.genre, genreList) }
+            field("Genre") { combobox(songP1.genre, genreList) }
             field("Subgenre") { textfield(songP1.subgenre) }
             field("Length") { textfield(songP1.songLength) }
             field("Vibe") { textfield(songP1.vibe) }
@@ -175,7 +175,7 @@ class NewSongMainData : Fragment("Main")
     }
 }
 
-class NewSongCompletionStateData : Fragment("Completion State")
+class SongCompletionStateData : Fragment("Completion State")
 {
     private val songP1: SongModelP1 by inject()
 
@@ -225,7 +225,7 @@ class NewSongCompletionStateData : Fragment("Completion State")
     }
 }
 
-class NewSongPromotionData : Fragment("Promotion")
+class SongPromotionData : Fragment("Promotion")
 {
     private val songP1: SongModelP1 by inject()
 
@@ -252,7 +252,7 @@ class NewSongPromotionData : Fragment("Promotion")
     }
 }
 
-class NewSongFinancialData : Fragment("Finances")
+class SongFinancialData : Fragment("Finances")
 {
     private val songP1: SongModelP1 by inject()
 
@@ -277,7 +277,7 @@ class NewSongFinancialData : Fragment("Finances")
     }
 }
 
-class NewSongAvailabilityData : Fragment("Availability")
+class SongAvailabilityData : Fragment("Availability")
 {
     private val songP2: SongModelP2 by inject()
 
