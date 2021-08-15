@@ -1,15 +1,11 @@
 package modules.mx.gui
 
 import javafx.scene.control.TabPane
-import javafx.scene.paint.Color
-import javafx.scene.text.FontWeight
 import javafx.stage.Stage
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.Stylesheet
 import modules.m1.gui.MG1Overview
-import modules.m1.gui.MG1SongFinder
 import modules.m1.logic.M1Benchmark
-import modules.m2.gui.MG2ContactFinder
 import modules.m2.gui.MG2Overview
 import modules.m3.gui.MG3InvoiceFinder
 import modules.mx.MXUser

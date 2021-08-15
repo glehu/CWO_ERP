@@ -2,7 +2,6 @@ package modules.m2.gui
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IOverview
-import modules.m1.gui.SongMainData
 import modules.m2.logic.M2Controller
 import modules.mx.rightButtonsWidth
 import tornadofx.*

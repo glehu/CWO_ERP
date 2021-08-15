@@ -1,7 +1,6 @@
 package modules
 
 import javafx.scene.paint.Color
-import javafx.scene.paint.Paint
 import javafx.scene.text.FontWeight
 import tornadofx.Stylesheet
 import tornadofx.c

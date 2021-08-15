@@ -16,7 +16,6 @@ import modules.m2.logic.M2DBManager
 import modules.mx.logic.MXLog
 import modules.mx.m2GlobalIndex
 import modules.mx.maxSearchResultsGlobal
-import modules.mx.rightButtonsWidth
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 

@@ -3,7 +3,6 @@ package modules.m2.logic
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
-import modules.m1.gui.MG1SongFinder
 import modules.m1.misc.SongModelP1
 import modules.m2.Contact
 import modules.m2.gui.*
