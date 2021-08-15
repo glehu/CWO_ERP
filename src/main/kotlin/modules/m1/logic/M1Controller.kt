@@ -30,17 +30,23 @@ class M1Controller : IModule, Controller()
     fun saveSong()
     {
         val wizard = find<SongConfiguratorWizard>()
+        var isComplete = true
         wizard.songP1.commit()
         wizard.songP2.commit()
-        val raf = db.openRandomFileAccess(module(), "rw")
-        M1DBManager().saveEntry(
-            getSongFromPropertyP2(
-                getSongFromPropertyP1(wizard.songP1.item),
-                wizard.songP2.item
-            ), db, -1L, -1, raf, m1GlobalIndex
-        )
-        db.closeRandomFileAccess(raf)
-        wizard.isComplete = false
+        if(!wizard.songP1.isValid) isComplete = false
+        if(!wizard.songP2.isValid) isComplete = false
+        if (isComplete)
+        {
+            val raf = db.openRandomFileAccess(module(), "rw")
+            M1DBManager().saveEntry(
+                getSongFromPropertyP2(
+                    getSongFromPropertyP1(wizard.songP1.item),
+                    wizard.songP2.item
+                ), db, -1L, -1, raf, m1GlobalIndex
+            )
+            db.closeRandomFileAccess(raf)
+            wizard.isComplete = false
+        }
     }
 
     fun openWizardNewSong()
