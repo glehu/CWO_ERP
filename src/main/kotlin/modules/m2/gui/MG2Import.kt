@@ -14,7 +14,7 @@ import java.io.File
 @ExperimentalSerializationApi
 class MG2Import : Fragment("Contact Data Import")
 {
-    private val contactSchema: ContactModel by inject()
+    private val contactSchema: ContactModel = ContactModel()
     private val m2controller: M2Import by inject()
     private val progressProperty = SimpleIntegerProperty()
     private val filenameProperty = SimpleStringProperty()
