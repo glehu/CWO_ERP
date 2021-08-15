@@ -12,9 +12,9 @@ class Stylesheet : Stylesheet()
     {
         root {
             accentColor = c("#1e74c6")
-            focusColor = accentColor
+            focusColor = c("#1e74c6")
             baseColor = c("#373e43")
-            unsafe("-fx-control-inner-background", baseColor.derive(0.25))
+            unsafe("-fx-control-inner-background", c("#373e43").derive(0.25))
             unsafe("-fx-control-inner-background-alt", raw("-fx-control-inner-background"))
         }
 
@@ -36,7 +36,7 @@ class Stylesheet : Stylesheet()
                 textFill = Color.WHITE
             }
             and(":default") {
-                baseColor = accentColor
+                baseColor = c("#1e74c6")
             }
         }
 
@@ -47,11 +47,11 @@ class Stylesheet : Stylesheet()
         }
 
         scrollBar {
-            backgroundColor += baseColor.derive(0.45)
+            backgroundColor += c("#373e43").derive(0.45)
         }
 
         ".table-view" {
-            unsafe("-fx-selection-bar-non-focused", baseColor.derive(0.5))
+            unsafe("-fx-selection-bar-non-focused", c("#373e43").derive(0.5))
         }
 
         ".table-view .column-header .label" {
