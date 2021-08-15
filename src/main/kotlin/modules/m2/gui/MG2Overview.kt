@@ -13,18 +13,18 @@ class MG2Overview : IOverview, View("M2 Contacts")
     override val root = borderpane {
         right = vbox {
             button("Search") {
-                action { m2Controller.openSearchScreen() }
+                action { m2Controller.searchEntry() }
                 tooltip("Opens the search screen.")
                 prefWidth = rightButtonsWidth
             }
             button("New") {
-                action { m2Controller.openWizardNewContact() }
-                tooltip("Add a new song to the database.")
+                action { m2Controller.newEntry() }
+                tooltip("Add a new contact to the database.")
                 prefWidth = rightButtonsWidth
             }
             button("Save") {
-                action { m2Controller.saveContact() }
-                tooltip("Add a new song to the database.")
+                action { m2Controller.saveEntry() }
+                tooltip("Saves the current contact.")
                 prefWidth = rightButtonsWidth
             }
             //Analytics functions

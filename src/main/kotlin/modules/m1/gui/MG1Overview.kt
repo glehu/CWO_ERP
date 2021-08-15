@@ -14,18 +14,18 @@ class MG1Overview : IOverview, View("M1 Songs")
     override val root = borderpane {
         right = vbox {
             button("Search") {
-                action { m1Controller.openSearchScreen() }
+                action { m1Controller.searchEntry() }
                 tooltip("Opens the search screen.")
                 prefWidth = rightButtonsWidth
             }
             button("New") {
-                action { m1Controller.openWizardNewSong() }
+                action { m1Controller.newEntry() }
                 tooltip("Add a new song to the database.")
                 prefWidth = rightButtonsWidth
             }
             button("Save") {
-                action { m1Controller.saveSong() }
-                tooltip("Add a new song to the database.")
+                action { m1Controller.saveEntry() }
+                tooltip("Saves the current song.")
                 prefWidth = rightButtonsWidth
             }
             button("Analytics") {

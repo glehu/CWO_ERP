@@ -22,12 +22,12 @@ class M1Controller : IModule, Controller()
     val db: CwODB by inject()
     private val m2Controller: M2Controller by inject()
 
-    fun openSearchScreen()
+    fun searchEntry()
     {
         find<MG1SongFinder>().openModal()
     }
 
-    fun saveSong()
+    fun saveEntry()
     {
         val wizard = find<SongConfiguratorWizard>()
         var isComplete = true
@@ -49,7 +49,7 @@ class M1Controller : IModule, Controller()
         }
     }
 
-    fun openWizardNewSong()
+    fun newEntry()
     {
         val wizard = find<SongConfiguratorWizard>()
         wizard.songP1.item = SongPropertyP1()

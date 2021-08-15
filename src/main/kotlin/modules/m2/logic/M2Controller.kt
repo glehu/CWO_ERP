@@ -23,12 +23,12 @@ class M2Controller : IModule, Controller()
     private val wizard = find<ContactConfiguratorWizard>()
     val db: CwODB by inject()
 
-    fun openSearchScreen()
+    fun searchEntry()
     {
         find<MG2ContactFinder>().openModal()
     }
 
-    fun saveContact()
+    fun saveEntry()
     {
         var isComplete = true
         wizard.contact.commit()
@@ -44,7 +44,7 @@ class M2Controller : IModule, Controller()
         }
     }
 
-    fun openWizardNewContact()
+    fun newEntry()
     {
         wizard.contact.item = ContactProperty()
         wizard.isComplete = false
