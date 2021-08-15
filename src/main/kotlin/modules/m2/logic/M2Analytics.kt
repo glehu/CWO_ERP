@@ -32,7 +32,7 @@ class M2Analytics : IModule, Controller()
         val timeInMS = measureTimeMillis {
             db.getEntriesFromSearchString(
                 "", 0, false, module(), -1, indexManager
-            )
+            )                       // shout out blkghst
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping city data..."))
                 val contact: Contact = dbManager.decodeEntry(entryBytes) as Contact
