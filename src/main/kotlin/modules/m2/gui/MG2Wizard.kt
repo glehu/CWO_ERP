@@ -34,6 +34,9 @@ class NewContactMainData : Fragment("Main")
     //----------------------------------^
     override val root = form {
         fieldset {
+            field("UID") {
+                textfield(contact.uID).isEditable = false
+            }
             field("Name") { textfield(contact.name).required() }
             field("First Name") { textfield(contact.firstName) }
             field("Last Name") { textfield(contact.lastName) }

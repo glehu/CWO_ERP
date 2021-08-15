@@ -71,6 +71,9 @@ class SongMainData : Fragment("Main")
 
     override val root = form {
         fieldset {
+            field("UID") {
+                textfield(songP1.uID).isEditable = false
+            }
             field("Name") { textfield(songP1.name).required() }
             field("Vocalist") {
                 hbox {
