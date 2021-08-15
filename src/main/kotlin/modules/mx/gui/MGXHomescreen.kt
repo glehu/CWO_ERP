@@ -36,7 +36,6 @@ class MXGLogin : Fragment("CWO ERP")
     private val loginUser = MXUserModel(getUserPropertyFromUser(MXUser("", "")))
     private val userManager: MXUserManager by inject()
     override val root = borderpane {
-        setPrefSize(350.0, 250.0)
         top = menubar {
             menu("Menu") {
                 item("Preferences").action { showPreferences() }
@@ -44,27 +43,29 @@ class MXGLogin : Fragment("CWO ERP")
         }
         center = form {
             loginRoutines()
-            vbox {
-                fieldset {
-                    field("Username") { textfield(loginUser.username) { prefWidth = 200.0 }.required() }
-                    field("Password") { passwordfield(loginUser.password) { prefWidth = 200.0 }.required() }
+            fieldset("Login Credentials") {
+                vbox {
+                    fieldset {
+                        field("Username") { textfield(loginUser.username).required() }
+                        field("Password") { passwordfield(loginUser.password).required() }
+                    }
                 }
-            }
-            button("Login") {
-                enableWhen(loginUser.dirty)
-                shortcut("Enter")
-                action {
-                    var loginSuccess = false
-                    runAsyncWithProgress {
-                        if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty())
-                        {
-                            loginSuccess = userManager.login(loginUser.username.value, loginUser.password.value)
+                button("Login") {
+                    enableWhen(loginUser.dirty)
+                    shortcut("Enter")
+                    action {
+                        var loginSuccess = false
+                        runAsyncWithProgress {
+                            if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty())
+                            {
+                                loginSuccess = userManager.login(loginUser.username.value, loginUser.password.value)
+                            }
+                        } ui {
+                            if (loginSuccess)
+                            {
+                                replaceWith<MXGUserInterface>()
+                            } else loginUser.password.value = ""
                         }
-                    } ui {
-                        if (loginSuccess)
-                        {
-                            replaceWith<MXGUserInterface>()
-                        } else loginUser.password.value = ""
                     }
                 }
             }
