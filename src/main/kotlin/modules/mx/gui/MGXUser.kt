@@ -7,6 +7,7 @@ import modules.mx.MXUser
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserFromUserProperty
 import modules.mx.misc.getUserPropertyFromUser
+import modules.mx.rightButtonsWidth
 import modules.mx.token
 import tornadofx.*
 
@@ -37,15 +38,15 @@ class MGXUser(user: MXUser, credentials: MXCredentials) : Fragment("User")
                 userManager.updateUser(getUserFromUserProperty(userModel.item), originalUser, credentials)
                 close()
             }
-            prefWidth = 100.0
+            prefWidth = rightButtonsWidth
         }
         button("Delete") {
-            textFill = Color.RED
+            prefWidth = rightButtonsWidth
             action {
                 userManager.deleteUser(originalUser, credentials)
                 close()
             }
-            prefWidth = 100.0
+            style { baseColor = Color.DARKRED }
             vboxConstraints { marginTop = 25.0 }
         }
     }

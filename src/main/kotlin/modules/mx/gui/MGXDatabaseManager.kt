@@ -33,7 +33,7 @@ class MGXDatabaseManager : Fragment("Databases")
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
-                textFill = Color.RED
+                style { baseColor = Color.DARKRED }
             }
             button("Reset M2") {
                 action {
@@ -43,7 +43,7 @@ class MGXDatabaseManager : Fragment("Databases")
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
-                textFill = Color.RED
+                style { baseColor = Color.DARKRED }
             }
             button("Reset M3") {
                 action {
@@ -53,7 +53,7 @@ class MGXDatabaseManager : Fragment("Databases")
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
-                textFill = Color.RED
+                style { baseColor = Color.DARKRED }
             }
         }
         center {
