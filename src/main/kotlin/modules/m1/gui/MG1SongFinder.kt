@@ -7,6 +7,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.Song
@@ -64,10 +65,12 @@ class MG1SongFinder : IModule, View("M1 Songs")
                     readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0).cellFormat {
                         text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
                         rowItem.vocalist = text
+                        textFill = Color.LIGHTGRAY
                     }
                     readonlyColumn("Producer", Song::producer).prefWidth(200.0).cellFormat {
                         text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer)
                         rowItem.producer = text
+                        textFill = Color.LIGHTGRAY
                     }
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
