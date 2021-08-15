@@ -60,8 +60,11 @@ class Stylesheet : Stylesheet()
         }
 
         s(listCell, tableRowCell) {
-            and(even, odd) {
+            and(even) {
                 unsafe("-fx-control-inner-background", c("#292d30"))
+            }
+            and(odd) {
+                unsafe("-fx-control-inner-background", c("#32373b"))
             }
         }
 
