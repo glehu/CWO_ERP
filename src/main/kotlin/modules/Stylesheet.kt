@@ -1,6 +1,7 @@
 package modules
 
 import javafx.scene.paint.Color
+import javafx.scene.paint.Paint
 import javafx.scene.text.FontWeight
 import tornadofx.Stylesheet
 import tornadofx.c
@@ -12,8 +13,8 @@ class Stylesheet : Stylesheet()
     {
         root {
             accentColor = c("#1e74c6")
-            focusColor = c("#1e74c6")
             baseColor = c("#373e43")
+            focusColor = c("#1e74c6")
             unsafe("-fx-control-inner-background", c("#373e43").derive(0.25))
             unsafe("-fx-control-inner-background-alt", raw("-fx-control-inner-background"))
         }

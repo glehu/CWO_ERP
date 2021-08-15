@@ -1,5 +1,6 @@
 package modules.m1.gui
 
+import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IOverview
 import modules.m1.logic.M1Controller
@@ -50,90 +51,52 @@ class MG1Overview : IOverview, View("M1 Songs")
             }
         }
         center = form {
-            vbox(10) {
+            vbox {
                 hbox(10) {
+                    style {
+                        backgroundColor += c("#373e43")
+                        paddingAll = 10
+                    }
                     fieldset("Main Data") {
                         add(SongMainData::class)
-                        style {
-                            paddingAll = 10
-                            backgroundColor += c("#373e43")
-                        }
                     }
-                    fieldset("Completion State") {
-                        add(SongCompletionStateData::class)
-                        style {
-                            paddingAll = 10
-                            backgroundColor += c("#373e43")
+                    vbox {
+                        fieldset("Album/EP Data") {
+                            add(NewSongAlbumEPData::class)
+                        }
+                        fieldset("Visualization Data") {
+                            add(NewSongVisualizationData::class)
                         }
                     }
                     vbox {
                         fieldset("Availability Data") {
                             add(SongAvailabilityData::class)
-                            style {
-                                paddingAll = 10
-                                backgroundColor += c("#373e43")
-                            }
                         }
                         fieldset("Promotion Data") {
                             add(SongPromotionData::class)
-                            style {
-                                paddingAll = 10
-                                backgroundColor += c("#373e43")
-                            }
                         }
                     }
                     vbox {
+                        fieldset("Statistics Data") {
+                            add(NewSongStatisticsData::class)
+                        }
                         fieldset("Financial Data") {
                             add(SongFinancialData::class)
-                            style {
-                                paddingAll = 10
-                                backgroundColor += c("#373e43")
-                            }
-                        }
-                        fieldset("Visualization Data") {
-                            add(NewSongVisualizationData::class)
-                            style {
-                                paddingAll = 10
-                                backgroundColor += c("#373e43")
-                            }
                         }
                     }
-                    fieldset("Album/EP Data") {
-                        add(NewSongAlbumEPData::class)
-                        style {
-                            paddingAll = 10
-                            backgroundColor += c("#373e43")
-                        }
-                    }
-                    fieldset("Statistics Data") {
-                        add(NewSongStatisticsData::class)
-                        style {
-                            paddingAll = 10
-                            backgroundColor += c("#373e43")
-                        }
+                    fieldset("Completion State") {
+                        add(SongCompletionStateData::class)
                     }
                 }
-                hbox(10) {
-                    fieldset("Collaboration Data") {
+                squeezebox {
+                    fold("Collaboration Data", expanded = false, closeable = false) {
                         add(NewSongCollaborationData::class)
-                        style {
-                            paddingAll = 10
-                            backgroundColor += c("#373e43")
-                        }
                     }
-                    fieldset("Copyright Data") {
-                        add(NewSongVisualizationData::class)
-                        style {
-                            paddingAll = 10
-                            backgroundColor += c("#373e43")
-                        }
+                    fold("Copyright Data", expanded = false, closeable = false) {
+                        add(NewSongCopyrightData::class)
                     }
-                    fieldset("Miscellaneous") {
+                    fold("Miscellaneous", expanded = false, closeable = false) {
                         add(NewSongMiscData::class)
-                        style {
-                            paddingAll = 10
-                            backgroundColor += c("#373e43")
-                        }
                     }
                 }
             }

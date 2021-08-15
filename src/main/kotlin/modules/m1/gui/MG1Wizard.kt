@@ -203,12 +203,12 @@ class SongCompletionStateData : Fragment("Completion State")
 
     override val root = form {
         fieldset {
-            fieldset("Song state") { combobox(songP1.songState, songStateList) }
-            fieldset("Instrumental state") { combobox(songP1.instruState, instruStateList) }
-            fieldset("Lyrics state") { combobox(songP1.lyricsState, lyricsStateList) }
-            fieldset("Vocals state") { combobox(songP1.vocalsState, vocalsStateList) }
-            fieldset("Mixing state") { combobox(songP1.mixingState, mixingStateList) }
-            fieldset("Mastering state") { combobox(songP1.masteringState, masteringStateList) }
+            field("Song state") { combobox(songP1.songState, songStateList) }
+            field("Instrumental state") { combobox(songP1.instruState, instruStateList) }
+            field("Lyrics state") { combobox(songP1.lyricsState, lyricsStateList) }
+            field("Vocals state") { combobox(songP1.vocalsState, vocalsStateList) }
+            field("Mixing state") { combobox(songP1.mixingState, mixingStateList) }
+            field("Mastering state") { combobox(songP1.masteringState, masteringStateList) }
         }
     }
 
@@ -370,14 +370,10 @@ class NewSongStatisticsData : Fragment("Statistics")
     //-------- Statistics Data ---------|
     //----------------------------------^
     override val root = form {
-        fieldset("Spotify") {
-            field("Streams") { textfield(songP2.playsSpotify) }
-        }
-        fieldset("YouTube") {
-            field("Views") { textfield(songP2.playsYouTube) }
-        }
-        fieldset("Soundcloud") {
-            field("Streams") { textfield(songP2.playsSoundCloud) }
+        fieldset {
+            field("Spotify") { textfield(songP2.playsSpotify) }
+            field("YouTube") { textfield(songP2.playsYouTube) }
+            field("Soundcloud") { textfield(songP2.playsSoundCloud) }
         }
     }
 
@@ -536,16 +532,18 @@ class NewSongMiscData : Fragment("Misc")
     //----------- Misc Data ------------|
     //----------------------------------^
     override val root = form {
-        fieldset("Inspired by...") {
-            field("Artist") { textfield(songP2.inspiredByArtist) }
-            field("Song") { textfield(songP2.inspiredBySong) }
-        }
-        fieldset("Soft-/Hardware") {
-            field("DAW") { textfield(songP2.dawUsed) }
-            field("Microphone") { textfield(songP2.micUsed) }
-        }
-        fieldset("Comment") {
-            field { textfield(songP2.comment) }
+        hbox(20) {
+            fieldset("Inspired by...") {
+                field("Artist") { textfield(songP2.inspiredByArtist) }
+                field("Song") { textfield(songP2.inspiredBySong) }
+            }
+            fieldset("Soft-/Hardware") {
+                field("DAW") { textfield(songP2.dawUsed) }
+                field("Microphone") { textfield(songP2.micUsed) }
+            }
+            fieldset("Comment") {
+                field { textfield(songP2.comment) }
+            }
         }
     }
 
