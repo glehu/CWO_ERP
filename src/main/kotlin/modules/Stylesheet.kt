@@ -25,6 +25,8 @@ class Stylesheet : Stylesheet()
 
         textField {
             promptTextFill = Color.GRAY
+            textFill = Color.BLACK
+            fontWeight = FontWeight.EXTRA_BOLD
         }
 
         title {
