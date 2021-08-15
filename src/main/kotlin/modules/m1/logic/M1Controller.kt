@@ -55,24 +55,6 @@ class M1Controller : IModule, Controller()
         wizard.songP1.item = SongPropertyP1()
         wizard.songP2.item = SongPropertyP2()
         wizard.isComplete = false
-        wizard.onComplete {
-            if (wizard.songP1.item.nameProperty.value !== null)
-            {
-                val raf = db.openRandomFileAccess(module(), "rw")
-                M1DBManager().saveEntry(
-                    getSongFromPropertyP2(
-                        getSongFromPropertyP1(wizard.songP1.item),
-                        wizard.songP2.item
-                    ), db, -1L, -1, raf, m1GlobalIndex
-                )
-                db.closeRandomFileAccess(raf)
-                wizard.songP1.item = SongPropertyP1()
-                wizard.songP2.item = SongPropertyP2()
-                wizard.isComplete = false
-                //wizard.close()
-            }
-        }
-        //wizard.openModal(block = true)
     }
 
     fun openAnalytics()

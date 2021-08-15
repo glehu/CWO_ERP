@@ -10,6 +10,7 @@ import modules.m1.gui.MG1Overview
 import modules.m1.gui.MG1SongFinder
 import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2ContactFinder
+import modules.m2.gui.MG2Overview
 import modules.m3.gui.MG3InvoiceFinder
 import modules.mx.MXUser
 import modules.mx.activeUser
@@ -108,7 +109,7 @@ class MXGUserInterface : View("CWO ERP")
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
             if (activeUser.canAccessM1) tab<MG1Overview>()
-            if (activeUser.canAccessM2) tab<MG2ContactFinder>()
+            if (activeUser.canAccessM2) tab<MG2Overview>()
             if (activeUser.canAccessM3) tab<MG3InvoiceFinder>()
             if (activeUser.canAccessMX) tab<MGXManagement>()
         }

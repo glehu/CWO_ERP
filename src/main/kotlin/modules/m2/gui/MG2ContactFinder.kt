@@ -74,39 +74,10 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                         {
                             m2Controller.showContact(it.uID)
                             startSearch()
+                            close()
                         }
                     }
                 }
-            }
-        }
-        right = vbox {
-            //Main functions
-            button("New Contact") {
-                action {
-                    m2Controller.openWizardNewContact()
-                    startSearch()
-                }
-                tooltip("Add a new contact to the database.")
-                prefWidth = rightButtonsWidth
-            }
-            //Analytics functions
-            button("Analytics") {
-                action { m2Controller.openAnalytics() }
-                tooltip("Display a chart to show the distribution of genres.")
-                prefWidth = rightButtonsWidth
-            }
-            //Maintenance functions
-            button("Rebuild indices") {
-                //TODO: Not yet implemented
-                isDisable = true
-                tooltip("Rebuilds all indices in case of faulty indices.")
-                prefWidth = rightButtonsWidth
-            }
-            //Data import
-            button("Data Import") {
-                action { m2Controller.openDataImport() }
-                tooltip("Import contact data from a .csv file.")
-                prefWidth = rightButtonsWidth
             }
         }
     }

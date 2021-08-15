@@ -3,6 +3,7 @@ package modules.m2.logic
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
+import modules.m1.gui.MG1SongFinder
 import modules.m1.misc.SongModelP1
 import modules.m2.Contact
 import modules.m2.gui.*
@@ -23,24 +24,31 @@ class M2Controller : IModule, Controller()
     private val wizard = find<ContactConfiguratorWizard>()
     val db: CwODB by inject()
 
+    fun openSearchScreen()
+    {
+        find<MG2ContactFinder>().openModal()
+    }
+
+    fun saveContact()
+    {
+        var isComplete = true
+        wizard.contact.commit()
+        if(!wizard.contact.isValid) isComplete = false
+        if (isComplete)
+        {
+            val raf = db.openRandomFileAccess(module(), "rw")
+            M2DBManager().saveEntry(
+                getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, m2GlobalIndex
+            )
+            db.closeRandomFileAccess(raf)
+            wizard.isComplete = false
+        }
+    }
+
     fun openWizardNewContact()
     {
         wizard.contact.item = ContactProperty()
         wizard.isComplete = false
-        wizard.onComplete {
-            if (wizard.contact.name.value !== null)
-            {
-                val raf = db.openRandomFileAccess(module(), "rw")
-                M2DBManager().saveEntry(
-                    getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, m2GlobalIndex
-                )
-                db.closeRandomFileAccess(raf)
-                wizard.contact.item = ContactProperty()
-                wizard.isComplete = false
-                wizard.close()
-            }
-        }
-        wizard.openModal(block = true)
     }
 
     fun openAnalytics()
@@ -102,9 +110,9 @@ class M2Controller : IModule, Controller()
                 this.db.closeRandomFileAccess(raf)
                 wizard.contact.item = ContactProperty()
                 wizard.isComplete = false
-                wizard.close()
+                //wizard.close()
             }
         }
-        wizard.openWindow(block = true)
+        //wizard.openWindow(block = true)
     }
 }
