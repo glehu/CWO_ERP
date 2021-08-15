@@ -5,6 +5,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IModule
 import modules.m1.Song
 import modules.m1.gui.MG1Analytics
+import modules.m1.gui.MG1SongFinder
 import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.gui.SongViewerWizard
 import modules.m1.misc.*
@@ -20,6 +21,27 @@ class M1Controller : IModule, Controller()
 
     val db: CwODB by inject()
     private val m2Controller: M2Controller by inject()
+
+    fun openSearchScreen()
+    {
+        find<MG1SongFinder>().openModal()
+    }
+
+    fun saveSong()
+    {
+        val wizard = find<SongConfiguratorWizard>()
+        wizard.songP1.commit()
+        wizard.songP2.commit()
+        val raf = db.openRandomFileAccess(module(), "rw")
+        M1DBManager().saveEntry(
+            getSongFromPropertyP2(
+                getSongFromPropertyP1(wizard.songP1.item),
+                wizard.songP2.item
+            ), db, -1L, -1, raf, m1GlobalIndex
+        )
+        db.closeRandomFileAccess(raf)
+        wizard.isComplete = false
+    }
 
     fun openWizardNewSong()
     {
@@ -41,10 +63,10 @@ class M1Controller : IModule, Controller()
                 wizard.songP1.item = SongPropertyP1()
                 wizard.songP2.item = SongPropertyP2()
                 wizard.isComplete = false
-                wizard.close()
+                //wizard.close()
             }
         }
-        wizard.openModal(block = true)
+        //wizard.openModal(block = true)
     }
 
     fun openAnalytics()
@@ -92,9 +114,9 @@ class M1Controller : IModule, Controller()
                 wizard.songP1.item = SongPropertyP1()
                 wizard.songP2.item = SongPropertyP2()
                 wizard.isComplete = false
-                wizard.close()
+                //wizard.close()
             }
         }
-        wizard.openModal(block = true)
+        //wizard.openModal(block = true)
     }
 }

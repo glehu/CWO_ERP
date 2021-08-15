@@ -76,6 +76,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                     onUserSelect(1) {
                         m1Controller.showSong(it)
                         startSearch()
+                        close()
                     }
                 }
             }

@@ -107,8 +107,7 @@ class MXGUserInterface : View("CWO ERP")
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
-            if (activeUser.canAccessM1) tab<MG1SongFinder>()
-            tab<MG1Overview>()
+            if (activeUser.canAccessM1) tab<MG1Overview>()
             if (activeUser.canAccessM2) tab<MG2ContactFinder>()
             if (activeUser.canAccessM3) tab<MG3InvoiceFinder>()
             if (activeUser.canAccessMX) tab<MGXManagement>()
