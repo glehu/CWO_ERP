@@ -3,8 +3,6 @@ package modules.m1.gui
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IOverview
 import modules.m1.logic.M1Controller
-import modules.m1.misc.SongModelP1
-import modules.m1.misc.SongModelP2
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
@@ -12,8 +10,6 @@ import tornadofx.*
 class MG1Overview : IOverview, View("M1 Songs")
 {
     private val m1Controller: M1Controller by inject()
-    private val songP1: SongModelP1 by inject()
-    private val songP2: SongModelP2 by inject()
 
     override val root = borderpane {
         right = vbox {
