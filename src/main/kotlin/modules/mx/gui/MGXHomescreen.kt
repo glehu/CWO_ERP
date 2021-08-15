@@ -1,8 +1,12 @@
 package modules.mx.gui
 
 import javafx.scene.control.TabPane
+import javafx.scene.paint.Color
+import javafx.scene.text.FontWeight
+import javafx.stage.Stage
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.mx.logic.loginRoutines
+import modules.Stylesheet
+import modules.m1.gui.MG1Overview
 import modules.m1.gui.MG1SongFinder
 import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2ContactFinder
@@ -11,16 +15,23 @@ import modules.mx.MXUser
 import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
+import modules.mx.logic.loginRoutines
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class CWOMainGUI : App(MXGLogin::class, Styles::class)
-class Styles : Stylesheet()
+class CWOMainGUI : App(MXGLogin::class, Stylesheet::class)
+{
+    override fun start(stage: Stage)
+    {
+        super.start(stage)
+        stage.isMaximized = true
+    }
+}
 
 @ExperimentalSerializationApi
-class MXGLogin : View("CWO ERP")
+class MXGLogin : Fragment("CWO ERP")
 {
     private val loginUser = MXUserModel(getUserPropertyFromUser(MXUser("", "")))
     private val userManager: MXUserManager by inject()
@@ -52,8 +63,7 @@ class MXGLogin : View("CWO ERP")
                     } ui {
                         if (loginSuccess)
                         {
-                            close()
-                            find(MXGUserInterface::class).openModal()
+                            replaceWith<MXGUserInterface>()
                         } else loginUser.password.value = ""
                     }
                 }
@@ -97,6 +107,7 @@ class MXGUserInterface : View("CWO ERP")
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
             if (activeUser.canAccessM1) tab<MG1SongFinder>()
+            tab<MG1Overview>()
             if (activeUser.canAccessM2) tab<MG2ContactFinder>()
             if (activeUser.canAccessM3) tab<MG3InvoiceFinder>()
             if (activeUser.canAccessMX) tab<MGXManagement>()

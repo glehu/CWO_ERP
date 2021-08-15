@@ -77,38 +77,6 @@ class MG1SongFinder : IModule, View("M1 Songs")
                 }
             }
         }
-        right = vbox {
-            //Main functions
-            button("New Song") {
-                action {
-                    m1Controller.openWizardNewSong()
-                    startSearch()
-                }
-                tooltip("Add a new song to the database.")
-                prefWidth = rightButtonsWidth
-            }
-            //Analytics functions
-            button("Analytics") {
-                action { m1Controller.openAnalytics() }
-                tooltip("Display a chart to show the distribution of genres.")
-                prefWidth = rightButtonsWidth
-            }
-            //Maintenance functions
-            button("Rebuild indices") {
-                //TODO: Not yet implemented
-                isDisable = true
-                tooltip("Rebuilds all indices in case of faulty indices.")
-                prefWidth = rightButtonsWidth
-            }
-            //Data import
-            button("Data Import") {
-                //TODO: Not yet implemented
-                isDisable = true
-                //action { m1Controller.openDataImport() }
-                tooltip("Import contact data from a .csv file.")
-                prefWidth = rightButtonsWidth
-            }
-        }
     }
 
     private fun startSearch()
