@@ -76,6 +76,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                             close()
                         }
                     }
+                    isFocusTraversable = false
                 }
             }
         }

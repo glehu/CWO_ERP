@@ -77,6 +77,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                         startSearch()
                         close()
                     }
+                    isFocusTraversable = false
                 }
             }
         }
