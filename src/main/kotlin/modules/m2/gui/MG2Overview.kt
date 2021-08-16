@@ -3,6 +3,7 @@ package modules.m2.gui
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IOverview
+import modules.Stylesheet
 import modules.m2.logic.M2Controller
 import modules.mx.rightButtonsWidth
 import tornadofx.*
@@ -57,6 +58,7 @@ class MG2Overview : IOverview, View("M2 Contacts")
                     }
                     fieldset("Main Data") {
                         add(NewContactMainData::class)
+                        addClass(Stylesheet.fieldsetBorder)
                     }
                 }
             }

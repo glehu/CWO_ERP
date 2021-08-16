@@ -2,12 +2,14 @@ package modules
 
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
+import tornadofx.*
 import tornadofx.Stylesheet
-import tornadofx.c
-import tornadofx.derive
 
 class Stylesheet : Stylesheet()
 {
+    companion object {
+        val fieldsetBorder by cssclass()
+    }
     init
     {
         root {
@@ -20,6 +22,16 @@ class Stylesheet : Stylesheet()
 
         label {
             unsafe("-fx-text-fill", Color.LIGHTGRAY)
+        }
+
+        fieldsetBorder {
+            unsafe("-fx-border-color", Color.GRAY)
+            padding = CssBox(
+                Dimension(5.0, Dimension.LinearUnits.px),
+                Dimension(5.0, Dimension.LinearUnits.px),
+                Dimension(5.0, Dimension.LinearUnits.px),
+                Dimension(5.0, Dimension.LinearUnits.px)
+            )
         }
 
         textField {

@@ -3,6 +3,7 @@ package modules.m1.gui
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IOverview
+import modules.Stylesheet
 import modules.m1.logic.M1Controller
 import modules.mx.rightButtonsWidth
 import tornadofx.*
@@ -57,6 +58,7 @@ class MG1Overview : IOverview, View("M1 Songs")
                     }
                     fieldset("Main Data") {
                         add(SongMainData::class)
+                        addClass(Stylesheet.fieldsetBorder)
                     }
                     vbox {
                         fieldset("Album/EP Data") {
@@ -65,6 +67,7 @@ class MG1Overview : IOverview, View("M1 Songs")
                         fieldset("Visualization Data") {
                             add(NewSongVisualizationData::class)
                         }
+                        addClass(Stylesheet.fieldsetBorder)
                     }
                     vbox {
                         fieldset("Availability Data") {
@@ -73,6 +76,7 @@ class MG1Overview : IOverview, View("M1 Songs")
                         fieldset("Promotion Data") {
                             add(SongPromotionData::class)
                         }
+                        addClass(Stylesheet.fieldsetBorder)
                     }
                     vbox {
                         fieldset("Statistics Data") {
@@ -81,9 +85,11 @@ class MG1Overview : IOverview, View("M1 Songs")
                         fieldset("Financial Data") {
                             add(SongFinancialData::class)
                         }
+                        addClass(Stylesheet.fieldsetBorder)
                     }
                     fieldset("Completion State") {
                         add(SongCompletionStateData::class)
+                        addClass(Stylesheet.fieldsetBorder)
                     }
                 }
                 squeezebox {
