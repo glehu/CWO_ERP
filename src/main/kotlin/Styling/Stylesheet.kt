@@ -76,18 +76,16 @@ class Stylesheet : Stylesheet()
         }
 
         s(listCell, tableRowCell) {
+            unsafe("-fx-table-cell-border-color", raw("transparent"))
+
+            and(empty) {
+                unsafe("-fx-background-color", raw("transparent"))
+            }
             and(even) {
                 unsafe("-fx-control-inner-background", c("#292d30"))
             }
             and(odd) {
                 unsafe("-fx-control-inner-background", c("#32373b"))
-            }
-        }
-
-        s(listCell, tableRowCell) {
-            unsafe("-fx-table-cell-border-color", raw("transparent"))
-            and(empty) {
-                unsafe("-fx-background-color", raw("transparent"))
             }
         }
     }
