@@ -74,7 +74,8 @@ class MG1SongFinder : IModule, View("M1 Songs")
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
                         m1Controller.showSong(it)
-                        startSearch()
+                        //startSearch()
+                        searchText.text = ""
                         close()
                     }
                     isFocusTraversable = false
