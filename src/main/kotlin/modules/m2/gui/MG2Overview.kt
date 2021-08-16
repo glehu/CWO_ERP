@@ -1,5 +1,6 @@
 package modules.m2.gui
 
+import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IOverview
 import modules.m2.logic.M2Controller
@@ -51,7 +52,7 @@ class MG2Overview : IOverview, View("M2 Contacts")
             vbox {
                 hbox(10) {
                     style {
-                        backgroundColor += c("#373e43")
+                        unsafe("-fx-background-color", Color.web("#373e43", 1.0))
                         paddingAll = 10
                     }
                     fieldset("Main Data") {

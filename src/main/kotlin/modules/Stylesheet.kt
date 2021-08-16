@@ -11,45 +11,45 @@ class Stylesheet : Stylesheet()
     init
     {
         root {
-            accentColor = c("#1e74c6")
-            baseColor = c("#373e43")
-            focusColor = c("#1e74c6")
-            unsafe("-fx-control-inner-background", c("#373e43").derive(0.25))
+            unsafe("-fx-accent", Color.web("#1e74c6", 1.0))
+            unsafe("-fx-base", Color.web("#373e43", 1.0))
+            unsafe("-fx-focus-color", Color.web("#1e74c6", 1.0))
+            unsafe("-fx-control-inner-background", Color.web("#373e43", 1.0).derive(0.25))
             unsafe("-fx-control-inner-background-alt", raw("-fx-control-inner-background"))
         }
 
         label {
-            textFill = Color.LIGHTGRAY
+            unsafe("-fx-text-fill", Color.LIGHTGRAY)
         }
 
         textField {
-            promptTextFill = Color.GRAY
-            textFill = Color.BLACK
-            fontWeight = FontWeight.EXTRA_BOLD
+            unsafe("-fx-prompt-text-fill", Color.GRAY)
+            unsafe("-fx-text-fill", Color.WHITE)
+            unsafe("-fx-font-weight", FontWeight.EXTRA_BOLD)
         }
 
         title {
-            fontWeight = FontWeight.BOLD
+            unsafe("-fx-font-weight", FontWeight.BOLD)
         }
 
         button {
             focusTraversable = false
             and(":hover") {
-                textFill = Color.WHITE
+                unsafe("-fx-text-fill", Color.WHITE)
             }
             and(":default") {
-                baseColor = c("#1e74c6")
+                unsafe("-fx-base", Color.web("#1e74c6", 1.0))
             }
         }
 
         ".separator *.line" {
-            backgroundColor += c("#3C3C3C")
+            unsafe("-fx-background-color", Color.web("#3C3C3C", 1.0))
             unsafe("-fx-border-style", raw("solid"))
             unsafe("-fx-border-width", raw("1px"))
         }
 
         scrollBar {
-            backgroundColor += c("#373e43").derive(0.45)
+            unsafe("-fx-background-color", Color.web("#373e43").derive(0.45))
         }
 
         ".table-view" {
@@ -71,15 +71,10 @@ class Stylesheet : Stylesheet()
         }
 
         s(listCell, tableRowCell) {
+            unsafe("-fx-table-cell-border-color", raw("transparent"))
             and(empty) {
                 unsafe("-fx-background-color", raw("transparent"))
             }
-        }
-
-        s(listCell, tableRowCell)
-        {
-            unsafe("-fx-border-color", raw("transparent"))
-            unsafe("-fx-table-cell-border-color", raw("transparent"))
         }
     }
 }

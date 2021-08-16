@@ -1,5 +1,6 @@
 package modules.m1.gui
 
+import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.IOverview
 import modules.m1.logic.M1Controller
@@ -51,7 +52,7 @@ class MG1Overview : IOverview, View("M1 Songs")
             vbox {
                 hbox(10) {
                     style {
-                        backgroundColor += c("#373e43")
+                        unsafe("-fx-background-color", Color.web("#373e43", 1.0))
                         paddingAll = 10
                     }
                     fieldset("Main Data") {
