@@ -1,9 +1,9 @@
 package modules.m1.gui
 
-import javafx.scene.paint.Color
+import Styling.Stylesheet
+import javafx.scene.layout.Priority
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.interfaces.IOverview
-import Styling.Stylesheet
 import modules.m1.logic.M1Controller
 import modules.mx.rightButtonsWidth
 import tornadofx.*
@@ -53,12 +53,13 @@ class MG1Overview : IOverview, View("M1 Songs")
             vbox {
                 hbox(10) {
                     style {
-                        unsafe("-fx-background-color", Color.web("#373e43", 1.0))
                         paddingAll = 10
                     }
+                    addClass(Stylesheet.fieldsetBorder)
                     fieldset("Main Data") {
                         add(SongMainData::class)
                         addClass(Stylesheet.fieldsetBorder)
+                        hgrow = Priority.ALWAYS
                     }
                     vbox {
                         fieldset("Album/EP Data") {

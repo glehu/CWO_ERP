@@ -26,6 +26,8 @@ class Stylesheet : Stylesheet()
 
         fieldsetBorder {
             unsafe("-fx-border-color", Color.GRAY)
+            //unsafe("-fx-background-color", Color.web("#3C3C3C", 1.0))
+            unsafe("-fx-background-color", Color.web("#373e43", 1.0))
             padding = CssBox(
                 Dimension(5.0, Dimension.LinearUnits.px),
                 Dimension(5.0, Dimension.LinearUnits.px),
