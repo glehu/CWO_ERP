@@ -1,4 +1,4 @@
-# CWO_ERP
+# CWO ERP
 CWO Enterprise Resource Planning Software using a custom self-written database. 
 
 ## First steps
