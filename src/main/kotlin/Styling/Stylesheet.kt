@@ -1,4 +1,4 @@
-package modules
+package Styling
 
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight

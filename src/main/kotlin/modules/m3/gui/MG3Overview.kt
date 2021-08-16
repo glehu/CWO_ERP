@@ -1,5 +1,5 @@
 package modules.m3.gui
 
-import modules.IOverview
+import modules.interfaces.IOverview
 
 class MG3Overview : IOverview

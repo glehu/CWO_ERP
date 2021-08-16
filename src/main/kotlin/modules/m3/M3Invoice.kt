@@ -2,8 +2,8 @@ package modules.m3
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import modules.IEntry
-import modules.IInvoice
+import modules.interfaces.IEntry
+import modules.interfaces.IInvoice
 import modules.mx.m3GlobalIndex
 
 @Serializable

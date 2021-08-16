@@ -4,7 +4,7 @@ import db.CwODB
 import javafx.collections.ObservableList
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.IIndexManager
+import modules.interfaces.IIndexManager
 import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager

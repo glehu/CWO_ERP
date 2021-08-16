@@ -1,6 +1,6 @@
 package modules.mx.logic
 
-import modules.IModule
+import modules.interfaces.IModule
 import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestampFromUnix

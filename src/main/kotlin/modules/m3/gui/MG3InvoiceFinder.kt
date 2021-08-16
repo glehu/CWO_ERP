@@ -8,7 +8,7 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.IModule
+import modules.interfaces.IModule
 import modules.m2.logic.M2Controller
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller

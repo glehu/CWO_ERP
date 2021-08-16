@@ -2,7 +2,7 @@ package modules.m2.logic
 
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.IModule
+import modules.interfaces.IModule
 import modules.m2.Contact
 import modules.mx.logic.MXLog
 import tornadofx.Controller

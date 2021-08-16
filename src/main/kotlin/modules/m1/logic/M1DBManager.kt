@@ -6,8 +6,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
-import modules.IDBManager
-import modules.IModule
+import modules.interfaces.IDBManager
+import modules.interfaces.IModule
 import modules.m1.Song
 import java.io.RandomAccessFile
 

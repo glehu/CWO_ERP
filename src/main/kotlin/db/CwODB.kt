@@ -4,8 +4,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.IIndexManager
-import modules.IModule
+import modules.interfaces.IIndexManager
+import modules.interfaces.IModule
 import modules.mx.MXLastChange
 import modules.mx.activeUser
 import modules.mx.getModulePath

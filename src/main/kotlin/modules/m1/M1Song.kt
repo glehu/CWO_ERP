@@ -2,7 +2,7 @@ package modules.m1
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import modules.IEntry
+import modules.interfaces.IEntry
 import modules.mx.m1GlobalIndex
 
 @Serializable

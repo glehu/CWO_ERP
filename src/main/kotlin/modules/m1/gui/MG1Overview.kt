@@ -2,8 +2,8 @@ package modules.m1.gui
 
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.IOverview
-import modules.Stylesheet
+import modules.interfaces.IOverview
+import Styling.Stylesheet
 import modules.m1.logic.M1Controller
 import modules.mx.rightButtonsWidth
 import tornadofx.*

@@ -3,7 +3,7 @@ package modules.mx.gui
 import javafx.scene.control.TabPane
 import javafx.stage.Stage
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.Stylesheet
+import Styling.Stylesheet
 import modules.m1.gui.MG1Overview
 import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2Overview
