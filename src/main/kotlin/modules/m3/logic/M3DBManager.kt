@@ -21,7 +21,7 @@ class M3DBManager : IModule, IDBManager
         entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,
         raf: RandomAccessFile, indexManager: Any,
         indexWriteToDisk: Boolean
-    )
+    ): Int
     {
         entry as Invoice
         indexManager as M3IndexManager
@@ -29,6 +29,7 @@ class M3DBManager : IModule, IDBManager
         val songSerialized = ProtoBuf.encodeToByteArray(entry)
         val (posDBX, byteSizeX) = cwodb.saveEntry(songSerialized, entry.uID, posDB, byteSize, module(), raf)
         indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk)
+        return entry.uID
     }
 
     @ExperimentalSerializationApi

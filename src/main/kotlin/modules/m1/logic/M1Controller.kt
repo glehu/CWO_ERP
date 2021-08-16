@@ -38,7 +38,7 @@ class M1Controller : IModule, Controller()
         if (isComplete)
         {
             val raf = db.openRandomFileAccess(module(), "rw")
-            M1DBManager().saveEntry(
+            wizard.songP1.uID.value = M1DBManager().saveEntry(
                 getSongFromPropertyP2(
                     getSongFromPropertyP1(wizard.songP1.item),
                     wizard.songP2.item

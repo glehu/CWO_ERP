@@ -36,7 +36,7 @@ class M2Controller : IModule, Controller()
         if (isComplete)
         {
             val raf = db.openRandomFileAccess(module(), "rw")
-            M2DBManager().saveEntry(
+            wizard.contact.uID.value = M2DBManager().saveEntry(
                 getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, m2GlobalIndex
             )
             db.closeRandomFileAccess(raf)

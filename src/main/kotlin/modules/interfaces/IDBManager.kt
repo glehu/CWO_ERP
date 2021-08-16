@@ -10,7 +10,7 @@ interface IDBManager : IModule
         entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,
         raf: RandomAccessFile, indexManager: Any,
         indexWriteToDisk: Boolean = true
-    )
+    ): Int
 
     fun getEntry(uID: Int, cwodb: CwODB, index: Index): Any
 
