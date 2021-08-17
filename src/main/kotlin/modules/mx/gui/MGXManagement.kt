@@ -2,10 +2,10 @@ package modules.mx.gui
 
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
-import tornadofx.Fragment
+import tornadofx.View
 import tornadofx.tabpane
 
-class MGXManagement : Fragment("MX Management")
+class MGXManagement : View("MX Management")
 {
     @ExperimentalSerializationApi
     override val root = tabpane {
@@ -13,5 +13,6 @@ class MGXManagement : Fragment("MX Management")
 
         tab<MGXUserManager>()
         tab<MGXDatabaseManager>()
+        tab<MGXAPI>()
     }
 }

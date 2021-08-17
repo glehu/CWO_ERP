@@ -12,7 +12,7 @@ import modules.mx.*
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MGXDatabaseManager : Fragment("Databases")
+class MGXDatabaseManager : View("Databases")
 {
     private var indexManagers: ObservableList<IIndexManager> = observableListOf(
         m1GlobalIndex, m2GlobalIndex, m3GlobalIndex

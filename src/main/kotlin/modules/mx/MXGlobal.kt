@@ -43,3 +43,6 @@ const val rightButtonsWidth = 150.0
 
 //Time
 var differenceFromUTC: Int = 0
+
+//Server
+lateinit var server: MXServer

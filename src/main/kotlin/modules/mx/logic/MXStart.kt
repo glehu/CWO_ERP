@@ -53,4 +53,6 @@ fun startupRoutines(user: MXUser)
     m1GlobalIndex = M1IndexManager()
     m2GlobalIndex = M2IndexManager()
     m3GlobalIndex = M3IndexManager()
+    //Start embedded server
+    server = MXServer()
 }
