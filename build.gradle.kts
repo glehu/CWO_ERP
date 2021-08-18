@@ -26,6 +26,8 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:1.6.2")
     implementation("io.ktor:ktor-client-core:1.6.2")
     implementation("io.ktor:ktor-client-cio:1.6.2")
+    implementation("io.ktor:ktor-client-auth:1.6.2")
+    implementation("io.ktor:ktor-client-serialization:1.6.2")
     implementation("io.ktor:ktor-html-builder:1.6.2")
     implementation("io.ktor:ktor-freemarker:1.6.2")
     implementation("io.ktor:ktor-auth:1.6.2")

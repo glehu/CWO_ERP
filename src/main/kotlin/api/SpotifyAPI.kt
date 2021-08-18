@@ -1,18 +1,26 @@
 package api
 
 import io.ktor.client.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import modules.interfaces.IAPI
+import modules.mx.logic.MXAPI
+import server.SpotifyAuthCallbackJson
 import java.io.File
 import java.net.URLEncoder
 
 class SpotifyAPI : IAPI
 {
+    override val apiName = "spotify"
+
     private val spotifyAuthEndpoint = "https://accounts.spotify.com/authorize"
     private val redirectURI = "http://localhost:8000/authcallback/spotify"
     private val redirectURIEncoded = URLEncoder.encode(redirectURI, "utf-8")
@@ -36,10 +44,14 @@ class SpotifyAPI : IAPI
                 "&state=b78b07157ced"
     }
 
-    fun getAccessTokenFromAuthCode(authCode: String): String
+    fun getAccessTokenFromAuthCode(authCode: String): SpotifyAuthCallbackJson
     {
-        lateinit var response: HttpResponse
-        val client = HttpClient()
+        lateinit var response: SpotifyAuthCallbackJson
+        val client = HttpClient {
+            install(JsonFeature) {
+                serializer = KotlinxSerializer()
+            }
+        }
         runBlocking {
             launch {
                 response = client.post("https://accounts.spotify.com/api/token") {
@@ -51,8 +63,32 @@ class SpotifyAPI : IAPI
                         append("client_secret", clientSecret)
                     })
                 }
+                client.close()
+                saveAccessAndRefreshToken(response)
             }
         }
-        return response.toString()
+        return response
+    }
+
+    private fun saveAccessAndRefreshToken(response: SpotifyAuthCallbackJson)
+    {
+        val tokenFile = MXAPI().getAPITokenFile(apiName)
+        tokenFile.writeText(Json.encodeToString(response))
+    }
+
+
+    fun getAccessAndRefreshToken(): SpotifyAuthCallbackJson
+    {
+        val tokenData: SpotifyAuthCallbackJson
+        val tokenFile = MXAPI().getAPITokenFile(apiName)
+        val fileContent = tokenFile.readText()
+        tokenData = if (fileContent.isNotEmpty())
+        {
+            Json.decodeFromString(tokenFile.readText())
+        } else
+        {
+            SpotifyAuthCallbackJson("?", "?", "?", 0, "?")
+        }
+        return tokenData
     }
 }
