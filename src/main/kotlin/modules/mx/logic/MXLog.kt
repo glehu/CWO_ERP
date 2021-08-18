@@ -12,7 +12,7 @@ class MXLog
 {
     enum class LogType
     {
-        INFO, WARNING, ERROR
+        INFO, WARNING, ERROR, COM
     }
 
     companion object MXLog : IModule
