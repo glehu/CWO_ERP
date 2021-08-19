@@ -21,6 +21,7 @@ class GSpotify : View("Spotify API")
     private val accountNameProperty = SimpleStringProperty()
     private val accountTypeProperty = SimpleStringProperty()
     private val accountProductProperty = SimpleStringProperty()
+    private val accountIDProperty = SimpleStringProperty()
     private val accountFollowersProperty = SimpleStringProperty()
 
     //Token Data
@@ -58,6 +59,9 @@ class GSpotify : View("Spotify API")
                             field("Account Product") {
                                 textfield(accountProductProperty) { isEditable = false }
                             }
+                        }
+                        field("Spotify ID") {
+                            textfield(accountIDProperty) { isEditable = false }
                         }
                         field("Followers") {
                             textfield(accountFollowersProperty) { isEditable = false }
@@ -130,6 +134,7 @@ class GSpotify : View("Spotify API")
         accountNameProperty.value = userData.display_name
         accountTypeProperty.value = userData.type
         accountProductProperty.value = userData.product
+        accountIDProperty.value = userData.id
         accountFollowersProperty.value = userData.followers["total"]!!
     }
 }
