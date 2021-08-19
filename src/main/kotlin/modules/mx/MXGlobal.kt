@@ -35,7 +35,7 @@ val programPath: String = System.getProperty("user.dir")
 var dataPath: String = ""
 fun getModulePath(module: String) = "$dataPath\\data\\$module"
 fun getIniFile() = File("$programPath\\cwo_erp.ini")
-fun getClientSecretFile(api: String) = File("$programPath\\${api}_cs.txt")
+fun getClientSecretFile(api: String) = File("$dataPath\\data\\api\\${api}_cs.txt")
 
 //Search settings
 var maxSearchResultsGlobal: Int = 0
