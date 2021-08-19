@@ -9,6 +9,7 @@ import modules.mx.logic.MXAPI
 
 class SpotifyAPI : IAPI
 {
+    val controller = SpotifyController()
     override val auth = SpotifyAUTH()
     override val apiName = "spotify"
 
@@ -19,6 +20,7 @@ class SpotifyAPI : IAPI
         runBlocking {
             launch {
                 userData = client.get("https://api.spotify.com/v1/me")
+                controller.saveUserData(userData)
                 client.close()
             }
         }

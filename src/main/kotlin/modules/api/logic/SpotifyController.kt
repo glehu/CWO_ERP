@@ -42,7 +42,7 @@ class SpotifyController : IAPI, Controller()
         return userDataFile
     }
 
-    private fun saveUserData(userData: SpotifyUserProfileJson)
+    fun saveUserData(userData: SpotifyUserProfileJson)
     {
         getUserDataFile().writeText(Json.encodeToString(userData))
     }
