@@ -11,11 +11,13 @@ import kotlinx.serialization.json.Json
 import modules.interfaces.IAPI
 import modules.interfaces.ITokenData
 import modules.mx.getClientSecretFile
+import modules.mx.gui.api.MGXSpotify
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXAPI.Companion.getAPITokenFile
 import modules.mx.logic.MXTimestamp
 import server.SpotifyAuthCallbackJson
 import server.SpotifyUserProfileJson
+import tornadofx.find
 import java.net.URLEncoder
 
 class SpotifyAPI : IAPI
@@ -91,6 +93,7 @@ class SpotifyAPI : IAPI
                 {
                     refreshAccessToken()
                     tokenData = Json.decodeFromString(tokenFile.readText())
+                    find<MGXSpotify>().showTokenData(getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson)
                 }
             }
         } else tokenData = SpotifyAuthCallbackJson("?", "?", "?", 0, "?")
