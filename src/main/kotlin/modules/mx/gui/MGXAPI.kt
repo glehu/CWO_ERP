@@ -2,7 +2,7 @@ package modules.mx.gui
 
 import Styling.Stylesheet
 import javafx.scene.layout.Priority
-import modules.api.gui.MGXSpotify
+import modules.api.gui.GSpotify
 import tornadofx.*
 
 
@@ -15,7 +15,7 @@ class MGXAPI : View("API")
             }
             addClass(Stylesheet.fieldsetBorder)
             fieldset {
-                add(MGXSpotify::class)
+                add(GSpotify::class)
                 addClass(Stylesheet.fieldsetBorder)
                 hgrow = Priority.ALWAYS
             }

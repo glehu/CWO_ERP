@@ -8,7 +8,7 @@ import modules.mx.rightButtonsWidth
 import modules.api.json.SpotifyAuthCallbackJson
 import tornadofx.*
 
-class MGXSpotify : View("Spotify API")
+class GSpotify : View("Spotify API")
 {
     private val sAUTH = SpotifyAUTH()
     private val sAPI = SpotifyAPI()

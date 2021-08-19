@@ -6,7 +6,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import modules.api.gui.MGXSpotify
+import modules.api.gui.GSpotify
 import modules.mx.logic.MXLog
 import tornadofx.find
 import tornadofx.runAsync
@@ -24,8 +24,8 @@ class MXServer
                 MXLog.log("MX", MXLog.LogType.COM, "Spotify Auth Callback received", "server")
                 call.respondText("CWO ERP Spotify Authorization Callback Site")
                 val code: String? = call.request.queryParameters["code"]
-                find<MGXSpotify>().authCodeProperty.value = code
-                find<MGXSpotify>().showTokenData(SpotifyAUTH().getAccessTokenFromAuthCode(code!!))
+                find<GSpotify>().authCodeProperty.value = code
+                find<GSpotify>().showTokenData(SpotifyAUTH().getAccessTokenFromAuthCode(code!!))
             }
         }
     }
