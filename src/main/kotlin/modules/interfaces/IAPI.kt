@@ -33,7 +33,7 @@ interface IAPI
                 install(Auth) {
                     if (authType == MXAPI.Companion.AuthType.TOKEN)
                     {
-                        val tokenData = getAccessAndRefreshTokenFromDisk()
+                        val tokenData = getAccessAndRefreshTokenFromDisk(checkExpired = true)
                         bearer {
                             loadTokens {
                                 BearerTokens(tokenData.access_token, tokenData.refresh_token)
@@ -55,5 +55,5 @@ interface IAPI
         }
     }
 
-    fun getAccessAndRefreshTokenFromDisk(): ITokenData
+    fun getAccessAndRefreshTokenFromDisk(checkExpired: Boolean = false): ITokenData
 }

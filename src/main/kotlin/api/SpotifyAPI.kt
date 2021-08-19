@@ -13,6 +13,7 @@ import modules.interfaces.ITokenData
 import modules.mx.getClientSecretFile
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXAPI.Companion.getAPITokenFile
+import modules.mx.logic.MXTimestamp
 import server.SpotifyAuthCallbackJson
 import server.SpotifyUserProfileJson
 import java.net.URLEncoder
@@ -76,15 +77,23 @@ class SpotifyAPI : IAPI
         tokenFile.writeText(sJson)
     }
 
-    override fun getAccessAndRefreshTokenFromDisk(): ITokenData
+    override fun getAccessAndRefreshTokenFromDisk(checkExpired: Boolean): ITokenData
     {
-        val tokenData: SpotifyAuthCallbackJson
+        var tokenData: SpotifyAuthCallbackJson
         val tokenFile = getAPITokenFile(apiName)
         val fileContent = tokenFile.readText()
-        tokenData = if (fileContent.isNotEmpty())
+        if (fileContent.isNotEmpty())
         {
-            Json.decodeFromString(tokenFile.readText())
-        } else SpotifyAuthCallbackJson("?", "?", "?", 0, "?")
+            tokenData = Json.decodeFromString(tokenFile.readText())
+            if (checkExpired)
+            {
+                if (tokenData.expireUnixTimestamp <= MXTimestamp.getUnixTimestamp())
+                {
+                    refreshAccessToken()
+                    tokenData = Json.decodeFromString(tokenFile.readText())
+                }
+            }
+        } else tokenData = SpotifyAuthCallbackJson("?", "?", "?", 0, "?")
         return tokenData
     }
 

@@ -136,6 +136,7 @@ class MGXSpotify : View("Spotify API")
     private fun updateAccountData()
     {
         val accountData = SpotifyAPI().getAccountData()
+        showTokenData(SpotifyAPI().getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson)
         accountNameProperty.value = accountData.display_name
         accountTypeProperty.value = accountData.type
         accountProductProperty.value = accountData.product
