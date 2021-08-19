@@ -15,7 +15,7 @@ class MGXAPI : View("API")
                 paddingAll = 10
             }
             addClass(Stylesheet.fieldsetBorder)
-            fieldset("Spotify") {
+            fieldset {
                 add(MGXSpotify::class)
                 addClass(Stylesheet.fieldsetBorder)
                 hgrow = Priority.ALWAYS

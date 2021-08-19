@@ -7,9 +7,9 @@ class MXAPI
 {
     fun getAPITokenFile(api: String): File
     {
-        val tokenFilePath = File("${getModulePath("MX")}\\$api")
+        val tokenFilePath = File("${getModulePath("MX")}\\api\\$api")
         if (!tokenFilePath.isDirectory) tokenFilePath.mkdirs()
-        val tokenFile = File("$tokenFilePath\\$api")
+        val tokenFile = File("$tokenFilePath\\${api}_token.json")
         if (!tokenFile.isFile) tokenFile.createNewFile()
         return tokenFile
     }

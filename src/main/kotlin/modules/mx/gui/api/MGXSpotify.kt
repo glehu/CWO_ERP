@@ -2,8 +2,10 @@ package modules.mx.gui.api
 
 import api.SpotifyAPI
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleLongProperty
 import javafx.beans.property.SimpleStringProperty
 import modules.mx.rightButtonsWidth
+import server.SpotifyAuthCallbackJson
 import tornadofx.*
 
 class MGXSpotify : View("Spotify API")
@@ -11,14 +13,14 @@ class MGXSpotify : View("Spotify API")
     private val authURLProperty = SimpleStringProperty()
     val authCodeProperty = SimpleStringProperty()
     private val accessTokenProperty = SimpleStringProperty()
+    private val generatedAtUnixTimestampProperty = SimpleLongProperty()
     private val expiresInProperty = SimpleIntegerProperty()
+    private val expireUnixTimestampProperty = SimpleLongProperty()
     private val refreshTokenProperty = SimpleStringProperty()
+
     override val root = form {
-        val tokenData = SpotifyAPI().getAccessAndRefreshToken()
-        accessTokenProperty.value = tokenData.access_token
-        expiresInProperty.value = tokenData.expires_in
-        refreshTokenProperty.value = tokenData.refresh_token
-        fieldset {
+        showTokenData(SpotifyAPI().getAccessAndRefreshTokenFromDisk())
+        fieldset("Spotify Token Data") {
             hbox {
                 field("Authorization URL") {
                     textfield(authURLProperty) {
@@ -40,12 +42,6 @@ class MGXSpotify : View("Spotify API")
                         isEditable = false
                     }
                 }
-                button("Submit") {
-                    prefWidth = rightButtonsWidth
-                    action {
-
-                    }
-                }
             }
             field("Access Token") {
                 textfield(accessTokenProperty) {
@@ -53,10 +49,24 @@ class MGXSpotify : View("Spotify API")
                     isEditable = false
                 }
             }
-            field("Refresh Token") {
-                textfield(expiresInProperty) {
-                    prefWidth = 1500.0
-                    isEditable = false
+            hbox {
+                field("Generated at (UNIXTIME)") {
+                    textfield(generatedAtUnixTimestampProperty) {
+                        prefWidth = 1500.0
+                        isEditable = false
+                    }
+                }
+                field("Expires in (seconds)") {
+                    textfield(expiresInProperty) {
+                        prefWidth = 1500.0
+                        isEditable = false
+                    }
+                }
+                field("at (UNIXTIME)") {
+                    textfield(expireUnixTimestampProperty) {
+                        prefWidth = 1500.0
+                        isEditable = false
+                    }
                 }
             }
             field("Refresh Token") {
@@ -68,11 +78,12 @@ class MGXSpotify : View("Spotify API")
         }
     }
 
-    fun getAccessAndRefreshToken()
+    fun showTokenData(tokenData: SpotifyAuthCallbackJson)
     {
-        val jsonResponse = SpotifyAPI().getAccessTokenFromAuthCode(authCodeProperty.value)
-        accessTokenProperty.value = jsonResponse.access_token
-        expiresInProperty.value = jsonResponse.expires_in
-        refreshTokenProperty.value = jsonResponse.refresh_token
+        accessTokenProperty.value = tokenData.access_token
+        generatedAtUnixTimestampProperty.value = tokenData.generatedAtUnixTimestamp
+        expiresInProperty.value = tokenData.expires_in
+        expireUnixTimestampProperty.value = tokenData.expireUnixTimestamp
+        refreshTokenProperty.value = tokenData.refresh_token
     }
 }

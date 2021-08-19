@@ -30,7 +30,7 @@ class MXServer
                         call.respondText("CWO ERP Spotify Authorization Callback Site")
                         val code: String? = call.request.queryParameters["code"]
                         find<MGXSpotify>().authCodeProperty.value = code
-                        find<MGXSpotify>().getAccessAndRefreshToken()
+                        find<MGXSpotify>().showTokenData(SpotifyAPI().getAccessTokenFromAuthCode(code!!))
                     }
                 }
             }.start(wait = true)

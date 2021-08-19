@@ -13,6 +13,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.interfaces.IAPI
 import modules.mx.logic.MXAPI
+import modules.mx.logic.MXTimestamp
 import server.SpotifyAuthCallbackJson
 import java.io.File
 import java.net.URLEncoder
@@ -73,11 +74,12 @@ class SpotifyAPI : IAPI
     private fun saveAccessAndRefreshToken(response: SpotifyAuthCallbackJson)
     {
         val tokenFile = MXAPI().getAPITokenFile(apiName)
+        response.initialize()
         tokenFile.writeText(Json.encodeToString(response))
     }
 
 
-    fun getAccessAndRefreshToken(): SpotifyAuthCallbackJson
+    fun getAccessAndRefreshTokenFromDisk(): SpotifyAuthCallbackJson
     {
         val tokenData: SpotifyAuthCallbackJson
         val tokenFile = MXAPI().getAPITokenFile(apiName)
