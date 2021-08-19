@@ -4,7 +4,7 @@ import db.CwODB
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.interfaces.IModule
+import interfaces.IModule
 import modules.m1.Song
 import modules.m1.getGenreList
 import modules.mx.logic.MXLog

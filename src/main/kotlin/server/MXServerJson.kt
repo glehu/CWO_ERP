@@ -1,7 +1,7 @@
 package server
 
 import kotlinx.serialization.Serializable
-import modules.interfaces.ITokenData
+import interfaces.ITokenData
 
 @Serializable
 data class SpotifyAuthCallbackJson(

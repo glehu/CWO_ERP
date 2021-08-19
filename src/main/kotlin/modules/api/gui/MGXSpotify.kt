@@ -1,6 +1,6 @@
-package modules.mx.gui.api
+package modules.api.gui
 
-import api.SpotifyAPI
+import modules.api.logic.SpotifyAPI
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import modules.mx.rightButtonsWidth

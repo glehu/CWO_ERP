@@ -3,7 +3,7 @@ package modules.m1.gui
 import Styling.Stylesheet
 import javafx.scene.layout.Priority
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.interfaces.IOverview
+import interfaces.IOverview
 import modules.m1.logic.M1Controller
 import modules.mx.rightButtonsWidth
 import tornadofx.*

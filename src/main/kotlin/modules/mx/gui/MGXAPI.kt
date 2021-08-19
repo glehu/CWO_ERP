@@ -2,8 +2,7 @@ package modules.mx.gui
 
 import Styling.Stylesheet
 import javafx.scene.layout.Priority
-import modules.m1.gui.SongMainData
-import modules.mx.gui.api.MGXSpotify
+import modules.api.gui.MGXSpotify
 import tornadofx.*
 
 

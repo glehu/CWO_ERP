@@ -1,4 +1,4 @@
-package modules.interfaces
+package interfaces
 
 interface IModule
 {

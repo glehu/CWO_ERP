@@ -5,7 +5,7 @@ import db.CwODB
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.interfaces.IModule
+import interfaces.IModule
 import modules.m2.Contact
 import modules.m2.misc.ContactModel
 import modules.mx.logic.MXLog

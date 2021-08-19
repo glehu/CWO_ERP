@@ -2,7 +2,7 @@ package modules.m2.gui
 
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.interfaces.IOverview
+import interfaces.IOverview
 import Styling.Stylesheet
 import modules.m2.logic.M2Controller
 import modules.mx.rightButtonsWidth

@@ -2,7 +2,7 @@ package modules.m3.logic
 
 import db.CwODB
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.interfaces.IModule
+import interfaces.IModule
 import modules.m3.Invoice
 import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.InvoiceViewerWizard

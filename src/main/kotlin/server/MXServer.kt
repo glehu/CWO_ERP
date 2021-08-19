@@ -1,12 +1,12 @@
 package server
 
-import api.SpotifyAPI
+import modules.api.logic.SpotifyAPI
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import modules.mx.gui.api.MGXSpotify
+import modules.api.gui.MGXSpotify
 import modules.mx.logic.MXLog
 import tornadofx.find
 import tornadofx.runAsync

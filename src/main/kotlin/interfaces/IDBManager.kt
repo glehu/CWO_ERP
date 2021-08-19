@@ -1,4 +1,4 @@
-package modules.interfaces
+package interfaces
 
 import db.CwODB
 import db.Index

@@ -1,4 +1,4 @@
-package api
+package modules.api.logic
 
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -8,10 +8,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.interfaces.IAPI
-import modules.interfaces.ITokenData
+import interfaces.IAPI
+import interfaces.ITokenData
 import modules.mx.getClientSecretFile
-import modules.mx.gui.api.MGXSpotify
+import modules.api.gui.MGXSpotify
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXAPI.Companion.getAPITokenFile
 import modules.mx.logic.MXTimestamp

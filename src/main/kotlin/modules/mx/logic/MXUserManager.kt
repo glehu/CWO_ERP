@@ -7,7 +7,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.interfaces.IModule
+import interfaces.IModule
 import modules.mx.*
 import modules.mx.gui.MGXUser
 import tornadofx.Controller
