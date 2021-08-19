@@ -1,8 +1,5 @@
 package api
 
-import io.ktor.client.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
@@ -12,9 +9,11 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.interfaces.IAPI
+import modules.interfaces.ITokenData
 import modules.mx.logic.MXAPI
-import modules.mx.logic.MXTimestamp
+import modules.mx.logic.MXAPI.Companion.getAPITokenFile
 import server.SpotifyAuthCallbackJson
+import server.SpotifyUserProfileJson
 import java.io.File
 import java.net.URLEncoder
 
@@ -22,13 +21,13 @@ class SpotifyAPI : IAPI
 {
     override val apiName = "spotify"
 
-    private val spotifyAuthEndpoint = "https://accounts.spotify.com/authorize"
-    private val redirectURI = "http://localhost:8000/authcallback/spotify"
-    private val redirectURIEncoded = URLEncoder.encode(redirectURI, "utf-8")
-    private val clientID = "172f78362a5447c18cc93a75cdb16dfe"
-    private val clientSecret = File("confCred/spotifyApp").readText()
-    private val responseType = "code"
-    private val scopes = "user-read-playback-position%20" +
+    override val spotifyAuthEndpoint = "https://accounts.spotify.com/authorize"
+    override val redirectURI = "http://localhost:8000/authcallback/spotify"
+    override val redirectURIEncoded = URLEncoder.encode(redirectURI, "utf-8")!!
+    override val clientID = "172f78362a5447c18cc93a75cdb16dfe"
+    override val clientSecret = File("confCred/spotifyApp").readText()
+    override val responseType = "code"
+    override val scopes = "user-read-playback-position%20" +
             "playlist-read-private%20" +
             "user-read-email%20" +
             "user-read-private%20" +
@@ -48,11 +47,7 @@ class SpotifyAPI : IAPI
     fun getAccessTokenFromAuthCode(authCode: String): SpotifyAuthCallbackJson
     {
         lateinit var response: SpotifyAuthCallbackJson
-        val client = HttpClient {
-            install(JsonFeature) {
-                serializer = KotlinxSerializer()
-            }
-        }
+        val client = getHttpClient(MXAPI.Companion.AuthType.NONE)
         runBlocking {
             launch {
                 response = client.post("https://accounts.spotify.com/api/token") {
@@ -71,26 +66,59 @@ class SpotifyAPI : IAPI
         return response
     }
 
-    private fun saveAccessAndRefreshToken(response: SpotifyAuthCallbackJson)
+    private fun saveAccessAndRefreshToken(response: ITokenData)
     {
-        val tokenFile = MXAPI().getAPITokenFile(apiName)
+        response as SpotifyAuthCallbackJson
+        val tokenFile = getAPITokenFile(apiName)
         response.initialize()
-        tokenFile.writeText(Json.encodeToString(response))
+        val sJson = Json.encodeToString(response)
+        tokenFile.writeText(sJson)
     }
 
-
-    fun getAccessAndRefreshTokenFromDisk(): SpotifyAuthCallbackJson
+    override fun getAccessAndRefreshTokenFromDisk(): ITokenData
     {
         val tokenData: SpotifyAuthCallbackJson
-        val tokenFile = MXAPI().getAPITokenFile(apiName)
+        val tokenFile = getAPITokenFile(apiName)
         val fileContent = tokenFile.readText()
         tokenData = if (fileContent.isNotEmpty())
         {
             Json.decodeFromString(tokenFile.readText())
-        } else
-        {
-            SpotifyAuthCallbackJson("?", "?", "?", 0, "?")
-        }
+        } else SpotifyAuthCallbackJson("?", "?", "?", 0, "?")
         return tokenData
+    }
+
+    fun refreshAccessToken()
+    {
+        var tokenDataNew: SpotifyAuthCallbackJson
+        val tokenData = getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson
+        val client = getHttpClient(MXAPI.Companion.AuthType.NONE)
+        runBlocking {
+            launch {
+                tokenDataNew = client.post("https://accounts.spotify.com/api/token") {
+                    body = FormDataContent(Parameters.build {
+                        append("grant_type", "refresh_token")
+                        append("refresh_token", tokenData.refresh_token)
+                        append("client_id", clientID)
+                        append("client_secret", clientSecret)
+                    })
+                }
+                client.close()
+                tokenData.access_token = tokenDataNew.access_token
+                saveAccessAndRefreshToken(tokenData)
+            }
+        }
+    }
+
+    fun getAccountData(): SpotifyUserProfileJson
+    {
+        lateinit var response: SpotifyUserProfileJson
+        val client = getHttpClient(MXAPI.Companion.AuthType.TOKEN)
+        runBlocking {
+            launch {
+                response = client.get("https://api.spotify.com/v1/me")
+                client.close()
+            }
+        }
+        return response
     }
 }

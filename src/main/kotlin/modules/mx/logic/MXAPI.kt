@@ -5,12 +5,20 @@ import java.io.File
 
 class MXAPI
 {
-    fun getAPITokenFile(api: String): File
+    companion object
     {
-        val tokenFilePath = File("${getModulePath("MX")}\\api\\$api")
-        if (!tokenFilePath.isDirectory) tokenFilePath.mkdirs()
-        val tokenFile = File("$tokenFilePath\\${api}_token.json")
-        if (!tokenFile.isFile) tokenFile.createNewFile()
-        return tokenFile
+        enum class AuthType
+        {
+            BASIC, TOKEN, NONE
+        }
+
+        fun getAPITokenFile(api: String): File
+        {
+            val tokenFilePath = File("${getModulePath("MX")}\\api\\$api")
+            if (!tokenFilePath.isDirectory) tokenFilePath.mkdirs()
+            val tokenFile = File("$tokenFilePath\\${api}_token.json")
+            if (!tokenFile.isFile) tokenFile.createNewFile()
+            return tokenFile
+        }
     }
 }
