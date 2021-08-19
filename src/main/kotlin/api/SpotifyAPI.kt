@@ -41,7 +41,8 @@ class SpotifyAPI : IAPI
                 "&response_type=$responseType" +
                 "&redirect_uri=$redirectURIEncoded" +
                 "&scope=$scopes" +
-                "&state=b78b07157ced"
+                "&state=b78b07157ced" +
+                "&show_dialog=true"
     }
 
     fun getAccessTokenFromAuthCode(authCode: String): SpotifyAuthCallbackJson

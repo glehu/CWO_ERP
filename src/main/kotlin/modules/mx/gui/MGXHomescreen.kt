@@ -15,6 +15,7 @@ import modules.mx.logic.MXUserManager
 import modules.mx.logic.loginRoutines
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
+import modules.mx.server
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -24,6 +25,12 @@ class CWOMainGUI : App(MXGLogin::class, Stylesheet::class)
     {
         super.start(stage)
         stage.isMaximized = true
+    }
+
+    override fun stop()
+    {
+        server.serverEngine.stop(100L, 100L)
+        super.stop()
     }
 }
 
