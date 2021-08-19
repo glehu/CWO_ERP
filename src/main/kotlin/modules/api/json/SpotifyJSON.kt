@@ -1,7 +1,7 @@
 package modules.api.json
 
-import kotlinx.serialization.Serializable
 import interfaces.ITokenData
+import kotlinx.serialization.Serializable
 
 @Serializable
 data class SpotifyAuthCallbackJson(
@@ -21,7 +21,7 @@ data class SpotifyUserProfileJson(
     val display_name: String,
     val email: String,
     val external_urls: Map<String, String>,
-    val followers: Map<String,String?>,
+    val followers: Map<String, String?>,
     val href: String,
     val id: String,
     val product: String,

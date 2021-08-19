@@ -3,7 +3,7 @@ package modules.m2.gui
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import interfaces.IOverview
-import Styling.Stylesheet
+import styling.Stylesheet
 import modules.m2.logic.M2Controller
 import modules.mx.rightButtonsWidth
 import tornadofx.*

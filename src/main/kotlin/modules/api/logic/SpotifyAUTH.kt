@@ -8,13 +8,14 @@ import io.ktor.http.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.api.gui.GSpotify
+import modules.api.json.SpotifyAuthCallbackJson
 import modules.mx.getClientSecretFile
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXAPI.Companion.getAPITokenFile
 import modules.mx.logic.MXTimestamp
-import modules.api.json.SpotifyAuthCallbackJson
 import tornadofx.find
 import java.net.URLEncoder
 
@@ -46,9 +47,9 @@ class SpotifyAUTH : IAPIAUTH
                 "&show_dialog=true"
     }
 
-    override fun getAccessTokenFromAuthCode(authCode: String): SpotifyAuthCallbackJson
+    override fun getAccessTokenFromAuthCode(authCode: String): ITokenData
     {
-        lateinit var tokenData: SpotifyAuthCallbackJson
+        lateinit var tokenData: ITokenData
         val client = getAuthClient(MXAPI.Companion.AuthType.NONE)
         runBlocking {
             launch {
@@ -62,20 +63,20 @@ class SpotifyAUTH : IAPIAUTH
                     })
                 }
                 client.close()
-                saveTokenData(tokenData)
+                saveTokenData(tokenData as SpotifyAuthCallbackJson)
             }
         }
-        return tokenData
+        return tokenData as SpotifyAuthCallbackJson
     }
 
     override fun getAccessAndRefreshTokenFromDisk(checkExpired: Boolean): ITokenData
     {
-        var tokenData: SpotifyAuthCallbackJson
+        var tokenData: ITokenData
         val tokenFile = getAPITokenFile(apiName)
         val fileContent = tokenFile.readText()
         if (fileContent.isNotEmpty())
         {
-            tokenData = Json.decodeFromString(tokenFile.readText())
+            tokenData = Json.decodeFromString(tokenFile.readText()) as SpotifyAuthCallbackJson
             if (checkExpired)
             {
                 if (tokenData.expireUnixTimestamp <= MXTimestamp.getUnixTimestamp())
@@ -92,7 +93,7 @@ class SpotifyAUTH : IAPIAUTH
     override fun refreshAccessToken()
     {
         var tokenDataNew: SpotifyAuthCallbackJson
-        val tokenData = getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson
+        val tokenData = getAccessAndRefreshTokenFromDisk()
         val client = getAuthClient(MXAPI.Companion.AuthType.NONE)
         runBlocking {
             launch {
@@ -110,4 +111,6 @@ class SpotifyAUTH : IAPIAUTH
             }
         }
     }
+
+    override fun serializeTokenData(tokenData: ITokenData) = Json.encodeToString(tokenData as SpotifyAuthCallbackJson)
 }

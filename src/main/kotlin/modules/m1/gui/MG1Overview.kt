@@ -1,6 +1,6 @@
 package modules.m1.gui
 
-import Styling.Stylesheet
+import styling.Stylesheet
 import javafx.scene.layout.Priority
 import kotlinx.serialization.ExperimentalSerializationApi
 import interfaces.IOverview

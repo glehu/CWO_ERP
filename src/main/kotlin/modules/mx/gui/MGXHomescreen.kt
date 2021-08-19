@@ -1,6 +1,6 @@
 package modules.mx.gui
 
-import Styling.Stylesheet
+import styling.Stylesheet
 import javafx.scene.control.TabPane
 import javafx.stage.Stage
 import kotlinx.serialization.ExperimentalSerializationApi

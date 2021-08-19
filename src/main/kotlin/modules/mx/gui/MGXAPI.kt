@@ -1,6 +1,6 @@
 package modules.mx.gui
 
-import Styling.Stylesheet
+import styling.Stylesheet
 import javafx.scene.layout.Priority
 import modules.api.gui.GSpotify
 import tornadofx.*

@@ -1,4 +1,4 @@
-package Styling
+package styling
 
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
@@ -7,16 +7,18 @@ import tornadofx.Stylesheet
 
 class Stylesheet : Stylesheet()
 {
-    companion object {
+    companion object
+    {
         val fieldsetBorder by cssclass()
     }
+
     init
     {
         root {
             unsafe("-fx-accent", Color.web("#1e74c6", 1.0))
-            unsafe("-fx-base", Color.web("#373e43", 1.0))
+            unsafe("-fx-base", Color.web("#24282b", 1.0))  //former 373e43
             unsafe("-fx-focus-color", Color.web("#1e74c6", 1.0))
-            unsafe("-fx-control-inner-background", Color.web("#373e43", 1.0).derive(0.25))
+            unsafe("-fx-control-inner-background", Color.web("#373e43", 1.0).derive(0.1))
             unsafe("-fx-control-inner-background-alt", raw("-fx-control-inner-background"))
         }
 
@@ -26,7 +28,6 @@ class Stylesheet : Stylesheet()
 
         fieldsetBorder {
             unsafe("-fx-border-color", Color.GRAY)
-            //unsafe("-fx-background-color", Color.web("#3C3C3C", 1.0))
             unsafe("-fx-background-color", Color.web("#373e43", 1.0))
             padding = CssBox(
                 Dimension(5.0, Dimension.LinearUnits.px),
@@ -67,7 +68,7 @@ class Stylesheet : Stylesheet()
         }
 
         ".table-view" {
-            unsafe("-fx-selection-bar-non-focused", c("#373e43").derive(0.5))
+            unsafe("-fx-selection-bar-non-focused", Color.web("#373e43", 1.0).derive(0.5))
         }
 
         ".table-view .column-header .label" {
@@ -82,10 +83,10 @@ class Stylesheet : Stylesheet()
                 unsafe("-fx-background-color", raw("transparent"))
             }
             and(even) {
-                unsafe("-fx-control-inner-background", c("#292d30"))
+                unsafe("-fx-control-inner-background", Color.web("#292d30", 1.0))
             }
             and(odd) {
-                unsafe("-fx-control-inner-background", c("#32373b"))
+                unsafe("-fx-control-inner-background", Color.web("#32373b", 1.0))
             }
         }
     }

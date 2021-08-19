@@ -6,6 +6,7 @@ import modules.api.logic.SpotifyAPI
 import modules.api.logic.SpotifyAUTH
 import modules.mx.rightButtonsWidth
 import modules.api.json.SpotifyAuthCallbackJson
+import styling.Stylesheet.Companion.fieldsetBorder
 import tornadofx.*
 
 class GSpotify : View("Spotify API")
@@ -34,6 +35,7 @@ class GSpotify : View("Spotify API")
             fold("Spotify Account Data", expanded = true, closeable = false) {
                 form {
                     fieldset {
+                        addClass(fieldsetBorder)
                         button("Update") {
                             prefWidth = rightButtonsWidth
                             action {
@@ -69,6 +71,7 @@ class GSpotify : View("Spotify API")
             fold("Spotify Token Data", expanded = false, closeable = false) {
                 form {
                     fieldset {
+                        addClass(fieldsetBorder)
                         hbox {
                             field("Authorization URL") {
                                 textfield(authURLProperty) {

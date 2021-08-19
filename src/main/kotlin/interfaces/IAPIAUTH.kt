@@ -8,6 +8,7 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.api.json.SpotifyAuthCallbackJson
 import modules.mx.logic.MXAPI
 
 interface IAPIAUTH
@@ -29,9 +30,11 @@ interface IAPIAUTH
     {
         val tokenFile = MXAPI.getAPITokenFile(apiName)
         tokenData.initialize()
-        val sJson = Json.encodeToString(tokenData)
+        val sJson = serializeTokenData(tokenData)
         tokenFile.writeText(sJson)
     }
+
+    fun serializeTokenData(tokenData: ITokenData): String
 
     fun refreshAccessToken()
 
