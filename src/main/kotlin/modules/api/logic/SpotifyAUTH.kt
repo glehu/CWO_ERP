@@ -8,7 +8,6 @@ import io.ktor.http.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.api.gui.GSpotify
 import modules.mx.getClientSecretFile
@@ -36,7 +35,7 @@ class SpotifyAUTH : IAPIAUTH
             "user-library-read%20" +
             "playlist-read-collaborative"
 
-    fun getAuthorizationURL(): String
+    override fun getAuthorizationURL(): String
     {
         return spotifyAuthEndpoint +
                 "?client_id=$clientID" +
@@ -47,13 +46,13 @@ class SpotifyAUTH : IAPIAUTH
                 "&show_dialog=true"
     }
 
-    fun getAccessTokenFromAuthCode(authCode: String): SpotifyAuthCallbackJson
+    override fun getAccessTokenFromAuthCode(authCode: String): SpotifyAuthCallbackJson
     {
-        lateinit var response: SpotifyAuthCallbackJson
+        lateinit var tokenData: SpotifyAuthCallbackJson
         val client = getAuthClient(MXAPI.Companion.AuthType.NONE)
         runBlocking {
             launch {
-                response = client.post("https://accounts.spotify.com/api/token") {
+                tokenData = client.post("https://accounts.spotify.com/api/token") {
                     body = FormDataContent(Parameters.build {
                         append("grant_type", "authorization_code")
                         append("code", authCode)
@@ -63,19 +62,10 @@ class SpotifyAUTH : IAPIAUTH
                     })
                 }
                 client.close()
-                saveAccessAndRefreshToken(response)
+                saveTokenData(tokenData)
             }
         }
-        return response
-    }
-
-    private fun saveAccessAndRefreshToken(response: ITokenData)
-    {
-        response as SpotifyAuthCallbackJson
-        val tokenFile = getAPITokenFile(apiName)
-        response.initialize()
-        val sJson = Json.encodeToString(response)
-        tokenFile.writeText(sJson)
+        return tokenData
     }
 
     override fun getAccessAndRefreshTokenFromDisk(checkExpired: Boolean): ITokenData
@@ -99,7 +89,7 @@ class SpotifyAUTH : IAPIAUTH
         return tokenData
     }
 
-    fun refreshAccessToken()
+    override fun refreshAccessToken()
     {
         var tokenDataNew: SpotifyAuthCallbackJson
         val tokenData = getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson
@@ -116,7 +106,7 @@ class SpotifyAUTH : IAPIAUTH
                 }
                 client.close()
                 tokenData.access_token = tokenDataNew.access_token
-                saveAccessAndRefreshToken(tokenData)
+                saveTokenData(tokenData)
             }
         }
     }

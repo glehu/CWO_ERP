@@ -6,6 +6,8 @@ import io.ktor.client.features.auth.*
 import io.ktor.client.features.auth.providers.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import modules.mx.logic.MXAPI
 
 interface IAPIAUTH
@@ -18,6 +20,20 @@ interface IAPIAUTH
     val clientSecret: String
     val responseType: String
     val scopes: String
+
+    fun getAuthorizationURL(): String
+
+    fun getAccessTokenFromAuthCode(authCode: String): ITokenData
+
+    fun saveTokenData(tokenData: ITokenData)
+    {
+        val tokenFile = MXAPI.getAPITokenFile(apiName)
+        tokenData.initialize()
+        val sJson = Json.encodeToString(tokenData)
+        tokenFile.writeText(sJson)
+    }
+
+    fun refreshAccessToken()
 
     fun getAuthClient(authType: MXAPI.Companion.AuthType): HttpClient
     {
