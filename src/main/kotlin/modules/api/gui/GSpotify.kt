@@ -2,10 +2,10 @@ package modules.api.gui
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
+import modules.api.json.SpotifyAuthCallbackJson
 import modules.api.logic.SpotifyAPI
 import modules.api.logic.SpotifyAUTH
 import modules.mx.rightButtonsWidth
-import modules.api.json.SpotifyAuthCallbackJson
 import styling.Stylesheet.Companion.fieldsetBorder
 import tornadofx.*
 
@@ -31,39 +31,32 @@ class GSpotify : View("Spotify API")
 
     override val root = form {
         showTokenData(sAUTH.getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson)
+        authURLProperty.value = sAUTH.getAuthorizationURL()
         squeezebox {
             fold("Spotify Account Data", expanded = true, closeable = false) {
                 form {
                     fieldset {
                         addClass(fieldsetBorder)
-                        button("Update") {
+                        button("Get Data") {
                             prefWidth = rightButtonsWidth
                             action {
                                 updateAccountData()
                             }
                             isDisable = (accessTokenProperty.value.isEmpty())
                         }
-                        hbox {
+                        hbox(10) {
                             field("Account Name") {
-                                textfield(accountNameProperty) {
-                                    isEditable = false
-                                }
+                                textfield(accountNameProperty) { isEditable = false }
                             }
                             field("Account Type") {
-                                textfield(accountTypeProperty) {
-                                    isEditable = false
-                                }
+                                textfield(accountTypeProperty) { isEditable = false }
                             }
                             field("Account Product") {
-                                textfield(accountProductProperty) {
-                                    isEditable = false
-                                }
+                                textfield(accountProductProperty) { isEditable = false }
                             }
                         }
                         field("Followers") {
-                            textfield(accountFollowersProperty) {
-                                isEditable = false
-                            }
+                            textfield(accountFollowersProperty) { isEditable = false }
                         }
                     }
                 }
@@ -72,67 +65,40 @@ class GSpotify : View("Spotify API")
                 form {
                     fieldset {
                         addClass(fieldsetBorder)
-                        hbox {
-                            field("Authorization URL") {
-                                textfield(authURLProperty) {
-                                    prefWidth = 1500.0
-                                    isEditable = false
-                                }
-                            }
-                            button("Generate") {
-                                prefWidth = rightButtonsWidth
-                                action {
-                                    authURLProperty.value = sAUTH.getAuthorizationURL()
-                                }
+                        button("Refresh Token") {
+                            prefWidth = rightButtonsWidth
+                            action {
+                                sAUTH.refreshAccessToken()
+                                showTokenData(
+                                    sAUTH.getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson
+                                )
                             }
                         }
-                        hbox {
-                            field("Authorization Code") {
-                                textfield(authCodeProperty) {
-                                    prefWidth = 1500.0
-                                    isEditable = false
-                                }
+                        field("Authorization URL") {
+                            textfield(authURLProperty) {
+                                isEditable = false
+                                tooltip("Enter this URL in your browser to authorize CWO ERP.")
                             }
                         }
-                        hbox {
-                            field("Access Token") {
-                                textfield(accessTokenProperty) {
-                                    prefWidth = 1500.0
-                                    isEditable = false
-                                }
-                            }
-                            button("Refresh") {
-                                prefWidth = rightButtonsWidth
-                                action {
-                                    sAUTH.refreshAccessToken()
-                                    showTokenData(
-                                        sAUTH.getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson
-                                    )
-                                }
-                            }
+                        field("Authorization Code") {
+                            textfield(authCodeProperty) { isEditable = false }
                         }
-                        hbox {
+                        field("Access Token") {
+                            textfield(accessTokenProperty) { isEditable = false }
+                        }
+                        hbox(10) {
                             field("Generated at (UNIXTIME)") {
-                                textfield(generatedAtUnixTimestampProperty) {
-                                    isEditable = false
-                                }
+                                textfield(generatedAtUnixTimestampProperty) { isEditable = false }
                             }
                             field("Expires in (seconds)") {
-                                textfield(expiresInProperty) {
-                                    isEditable = false
-                                }
+                                textfield(expiresInProperty) { isEditable = false }
                             }
                             field("at (UNIXTIME)") {
-                                textfield(expireUnixTimestampProperty) {
-                                    isEditable = false
-                                }
+                                textfield(expireUnixTimestampProperty) { isEditable = false }
                             }
                         }
                         field("Refresh Token") {
-                            textfield(refreshTokenProperty) {
-                                prefWidth = 1500.0
-                                isEditable = false
-                            }
+                            textfield(refreshTokenProperty) { isEditable = false }
                         }
                     }
                 }

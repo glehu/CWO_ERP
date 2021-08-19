@@ -48,6 +48,7 @@ class MXGLogin : Fragment("CWO ERP")
         center = form {
             loginRoutines()
             fieldset("Login Credentials") {
+                addClass(Stylesheet.fieldsetBorder)
                 vbox {
                     fieldset {
                         field("Username") { textfield(loginUser.username).required() }
