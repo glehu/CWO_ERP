@@ -10,11 +10,11 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.interfaces.IAPI
 import modules.interfaces.ITokenData
+import modules.mx.getClientSecretFile
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXAPI.Companion.getAPITokenFile
 import server.SpotifyAuthCallbackJson
 import server.SpotifyUserProfileJson
-import java.io.File
 import java.net.URLEncoder
 
 class SpotifyAPI : IAPI
@@ -25,7 +25,7 @@ class SpotifyAPI : IAPI
     override val redirectURI = "http://localhost:8000/authcallback/spotify"
     override val redirectURIEncoded = URLEncoder.encode(redirectURI, "utf-8")!!
     override val clientID = "172f78362a5447c18cc93a75cdb16dfe"
-    override val clientSecret = File("confCred/spotifyApp").readText()
+    override val clientSecret = getClientSecretFile(apiName).readText()
     override val responseType = "code"
     override val scopes = "user-read-playback-position%20" +
             "playlist-read-private%20" +
