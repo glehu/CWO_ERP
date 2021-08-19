@@ -22,6 +22,7 @@ import java.net.URLEncoder
 class SpotifyAUTH : IAPIAUTH
 {
     override val apiName = "spotify"
+    override val auth: IAPIAUTH = this
 
     override val spotifyAuthEndpoint = "https://accounts.spotify.com/authorize"
     override val redirectURI = "http://localhost:8000/authcallback/spotify"
@@ -86,7 +87,7 @@ class SpotifyAUTH : IAPIAUTH
                     find<GSpotify>().showTokenData(getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson)
                 }
             }
-        } else tokenData = SpotifyAuthCallbackJson("?", "?", "?", 0, "?")
+        } else tokenData = SpotifyAuthCallbackJson()
         return tokenData
     }
 

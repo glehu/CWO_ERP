@@ -10,17 +10,23 @@ import modules.mx.logic.MXAPI
 class SpotifyAPI : IAPI
 {
     override val auth = SpotifyAUTH()
+    override val apiName = "spotify"
 
     fun getAccountData(): SpotifyUserProfileJson
     {
-        lateinit var response: SpotifyUserProfileJson
+        lateinit var userData: SpotifyUserProfileJson
         val client = auth.getAuthClient(MXAPI.Companion.AuthType.TOKEN)
         runBlocking {
             launch {
-                response = client.get("https://api.spotify.com/v1/me")
+                userData = client.get("https://api.spotify.com/v1/me")
                 client.close()
             }
         }
-        return response
+        return userData
+    }
+
+    fun getArtistsAlbum()
+    {
+
     }
 }

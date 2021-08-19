@@ -11,9 +11,9 @@ import kotlinx.serialization.json.Json
 import modules.api.json.SpotifyAuthCallbackJson
 import modules.mx.logic.MXAPI
 
-interface IAPIAUTH
+interface IAPIAUTH : IAPI
 {
-    val apiName: String
+    override val apiName: String
     val spotifyAuthEndpoint: String
     val redirectURI: String
     val redirectURIEncoded: String

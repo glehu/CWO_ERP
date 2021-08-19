@@ -3,8 +3,10 @@ package modules.api.gui
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import modules.api.json.SpotifyAuthCallbackJson
+import modules.api.json.SpotifyUserProfileJson
 import modules.api.logic.SpotifyAPI
 import modules.api.logic.SpotifyAUTH
+import modules.api.logic.SpotifyController
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet.Companion.fieldsetBorder
 import tornadofx.*
@@ -13,6 +15,7 @@ class GSpotify : View("Spotify API")
 {
     private val sAUTH = SpotifyAUTH()
     private val sAPI = SpotifyAPI()
+    private val controller: SpotifyController by inject()
 
     //Account Data
     private val accountNameProperty = SimpleStringProperty()
@@ -31,6 +34,7 @@ class GSpotify : View("Spotify API")
 
     override val root = form {
         showTokenData(sAUTH.getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson)
+        showUserData(controller.getUserData())
         authURLProperty.value = sAUTH.getAuthorizationURL()
         squeezebox {
             fold("Spotify Account Data", expanded = true, closeable = false) {
@@ -40,7 +44,7 @@ class GSpotify : View("Spotify API")
                         button("Get Data") {
                             prefWidth = rightButtonsWidth
                             action {
-                                updateAccountData()
+                                updateUserData()
                             }
                             isDisable = (accessTokenProperty.value.isEmpty())
                         }
@@ -106,13 +110,10 @@ class GSpotify : View("Spotify API")
         }
     }
 
-    private fun updateAccountData()
+    private fun updateUserData()
     {
-        val accountData = sAPI.getAccountData()
-        accountNameProperty.value = accountData.display_name
-        accountTypeProperty.value = accountData.type
-        accountProductProperty.value = accountData.product
-        accountFollowersProperty.value = accountData.followers["total"]!!
+        val userData = sAPI.getAccountData()
+        showUserData(userData)
     }
 
     fun showTokenData(tokenData: SpotifyAuthCallbackJson)
@@ -122,5 +123,13 @@ class GSpotify : View("Spotify API")
         expiresInProperty.value = tokenData.expires_in
         expireUnixTimestampProperty.value = tokenData.expireUnixTimestamp.toString()
         refreshTokenProperty.value = tokenData.refresh_token
+    }
+
+    private fun showUserData(userData: SpotifyUserProfileJson)
+    {
+        accountNameProperty.value = userData.display_name
+        accountTypeProperty.value = userData.type
+        accountProductProperty.value = userData.product
+        accountFollowersProperty.value = userData.followers["total"]!!
     }
 }
