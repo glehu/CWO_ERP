@@ -1,6 +1,6 @@
 package server
 
-import modules.api.logic.SpotifyAPI
+import modules.api.logic.SpotifyAUTH
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -25,7 +25,7 @@ class MXServer
                 call.respondText("CWO ERP Spotify Authorization Callback Site")
                 val code: String? = call.request.queryParameters["code"]
                 find<MGXSpotify>().authCodeProperty.value = code
-                find<MGXSpotify>().showTokenData(SpotifyAPI().getAccessTokenFromAuthCode(code!!))
+                find<MGXSpotify>().showTokenData(SpotifyAUTH().getAccessTokenFromAuthCode(code!!))
             }
         }
     }

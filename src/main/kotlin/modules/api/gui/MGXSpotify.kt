@@ -1,14 +1,18 @@
 package modules.api.gui
 
-import modules.api.logic.SpotifyAPI
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
+import modules.api.logic.SpotifyAPI
+import modules.api.logic.SpotifyAUTH
 import modules.mx.rightButtonsWidth
-import server.SpotifyAuthCallbackJson
+import modules.api.json.SpotifyAuthCallbackJson
 import tornadofx.*
 
 class MGXSpotify : View("Spotify API")
 {
+    private val sAUTH = SpotifyAUTH()
+    private val sAPI = SpotifyAPI()
+
     //Account Data
     private val accountNameProperty = SimpleStringProperty()
     private val accountTypeProperty = SimpleStringProperty()
@@ -25,7 +29,7 @@ class MGXSpotify : View("Spotify API")
     private val refreshTokenProperty = SimpleStringProperty()
 
     override val root = form {
-        showTokenData(SpotifyAPI().getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson)
+        showTokenData(sAUTH.getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson)
         squeezebox {
             fold("Spotify Account Data", expanded = true, closeable = false) {
                 form {
@@ -75,7 +79,7 @@ class MGXSpotify : View("Spotify API")
                             button("Generate") {
                                 prefWidth = rightButtonsWidth
                                 action {
-                                    authURLProperty.value = SpotifyAPI().getAuthorizationURL()
+                                    authURLProperty.value = sAUTH.getAuthorizationURL()
                                 }
                             }
                         }
@@ -97,9 +101,9 @@ class MGXSpotify : View("Spotify API")
                             button("Refresh") {
                                 prefWidth = rightButtonsWidth
                                 action {
-                                    SpotifyAPI().refreshAccessToken()
+                                    sAUTH.refreshAccessToken()
                                     showTokenData(
-                                        SpotifyAPI().getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson
+                                        sAUTH.getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson
                                     )
                                 }
                             }
@@ -135,7 +139,7 @@ class MGXSpotify : View("Spotify API")
 
     private fun updateAccountData()
     {
-        val accountData = SpotifyAPI().getAccountData()
+        val accountData = sAPI.getAccountData()
         accountNameProperty.value = accountData.display_name
         accountTypeProperty.value = accountData.type
         accountProductProperty.value = accountData.product

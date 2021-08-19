@@ -1,4 +1,4 @@
-package server
+package modules.api.json
 
 import kotlinx.serialization.Serializable
 import interfaces.ITokenData

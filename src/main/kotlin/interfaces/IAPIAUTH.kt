@@ -8,7 +8,7 @@ import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import modules.mx.logic.MXAPI
 
-interface IAPI
+interface IAPIAUTH
 {
     val apiName: String
     val spotifyAuthEndpoint: String
@@ -19,7 +19,7 @@ interface IAPI
     val responseType: String
     val scopes: String
 
-    fun getHttpClient(authType: MXAPI.Companion.AuthType): HttpClient
+    fun getAuthClient(authType: MXAPI.Companion.AuthType): HttpClient
     {
         return HttpClient(CIO) {
             install(JsonFeature) {
