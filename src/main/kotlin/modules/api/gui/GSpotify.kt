@@ -122,11 +122,11 @@ class GSpotify : View("Spotify API")
 
     fun showTokenData(tokenData: SpotifyAuthCallbackJson)
     {
-        accessTokenProperty.value = tokenData.access_token
+        accessTokenProperty.value = tokenData.accessToken
         generatedAtUnixTimestampProperty.value = tokenData.generatedAtUnixTimestamp.toString()
-        expiresInProperty.value = tokenData.expires_in
+        expiresInProperty.value = tokenData.expiresIn
         expireUnixTimestampProperty.value = tokenData.expireUnixTimestamp.toString()
-        refreshTokenProperty.value = tokenData.refresh_token
+        refreshTokenProperty.value = tokenData.refreshToken
     }
 
     private fun showUserData(userData: SpotifyUserProfileJson)
@@ -135,6 +135,9 @@ class GSpotify : View("Spotify API")
         accountTypeProperty.value = userData.type
         accountProductProperty.value = userData.product
         accountIDProperty.value = userData.id
-        accountFollowersProperty.value = userData.followers["total"]!!
+        if (userData.followers["total"] != null)
+        {
+            accountFollowersProperty.value = userData.followers["total"]
+        }
     }
 }

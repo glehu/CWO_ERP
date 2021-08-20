@@ -1,15 +1,16 @@
 package modules.api.json
 
 import interfaces.ITokenData
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class SpotifyAuthCallbackJson(
-    override var access_token: String = "?",
-    override var token_type: String = "?",
+    @SerialName("access_token") override var accessToken: String = "?",
+    @SerialName("token_type") override var tokenType: String = "?",
     override var scope: String = "?",
-    override var expires_in: Int = 0,
-    override var refresh_token: String = "",
+    @SerialName("expires_in") override var expiresIn: Int = 0,
+    @SerialName("refresh_token") override var refreshToken: String = "",
     //Automatic
     override var generatedAtUnixTimestamp: Long = 0,
     override var expireUnixTimestamp: Long = 0
@@ -17,14 +18,35 @@ data class SpotifyAuthCallbackJson(
 
 @Serializable
 data class SpotifyUserProfileJson(
-    val country: String = "?",
-    val display_name: String = "?",
-    val email: String = "?",
-    val external_urls: Map<String, String> = mapOf("?" to "?"),
-    val followers: Map<String, String?> = mapOf("?" to "?"),
+    var country: String = "?",
+    var display_name: String = "?",
+    var email: String = "?",
+    var external_urls: Map<String, String> = mapOf("?" to "?"),
+    var followers: Map<String, String?> = mapOf("?" to "?"),
+    var href: String = "?",
+    var id: String = "?",
+    var product: String = "?",
+    var type: String = "?",
+    var uri: String = "?"
+)
+
+@Serializable
+data class SpotifyAlbumListJson(
     val href: String = "?",
+    val items: List<SpotifyAlbumJson> = listOf(SpotifyAlbumJson())
+)
+
+@Serializable
+data class SpotifyAlbumJson(
+    @SerialName("album_group") val albumGroup: String = "?",
+    @SerialName("album_type") val albumType: String = "?",
+    val artists: List<SpotifyArtistJson> = listOf(SpotifyArtistJson())
+)
+
+@Serializable
+data class SpotifyArtistJson(
     val id: String = "?",
-    val product: String = "?",
+    val name: String = "?",
     val type: String = "?",
     val uri: String = "?"
 )

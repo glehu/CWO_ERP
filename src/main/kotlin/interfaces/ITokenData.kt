@@ -4,17 +4,17 @@ import modules.mx.logic.MXTimestamp
 
 interface ITokenData
 {
-    var access_token: String
-    var token_type: String
+    var accessToken: String
+    var tokenType: String
     var scope: String
-    var expires_in: Int
-    var refresh_token: String
+    var expiresIn: Int
+    var refreshToken: String
     var generatedAtUnixTimestamp: Long
     var expireUnixTimestamp: Long
 
     fun initialize()
     {
         generatedAtUnixTimestamp = MXTimestamp.getUnixTimestamp()
-        expireUnixTimestamp = generatedAtUnixTimestamp + expires_in
+        expireUnixTimestamp = generatedAtUnixTimestamp + expiresIn
     }
 }

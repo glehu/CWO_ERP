@@ -29,6 +29,6 @@ class SpotifyAPI : IAPI
 
     fun getArtistsAlbum()
     {
-
+        
     }
 }

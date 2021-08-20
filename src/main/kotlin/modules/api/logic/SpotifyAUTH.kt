@@ -50,7 +50,7 @@ class SpotifyAUTH : IAPIAUTH
 
     override fun getAccessTokenFromAuthCode(authCode: String): ITokenData
     {
-        lateinit var tokenData: ITokenData
+        lateinit var tokenData: SpotifyAuthCallbackJson
         val client = getAuthClient(MXAPI.Companion.AuthType.NONE)
         runBlocking {
             launch {
@@ -64,10 +64,10 @@ class SpotifyAUTH : IAPIAUTH
                     })
                 }
                 client.close()
-                saveTokenData(tokenData as SpotifyAuthCallbackJson)
+                saveTokenData(tokenData)
             }
         }
-        return tokenData as SpotifyAuthCallbackJson
+        return tokenData
     }
 
     override fun getAccessAndRefreshTokenFromDisk(checkExpired: Boolean): ITokenData
@@ -101,13 +101,13 @@ class SpotifyAUTH : IAPIAUTH
                 tokenDataNew = client.post("https://accounts.spotify.com/api/token") {
                     body = FormDataContent(Parameters.build {
                         append("grant_type", "refresh_token")
-                        append("refresh_token", tokenData.refresh_token)
+                        append("refresh_token", tokenData.refreshToken)
                         append("client_id", clientID)
                         append("client_secret", clientSecret)
                     })
                 }
                 client.close()
-                tokenData.access_token = tokenDataNew.access_token
+                tokenData.accessToken = tokenDataNew.accessToken
                 saveTokenData(tokenData)
             }
         }

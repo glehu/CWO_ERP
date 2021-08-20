@@ -21,7 +21,7 @@ class SpotifyController : IAPI, Controller()
         val userData: SpotifyUserProfileJson
         if (fileContent.isEmpty())
         {
-            if (auth.getAccessAndRefreshTokenFromDisk().access_token != "?")
+            if (auth.getAccessAndRefreshTokenFromDisk().accessToken != "?")
             {
                 userData = SpotifyAPI().getAccountData()
                 saveUserData(userData)

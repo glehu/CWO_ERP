@@ -6,9 +6,6 @@ import io.ktor.client.features.auth.*
 import io.ktor.client.features.auth.providers.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import modules.api.json.SpotifyAuthCallbackJson
 import modules.mx.logic.MXAPI
 
 interface IAPIAUTH : IAPI
@@ -55,7 +52,7 @@ interface IAPIAUTH : IAPI
                         val tokenData = getAccessAndRefreshTokenFromDisk(checkExpired = true)
                         bearer {
                             loadTokens {
-                                BearerTokens(tokenData.access_token, tokenData.refresh_token)
+                                BearerTokens(tokenData.accessToken, tokenData.refreshToken)
                             }
                         }
                     } else if (authType == MXAPI.Companion.AuthType.BASIC)
