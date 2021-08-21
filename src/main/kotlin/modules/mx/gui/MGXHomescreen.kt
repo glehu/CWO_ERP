@@ -1,5 +1,6 @@
 package modules.mx.gui
 
+import interfaces.IModule
 import styling.Stylesheet
 import javafx.scene.control.TabPane
 import javafx.stage.Stage
@@ -19,8 +20,11 @@ import modules.mx.server
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class CWOMainGUI : App(MXGLogin::class, Stylesheet::class)
+class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class)
 {
+    override fun moduleNameLong() = "CWO ERP"
+    override fun module() = "MX"
+
     override fun start(stage: Stage)
     {
         super.start(stage)
@@ -29,6 +33,7 @@ class CWOMainGUI : App(MXGLogin::class, Stylesheet::class)
 
     override fun stop()
     {
+        MXLog.log(module(), MXLog.LogType.INFO, "Shutting down server...", moduleNameLong())
         server.serverEngine.stop(100L, 100L)
         super.stop()
     }
