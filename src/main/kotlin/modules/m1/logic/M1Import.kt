@@ -6,6 +6,7 @@ import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.api.json.SpotifyAlbumJson
 import modules.api.json.SpotifyAlbumListJson
+import modules.api.json.SpotifyArtistJson
 import modules.m1.Song
 import modules.m2.Contact
 import modules.m2.logic.M2DBManager
@@ -39,9 +40,11 @@ class M1Import : IModule, Controller()
         var song: Song
         var contact: Contact
         var counter = 0
+        var artistUID: Int
         var uID: Int
         var pos: Long
         var byteSize: Int
+        var releaseDate: String = getDefaultDate()
         val timeInMillis = measureTimeMillis {
             for (album: SpotifyAlbumJson in albumListJson.albums)
             {
@@ -71,40 +74,62 @@ class M1Import : IModule, Controller()
                 song.type = album.albumType
                 //Generic data
                 song.name = album.name
-                song.vocalist = album.artists[0].name
-                val releaseDate = LocalDate.parse(album.releaseDate)
+
+                when (album.releaseDatePrecision)
+                {
+                    "day" -> releaseDate = album.releaseDate
+                    "month" -> releaseDate = album.releaseDate + "-01"
+                    "year" -> releaseDate = album.releaseDate + "-01-01"
+                }
+                val releaseDateParsed = LocalDate.parse(releaseDate)
                 song.releaseDate =
-                    releaseDate.dayOfMonth
-                        .toString().padStart(2, '0') +
+                    releaseDateParsed.dayOfMonth.toString().padStart(2, '0') +
                             ".${
-                                releaseDate.monthValue
+                                releaseDateParsed.monthValue
                                     .toString().padStart(2, '0')
                             }" +
-                            ".${releaseDate.year}"
+                            ".${releaseDateParsed.year}"
 
-                //Does the artist exist?
-                filteredMap = m2GlobalIndex.indexList[3]!!.indexMap.filterValues {
-                    it.content.contains(album.artists[0].id)
-                }
-                if (filteredMap.isEmpty())
+                //Do the artists exist?
+                for ((artistCounter, artist: SpotifyArtistJson) in album.artists.withIndex())
                 {
-                    contact = Contact(-1, song.vocalist)
-                    contact.spotifyID = album.artists[0].id
-                    contact.birthdate = getDefaultDate()
-                    song.vocalistUID = m2DBManager.saveEntry(
-                        entry = contact,
-                        cwodb = db,
-                        posDB = -1,
-                        byteSize = -1,
-                        raf = m2raf,
-                        indexManager = m2GlobalIndex,
-                        indexWriteToDisk = true
-                    )
-                } else
-                {
-                    val indexContent = filteredMap.values.first()
-                    contact = m2DBManager.getEntry(indexContent.uID, db, m2GlobalIndex.indexList[3]!!) as Contact
-                    song.vocalistUID = contact.uID
+                    filteredMap = m2GlobalIndex.indexList[3]!!.indexMap.filterValues {
+                        it.content.contains(artist.id)
+                    }
+                    if (filteredMap.isEmpty())
+                    {
+                        contact = Contact(-1, artist.name)
+                        contact.spotifyID = artist.id
+                        contact.birthdate = getDefaultDate()
+                        artistUID = m2DBManager
+                            .saveEntry(contact, db, -1, -1, m2raf, m2GlobalIndex, true)
+                    } else
+                    {
+                        val indexContent = filteredMap.values.first()
+                        contact = m2DBManager.getEntry(indexContent.uID, db, m2GlobalIndex.indexList[3]!!) as Contact
+                        artistUID = contact.uID
+                    }
+                    when (artistCounter)
+                    {
+                        0 ->
+                        {
+                            song.vocalist = artist.name
+                            song.vocalistUID = artistUID
+                        }
+
+                        1 ->
+                        {
+                            song.coVocalist1 = artist.name
+                            song.coVocalist1UID = artistUID
+                        }
+
+                        2 ->
+                        {
+                            song.coVocalist2 = artist.name
+                            song.coVocalist2UID = artistUID
+                        }
+                    }
+                    song.vocalistUID
                 }
 
                 //Save the song
