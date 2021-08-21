@@ -33,7 +33,7 @@ class MGXDatabaseManager : View("Databases")
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
-                style { baseColor = Color.DARKRED }
+                style { unsafe("-fx-base", Color.DARKRED) }
             }
             button("Reset M2") {
                 action {
@@ -43,7 +43,7 @@ class MGXDatabaseManager : View("Databases")
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
-                style { baseColor = Color.DARKRED }
+                style { unsafe("-fx-base", Color.DARKRED) }
             }
             button("Reset M3") {
                 action {
@@ -53,7 +53,7 @@ class MGXDatabaseManager : View("Databases")
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
-                style { baseColor = Color.DARKRED }
+                style { unsafe("-fx-base", Color.DARKRED) }
             }
         }
         center {

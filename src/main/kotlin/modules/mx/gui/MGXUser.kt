@@ -2,8 +2,8 @@ package modules.mx.gui
 
 import javafx.scene.paint.Color
 import modules.mx.MXCredentials
-import modules.mx.logic.MXUserManager
 import modules.mx.MXUser
+import modules.mx.logic.MXUserManager
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserFromUserProperty
 import modules.mx.misc.getUserPropertyFromUser
@@ -46,7 +46,7 @@ class MGXUser(user: MXUser, credentials: MXCredentials) : Fragment("User")
                 userManager.deleteUser(originalUser, credentials)
                 close()
             }
-            style { baseColor = Color.DARKRED }
+            style { unsafe("-fx-base", Color.DARKRED) }
             vboxConstraints { marginTop = 25.0 }
         }
     }

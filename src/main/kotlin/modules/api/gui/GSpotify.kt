@@ -2,6 +2,7 @@ package modules.api.gui
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.scene.paint.Color
 import modules.api.json.SpotifyAuthCallbackJson
 import modules.api.json.SpotifyUserProfileJson
 import modules.api.logic.SpotifyAPI
@@ -72,7 +73,7 @@ class GSpotify : View("Spotify API")
                     }
                 }
             }
-            fold("API Dev Test", expanded = true, closeable = false) {
+            fold("Import", expanded = true, closeable = false) {
                 form {
                     fieldset {
                         addClass(fieldsetBorder)
@@ -81,6 +82,7 @@ class GSpotify : View("Spotify API")
                             action {
                                 sAPI.getArtistAlbumList(artistSpotifyIDProperty.value)
                             }
+                            style { unsafe("-fx-base", Color.DARKGREEN) }
                         }
                     }
                 }
