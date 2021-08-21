@@ -1,13 +1,12 @@
 package modules.m1.logic
 
 import db.CwODB
-import kotlinx.serialization.ExperimentalSerializationApi
 import interfaces.IModule
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.gui.MG1Analytics
 import modules.m1.gui.MG1SongFinder
 import modules.m1.gui.SongConfiguratorWizard
-import modules.m1.gui.SongViewerWizard
 import modules.m1.misc.*
 import modules.m2.logic.M2Controller
 import modules.mx.m1GlobalIndex
@@ -31,18 +30,28 @@ class M1Controller : IModule, Controller()
     {
         val wizard = find<SongConfiguratorWizard>()
         var isComplete = true
-        wizard.songP1.commit()
-        wizard.songP2.commit()
-        if(!wizard.songP1.isValid) isComplete = false
-        if(!wizard.songP2.isValid) isComplete = false
+        if (!wizard.songMainData.isValid) isComplete = false
         if (isComplete)
         {
+            wizard.songMainData.commit()
+            wizard.songCompletionState.commit()
+            wizard.songPromotionData.commit()
+            wizard.songFinancialData.commit()
+            wizard.songAvailabilityData.commit()
+            wizard.songVisualizationData.commit()
+            wizard.songAlbumEPData.commit()
+            wizard.songStatisticsData.commit()
+            wizard.songCollaborationData.commit()
+            wizard.songCopyrightData.commit()
+            wizard.songMiscData.commit()
             val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-            wizard.songP1.uID.value = M1DBManager().saveEntry(
-                getSongFromPropertyP2(
-                    getSongFromPropertyP1(wizard.songP1.item),
-                    wizard.songP2.item
-                ), db, -1L, -1, raf, m1GlobalIndex
+            wizard.songMainData.uID.value = M1DBManager().saveEntry(
+                entry = getSongFromProperties(wizard),
+                cwodb = db,
+                posDB = -1L,
+                byteSize = -1,
+                raf = raf,
+                indexManager = m1GlobalIndex
             )
             db.closeRandomFileAccess(raf)
             wizard.isComplete = false
@@ -52,8 +61,17 @@ class M1Controller : IModule, Controller()
     fun newEntry()
     {
         val wizard = find<SongConfiguratorWizard>()
-        wizard.songP1.item = SongPropertyP1()
-        wizard.songP2.item = SongPropertyP2()
+        wizard.songMainData.item = SongPropertyMainData()
+        wizard.songCompletionState.item = SongPropertyCompletionState()
+        wizard.songPromotionData.item = SongPropertyPromotionData()
+        wizard.songFinancialData.item = SongPropertyFinancialData()
+        wizard.songAvailabilityData.item = SongPropertyAvailabilityData()
+        wizard.songVisualizationData.item = SongPropertyVisualizationData()
+        wizard.songAlbumEPData.item = SongPropertyAlbumEPData()
+        wizard.songStatisticsData.item = SongPropertyStatisticsData()
+        wizard.songCollaborationData.item = SongPropertyCollaborationData()
+        wizard.songCopyrightData.item = SongPropertyCopyrightData()
+        wizard.songMiscData.item = SongPropertyMiscData()
         wizard.isComplete = false
     }
 
@@ -63,48 +81,72 @@ class M1Controller : IModule, Controller()
         find<MG1Analytics>().openModal()
     }
 
+    private fun getSongFromProperties(wizard: SongConfiguratorWizard): Song
+    {
+        var song = Song(-1, "")
+        song = getSongFromProperty(song, wizard.songMainData.item)
+        song = getSongFromProperty(song, wizard.songCompletionState.item)
+        song = getSongFromProperty(song, wizard.songPromotionData.item)
+        song = getSongFromProperty(song, wizard.songFinancialData.item)
+        song = getSongFromProperty(song, wizard.songAvailabilityData.item)
+        song = getSongFromProperty(song, wizard.songVisualizationData.item)
+        song = getSongFromProperty(song, wizard.songAlbumEPData.item)
+        song = getSongFromProperty(song, wizard.songStatisticsData.item)
+        song = getSongFromProperty(song, wizard.songCollaborationData.item)
+        song = getSongFromProperty(song, wizard.songCopyrightData.item)
+        song = getSongFromProperty(song, wizard.songMiscData.item)
+        return song
+    }
+
     fun showSong(song: Song)
     {
-        val wizard = find<SongViewerWizard>()
-        wizard.songP1.item = getSongPropertyP1FromSong(song)
-        wizard.songP2.item = getSongPropertyP2FromSong(song)
+        val wizard = find<SongConfiguratorWizard>()
+        wizard.songMainData.item = getSongPropertyMainData(song)
+        wizard.songCompletionState.item = getSongPropertyCompletionState(song)
+        wizard.songPromotionData.item = getSongPropertyPromotionData(song)
+        wizard.songFinancialData.item = getSongPropertyFinancialData(song)
+        wizard.songAvailabilityData.item = getSongPropertyAvailabilityData(song)
+        wizard.songVisualizationData.item = getSongPropertyVisualizationData(song)
+        wizard.songAlbumEPData.item = getSongPropertyAlbumEPData(song)
+        wizard.songStatisticsData.item = getSongPropertyStatisticsData(song)
+        wizard.songCollaborationData.item = getSongPropertyCollaborationData(song)
+        wizard.songCopyrightData.item = getSongPropertyCopyrightData(song)
+        wizard.songMiscData.item = getSongPropertyMiscData(song)
 
         //Sync contact data
-        wizard.songP1.item.mixing =
-            m2Controller.getContactName(wizard.songP1.item.mixingUID, wizard.songP1.item.mixing)
-        wizard.songP1.item.mastering =
-            m2Controller.getContactName(wizard.songP1.item.masteringUID, wizard.songP1.item.mastering)
-        wizard.songP2.item.coVocalist1 =
-            m2Controller.getContactName(wizard.songP2.item.coVocalist1UID, wizard.songP2.item.coVocalist1)
-        wizard.songP2.item.coVocalist2 =
-            m2Controller.getContactName(wizard.songP2.item.coVocalist2UID, wizard.songP2.item.coVocalist2)
-        wizard.songP2.item.coProducer1 =
-            m2Controller.getContactName(wizard.songP2.item.coProducer1UID, wizard.songP2.item.coProducer1)
-        wizard.songP2.item.coProducer2 =
-            m2Controller.getContactName(wizard.songP2.item.coProducer2UID, wizard.songP2.item.coProducer2)
+        wizard.songMainData.item.mixing =
+            m2Controller.getContactName(
+                wizard.songMainData.item.mixingUID,
+                wizard.songMainData.item.mixing
+            )
+        wizard.songMainData.item.mastering =
+            m2Controller.getContactName(
+                wizard.songMainData.item.masteringUID,
+                wizard.songMainData.item.mastering
+            )
+        wizard.songCollaborationData.item.coVocalist1 =
+            m2Controller.getContactName(
+                wizard.songCollaborationData.item.coVocalist1UID,
+                wizard.songCollaborationData.item.coVocalist1
+            )
+        wizard.songCollaborationData.item.coVocalist2 =
+            m2Controller.getContactName(
+                wizard.songCollaborationData.item.coVocalist2UID,
+                wizard.songCollaborationData.item.coVocalist2
+            )
+        wizard.songCollaborationData.item.coProducer1 =
+            m2Controller.getContactName(
+                wizard.songCollaborationData.item.coProducer1UID,
+                wizard.songCollaborationData.item.coProducer1
+            )
+        wizard.songCollaborationData.item.coProducer2 =
+            m2Controller.getContactName(
+                wizard.songCollaborationData.item.coProducer2UID,
+                wizard.songCollaborationData.item.coProducer2
+            )
 
         wizard.onComplete {
-            if (wizard.songP1.uID.value != -1)
-            {
-                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-                M1DBManager().saveEntry(
-                    entry = getSongFromPropertyP2(
-                        getSongFromPropertyP1(wizard.songP1.item),
-                        wizard.songP2.item
-                    ),
-                    cwodb = db,
-                    posDB = m1GlobalIndex.indexList[0]!!.indexMap[wizard.songP1.item.uID]!!.pos,
-                    byteSize = m1GlobalIndex.indexList[0]!!.indexMap[wizard.songP1.item.uID]!!.byteSize,
-                    raf = raf,
-                    indexManager = m1GlobalIndex
-                )
-                db.closeRandomFileAccess(raf)
-                wizard.songP1.item = SongPropertyP1()
-                wizard.songP2.item = SongPropertyP2()
-                wizard.isComplete = false
-                //wizard.close()
-            }
+            saveEntry()
         }
-        //wizard.openModal(block = true)
     }
 }

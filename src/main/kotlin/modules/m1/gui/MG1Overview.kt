@@ -50,6 +50,7 @@ class MG1Overview : IOverview, View("M1 Songs")
             }
         }
         center = form {
+            m1Controller.newEntry()
             vbox {
                 hbox(10) {
                     style {
@@ -63,10 +64,10 @@ class MG1Overview : IOverview, View("M1 Songs")
                     }
                     vbox {
                         fieldset("Album/EP Data") {
-                            add(NewSongAlbumEPData::class)
+                            add(SongAlbumEPData::class)
                         }
                         fieldset("Visualization Data") {
-                            add(NewSongVisualizationData::class)
+                            add(SongVisualizationData::class)
                         }
                         addClass(Stylesheet.fieldsetBorder)
                     }
@@ -81,7 +82,7 @@ class MG1Overview : IOverview, View("M1 Songs")
                     }
                     vbox {
                         fieldset("Statistics Data") {
-                            add(NewSongStatisticsData::class)
+                            add(SongStatisticsData::class)
                         }
                         fieldset("Financial Data") {
                             add(SongFinancialData::class)
@@ -89,19 +90,19 @@ class MG1Overview : IOverview, View("M1 Songs")
                         addClass(Stylesheet.fieldsetBorder)
                     }
                     fieldset("Completion State") {
-                        add(SongCompletionStateData::class)
+                        add(SongCompletionState::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
                 }
                 squeezebox {
                     fold("Collaboration Data", expanded = false, closeable = false) {
-                        add(NewSongCollaborationData::class)
+                        add(SongCollaborationData::class)
                     }
                     fold("Copyright Data", expanded = false, closeable = false) {
-                        add(NewSongCopyrightData::class)
+                        add(SongCopyrightData::class)
                     }
                     fold("Miscellaneous", expanded = false, closeable = false) {
-                        add(NewSongMiscData::class)
+                        add(SongMiscData::class)
                     }
                 }
             }

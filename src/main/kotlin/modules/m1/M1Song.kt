@@ -108,6 +108,11 @@ data class Song(override var uID: Int, var name: String) : IEntry
     var containsExplicitLyrics: Boolean = false
 
     //----------------------------------v
+    //--------- Copyright Data ---------|
+    //----------------------------------^
+    var spotifyID: String = "?"
+
+    //----------------------------------v
     //----------- Misc Data ------------|
     //----------------------------------^
     var inspiredByArtist: String = "?"
