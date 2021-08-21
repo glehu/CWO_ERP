@@ -24,6 +24,9 @@ class GSpotify : View("Spotify API")
     private val accountIDProperty = SimpleStringProperty()
     private val accountFollowersProperty = SimpleStringProperty()
 
+    //API Dev Test
+    private val artistSpotifyIDProperty = SimpleStringProperty()
+
     //Token Data
     private val authURLProperty = SimpleStringProperty()
     val authCodeProperty = SimpleStringProperty()
@@ -65,6 +68,19 @@ class GSpotify : View("Spotify API")
                         }
                         field("Followers") {
                             textfield(accountFollowersProperty) { isEditable = false }
+                        }
+                    }
+                }
+            }
+            fold("API Dev Test", expanded = true, closeable = false) {
+                form {
+                    fieldset {
+                        addClass(fieldsetBorder)
+                        field("Artist SpotifyID") { textfield(artistSpotifyIDProperty) }
+                        button("Get Artist Album List") {
+                            action {
+                                sAPI.getArtistAlbumList(artistSpotifyIDProperty.value)
+                            }
                         }
                     }
                 }

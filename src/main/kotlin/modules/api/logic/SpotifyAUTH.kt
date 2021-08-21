@@ -72,12 +72,12 @@ class SpotifyAUTH : IAPIAUTH
 
     override fun getAccessAndRefreshTokenFromDisk(checkExpired: Boolean): ITokenData
     {
-        var tokenData: ITokenData
+        var tokenData: SpotifyAuthCallbackJson
         val tokenFile = getAPITokenFile(apiName)
         val fileContent = tokenFile.readText()
         if (fileContent.isNotEmpty())
         {
-            tokenData = Json.decodeFromString(tokenFile.readText()) as SpotifyAuthCallbackJson
+            tokenData = Json.decodeFromString(tokenFile.readText())
             if (checkExpired)
             {
                 if (tokenData.expireUnixTimestamp <= MXTimestamp.getUnixTimestamp())
