@@ -41,41 +41,6 @@ class SongConfiguratorWizard : Wizard("Add new song")
     }
 }
 
-//This Wizard is used to view and/or edit songs
-/*
-@ExperimentalSerializationApi
-class SongViewerWizard : Wizard("View a song")
-{
-    val songMainData: SongPropertyMainDataModel by inject()
-    val songCompletionState: SongPropertyCompletionStateModel by inject()
-    val songPromotionData: SongPropertyPromotionDataModel by inject()
-    val songFinancialData: SongPropertyFinancialDataModel by inject()
-    val songAvailabilityData: SongPropertyAvailabilityDataModel by inject()
-    val songVisualizationData: SongPropertyVisualizationDataModel by inject()
-    val songAlbumEPData: SongPropertyAlbumEPDataModel by inject()
-    val songStatisticsData: SongPropertyStatisticsDataModel by inject()
-    val songCollaborationData: SongPropertyCollaborationDataModel by inject()
-    val songCopyrightData: SongPropertyCopyrightDataModel by inject()
-    val songMiscData: SongPropertyMiscDataModel by inject()
-
-    init
-    {
-        enableStepLinks = true
-        add(SongMainData::class)
-        add(SongCompletionState::class)
-        add(SongPromotionData::class)
-        add(SongFinancialData::class)
-        add(SongAvailabilityData::class)
-        add(SongVisualizationData::class)
-        add(SongAlbumEPData::class)
-        add(SongStatisticsData::class)
-        add(SongCollaborationData::class)
-        add(SongCopyrightData::class)
-        add(SongMiscData::class)
-    }
-}
- */
-
 @ExperimentalSerializationApi
 class SongMainData : Fragment("Main")
 {
@@ -116,7 +81,7 @@ class SongMainData : Fragment("Main")
                                 songMainData.vocalist.value = contact.name
                             }
                         }
-                    }.required()
+                    }
                     label(songMainData.vocalistUID) { paddingHorizontal = 20 }
                 }
             }
@@ -140,7 +105,7 @@ class SongMainData : Fragment("Main")
                                 songMainData.producer.value = contact.name
                             }
                         }
-                    }.required()
+                    }
                     label(songMainData.producerUID) { paddingHorizontal = 20 }
                 }
             }

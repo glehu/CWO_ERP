@@ -18,11 +18,11 @@ class SongPropertyMainData
     val nameProperty = SimpleStringProperty()
     var name: String by nameProperty
 
-    val vocalistProperty = SimpleStringProperty()
+    val vocalistProperty = SimpleStringProperty("?")
     val vocalistUIDProperty = SimpleIntegerProperty(-1)
     var vocalist: String by vocalistProperty
     var vocalistUID: Int by vocalistUIDProperty
-    val producerProperty = SimpleStringProperty()
+    val producerProperty = SimpleStringProperty("?")
     val producerUIDProperty = SimpleIntegerProperty(-1)
     var producer: String by producerProperty
     var producerUID: Int by producerUIDProperty
