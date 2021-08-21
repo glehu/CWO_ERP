@@ -304,7 +304,7 @@ class SongPropertyMiscData
     //----------------------------------v
     //------------ API Data ------------|
     //----------------------------------^
-    val spotifyIDProperty = SimpleStringProperty()
+    val spotifyIDProperty = SimpleStringProperty("?")
     var spotifyID: String by spotifyIDProperty
 }
 

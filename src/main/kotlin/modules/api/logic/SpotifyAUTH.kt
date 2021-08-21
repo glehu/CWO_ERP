@@ -1,12 +1,14 @@
 package modules.api.logic
 
 import interfaces.IAPIAUTH
+import interfaces.IModule
 import interfaces.ITokenData
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -15,12 +17,17 @@ import modules.api.json.SpotifyAuthCallbackJson
 import modules.mx.getClientSecretFile
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXAPI.Companion.getAPITokenFile
+import modules.mx.logic.MXLog
 import modules.mx.logic.MXTimestamp
 import tornadofx.find
 import java.net.URLEncoder
 
-class SpotifyAUTH : IAPIAUTH
+@ExperimentalSerializationApi
+class SpotifyAUTH : IModule, IAPIAUTH
 {
+    override fun moduleNameLong() = "SpotifyAUTH"
+    override fun module() = "M1"
+
     override val apiName = "spotify"
     override val auth: IAPIAUTH = this
 
@@ -63,6 +70,7 @@ class SpotifyAUTH : IAPIAUTH
                         append("client_secret", clientSecret)
                     })
                 }
+                MXLog.log(module(), MXLog.LogType.COM, "Spotify access token obtained", moduleNameLong())
                 client.close()
                 saveTokenData(tokenData)
             }
@@ -106,6 +114,7 @@ class SpotifyAUTH : IAPIAUTH
                         append("client_secret", clientSecret)
                     })
                 }
+                MXLog.log(module(), MXLog.LogType.COM, "Spotify access token refreshed", moduleNameLong())
                 client.close()
                 tokenData.accessToken = tokenDataNew.accessToken
                 saveTokenData(tokenData)

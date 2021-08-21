@@ -2,10 +2,10 @@ package modules.m2.logic
 
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import db.CwODB
+import interfaces.IModule
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import interfaces.IModule
 import modules.m2.Contact
 import modules.m2.misc.ContactModel
 import modules.mx.logic.MXLog
@@ -29,7 +29,7 @@ class M2Import : IModule, Controller()
         updateProgress: (Pair<Int, String>) -> Unit
     )
     {
-        MXLog.log(module(), MXLog.LogType.INFO, "Data Import Start", moduleNameLong())
+        MXLog.log(module(), MXLog.LogType.INFO, "Data import start", moduleNameLong())
         val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
         val dbManager = M2DBManager()
         var counter = 0
@@ -40,7 +40,6 @@ class M2Import : IModule, Controller()
             }.open(file) {
                 readAllWithHeaderAsSequence().forEach { row: Map<String, String> ->
                     counter++
-                    //Do something
                     val contact = Contact(-1, import(row[contactSchema.name.value].toString(), "NoName"))
                     contact.firstName = import(row[contactSchema.firstName.value].toString())
                     contact.lastName = import(row[contactSchema.lastName.value].toString())

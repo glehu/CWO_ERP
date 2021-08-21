@@ -9,7 +9,6 @@ import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
 import java.util.*
-import kotlin.collections.ArrayList
 
 interface IIndexManager : IModule
 {

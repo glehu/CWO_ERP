@@ -3,13 +3,13 @@ package modules.m1.logic
 import db.CwODB
 import db.Index
 import db.IndexContent
+import interfaces.IIndexManager
+import interfaces.IModule
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import interfaces.IIndexManager
-import interfaces.IModule
 import modules.m1.Song
 import modules.mx.activeUser
 import modules.mx.logic.MXLog
@@ -42,6 +42,7 @@ class M1IndexManager : IModule, IIndexManager, Controller()
         indexList[2] = db.getIndex(module(), 2)
         indexList[3] = db.getIndex(module(), 3)
         indexList[4] = db.getIndex(module(), 4)
+        indexList[5] = db.getIndex(module(), 5)
         lastUID = updateLastUID()
         getLastChangeDates()
         MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
@@ -60,6 +61,7 @@ class M1IndexManager : IModule, IIndexManager, Controller()
         buildIndex2(entry, posDB, byteSize)
         buildIndex3(entry, posDB, byteSize)
         buildIndex4(entry, posDB, byteSize)
+        buildIndex5(entry, posDB, byteSize)
         if (writeToDisk) launch {
             writeIndexData()
         }
@@ -73,6 +75,7 @@ class M1IndexManager : IModule, IIndexManager, Controller()
         db.getIndexFile(module(), 2).writeText(Json.encodeToString(indexList[2]))
         db.getIndexFile(module(), 3).writeText(Json.encodeToString(indexList[3]))
         db.getIndexFile(module(), 4).writeText(Json.encodeToString(indexList[4]))
+        db.getIndexFile(module(), 5).writeText(Json.encodeToString(indexList[5]))
     }
 
     //**** **** **** **** **** INDICES **** **** **** **** ****
@@ -109,5 +112,12 @@ class M1IndexManager : IModule, IIndexManager, Controller()
     {
         val formatted = indexFormat(song.genre)
         indexList[4]!!.indexMap[song.uID] = IndexContent(song.uID, formatted, posDB, byteSize)
+    }
+
+    //Index 5 (Song.spotifyID)
+    private fun buildIndex5(song: Song, posDB: Long, byteSize: Int)
+    {
+        val formatted = song.spotifyID
+        indexList[5]!!.indexMap[song.uID] = IndexContent(song.uID, formatted, posDB, byteSize)
     }
 }

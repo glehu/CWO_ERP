@@ -277,7 +277,7 @@ class CwODB : IModule, Controller()
         {
             File("${getModulePath(module)}\\$module.db").delete()
             File("${getModulePath(module)}\\$module.nu").delete()
-            for (i in 1..99) File("${getModulePath(module)}\\$module.ix$i").delete()
+            for (i in 0..99) File("${getModulePath(module)}\\$module.ix$i").delete()
             MXLog.log(module, MXLog.LogType.INFO, "Reset database for $module successful", moduleNameLong())
         }
     }

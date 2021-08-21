@@ -38,7 +38,11 @@ data class SpotifyUserProfileJson(
 data class SpotifyAlbumListJson(
     val href: String = "?",
     @SerialName("items")
-    val albums: List<SpotifyAlbumJson> = listOf(SpotifyAlbumJson())
+    val albums: List<SpotifyAlbumJson> = listOf(SpotifyAlbumJson()),
+    val limit: Int = 0,
+    val next: String? = "?",
+    val offset: Int = 0,
+    val total: Int = 0
 )
 
 @Serializable

@@ -3,15 +3,19 @@ package modules.api.gui
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.paint.Color
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.api.json.SpotifyAuthCallbackJson
 import modules.api.json.SpotifyUserProfileJson
 import modules.api.logic.SpotifyAPI
 import modules.api.logic.SpotifyAUTH
 import modules.api.logic.SpotifyController
+import modules.m1.logic.M1Import
+import modules.mx.gui.MGXProgressbar
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet.Companion.fieldsetBorder
 import tornadofx.*
 
+@ExperimentalSerializationApi
 class GSpotify : View("Spotify API")
 {
     private val sAUTH = SpotifyAUTH()
@@ -80,11 +84,21 @@ class GSpotify : View("Spotify API")
                         field("Artist SpotifyID") { textfield(artistSpotifyIDProperty) }
                         button("Import Album List") {
                             action {
-                                sAPI.getArtistAlbumList(artistSpotifyIDProperty.value)
+                                if (artistSpotifyIDProperty.value != null)
+                                {
+                                    runAsync {
+                                        M1Import().importSpotifyAlbumList(
+                                            sAPI.getArtistAlbumList(artistSpotifyIDProperty.value)
+                                        ) {
+                                            updateMessage("${it.second} ${it.first}")
+                                        }
+                                    }
+                                }
                             }
                             style { unsafe("-fx-base", Color.DARKGREEN) }
                             prefWidth = rightButtonsWidth + 50
                         }
+                        add<MGXProgressbar>()
                     }
                 }
             }
