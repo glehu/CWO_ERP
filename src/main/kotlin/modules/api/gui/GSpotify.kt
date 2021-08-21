@@ -77,7 +77,7 @@ class GSpotify : View("Spotify API")
                     fieldset {
                         addClass(fieldsetBorder)
                         field("Artist SpotifyID") { textfield(artistSpotifyIDProperty) }
-                        button("Get Artist Album List") {
+                        button("Import Artist Album List") {
                             action {
                                 sAPI.getArtistAlbumList(artistSpotifyIDProperty.value)
                             }

@@ -1,7 +1,6 @@
 package modules.mx.gui
 
 import interfaces.IModule
-import styling.Stylesheet
 import javafx.scene.control.TabPane
 import javafx.stage.Stage
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -17,6 +16,7 @@ import modules.mx.logic.loginRoutines
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
 import modules.mx.server
+import styling.Stylesheet
 import tornadofx.*
 
 @ExperimentalSerializationApi
