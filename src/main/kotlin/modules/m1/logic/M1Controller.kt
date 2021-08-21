@@ -55,7 +55,7 @@ class M1Controller : IModule, Controller()
             )
             db.closeRandomFileAccess(raf)
             wizard.isComplete = false
-        }
+        } else wizard.songMainData.validate()
     }
 
     fun newEntry()
