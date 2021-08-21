@@ -1,13 +1,18 @@
 package modules.m1.logic
 
 import db.CwODB
+import db.IndexContent
 import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.api.json.SpotifyAlbumJson
 import modules.api.json.SpotifyAlbumListJson
 import modules.m1.Song
+import modules.m2.Contact
+import modules.m2.logic.M2DBManager
 import modules.mx.logic.MXLog
+import modules.mx.logic.getDefaultDate
 import modules.mx.m1GlobalIndex
+import modules.mx.m2GlobalIndex
 import tornadofx.Controller
 import java.time.LocalDate
 import kotlin.system.measureTimeMillis
@@ -27,7 +32,12 @@ class M1Import : IModule, Controller()
     {
         MXLog.log(module(), MXLog.LogType.INFO, "Spotify album list import start", moduleNameLong())
         val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-        val dbManager = M1DBManager()
+        val m2raf = db.openRandomFileAccess("M2", CwODB.RafMode.READWRITE)
+        val m1DBManager = M1DBManager()
+        val m2DBManager = M2DBManager()
+        var filteredMap: Map<Int, IndexContent>
+        var song: Song
+        var contact: Contact
         var counter = 0
         var uID: Int
         var pos: Long
@@ -36,10 +46,10 @@ class M1Import : IModule, Controller()
             for (album: SpotifyAlbumJson in albumListJson.albums)
             {
                 counter++
-                var song: Song
+                updateProgress(Pair(counter, "Importing spotify albums..."))
 
                 //New album or existing album
-                val filteredMap = m1GlobalIndex.indexList[5]!!.indexMap.filterValues {
+                filteredMap = m1GlobalIndex.indexList[5]!!.indexMap.filterValues {
                     it.content.contains(album.id)
                 }
                 if (filteredMap.isEmpty())
@@ -53,7 +63,7 @@ class M1Import : IModule, Controller()
                     uID = indexContent.uID
                     pos = indexContent.pos
                     byteSize = indexContent.byteSize
-                    song = dbManager.getEntry(uID, db, m1GlobalIndex.indexList[5]!!) as Song
+                    song = m1DBManager.getEntry(uID, db, m1GlobalIndex.indexList[5]!!) as Song
                 }
 
                 //Spotify META Data
@@ -72,8 +82,33 @@ class M1Import : IModule, Controller()
                             }" +
                             ".${releaseDate.year}"
 
-                updateProgress(Pair(counter, "Importing spotify albums..."))
-                dbManager.saveEntry(
+                //Does the artist exist?
+                filteredMap = m2GlobalIndex.indexList[3]!!.indexMap.filterValues {
+                    it.content.contains(album.artists[0].id)
+                }
+                if (filteredMap.isEmpty())
+                {
+                    contact = Contact(-1, song.vocalist)
+                    contact.spotifyID = album.artists[0].id
+                    contact.birthdate = getDefaultDate()
+                    song.vocalistUID = m2DBManager.saveEntry(
+                        entry = contact,
+                        cwodb = db,
+                        posDB = -1,
+                        byteSize = -1,
+                        raf = m2raf,
+                        indexManager = m2GlobalIndex,
+                        indexWriteToDisk = true
+                    )
+                } else
+                {
+                    val indexContent = filteredMap.values.first()
+                    contact = m2DBManager.getEntry(indexContent.uID, db, m2GlobalIndex.indexList[3]!!) as Contact
+                    song.vocalistUID = contact.uID
+                }
+
+                //Save the song
+                m1DBManager.saveEntry(
                     entry = song,
                     cwodb = db,
                     posDB = pos,
