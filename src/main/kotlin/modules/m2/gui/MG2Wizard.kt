@@ -51,6 +51,7 @@ class NewContactMainData : Fragment("Main")
             field("Instrumentalist") { checkbox("", contact.isInstrumentalist) }
             field("Manager") { checkbox("", contact.isManager) }
             field("Fan") { checkbox("", contact.isFan) }
+            field("Spotify ID") { textfield(contact.spotifyID) }
         }
     }
 
