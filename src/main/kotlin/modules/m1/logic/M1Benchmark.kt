@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import interfaces.IModule
 import modules.m1.Song
-import modules.m1.getGenreList
+import modules.m1.misc.getGenreList
 import modules.mx.logic.MXLog
 import modules.mx.logic.getRandomString
 import modules.mx.m1GlobalIndex

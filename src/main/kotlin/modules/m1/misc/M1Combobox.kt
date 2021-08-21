@@ -1,4 +1,4 @@
-package modules.m1
+package modules.m1.misc
 
 fun getGenreList(): ArrayList<String>
 {
@@ -20,5 +20,13 @@ fun getGenreList(): ArrayList<String>
         "Techno",
         "Trance",
         "Trap"
+    )
+}
+
+fun getTypeList(): ArrayList<String>
+{
+    return arrayListOf(
+        "Single",
+        "Album/EP"
     )
 }

@@ -17,7 +17,6 @@ class SongPropertyMainData
     var uID by uIDProperty
     val nameProperty = SimpleStringProperty()
     var name: String by nameProperty
-
     val vocalistProperty = SimpleStringProperty("?")
     val vocalistUIDProperty = SimpleIntegerProperty(-1)
     var vocalist: String by vocalistProperty
@@ -34,6 +33,8 @@ class SongPropertyMainData
     val masteringUIDProperty = SimpleIntegerProperty(-1)
     var mastering: String by masteringProperty
     var masteringUID: Int by masteringUIDProperty
+    val typeProperty = SimpleStringProperty("?")
+    var type: String by typeProperty
     val genreProperty = SimpleStringProperty("?")
     var genre: String by genreProperty
     val subgenreProperty = SimpleStringProperty("?")
@@ -56,6 +57,7 @@ class SongPropertyMainDataModel : ItemViewModel<SongPropertyMainData>()
     val mixingUID = bind(SongPropertyMainData::mixingUIDProperty)
     val mastering = bind(SongPropertyMainData::masteringProperty)
     val masteringUID = bind(SongPropertyMainData::masteringUIDProperty)
+    val type = bind(SongPropertyMainData::typeProperty)
     val genre = bind(SongPropertyMainData::genreProperty)
     val subgenre = bind(SongPropertyMainData::subgenreProperty)
     val songLength = bind(SongPropertyMainData::songLengthProperty)
@@ -298,6 +300,12 @@ class SongPropertyMiscData
     var micUsed: String by micUsedProperty
     val commentProperty = SimpleStringProperty("?")
     var comment: String by commentProperty
+
+    //----------------------------------v
+    //------------ API Data ------------|
+    //----------------------------------^
+    val spotifyIDProperty = SimpleStringProperty()
+    var spotifyID: String by spotifyIDProperty
 }
 
 class SongPropertyMiscDataModel : ItemViewModel<SongPropertyMiscData>()
@@ -307,6 +315,7 @@ class SongPropertyMiscDataModel : ItemViewModel<SongPropertyMiscData>()
     val dawUsed = bind(SongPropertyMiscData::dawUsedProperty)
     val micUsed = bind(SongPropertyMiscData::micUsedProperty)
     val comment = bind(SongPropertyMiscData::commentProperty)
+    val spotifyID = bind(SongPropertyMiscData::spotifyIDProperty)
 }
 
 fun getSongPropertyMainData(song: Song): SongPropertyMainData
@@ -325,6 +334,7 @@ fun getSongPropertyMainData(song: Song): SongPropertyMainData
     songPropertyMainData.mixingUID = song.mixingUID
     songPropertyMainData.mastering = song.mastering
     songPropertyMainData.masteringUID = song.masteringUID
+    songPropertyMainData.type = song.type
     songPropertyMainData.genre = song.genre
     songPropertyMainData.subgenre = song.subgenre
     songPropertyMainData.songLength = song.songLength
@@ -468,6 +478,11 @@ fun getSongPropertyMiscData(song: Song): SongPropertyMiscData
     songPropertyMiscData.dawUsed = song.dawUsed
     songPropertyMiscData.micUsed = song.micUsed
     songPropertyMiscData.comment = song.comment
+
+    //----------------------------------v
+    //------------ API Data ------------|
+    //----------------------------------^
+    songPropertyMiscData.spotifyID = song.spotifyID
     return songPropertyMiscData
 }
 
@@ -487,6 +502,7 @@ fun getSongFromProperty(song: Song, songPropertyMainData: SongPropertyMainData):
     song.mixingUID = songPropertyMainData.mixingUID
     song.mastering = songPropertyMainData.mastering
     song.masteringUID = songPropertyMainData.masteringUID
+    song.type = songPropertyMainData.type
     song.genre = songPropertyMainData.genre
     song.subgenre = songPropertyMainData.subgenre
     song.songLength = songPropertyMainData.songLength
@@ -621,5 +637,10 @@ fun getSongFromProperty(song: Song, songPropertyMiscData: SongPropertyMiscData):
     song.dawUsed = songPropertyMiscData.dawUsed
     song.micUsed = songPropertyMiscData.micUsed
     song.comment = songPropertyMiscData.comment
+
+    //----------------------------------v
+    //------------ API Data ------------|
+    //----------------------------------^
+    song.spotifyID = songPropertyMiscData.spotifyID
     return song
 }

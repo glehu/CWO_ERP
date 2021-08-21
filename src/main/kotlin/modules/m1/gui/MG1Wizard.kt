@@ -2,8 +2,8 @@ package modules.m1.gui
 
 import db.CwODB
 import javafx.collections.FXCollections
+import javafx.scene.layout.Priority
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.getGenreList
 import modules.m1.misc.*
 import modules.m2.logic.M2Controller
 import tornadofx.*
@@ -53,6 +53,7 @@ class SongMainData : Fragment("Main")
     //----------- Main Data ------------|
     //----------------------------------^
     private val genreList = FXCollections.observableArrayList(getGenreList())!!
+    private val typeList = FXCollections.observableArrayList(getTypeList())!!
 
     override val root = form {
         fieldset {
@@ -157,6 +158,7 @@ class SongMainData : Fragment("Main")
                     label(songMainData.masteringUID) { paddingHorizontal = 20 }
                 }
             }
+            field("Type") { combobox(songMainData.type, typeList) }
             field("Genre") { combobox(songMainData.genre, genreList) }
             field("Subgenre") { textfield(songMainData.subgenre) }
             field("Length") { textfield(songMainData.songLength) }
@@ -511,6 +513,12 @@ class SongMiscData : Fragment("Misc")
                 fieldset("Soft-/Hardware") {
                     field("DAW") { textfield(songMiscData.dawUsed) }
                     field("Microphone") { textfield(songMiscData.micUsed) }
+                }
+                //----------------------------------v
+                //------------ API Data ------------|
+                //----------------------------------^
+                fieldset("API") {
+                    field("Spotify ID") { textfield(songMiscData.spotifyID) }
                 }
             }
             fieldset("Comment") {

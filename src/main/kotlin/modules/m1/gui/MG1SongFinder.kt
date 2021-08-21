@@ -53,7 +53,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                 }
                 fieldset("Index")
                 {
-                    ixNr.value = "1-Name"
+                    ixNr.value = ixNrList[0]
                     combobox(ixNr, ixNrList) {
                         tooltip("Selects the index file that will be searched in.")
                     }

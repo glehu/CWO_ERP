@@ -23,6 +23,7 @@ data class Song(override var uID: Int, var name: String) : IEntry
     var mixingUID: Int = -1
     var mastering: String = "?"
     var masteringUID: Int = -1
+    var type: String = "?"
     var genre: String = "?"
     var subgenre: String = "?"
     var songLength: String = "??:??"
@@ -108,11 +109,6 @@ data class Song(override var uID: Int, var name: String) : IEntry
     var containsExplicitLyrics: Boolean = false
 
     //----------------------------------v
-    //--------- Copyright Data ---------|
-    //----------------------------------^
-    var spotifyID: String = "?"
-
-    //----------------------------------v
     //----------- Misc Data ------------|
     //----------------------------------^
     var inspiredByArtist: String = "?"
@@ -120,6 +116,11 @@ data class Song(override var uID: Int, var name: String) : IEntry
     var dawUsed: String = "?"
     var micUsed: String = "?"
     var comment: String = "?"
+
+    //----------------------------------v
+    //------------ API Data ------------|
+    //----------------------------------^
+    var spotifyID: String = "?"
 
     @ExperimentalSerializationApi
     override fun initialize()
