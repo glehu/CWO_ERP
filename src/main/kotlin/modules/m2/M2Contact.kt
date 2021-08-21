@@ -37,6 +37,11 @@ data class Contact(override var uID: Int, var name: String) : IEntry
     var isManager: Boolean = false
     var isFan: Boolean = false
 
+    //----------------------------------v
+    //------------ API Data ------------|
+    //----------------------------------^
+    var spotifyID: String = "?"
+
     @ExperimentalSerializationApi
     override fun initialize()
     {

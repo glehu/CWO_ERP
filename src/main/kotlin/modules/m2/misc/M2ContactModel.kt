@@ -56,6 +56,12 @@ class ContactProperty
     var isManager by isManagerProperty
     val isFanProperty = SimpleBooleanProperty(false)
     var isFan by isFanProperty
+
+    //----------------------------------v
+    //------------ API Data ------------|
+    //----------------------------------^
+    val spotifyIDProperty = SimpleStringProperty("?")
+    var spotifyID: String by spotifyIDProperty
 }
 
 class ContactModel : ItemViewModel<ContactProperty>(ContactProperty())
@@ -75,6 +81,7 @@ class ContactModel : ItemViewModel<ContactProperty>(ContactProperty())
     val isInstrumentalist = bind(ContactProperty::isInstrumentalistProperty)
     val isManager = bind(ContactProperty::isManagerProperty)
     val isFan = bind(ContactProperty::isFanProperty)
+    val spotifyID = bind(ContactProperty::spotifyIDProperty)
 }
 
 fun getContactPropertyFromContact(contact: Contact): ContactProperty
@@ -111,6 +118,11 @@ fun getContactPropertyFromContact(contact: Contact): ContactProperty
     contactProperty.isManager = contact.isManager
     contactProperty.isFan = contact.isFan
 
+    //----------------------------------v
+    //------------ API Data ------------|
+    //----------------------------------^
+    contactProperty.spotifyID = contact.spotifyID
+
     return contactProperty
 }
 
@@ -146,6 +158,11 @@ fun getContactFromProperty(contactProperty: ContactProperty): Contact
     contact.isInstrumentalist = contactProperty.isInstrumentalist
     contact.isManager = contactProperty.isManager
     contact.isFan = contactProperty.isFan
+
+    //----------------------------------v
+    //------------ API Data ------------|
+    //----------------------------------^
+    contact.spotifyID = contactProperty.spotifyID
 
     return contact
 }
