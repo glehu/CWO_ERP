@@ -38,7 +38,7 @@ data class Contact(override var uID: Int, var name: String) : IEntry
     var isFan: Boolean = false
 
     @ExperimentalSerializationApi
-    fun initialize()
+    override fun initialize()
     {
         if (uID == -1) uID = m2GlobalIndex.getUID()
     }

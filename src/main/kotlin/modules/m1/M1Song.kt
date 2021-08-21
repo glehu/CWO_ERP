@@ -1,8 +1,8 @@
 package modules.m1
 
+import interfaces.IEntry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import interfaces.IEntry
 import modules.mx.m1GlobalIndex
 
 @Serializable
@@ -121,67 +121,9 @@ data class Song(override var uID: Int, var name: String) : IEntry
     var micUsed: String = "?"
     var comment: String = "?"
 
-    //*************************************************
-    //****************** Auto Generated Data **********
-    //*************************************************
-
-    //Time
-    private var songLengthHours: Double = 0.0
-    private var songLengthMinutes: Double = 0.0
-    private var songLengthSeconds: Double = 0.0
-
-    //Money
-    private var moneySpentPerMinute: Double = 0.0
-    private var moneyGainedTotal: Double = 0.0
-    private var moneyGainedPerMinute: Double = 0.0
-
-    //Stats
-    private var totalPlays: Int = 0
-    private var averagePlays: Double = 0.0
-
-    //Single/EP/Album
-    private var isSingle: Boolean = false
-
-    //Collaboration
-    private var hasFeature: Boolean = false
-    private var isCollab: Boolean = false
-
     @ExperimentalSerializationApi
-    fun initialize()
+    override fun initialize()
     {
         if (uID == -1) uID = m1GlobalIndex.getUID()
-
-        val sTmp1: String
-        val sTmp2: String
-        //----------------- Time
-        val regex = "^[0-9]?[0-9]:[0-9][0-9]$".toRegex()
-        if (regex.matches(songLength))
-        {
-            sTmp1 = songLength.substringAfter(':')
-            sTmp2 = songLength.substringBefore(':')
-            val seconds: Double = ((sTmp1.toDouble()) + (sTmp2.toDouble() * 60))
-            songLengthHours = ((seconds / 60) / 60)
-            songLengthMinutes = (seconds / 60)
-            songLengthSeconds = seconds
-        } else songLengthHours = 0.0; songLengthMinutes = 0.0; songLengthSeconds = 0.0
-        //----------------- Money
-        moneyGainedTotal = moneyGainedStreams + moneyGainedSponsor
-        if (songLengthMinutes > 0.0)
-        {
-            moneySpentPerMinute = moneySpent / songLengthMinutes
-            moneyGainedPerMinute = moneyGainedTotal / songLengthMinutes
-        }
-        //----------------- Statistics
-        totalPlays = 0
-        var nTmp1 = 0
-        if (onSpotify) nTmp1 += 1; totalPlays += playsSpotify
-        if (onYouTube) nTmp1 += 1; totalPlays += playsYouTube
-        if (onSoundCloud) nTmp1 += 1; totalPlays += playsSoundCloud
-        averagePlays = if (nTmp1 > 0) totalPlays.toDouble() / nTmp1 else 0.0
-        //----------------- Single/EP/Album
-        isSingle = !(inEP || inAlbum)
-        //----------------- Collaboration
-        hasFeature = (coVocalist1.isNotEmpty()) && (coVocalist2.isNotEmpty())
-        isCollab = (coProducer1.isNotEmpty()) && (coProducer2.isNotEmpty())
     }
 }

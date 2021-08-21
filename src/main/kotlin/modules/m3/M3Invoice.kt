@@ -40,7 +40,7 @@ data class Invoice(override var uID: Int) : IEntry, IInvoice
     var isIncome: Boolean = false
 
     @ExperimentalSerializationApi
-    fun initialize()
+    override fun initialize()
     {
         if (uID == -1) uID = m3GlobalIndex.getUID()
         if (price > 0) isIncome = true
