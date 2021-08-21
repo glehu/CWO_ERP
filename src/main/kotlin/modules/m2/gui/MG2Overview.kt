@@ -50,6 +50,7 @@ class MG2Overview : IOverview, View("M2 Contacts")
             }
         }
         center = form {
+            m2Controller.newEntry()
             vbox {
                 hbox(10) {
                     style {

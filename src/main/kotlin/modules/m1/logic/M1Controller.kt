@@ -72,6 +72,8 @@ class M1Controller : IModule, Controller()
         wizard.songCollaborationData.item = SongPropertyCollaborationData()
         wizard.songCopyrightData.item = SongPropertyCopyrightData()
         wizard.songMiscData.item = SongPropertyMiscData()
+
+        wizard.songMainData.validate()
         wizard.isComplete = false
     }
 

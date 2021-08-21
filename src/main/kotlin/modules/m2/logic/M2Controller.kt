@@ -47,6 +47,8 @@ class M2Controller : IModule, Controller()
     fun newEntry()
     {
         wizard.contact.item = ContactProperty()
+
+        wizard.contact.validate()
         wizard.isComplete = false
     }
 

@@ -47,11 +47,11 @@ class GSpotify : View("Spotify API")
                     fieldset {
                         addClass(fieldsetBorder)
                         button("Get Data") {
-                            prefWidth = rightButtonsWidth
                             action {
                                 updateUserData()
                             }
                             isDisable = (accessTokenProperty.value.isEmpty())
+                            prefWidth = rightButtonsWidth + 50
                         }
                         hbox(10) {
                             field("Account Name") {
@@ -78,11 +78,12 @@ class GSpotify : View("Spotify API")
                     fieldset {
                         addClass(fieldsetBorder)
                         field("Artist SpotifyID") { textfield(artistSpotifyIDProperty) }
-                        button("Import Artist Album List") {
+                        button("Import Album List") {
                             action {
                                 sAPI.getArtistAlbumList(artistSpotifyIDProperty.value)
                             }
                             style { unsafe("-fx-base", Color.DARKGREEN) }
+                            prefWidth = rightButtonsWidth + 50
                         }
                     }
                 }
