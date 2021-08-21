@@ -36,22 +36,34 @@ class SpotifyAPI : IModule, IAPI
         return userData
     }
 
-    fun getArtistAlbumList(artistSpotifyID: String): SpotifyAlbumListJson
+    fun getArtistAlbumList(artistSpotifyID: String): ArrayList<SpotifyAlbumListJson>
     {
-        var albumList = SpotifyAlbumListJson()
+        var albumList: SpotifyAlbumListJson
+        val albumListTotal = ArrayList<SpotifyAlbumListJson>()
+        var finished = false
+        var url = "https://api.spotify.com/v1/artists/$artistSpotifyID/albums?limit=50"
         if (artistSpotifyID.isNotEmpty())
         {
             val client = auth.getAuthClient(MXAPI.Companion.AuthType.TOKEN)
             runBlocking {
                 launch {
-                    albumList = client.get(
-                        "https://api.spotify.com/v1/artists/$artistSpotifyID/albums?limit=50"
-                    )
-                    MXLog.log(module(), MXLog.LogType.COM, "Spotify album list received", moduleNameLong())
+                    while (!finished)
+                    {
+                        albumList = client.get(url)
+                        albumListTotal.add(albumList)
+                        MXLog.log(module(), MXLog.LogType.COM, "Spotify album list received", moduleNameLong())
+                        if (albumList.next == null)
+                        {
+                            finished = true
+                        } else
+                        {
+                            url = albumList.next!!
+                        }
+                    }
                     client.close()
                 }
             }
         }
-        return albumList
+        return albumListTotal
     }
 }
