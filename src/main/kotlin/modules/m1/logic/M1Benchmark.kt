@@ -25,7 +25,7 @@ class M1Benchmark : IModule, Controller()
     fun insertRandomEntries(amount: Int)
     {
         MXLog.log(module(), MXLog.LogType.INFO, "Benchmark entry insertion start", moduleNameLong())
-        val raf = db.openRandomFileAccess(module(), "rw")
+        val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
         val dbManager = M1DBManager()
         val timeInMillis = measureTimeMillis {
             for (i in 1..amount)

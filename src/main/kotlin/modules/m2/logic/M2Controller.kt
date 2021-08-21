@@ -35,7 +35,7 @@ class M2Controller : IModule, Controller()
         if(!wizard.contact.isValid) isComplete = false
         if (isComplete)
         {
-            val raf = db.openRandomFileAccess(module(), "rw")
+            val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
             wizard.contact.uID.value = M2DBManager().saveEntry(
                 getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, m2GlobalIndex
             )
@@ -97,7 +97,7 @@ class M2Controller : IModule, Controller()
         wizard.onComplete {
             if (wizard.contact.uID.value != -1)
             {
-                val raf = db.openRandomFileAccess(module(), "rw")
+                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
                 M2DBManager().saveEntry(
                     entry = getContactFromProperty(wizard.contact.item),
                     cwodb = db,

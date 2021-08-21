@@ -37,7 +37,7 @@ class M1Controller : IModule, Controller()
         if(!wizard.songP2.isValid) isComplete = false
         if (isComplete)
         {
-            val raf = db.openRandomFileAccess(module(), "rw")
+            val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
             wizard.songP1.uID.value = M1DBManager().saveEntry(
                 getSongFromPropertyP2(
                     getSongFromPropertyP1(wizard.songP1.item),
@@ -86,7 +86,7 @@ class M1Controller : IModule, Controller()
         wizard.onComplete {
             if (wizard.songP1.uID.value != -1)
             {
-                val raf = db.openRandomFileAccess(module(), "rw")
+                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
                 M1DBManager().saveEntry(
                     entry = getSongFromPropertyP2(
                         getSongFromPropertyP1(wizard.songP1.item),

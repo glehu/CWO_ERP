@@ -1,11 +1,11 @@
 package db
 
+import interfaces.IIndexManager
+import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import interfaces.IIndexManager
-import interfaces.IModule
 import modules.mx.MXLastChange
 import modules.mx.activeUser
 import modules.mx.getModulePath
@@ -83,7 +83,7 @@ class CwODB : IModule, Controller()
             if (posDB > -1L && !canOverride)
             {
                 val emptyEntry = ByteArray(byteSize)
-                val emptyRaf = openRandomFileAccess(module, "rw")
+                val emptyRaf = openRandomFileAccess(module, RafMode.READWRITE)
                 writeDBEntry(emptyEntry, posDB, emptyRaf)
                 closeRandomFileAccess(emptyRaf)
             }
@@ -111,7 +111,7 @@ class CwODB : IModule, Controller()
 
         if (getDatabaseFile(module).isFile)
         {
-            val raf: RandomAccessFile = openRandomFileAccess(module, "r")
+            val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
             //Determines the type of search that will be done depending on the search string
             val filteredMap: Map<Int, IndexContent> = if (!isGetAll(searchText))
             {
@@ -162,14 +162,28 @@ class CwODB : IModule, Controller()
         lateinit var entryBytes: ByteArray
         if (getDatabaseFile(module).isFile)
         {
-            val raf: RandomAccessFile = openRandomFileAccess(module, "r")
+            val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
             val indexContent = index.indexMap[uID]
             entryBytes = readDBEntry(indexContent!!.pos, indexContent.byteSize, raf)
         }
         return entryBytes
     }
 
-    fun openRandomFileAccess(module: String, mode: String) = RandomAccessFile(getDatabaseFile(module), mode)
+    enum class RafMode
+    {
+        READ, WRITE, READWRITE
+    }
+
+    fun openRandomFileAccess(module: String, mode: RafMode): RandomAccessFile
+    {
+        val rafMode: String = when(mode)
+        {
+            RafMode.READ -> "r"
+            RafMode.WRITE -> "w"
+            RafMode.READWRITE -> "rw"
+        }
+        return RandomAccessFile(getDatabaseFile(module), rafMode)
+    }
     fun closeRandomFileAccess(randAccessFile: RandomAccessFile) = randAccessFile.close()
 
     @ExperimentalSerializationApi

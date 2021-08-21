@@ -28,7 +28,7 @@ class M3Controller : IModule, Controller()
         wizard.onComplete {
             if (wizard.invoice.seller.value !== null)
             {
-                val raf = db.openRandomFileAccess(module(), "rw")
+                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
                 M3DBManager().saveEntry(
                     getInvoiceFromInvoiceProperty(wizard.invoice.item), db, -1L, -1, raf, m3GlobalIndex
                 )
@@ -48,7 +48,7 @@ class M3Controller : IModule, Controller()
         wizard.onComplete {
             if (wizard.invoice.uID.value != -1)
             {
-                val raf = db.openRandomFileAccess(module(), "rw")
+                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
                 M3DBManager().saveEntry(
                     entry = getInvoiceFromInvoiceProperty(wizard.invoice.item),
                     cwodb = db,
