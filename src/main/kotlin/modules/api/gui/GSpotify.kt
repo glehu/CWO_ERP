@@ -88,14 +88,15 @@ class GSpotify : View("Spotify API")
                                 if (artistSpotifyIDProperty.value != null)
                                 {
                                     runAsync {
-                                        for (albumList: SpotifyAlbumListJson in sAPI.getArtistAlbumList(
+                                        val albumListJson = sAPI.getArtistAlbumList(
                                             artistSpotifyIDProperty.value
-                                        ))
+                                        )
+                                        var entriesAdded = 0
+                                        for (albumList: SpotifyAlbumListJson in albumListJson)
                                         {
-                                            M1Import().importSpotifyAlbumList(
-                                                albumList,
-                                            ) {
-                                                updateMessage("${it.second} ${it.first}")
+                                            M1Import().importSpotifyAlbumList(albumList, entriesAdded) {
+                                                entriesAdded = it.first
+                                                updateMessage(it.second + "$entriesAdded")
                                             }
                                         }
                                     }

@@ -28,6 +28,7 @@ class M1Import : IModule, Controller()
     @ExperimentalSerializationApi
     fun importSpotifyAlbumList(
         albumListJson: SpotifyAlbumListJson,
+        entriesAdded: Int = 0,
         updateProgress: (Pair<Int, String>) -> Unit
     )
     {
@@ -36,17 +37,20 @@ class M1Import : IModule, Controller()
         var albumEntry: Song
         val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
         val m2raf = db.openRandomFileAccess("M2", CwODB.RafMode.READWRITE)
-        var counter = 0
+        var counter = entriesAdded
         val timeInMillis = measureTimeMillis {
             for (album: SpotifyAlbumJson in albumListJson.albums)
             {
                 counter++
-                updateProgress(Pair(counter, "Importing spotify albums..."))
                 albumEntry = createOrSaveAlbum(album, raf, m2raf)
                 for (trackList: SpotifyTracklistJson in SpotifyAPI().getSongListFromAlbum(album.id))
                 {
-                    createOrSaveTracksOfAlbum(trackList, albumEntry, raf, m2raf)
+                    createOrSaveTracksOfAlbum(trackList, albumEntry, raf, m2raf, counter)
+                    {
+                        counter = it.first
+                    }
                 }
+                updateProgress(Pair(counter, "Importing spotify albums..."))
             }
         }
         db.closeRandomFileAccess(raf)
@@ -64,7 +68,9 @@ class M1Import : IModule, Controller()
         trackList: SpotifyTracklistJson,
         album: Song,
         raf: RandomAccessFile,
-        m2raf: RandomAccessFile
+        m2raf: RandomAccessFile,
+        entriesAdded: Int = 0,
+        updateProgress: (Pair<Int, String>) -> Unit
     )
     {
         val m1DBManager = M1DBManager()
@@ -72,9 +78,11 @@ class M1Import : IModule, Controller()
         var uID: Int
         var pos: Long
         var byteSize: Int
+        var counter = entriesAdded
 
         for (track: SpotifyTrackJson in trackList.tracks)
         {
+            counter++
             //New album or existing album
             val filteredMap = m1GlobalIndex.indexList[5]!!.indexMap.filterValues {
                 it.content.contains(track.id)
@@ -116,6 +124,7 @@ class M1Import : IModule, Controller()
                 indexWriteToDisk = true
             )
             MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong())
+            updateProgress(Pair(counter, "Importing spotify tracks..."))
         }
     }
 
