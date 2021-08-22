@@ -187,21 +187,15 @@ class SongPropertyAlbumEPData
     //----------------------------------v
     //---------- Album/EP Data ---------|
     //----------------------------------^
-    val inEPProperty = SimpleBooleanProperty(false)
-    var inEP by inEPProperty
     val inAlbumProperty = SimpleBooleanProperty(false)
     var inAlbum by inAlbumProperty
-    val nameEPProperty = SimpleStringProperty("?")
-    var nameEP: String by nameEPProperty
     val nameAlbumProperty = SimpleStringProperty("?")
     var nameAlbum: String by nameAlbumProperty
 }
 
 class SongPropertyAlbumEPDataModel : ItemViewModel<SongPropertyAlbumEPData>()
 {
-    val inEP = bind(SongPropertyAlbumEPData::inEPProperty)
     val inAlbum = bind(SongPropertyAlbumEPData::inAlbumProperty)
-    val nameEP = bind(SongPropertyAlbumEPData::nameEPProperty)
     val nameAlbum = bind(SongPropertyAlbumEPData::nameAlbumProperty)
 }
 
@@ -416,9 +410,7 @@ fun getSongPropertyAlbumEPData(song: Song): SongPropertyAlbumEPData
     //---------------------------------v
     //---------- Album/EP Data --------|
     //---------------------------------^
-    songPropertyAlbumEPData.inEP = song.inEP
     songPropertyAlbumEPData.inAlbum = song.inAlbum
-    songPropertyAlbumEPData.nameEP = song.nameEP
     songPropertyAlbumEPData.nameAlbum = song.nameAlbum
     return songPropertyAlbumEPData
 }
@@ -579,9 +571,7 @@ fun getSongFromProperty(song: Song, songPropertyAlbumEPData: SongPropertyAlbumEP
     //---------------------------------v
     //---------- Album/EP Data --------|
     //---------------------------------^
-    song.inEP = songPropertyAlbumEPData.inEP
     song.inAlbum = songPropertyAlbumEPData.inAlbum
-    song.nameEP = songPropertyAlbumEPData.nameEP
     song.nameAlbum = songPropertyAlbumEPData.nameAlbum
     return song
 }

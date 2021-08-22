@@ -311,10 +311,6 @@ class SongAlbumEPData : Fragment("Album/EP")
     //---------- Album/EP Data ---------|
     //----------------------------------^
     override val root = form {
-        fieldset("EP") {
-            field("Part of EP") { checkbox("", songAlbumEPData.inEP) }
-            field("Name") { textfield(songAlbumEPData.nameEP) }
-        }
         fieldset("Album") {
             field("Part of Album") { checkbox("", songAlbumEPData.inAlbum) }
             field("Name") { textfield(songAlbumEPData.nameAlbum) }

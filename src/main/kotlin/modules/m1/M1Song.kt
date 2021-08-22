@@ -73,9 +73,7 @@ data class Song(override var uID: Int, var name: String) : IEntry
     //----------------------------------v
     //---------- Album/EP Data ---------|
     //----------------------------------^
-    var inEP: Boolean = false
     var inAlbum: Boolean = false
-    var nameEP: String = "?"
     var nameAlbum: String = "?"
 
     //----------------------------------v
