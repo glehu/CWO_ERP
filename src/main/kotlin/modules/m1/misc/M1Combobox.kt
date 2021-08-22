@@ -27,6 +27,9 @@ fun getSongTypeList(): ArrayList<String>
 {
     return arrayListOf(
         "Track",
+        "Single",
+        "Album/EP",
+        "Compilation"
     )
 }
 
@@ -34,6 +37,7 @@ fun getAlbumTypeList(): ArrayList<String>
 {
     return arrayListOf(
         "Single",
-        "Album/EP"
+        "Album/EP",
+        "Compilation"
     )
 }

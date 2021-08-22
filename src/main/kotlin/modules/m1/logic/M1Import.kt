@@ -3,6 +3,8 @@ package modules.m1.logic
 import db.CwODB
 import db.IndexContent
 import interfaces.IModule
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.api.json.*
 import modules.api.logic.SpotifyAPI
@@ -53,6 +55,8 @@ class M1Import : IModule, Controller()
                 updateProgress(Pair(counter, "Importing spotify albums..."))
             }
         }
+        runBlocking { launch { m1GlobalIndex.writeIndexData() } }
+        runBlocking { launch { m2GlobalIndex.writeIndexData() } }
         db.closeRandomFileAccess(raf)
         db.closeRandomFileAccess(m2raf)
         MXLog.log(
@@ -122,7 +126,7 @@ class M1Import : IModule, Controller()
                 byteSize = byteSize,
                 raf = raf,
                 indexManager = m1GlobalIndex,
-                indexWriteToDisk = true
+                indexWriteToDisk = false
             )
             MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong())
             updateProgress(Pair(counter, "Importing spotify tracks..."))
@@ -189,7 +193,7 @@ class M1Import : IModule, Controller()
             byteSize = byteSize,
             raf = raf,
             indexManager = m1GlobalIndex,
-            indexWriteToDisk = true
+            indexWriteToDisk = false
         )
         MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong())
         return song
@@ -213,7 +217,15 @@ class M1Import : IModule, Controller()
                 contact.spotifyID = artist.id
                 contact.birthdate = getDefaultDate()
                 artistUID = m2DBManager
-                    .saveEntry(contact, db, -1, -1, m2raf, m2GlobalIndex, true)
+                    .saveEntry(
+                        entry = contact,
+                        cwodb = db,
+                        posDB = -1,
+                        byteSize = -1,
+                        raf = m2raf,
+                        indexManager = m2GlobalIndex,
+                        indexWriteToDisk = false
+                    )
             } else
             {
                 val indexContent = filteredMap.values.first()
