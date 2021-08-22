@@ -36,44 +36,84 @@ data class SpotifyUserProfileJson(
 
 @Serializable
 data class SpotifyAlbumListJson(
-    val href: String = "?",
+    var href: String = "?",
     @SerialName("items")
-    val albums: List<SpotifyAlbumJson> = listOf(SpotifyAlbumJson()),
-    val limit: Int = 0,
-    val next: String? = "?",
-    val offset: Int = 0,
-    val total: Int = 0
+    var albums: List<SpotifyAlbumJson> = listOf(SpotifyAlbumJson()),
+    var limit: Int = 0,
+    var next: String? = "?",
+    var offset: Int = 0,
+    var total: Int = 0
 )
 
 @Serializable
 data class SpotifyAlbumJson(
     @SerialName("album_group")
-    val albumGroup: String = "?",
+    var albumGroup: String = "?",
     @SerialName("album_type")
-    val albumType: String = "?",
-    val artists: List<SpotifyArtistJson> = listOf(SpotifyArtistJson()),
+    var albumType: String = "?",
+    var artists: List<SpotifyArtistJson> = listOf(SpotifyArtistJson()),
     @SerialName("available_markets")
-    val availableMarkets: List<String> = listOf("?"),
+    var availableMarkets: List<String> = listOf("?"),
     @SerialName("external_urls")
-    val externalUrls: Map<String, String> = mapOf("?" to "?"),
-    val href: String = "?",
-    val id: String = "?",
-    val name: String = "?",
+    var externalUrls: Map<String, String> = mapOf("?" to "?"),
+    var href: String = "?",
+    var id: String = "?",
+    var name: String = "?",
     @SerialName("release_date")
-    val releaseDate: String = "?",
+    var releaseDate: String = "?",
     @SerialName("release_date_precision")
-    val releaseDatePrecision: String = "?",
-    val type: String = "?",
-    val uri: String = "?"
+    var releaseDatePrecision: String = "?",
+    var type: String = "?",
+    var uri: String = "?"
+)
+
+@Serializable
+data class SpotifyArtistListJson(
+    var artists: List<SpotifyArtistJson> = listOf(SpotifyArtistJson())
 )
 
 @Serializable
 data class SpotifyArtistJson(
     @SerialName("external_urls")
-    val externalUrls: Map<String, String> = mapOf("?" to "?"),
-    val href: String = "?",
-    val id: String = "?",
-    val name: String = "?",
-    val type: String = "?",
-    val uri: String = "?"
+    var externalUrls: Map<String, String> = mapOf("?" to "?"),
+    var followers: Map<String, String?> = mapOf("?" to "?"),
+    var genres: List<String> = listOf("?"),
+    var href: String = "?",
+    var id: String = "?",
+    var name: String = "?",
+    var popularity: Int = 0,
+    var type: String = "?",
+    var uri: String = "?"
+)
+
+@Serializable
+data class SpotifyTracklistJson(
+    var href: String = "?",
+    @SerialName("items")
+    var tracks: List<SpotifyTrackJson> = listOf(SpotifyTrackJson()),
+    var limit: Int = 0,
+    var next: String? = "?",
+    var offset: Int = 0,
+    var total: Int = 0
+)
+
+@Serializable
+data class SpotifyTrackJson(
+    var artists: List<SpotifyArtistJson> = listOf(SpotifyArtistJson()),
+    @SerialName("available_markets")
+    var availableMarkets: List<String> = listOf("?"),
+    @SerialName("disc_number")
+    var discNumber: Int = 0,
+    @SerialName("duration_ms")
+    var durationMs: Int = 0,
+    var explicit: Boolean = false,
+    @SerialName("external_urls")
+    var externalUrls: Map<String, String> = mapOf("?" to "?"),
+    var href: String = "?",
+    var id: String = "?",
+    var name: String = "?",
+    @SerialName("track_number")
+    var trackNumber: Int = 0,
+    var type: String = "?",
+    var uri: String = "?"
 )

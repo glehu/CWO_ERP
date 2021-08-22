@@ -165,6 +165,7 @@ class CwODB : IModule, Controller()
             val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
             val indexContent = index.indexMap[uID]
             entryBytes = readDBEntry(indexContent!!.pos, indexContent.byteSize, raf)
+            closeRandomFileAccess(raf)
         }
         return entryBytes
     }

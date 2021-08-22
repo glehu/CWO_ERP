@@ -6,8 +6,7 @@ import io.ktor.client.request.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.api.json.SpotifyAlbumListJson
-import modules.api.json.SpotifyUserProfileJson
+import modules.api.json.*
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXLog
 
@@ -65,5 +64,70 @@ class SpotifyAPI : IModule, IAPI
             }
         }
         return albumListTotal
+    }
+
+    fun getArtist(artistSpotifyID: String): SpotifyArtistJson
+    {
+        lateinit var artistData: SpotifyArtistJson
+        val client = auth.getAuthClient(MXAPI.Companion.AuthType.TOKEN)
+        runBlocking {
+            launch {
+                artistData = client.get("https://api.spotify.com/v1/artists/$artistSpotifyID")
+                MXLog.log(module(), MXLog.LogType.COM, "Spotify artist data received", moduleNameLong())
+                client.close()
+            }
+        }
+        return artistData
+    }
+
+    fun getMultipleArtists(spotifyIDs: List<String>): SpotifyArtistListJson
+    {
+        var artistDataList = SpotifyArtistListJson()
+        val separatedIDs: StringBuilder = StringBuilder()
+        for ((counter, id) in spotifyIDs.withIndex())
+        {
+            separatedIDs.append(id)
+            if (counter != spotifyIDs.size) separatedIDs.append(",")
+        }
+        val client = auth.getAuthClient(MXAPI.Companion.AuthType.TOKEN)
+        runBlocking {
+            launch {
+                artistDataList = client.get("https://api.spotify.com/v1/artists/${separatedIDs}")
+                MXLog.log(module(), MXLog.LogType.COM, "Spotify artist data received", moduleNameLong())
+                client.close()
+            }
+        }
+        return artistDataList
+    }
+
+    fun getSongListFromAlbum(albumSpotifyID: String): ArrayList<SpotifyTracklistJson>
+    {
+        var songList: SpotifyTracklistJson
+        val songListTotal = ArrayList<SpotifyTracklistJson>()
+        var finished = false
+        var url = "https://api.spotify.com/v1/albums/$albumSpotifyID/tracks?limit=50"
+        if (albumSpotifyID.isNotEmpty())
+        {
+            val client = auth.getAuthClient(MXAPI.Companion.AuthType.TOKEN)
+            runBlocking {
+                launch {
+                    while (!finished)
+                    {
+                        songList = client.get(url)
+                        songListTotal.add(songList)
+                        MXLog.log(module(), MXLog.LogType.COM, "Spotify song list received", moduleNameLong())
+                        if (songList.next == null)
+                        {
+                            finished = true
+                        } else
+                        {
+                            url = songList.next!!
+                        }
+                    }
+                    client.close()
+                }
+            }
+        }
+        return songListTotal
     }
 }

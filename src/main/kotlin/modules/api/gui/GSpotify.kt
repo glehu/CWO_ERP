@@ -92,7 +92,9 @@ class GSpotify : View("Spotify API")
                                             artistSpotifyIDProperty.value
                                         ))
                                         {
-                                            M1Import().importSpotifyAlbumList(albumList) {
+                                            M1Import().importSpotifyAlbumList(
+                                                albumList,
+                                            ) {
                                                 updateMessage("${it.second} ${it.first}")
                                             }
                                         }
