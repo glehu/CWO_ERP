@@ -5,7 +5,7 @@ import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.gui.MG1Analytics
-import modules.m1.gui.MG1SongFinder
+import modules.m1.gui.MG1EntryFinder
 import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.misc.*
 import modules.m2.logic.M2Controller
@@ -23,7 +23,7 @@ class M1Controller : IModule, Controller()
 
     fun searchEntry()
     {
-        find<MG1SongFinder>().openModal()
+        find<MG1EntryFinder>().openModal()
     }
 
     fun saveEntry()

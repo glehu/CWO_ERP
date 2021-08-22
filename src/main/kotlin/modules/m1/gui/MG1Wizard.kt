@@ -9,7 +9,7 @@ import tornadofx.*
 
 //This Wizard is used to create new songs
 @ExperimentalSerializationApi
-class SongConfiguratorWizard : Wizard("Add new song")
+class SongConfiguratorWizard : Wizard("Add new entry")
 {
     val songMainData: SongPropertyMainDataModel by inject()
     val songCompletionState: SongPropertyCompletionStateModel by inject()

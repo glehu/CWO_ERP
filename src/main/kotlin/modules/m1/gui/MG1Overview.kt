@@ -9,7 +9,7 @@ import modules.mx.rightButtonsWidth
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MG1Overview : IOverview, View("M1 Songs")
+class MG1Overview : IOverview, View("M1 Discography")
 {
     private val m1Controller: M1Controller by inject()
 
@@ -22,7 +22,7 @@ class MG1Overview : IOverview, View("M1 Songs")
             }
             button("New") {
                 action { m1Controller.newEntry() }
-                tooltip("Add a new song to the database.")
+                tooltip("Add a new entry to the database.")
                 prefWidth = rightButtonsWidth
             }
             button("Save") {

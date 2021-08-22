@@ -54,7 +54,7 @@ class MG1Analytics : Fragment("Genre distribution")
 
     private fun showPiechart(genreDist: MutableMap<String, Double>)
     {
-        piechart("Distribution for ${genreDist["[amount]"]!!.toInt()} songs") {
+        piechart("Distribution for ${genreDist["[amount]"]!!.toInt()} entries") {
             data.clear()
             for ((k, v) in genreDist)
             {

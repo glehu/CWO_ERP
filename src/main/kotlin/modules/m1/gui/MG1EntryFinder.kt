@@ -21,23 +21,23 @@ import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class MG1SongFinder : IModule, View("M1 Songs")
+class MG1EntryFinder : IModule, View("M1 Discography")
 {
-    override fun moduleNameLong() = "MG1SongFinder"
+    override fun moduleNameLong() = "MG1EntryFinder"
     override fun module() = "M1"
     val db: CwODB by inject()
     private val m1Controller: M1Controller by inject()
     private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
-    private var songsFound: ObservableList<Song> = observableListOf(Song(-1, ""))
+    private var entriesFound: ObservableList<Song> = observableListOf(Song(-1, ""))
     private var ixNr = SimpleStringProperty()
     private val ixNrList = FXCollections.observableArrayList(m1GlobalIndex.getIndexUserSelection())!!
     private val threadIDCurrentProperty = SimpleIntegerProperty()
     private var threadIDCurrent by threadIDCurrentProperty
     override val root = borderpane {
         center = form {
-            songsFound.clear()
+            entriesFound.clear()
             threadIDCurrent = 0
             fieldset {
                 field("Search") {
@@ -58,7 +58,7 @@ class MG1SongFinder : IModule, View("M1 Songs")
                         tooltip("Selects the index file that will be searched in.")
                     }
                 }
-                tableview(songsFound) {
+                tableview(entriesFound) {
                     readonlyColumn("ID", Song::uID).prefWidth(65.0)
                     readonlyColumn("Name", Song::name).prefWidth(310.0)
                     readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0).cellFormat {
@@ -88,11 +88,11 @@ class MG1SongFinder : IModule, View("M1 Songs")
     {
         runAsync {
             threadIDCurrent++
-            searchForSongs(threadIDCurrent)
+            searchForEntries(threadIDCurrent)
         }
     }
 
-    private fun searchForSongs(threadID: Int)
+    private fun searchForEntries(threadID: Int)
     {
         var entriesFound = 0
         val timeInMillis = measureTimeMillis {
@@ -107,8 +107,8 @@ class MG1SongFinder : IModule, View("M1 Songs")
             ) { _, bytes ->
                 if (threadID == threadIDCurrent)
                 {
-                    if (entriesFound == 0) songsFound.clear()
-                    songsFound.add(dbManager.decodeEntry(bytes) as Song)
+                    if (entriesFound == 0) this.entriesFound.clear()
+                    this.entriesFound.add(dbManager.decodeEntry(bytes) as Song)
                     entriesFound++
                 }
             }
@@ -117,11 +117,11 @@ class MG1SongFinder : IModule, View("M1 Songs")
         {
             if (entriesFound == 0)
             {
-                songsFound.clear()
+                this.entriesFound.clear()
             } else
             {
                 MXLog.log(
-                    module(), MXLog.LogType.INFO, "$entriesFound songs loaded (in $timeInMillis ms)",
+                    module(), MXLog.LogType.INFO, "$entriesFound entries loaded (in $timeInMillis ms)",
                     moduleNameLong()
                 )
             }
