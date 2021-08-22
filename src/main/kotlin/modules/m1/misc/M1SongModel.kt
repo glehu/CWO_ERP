@@ -33,7 +33,7 @@ class SongPropertyMainData
     val masteringUIDProperty = SimpleIntegerProperty(-1)
     var mastering: String by masteringProperty
     var masteringUID: Int by masteringUIDProperty
-    val typeProperty = SimpleStringProperty("?")
+    val typeProperty = SimpleStringProperty(getSongTypeList()[0])
     var type: String by typeProperty
     val genreProperty = SimpleStringProperty("?")
     var genre: String by genreProperty
@@ -191,12 +191,15 @@ class SongPropertyAlbumEPData
     var inAlbum by inAlbumProperty
     val nameAlbumProperty = SimpleStringProperty("?")
     var nameAlbum: String by nameAlbumProperty
+    val typeAlbumProperty = SimpleStringProperty("?")
+    var typeAlbum: String by typeAlbumProperty
 }
 
 class SongPropertyAlbumEPDataModel : ItemViewModel<SongPropertyAlbumEPData>()
 {
     val inAlbum = bind(SongPropertyAlbumEPData::inAlbumProperty)
     val nameAlbum = bind(SongPropertyAlbumEPData::nameAlbumProperty)
+    val typeAlbum = bind(SongPropertyAlbumEPData::typeAlbumProperty)
 }
 
 class SongPropertyStatisticsData
@@ -412,6 +415,7 @@ fun getSongPropertyAlbumEPData(song: Song): SongPropertyAlbumEPData
     //---------------------------------^
     songPropertyAlbumEPData.inAlbum = song.inAlbum
     songPropertyAlbumEPData.nameAlbum = song.nameAlbum
+    songPropertyAlbumEPData.typeAlbum = song.typeAlbum
     return songPropertyAlbumEPData
 }
 
@@ -573,6 +577,7 @@ fun getSongFromProperty(song: Song, songPropertyAlbumEPData: SongPropertyAlbumEP
     //---------------------------------^
     song.inAlbum = songPropertyAlbumEPData.inAlbum
     song.nameAlbum = songPropertyAlbumEPData.nameAlbum
+    song.typeAlbum = songPropertyAlbumEPData.typeAlbum
     return song
 }
 

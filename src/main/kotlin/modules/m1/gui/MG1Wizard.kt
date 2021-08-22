@@ -52,7 +52,7 @@ class SongMainData : Fragment("Main")
     //----------- Main Data ------------|
     //----------------------------------^
     private val genreList = FXCollections.observableArrayList(getGenreList())!!
-    private val typeList = FXCollections.observableArrayList(getTypeList())!!
+    private val typeList = FXCollections.observableArrayList(getSongTypeList())!!
 
     override val root = form {
         fieldset {
@@ -306,6 +306,7 @@ class SongVisualizationData : Fragment("Visualization")
 class SongAlbumEPData : Fragment("Album/EP")
 {
     private val songAlbumEPData: SongPropertyAlbumEPDataModel by inject()
+    private val albumTypeList = FXCollections.observableArrayList(getAlbumTypeList())!!
 
     //----------------------------------v
     //---------- Album/EP Data ---------|
@@ -314,6 +315,7 @@ class SongAlbumEPData : Fragment("Album/EP")
         fieldset("Album") {
             field("Part of Album") { checkbox("", songAlbumEPData.inAlbum) }
             field("Name") { textfield(songAlbumEPData.nameAlbum) }
+            field("Type") { combobox(songAlbumEPData.typeAlbum, albumTypeList) }
         }
     }
 

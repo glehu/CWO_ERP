@@ -75,6 +75,7 @@ data class Song(override var uID: Int, var name: String) : IEntry
     //----------------------------------^
     var inAlbum: Boolean = false
     var nameAlbum: String = "?"
+    var typeAlbum: String = "?"
 
     //----------------------------------v
     //-------- Statistics Data ---------|

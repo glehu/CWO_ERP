@@ -73,7 +73,7 @@ class M1Controller : IModule, Controller()
         wizard.songCopyrightData.item = SongPropertyCopyrightData()
         wizard.songMiscData.item = SongPropertyMiscData()
 
-        wizard.songMainData.type.value = getTypeList()[0]
+        wizard.songMainData.type.value = getSongTypeList()[0]
         wizard.songMainData.validate()
         wizard.isComplete = false
     }

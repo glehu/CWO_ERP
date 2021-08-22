@@ -108,6 +108,7 @@ class M1Import : IModule, Controller()
             song.name = track.name
             song.inAlbum = true
             song.nameAlbum = album.name
+            song.typeAlbum = album.type
             song.releaseDate = album.releaseDate
 
             //Do the artists exist?

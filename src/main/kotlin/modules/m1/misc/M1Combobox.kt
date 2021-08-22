@@ -23,7 +23,14 @@ fun getGenreList(): ArrayList<String>
     )
 }
 
-fun getTypeList(): ArrayList<String>
+fun getSongTypeList(): ArrayList<String>
+{
+    return arrayListOf(
+        "Track",
+    )
+}
+
+fun getAlbumTypeList(): ArrayList<String>
 {
     return arrayListOf(
         "Single",
