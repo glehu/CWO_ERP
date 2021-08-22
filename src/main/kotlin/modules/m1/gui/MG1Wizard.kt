@@ -68,7 +68,7 @@ class SongMainData : Fragment("Main")
                             item("Show contact").action {
                                 if (songMainData.vocalistUID.value != -1)
                                 {
-                                    m2controller.showContact(songMainData.vocalistUID.value)
+                                    m2controller.showContact(songMainData.vocalistUID.value, true)
                                 }
                                 songMainData.vocalist.value =
                                     m2controller.getContactName(
@@ -92,7 +92,7 @@ class SongMainData : Fragment("Main")
                         contextmenu {
                             item("Show contact").action {
                                 if (songMainData.producerUID.value != -1) m2controller.showContact(
-                                    songMainData.producerUID.value
+                                    songMainData.producerUID.value, true
                                 )
                                 songMainData.producer.value =
                                     m2controller.getContactName(
@@ -116,7 +116,7 @@ class SongMainData : Fragment("Main")
                         contextmenu {
                             item("Show contact").action {
                                 if (songMainData.mixingUID.value != -1) m2controller.showContact(
-                                    songMainData.mixingUID.value
+                                    songMainData.mixingUID.value, true
                                 )
                                 songMainData.mixing.value =
                                     m2controller.getContactName(
@@ -140,7 +140,7 @@ class SongMainData : Fragment("Main")
                         contextmenu {
                             item("Show contact").action {
                                 if (songMainData.masteringUID.value != -1) m2controller.showContact(
-                                    songMainData.masteringUID.value
+                                    songMainData.masteringUID.value, true
                                 )
                                 songMainData.mastering.value =
                                     m2controller.getContactName(
@@ -371,7 +371,7 @@ class SongCollaborationData : Fragment("Collaboration")
                                 item("Show contact").action {
                                     if (songCollaborationData.coVocalist1UID.value != -1)
                                     {
-                                        m2controller.showContact(songCollaborationData.coVocalist1UID.value)
+                                        m2controller.showContact(songCollaborationData.coVocalist1UID.value, true)
                                     }
                                     songCollaborationData.coVocalist1.value =
                                         m2controller.getContactName(
@@ -395,7 +395,7 @@ class SongCollaborationData : Fragment("Collaboration")
                             contextmenu {
                                 item("Show contact").action {
                                     if (songCollaborationData.coVocalist2UID.value != -1) m2controller.showContact(
-                                        songCollaborationData.coVocalist2UID.value
+                                        songCollaborationData.coVocalist2UID.value, true
                                     )
                                     songCollaborationData.coVocalist2.value =
                                         m2controller.getContactName(
@@ -421,7 +421,7 @@ class SongCollaborationData : Fragment("Collaboration")
                             contextmenu {
                                 item("Show contact").action {
                                     if (songCollaborationData.coProducer1UID.value != -1) m2controller.showContact(
-                                        songCollaborationData.coProducer1UID.value
+                                        songCollaborationData.coProducer1UID.value, true
                                     )
                                     songCollaborationData.coProducer1.value =
                                         m2controller.getContactName(
@@ -445,7 +445,7 @@ class SongCollaborationData : Fragment("Collaboration")
                             contextmenu {
                                 item("Show contact").action {
                                     if (songCollaborationData.coProducer2UID.value != -1) m2controller.showContact(
-                                        songCollaborationData.coProducer2UID.value
+                                        songCollaborationData.coProducer2UID.value, true
                                     )
                                     songCollaborationData.coProducer2.value =
                                         m2controller.getContactName(
