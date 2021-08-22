@@ -91,10 +91,10 @@ class M2Controller : IModule, Controller()
         } else default
     }
 
-    fun showContact(uID: Int, openWizard: Boolean = false)
+    fun showContact(uID: Int)
     {
         val contact = M2DBManager().getEntry(uID, db, m2GlobalIndex.indexList[0]!!) as Contact
-        val wizard = find<ContactViewerWizard>()
+        val wizard = find<ContactConfiguratorWizard>()
         wizard.contact.item = getContactPropertyFromContact(contact)
         wizard.onComplete {
             if (wizard.contact.uID.value != -1)
@@ -111,9 +111,9 @@ class M2Controller : IModule, Controller()
                 this.db.closeRandomFileAccess(raf)
                 wizard.contact.item = ContactProperty()
                 wizard.isComplete = false
-                if (openWizard) wizard.close()
+                //wizard.close()
             }
         }
-        if (openWizard) wizard.openWindow(block = true)
+        //wizard.openWindow(block = true)
     }
 }

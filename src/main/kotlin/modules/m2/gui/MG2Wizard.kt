@@ -10,17 +10,7 @@ class ContactConfiguratorWizard : Wizard("Add new contact")
     init
     {
         enableStepLinks = true
-        add(NewContactMainData::class)
-    }
-}
-
-class ContactViewerWizard : Wizard("View a contact")
-{
-    val contact: ContactModel by inject()
-
-    init
-    {
-        enableStepLinks = true
+        showHeader = false
         add(NewContactMainData::class)
     }
 }

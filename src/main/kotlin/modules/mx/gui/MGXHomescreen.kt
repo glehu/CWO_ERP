@@ -34,8 +34,13 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class)
     override fun stop()
     {
         MXLog.log(module(), MXLog.LogType.INFO, "Shutting down server...", moduleNameLong())
-        server.serverEngine.stop(100L, 100L)
-        super.stop()
+        try
+        {
+            server.serverEngine.stop(100L, 100L)
+        } finally
+        {
+            super.stop()
+        }
     }
 }
 
