@@ -20,15 +20,30 @@ class MG1Analytics : Fragment("Genre distribution")
     override val root = form {
         setPrefSize(800.0, 600.0)
         vbox {
-            button("Start") {
+            button("Genre Distribution") {
                 action {
                     maxEntries = m1controller.db.getLastUniqueID("M1")
                     runAsync {
-                        val genreDist = m1controller.getChartDataOnGenreDistribution(m1GlobalIndex) {
-                            progressN = it.first
-                            updateProgress(it.first.toDouble(), maxEntries.toDouble())
-                            updateMessage("${it.second} (${it.first} / $maxEntries)")
-                        }
+                        val genreDist =
+                            m1controller.getDistributionChartData(m1GlobalIndex, M1Analytics.DistType.GENRE) {
+                                progressN = it.first
+                                updateProgress(it.first.toDouble(), maxEntries.toDouble())
+                                updateMessage("${it.second} (${it.first} / $maxEntries)")
+                            }
+                        ui { showPiechart(genreDist) }
+                    }
+                }
+            }
+            button("Type Distribution") {
+                action {
+                    maxEntries = m1controller.db.getLastUniqueID("M1")
+                    runAsync {
+                        val genreDist =
+                            m1controller.getDistributionChartData(m1GlobalIndex, M1Analytics.DistType.TYPE) {
+                                progressN = it.first
+                                updateProgress(it.first.toDouble(), maxEntries.toDouble())
+                                updateMessage("${it.second} (${it.first} / $maxEntries)")
+                            }
                         ui { showPiechart(genreDist) }
                     }
                 }
@@ -39,7 +54,7 @@ class MG1Analytics : Fragment("Genre distribution")
 
     private fun showPiechart(genreDist: MutableMap<String, Double>)
     {
-        piechart("Genre distribution for ${genreDist["[amount]"]!!.toInt()} songs") {
+        piechart("Distribution for ${genreDist["[amount]"]!!.toInt()} songs") {
             data.clear()
             for ((k, v) in genreDist)
             {
