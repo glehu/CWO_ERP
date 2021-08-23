@@ -11,6 +11,7 @@ import modules.m1.misc.*
 import modules.m2.logic.M2Controller
 import modules.mx.m1GlobalIndex
 import tornadofx.Controller
+import tornadofx.Scope
 
 @ExperimentalSerializationApi
 class M1Controller : IModule, Controller()
@@ -84,6 +85,23 @@ class M1Controller : IModule, Controller()
         find<MG1Analytics>().openModal()
     }
 
+    fun selectAndReturnEntry(): Song
+    {
+        val entry: Song
+        val newScope = Scope()
+        val dataTransfer = SongPropertyMainDataModel()
+        dataTransfer.uID.value = -2
+        setInScope(dataTransfer, newScope)
+        tornadofx.find<MG1EntryFinder>(newScope).openModal(block = true)
+        entry = if (dataTransfer.name.value != null)
+        {
+            M1DBManager().getEntry(
+                dataTransfer.uID.value, db, m1GlobalIndex.indexList[0]!!
+            ) as Song
+        } else Song(-1, "")
+        return entry
+    }
+
     private fun getSongFromProperties(wizard: SongConfiguratorWizard): Song
     {
         var song = Song(-1, "")
@@ -116,40 +134,60 @@ class M1Controller : IModule, Controller()
         wizard.songCopyrightData.item = getSongPropertyCopyrightData(song)
         wizard.songMiscData.item = getSongPropertyMiscData(song)
 
+        //Sync album data
+        val album = getEntry(wizard.songAlbumEPData.item.albumUID)
+        if (album.uID != -1)
+        {
+            wizard.songAlbumEPData.item.nameAlbum = album.name
+            wizard.songAlbumEPData.item.typeAlbum = album.type
+        }
+
         //Sync contact data
         wizard.songMainData.item.mixing =
             m2Controller.getContactName(
-                wizard.songMainData.item.mixingUID,
-                wizard.songMainData.item.mixing
+                wizard.songMainData.item.mixingUID, wizard.songMainData.item.mixing
             )
         wizard.songMainData.item.mastering =
             m2Controller.getContactName(
-                wizard.songMainData.item.masteringUID,
-                wizard.songMainData.item.mastering
+                wizard.songMainData.item.masteringUID, wizard.songMainData.item.mastering
             )
         wizard.songCollaborationData.item.coVocalist1 =
             m2Controller.getContactName(
-                wizard.songCollaborationData.item.coVocalist1UID,
-                wizard.songCollaborationData.item.coVocalist1
+                wizard.songCollaborationData.item.coVocalist1UID, wizard.songCollaborationData.item.coVocalist1
             )
         wizard.songCollaborationData.item.coVocalist2 =
             m2Controller.getContactName(
-                wizard.songCollaborationData.item.coVocalist2UID,
-                wizard.songCollaborationData.item.coVocalist2
+                wizard.songCollaborationData.item.coVocalist2UID, wizard.songCollaborationData.item.coVocalist2
             )
         wizard.songCollaborationData.item.coProducer1 =
             m2Controller.getContactName(
-                wizard.songCollaborationData.item.coProducer1UID,
-                wizard.songCollaborationData.item.coProducer1
+                wizard.songCollaborationData.item.coProducer1UID, wizard.songCollaborationData.item.coProducer1
             )
         wizard.songCollaborationData.item.coProducer2 =
             m2Controller.getContactName(
-                wizard.songCollaborationData.item.coProducer2UID,
-                wizard.songCollaborationData.item.coProducer2
+                wizard.songCollaborationData.item.coProducer2UID, wizard.songCollaborationData.item.coProducer2
             )
 
         wizard.onComplete {
             saveEntry()
         }
+    }
+
+    private fun getEntryName(uID: Int, default: String): String
+    {
+        return if (uID != -1)
+        {
+            getEntry(uID).name
+        } else default
+    }
+
+    private fun getEntry(uID: Int): Song
+    {
+        return if (uID != -1)
+        {
+            M1DBManager().getEntry(
+                uID, db, m1GlobalIndex.indexList[0]!!
+            ) as Song
+        } else Song(-1, "")
     }
 }

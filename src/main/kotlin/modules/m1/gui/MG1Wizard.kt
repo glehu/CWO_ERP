@@ -3,6 +3,7 @@ package modules.m1.gui
 import db.CwODB
 import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
+import modules.m1.logic.M1Controller
 import modules.m1.misc.*
 import modules.m2.logic.M2Controller
 import tornadofx.*
@@ -303,10 +304,12 @@ class SongVisualizationData : Fragment("Visualization")
     }
 }
 
+@ExperimentalSerializationApi
 class SongAlbumEPData : Fragment("Album/EP")
 {
     private val songAlbumEPData: SongPropertyAlbumEPDataModel by inject()
     private val albumTypeList = FXCollections.observableArrayList(getAlbumTypeList())!!
+    private val m1controller: M1Controller by inject()
 
     //----------------------------------v
     //---------- Album/EP Data ---------|
@@ -314,7 +317,23 @@ class SongAlbumEPData : Fragment("Album/EP")
     override val root = form {
         fieldset("Album") {
             field("Part of Album") { checkbox("", songAlbumEPData.inAlbum) }
-            field("Name") { textfield(songAlbumEPData.nameAlbum) }
+            field("Name")
+            {
+                hbox {
+                    textfield(songAlbumEPData.nameAlbum) {
+                        contextmenu {
+                            item("Load album").action {
+                                val album = m1controller.selectAndReturnEntry()
+                                songAlbumEPData.inAlbum.value = true
+                                songAlbumEPData.nameAlbum.value = album.name
+                                songAlbumEPData.typeAlbum.value = album.type
+                                songAlbumEPData.albumUID.value = album.uID
+                            }
+                        }
+                    }
+                    label(songAlbumEPData.albumUID) { paddingHorizontal = 20 }
+                }
+            }
             field("Type") { combobox(songAlbumEPData.typeAlbum, albumTypeList) }
         }
     }

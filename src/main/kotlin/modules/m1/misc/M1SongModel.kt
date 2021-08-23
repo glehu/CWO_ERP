@@ -193,6 +193,8 @@ class SongPropertyAlbumEPData
     var nameAlbum: String by nameAlbumProperty
     val typeAlbumProperty = SimpleStringProperty("?")
     var typeAlbum: String by typeAlbumProperty
+    val albumUIDProperty = SimpleIntegerProperty(-1)
+    var albumUID: Int by albumUIDProperty
 }
 
 class SongPropertyAlbumEPDataModel : ItemViewModel<SongPropertyAlbumEPData>()
@@ -200,6 +202,7 @@ class SongPropertyAlbumEPDataModel : ItemViewModel<SongPropertyAlbumEPData>()
     val inAlbum = bind(SongPropertyAlbumEPData::inAlbumProperty)
     val nameAlbum = bind(SongPropertyAlbumEPData::nameAlbumProperty)
     val typeAlbum = bind(SongPropertyAlbumEPData::typeAlbumProperty)
+    val albumUID = bind(SongPropertyAlbumEPData::albumUIDProperty)
 }
 
 class SongPropertyStatisticsData
@@ -416,6 +419,7 @@ fun getSongPropertyAlbumEPData(song: Song): SongPropertyAlbumEPData
     songPropertyAlbumEPData.inAlbum = song.inAlbum
     songPropertyAlbumEPData.nameAlbum = song.nameAlbum
     songPropertyAlbumEPData.typeAlbum = song.typeAlbum
+    songPropertyAlbumEPData.albumUID = song.albumUID
     return songPropertyAlbumEPData
 }
 
@@ -578,6 +582,7 @@ fun getSongFromProperty(song: Song, songPropertyAlbumEPData: SongPropertyAlbumEP
     song.inAlbum = songPropertyAlbumEPData.inAlbum
     song.nameAlbum = songPropertyAlbumEPData.nameAlbum
     song.typeAlbum = songPropertyAlbumEPData.typeAlbum
+    song.albumUID = songPropertyAlbumEPData.albumUID
     return song
 }
 
