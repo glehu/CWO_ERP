@@ -23,8 +23,7 @@ import tornadofx.find
 import java.net.URLEncoder
 
 @ExperimentalSerializationApi
-class SpotifyAUTH : IModule, IAPIAUTH
-{
+class SpotifyAUTH : IModule, IAPIAUTH {
     override fun moduleNameLong() = "SpotifyAUTH"
     override fun module() = "M1"
 
@@ -44,8 +43,7 @@ class SpotifyAUTH : IModule, IAPIAUTH
             "user-library-read%20" +
             "playlist-read-collaborative"
 
-    override fun getAuthorizationURL(): String
-    {
+    override fun getAuthorizationURL(): String {
         return spotifyAuthEndpoint +
                 "?client_id=$clientID" +
                 "&response_type=$responseType" +
@@ -55,8 +53,7 @@ class SpotifyAUTH : IModule, IAPIAUTH
                 "&show_dialog=true"
     }
 
-    override fun getAccessTokenFromAuthCode(authCode: String): ITokenData
-    {
+    override fun getAccessTokenFromAuthCode(authCode: String): ITokenData {
         lateinit var tokenData: SpotifyAuthCallbackJson
         val client = getAuthClient(MXAPI.Companion.AuthType.NONE)
         runBlocking {
@@ -78,18 +75,14 @@ class SpotifyAUTH : IModule, IAPIAUTH
         return tokenData
     }
 
-    override fun getAccessAndRefreshTokenFromDisk(checkExpired: Boolean): ITokenData
-    {
+    override fun getAccessAndRefreshTokenFromDisk(checkExpired: Boolean): ITokenData {
         var tokenData: SpotifyAuthCallbackJson
         val tokenFile = getAPITokenFile(apiName)
         val fileContent = tokenFile.readText()
-        if (fileContent.isNotEmpty())
-        {
+        if (fileContent.isNotEmpty()) {
             tokenData = Json.decodeFromString(tokenFile.readText())
-            if (checkExpired)
-            {
-                if (tokenData.expireUnixTimestamp <= MXTimestamp.getUnixTimestamp())
-                {
+            if (checkExpired) {
+                if (tokenData.expireUnixTimestamp <= MXTimestamp.getUnixTimestamp()) {
                     refreshAccessToken()
                     tokenData = Json.decodeFromString(tokenFile.readText())
                     find<GSpotify>().showTokenData(getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson)
@@ -99,8 +92,7 @@ class SpotifyAUTH : IModule, IAPIAUTH
         return tokenData
     }
 
-    override fun refreshAccessToken()
-    {
+    override fun refreshAccessToken() {
         var tokenDataNew: SpotifyAuthCallbackJson
         val tokenData = getAccessAndRefreshTokenFromDisk()
         val client = getAuthClient(MXAPI.Companion.AuthType.NONE)

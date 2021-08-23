@@ -1,11 +1,14 @@
 package modules.m2.logic
 
 import db.CwODB
-import kotlinx.serialization.ExperimentalSerializationApi
 import interfaces.IModule
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
-import modules.m2.gui.*
+import modules.m2.gui.ContactConfiguratorWizard
+import modules.m2.gui.MG2Analytics
+import modules.m2.gui.MG2ContactFinder
+import modules.m2.gui.MG2Import
 import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import modules.m2.misc.getContactPropertyFromContact
@@ -15,26 +18,22 @@ import tornadofx.Scope
 import tornadofx.find
 
 @ExperimentalSerializationApi
-class M2Controller : IModule, Controller()
-{
+class M2Controller : IModule, Controller() {
     override fun moduleNameLong() = "M2Controller"
     override fun module() = "M2"
 
     private val wizard = find<ContactConfiguratorWizard>()
     val db: CwODB by inject()
 
-    fun searchEntry()
-    {
+    fun searchEntry() {
         find<MG2ContactFinder>().openModal()
     }
 
-    fun saveEntry()
-    {
+    fun saveEntry() {
         var isComplete = true
         wizard.contact.commit()
-        if(!wizard.contact.isValid) isComplete = false
-        if (isComplete)
-        {
+        if (!wizard.contact.isValid) isComplete = false
+        if (isComplete) {
             val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
             wizard.contact.uID.value = M2DBManager().saveEntry(
                 getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, m2GlobalIndex
@@ -44,35 +43,30 @@ class M2Controller : IModule, Controller()
         }
     }
 
-    fun newEntry()
-    {
+    fun newEntry() {
         wizard.contact.item = ContactProperty()
 
         wizard.contact.validate()
         wizard.isComplete = false
     }
 
-    fun openAnalytics()
-    {
+    fun openAnalytics() {
         //TODO: Add multiple analytics modes
         find<MG2Analytics>().openModal()
     }
 
-    fun openDataImport()
-    {
+    fun openDataImport() {
         find<MG2Import>().openModal()
     }
 
-    fun selectAndReturnContact(): Contact
-    {
+    fun selectAndReturnContact(): Contact {
         val contact: Contact
         val newScope = Scope()
         val dataTransfer = SongPropertyMainDataModel()
         dataTransfer.uID.value = -2
         setInScope(dataTransfer, newScope)
         find<MG2ContactFinder>(newScope).openModal(block = true)
-        contact = if (dataTransfer.name.value != null)
-        {
+        contact = if (dataTransfer.name.value != null) {
             M2DBManager().getEntry(
                 dataTransfer.uID.value, db, m2GlobalIndex.indexList[0]!!
             ) as Contact
@@ -80,10 +74,8 @@ class M2Controller : IModule, Controller()
         return contact
     }
 
-    fun getContactName(uID: Int, default: String): String
-    {
-        return if (uID != -1)
-        {
+    fun getContactName(uID: Int, default: String): String {
+        return if (uID != -1) {
             val contact = M2DBManager().getEntry(
                 uID, db, m2GlobalIndex.indexList[0]!!
             ) as Contact
@@ -91,14 +83,12 @@ class M2Controller : IModule, Controller()
         } else default
     }
 
-    fun showContact(uID: Int)
-    {
+    fun showContact(uID: Int) {
         val contact = M2DBManager().getEntry(uID, db, m2GlobalIndex.indexList[0]!!) as Contact
         val wizard = find<ContactConfiguratorWizard>()
         wizard.contact.item = getContactPropertyFromContact(contact)
         wizard.onComplete {
-            if (wizard.contact.uID.value != -1)
-            {
+            if (wizard.contact.uID.value != -1) {
                 val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
                 M2DBManager().saveEntry(
                     entry = getContactFromProperty(wizard.contact.item),

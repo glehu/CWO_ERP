@@ -10,8 +10,7 @@ import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
 import java.util.*
 
-interface IIndexManager : IModule
-{
+interface IIndexManager : IModule {
     val db: CwODB
     val indexList: Map<Int, Index>
     var lastUID: Int
@@ -22,51 +21,43 @@ interface IIndexManager : IModule
     var lastChangeDateLocal: String
     var lastChangeUser: String
 
-    fun getUID(): Int
-    {
+    fun getUID(): Int {
         lastUID++
         db.setLastUniqueID(lastUID, module())
         return lastUID
     }
 
-    fun setLastChangeData(uID: Int, activeUser: MXUser)
-    {
+    fun setLastChangeData(uID: Int, activeUser: MXUser) {
         lastChangeDateHex = getUnixTimestampHex()
         val lastChange = MXLastChange(uID, lastChangeDateHex, activeUser.username)
         db.setLastChangeValues(module, lastChange)
         getLastChangeDates()
     }
 
-    fun getLastChangeDates()
-    {
+    fun getLastChangeDates() {
         val lastChange = updateLastChangeData()
         lastChangeDateHex = lastChange.unixHex
         lastChangeUser = lastChange.user
         val unixLong = convUnixHexToUnixTimestamp(lastChangeDateHex)
-        if (unixLong != 0L)
-        {
+        if (unixLong != 0L) {
             //UTC
             lastChangeDateUTC = getUTCTimestamp(unixLong)
             //Local
             lastChangeDateLocal = getLocalTimestamp(unixLong)
-        } else
-        {
+        } else {
             lastChangeDateHex = ""
             lastChangeDateUTC = ""
             lastChangeDateLocal = ""
         }
     }
 
-    fun indexFormat(text: String): String
-    {
+    fun indexFormat(text: String): String {
         val songNameArray = text.uppercase(Locale.getDefault()).toCharArray()
         var formatted = ""
-        for (i in songNameArray.indices)
-        {
+        for (i in songNameArray.indices) {
             //Only alphanumerical characters (letters and numbers)
             val regex = "^[A-Z]?[0-9]?$".toRegex()
-            if (regex.matches(songNameArray[i].toString()))
-            {
+            if (regex.matches(songNameArray[i].toString())) {
                 formatted += songNameArray[i]
             }
         }

@@ -14,26 +14,22 @@ import tornadofx.Controller
 import tornadofx.Scope
 
 @ExperimentalSerializationApi
-class M1Controller : IModule, Controller()
-{
+class M1Controller : IModule, Controller() {
     override fun moduleNameLong() = "M1Controller"
     override fun module() = "M1"
 
     val db: CwODB by inject()
     private val m2Controller: M2Controller by inject()
 
-    fun searchEntry()
-    {
+    fun searchEntry() {
         find<MG1EntryFinder>().openModal()
     }
 
-    fun saveEntry()
-    {
+    fun saveEntry() {
         val wizard = find<SongConfiguratorWizard>()
         var isComplete = true
         if (!wizard.songMainData.isValid) isComplete = false
-        if (isComplete)
-        {
+        if (isComplete) {
             wizard.songMainData.commit()
             wizard.songCompletionState.commit()
             wizard.songPromotionData.commit()
@@ -59,8 +55,7 @@ class M1Controller : IModule, Controller()
         } else wizard.songMainData.validate()
     }
 
-    fun newEntry()
-    {
+    fun newEntry() {
         val wizard = find<SongConfiguratorWizard>()
         wizard.songMainData.item = SongPropertyMainData()
         wizard.songCompletionState.item = SongPropertyCompletionState()
@@ -79,22 +74,19 @@ class M1Controller : IModule, Controller()
         wizard.isComplete = false
     }
 
-    fun openAnalytics()
-    {
+    fun openAnalytics() {
         //TODO: Add multiple analytics modes
         find<MG1Analytics>().openModal()
     }
 
-    fun selectAndReturnEntry(): Song
-    {
+    fun selectAndReturnEntry(): Song {
         val entry: Song
         val newScope = Scope()
         val dataTransfer = SongPropertyMainDataModel()
         dataTransfer.uID.value = -2
         setInScope(dataTransfer, newScope)
         tornadofx.find<MG1EntryFinder>(newScope).openModal(block = true)
-        entry = if (dataTransfer.name.value != null)
-        {
+        entry = if (dataTransfer.name.value != null) {
             M1DBManager().getEntry(
                 dataTransfer.uID.value, db, m1GlobalIndex.indexList[0]!!
             ) as Song
@@ -102,8 +94,7 @@ class M1Controller : IModule, Controller()
         return entry
     }
 
-    private fun getSongFromProperties(wizard: SongConfiguratorWizard): Song
-    {
+    private fun getSongFromProperties(wizard: SongConfiguratorWizard): Song {
         var song = Song(-1, "")
         song = getSongFromProperty(song, wizard.songMainData.item)
         song = getSongFromProperty(song, wizard.songCompletionState.item)
@@ -119,8 +110,7 @@ class M1Controller : IModule, Controller()
         return song
     }
 
-    fun showSong(song: Song)
-    {
+    fun showSong(song: Song) {
         val wizard = find<SongConfiguratorWizard>()
         wizard.songMainData.item = getSongPropertyMainData(song)
         wizard.songCompletionState.item = getSongPropertyCompletionState(song)
@@ -136,8 +126,7 @@ class M1Controller : IModule, Controller()
 
         //Sync album data
         val album = getEntry(wizard.songAlbumEPData.item.albumUID)
-        if (album.uID != -1)
-        {
+        if (album.uID != -1) {
             wizard.songAlbumEPData.item.nameAlbum = album.name
             wizard.songAlbumEPData.item.typeAlbum = album.type
         }
@@ -173,18 +162,14 @@ class M1Controller : IModule, Controller()
         }
     }
 
-    private fun getEntryName(uID: Int, default: String): String
-    {
-        return if (uID != -1)
-        {
+    private fun getEntryName(uID: Int, default: String): String {
+        return if (uID != -1) {
             getEntry(uID).name
         } else default
     }
 
-    private fun getEntry(uID: Int): Song
-    {
-        return if (uID != -1)
-        {
+    private fun getEntry(uID: Int): Song {
+        return if (uID != -1) {
             M1DBManager().getEntry(
                 uID, db, m1GlobalIndex.indexList[0]!!
             ) as Song

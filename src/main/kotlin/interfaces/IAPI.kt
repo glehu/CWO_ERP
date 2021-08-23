@@ -1,7 +1,6 @@
 package interfaces
 
-interface IAPI
-{
+interface IAPI {
     val auth: IAPIAUTH
     val apiName: String
 }

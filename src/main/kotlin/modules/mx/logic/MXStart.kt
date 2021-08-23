@@ -14,20 +14,17 @@ import tornadofx.launch
 import java.io.File
 
 @ExperimentalSerializationApi
-fun main()
-{
+fun main() {
     launch<CWOMainGUI>()
 }
 
-fun loginRoutines()
-{
+fun loginRoutines() {
     //Search for the .ini file to set up the software
     if (!getIniFile().isFile) showPreferences()
     else readAndSetIniValues()
 }
 
-fun readAndSetIniValues()
-{
+fun readAndSetIniValues() {
     val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
     token = iniVal.token
     dataPath = iniVal.dataPath
@@ -36,8 +33,7 @@ fun readAndSetIniValues()
 }
 
 @ExperimentalSerializationApi
-fun startupRoutines(user: MXUser)
-{
+fun startupRoutines(user: MXUser) {
     //Set active user
     activeUser = user
     //Check if all data paths and files exist

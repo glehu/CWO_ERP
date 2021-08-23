@@ -15,8 +15,7 @@ import tornadofx.find
 import tornadofx.runAsync
 
 @ExperimentalSerializationApi
-class MXServer: IModule
-{
+class MXServer : IModule {
     override fun moduleNameLong() = "Server"
     override fun module() = "MX"
 
@@ -39,8 +38,7 @@ class MXServer: IModule
         }
     }
 
-    init
-    {
+    init {
         runAsync {
             serverEngine.start(wait = true)
         }

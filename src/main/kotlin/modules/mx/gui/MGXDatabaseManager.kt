@@ -1,10 +1,10 @@
 package modules.mx.gui
 
 import db.CwODB
+import interfaces.IIndexManager
 import javafx.collections.ObservableList
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
-import interfaces.IIndexManager
 import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
@@ -12,8 +12,7 @@ import modules.mx.*
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MGXDatabaseManager : View("Databases")
-{
+class MGXDatabaseManager : View("Databases") {
     private var indexManagers: ObservableList<IIndexManager> = observableListOf(
         m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
     )
@@ -67,8 +66,7 @@ class MGXDatabaseManager : View("Databases")
         }
     }
 
-    private fun updateDatabases()
-    {
+    private fun updateDatabases() {
         indexManagers.clear()
         m1GlobalIndex = M1IndexManager()
         m2GlobalIndex = M2IndexManager()

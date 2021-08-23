@@ -1,6 +1,7 @@
 package modules.m1.gui
 
 import db.CwODB
+import interfaces.IModule
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
@@ -9,7 +10,6 @@ import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
-import interfaces.IModule
 import modules.m1.Song
 import modules.m1.logic.M1Controller
 import modules.m1.logic.M1DBManager
@@ -21,8 +21,7 @@ import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class MG1EntryFinder : IModule, View("M1 Discography")
-{
+class MG1EntryFinder : IModule, View("M1 Discography") {
     override fun moduleNameLong() = "MG1EntryFinder"
     override fun module() = "M1"
     val db: CwODB by inject()
@@ -84,16 +83,14 @@ class MG1EntryFinder : IModule, View("M1 Discography")
         }
     }
 
-    private fun startSearch()
-    {
+    private fun startSearch() {
         runAsync {
             threadIDCurrent++
             searchForEntries(threadIDCurrent)
         }
     }
 
-    private fun searchForEntries(threadID: Int)
-    {
+    private fun searchForEntries(threadID: Int) {
         var entriesFound = 0
         val timeInMillis = measureTimeMillis {
             val dbManager = M1DBManager()
@@ -105,21 +102,17 @@ class MG1EntryFinder : IModule, View("M1 Discography")
                 maxSearchResultsGlobal,
                 m1GlobalIndex
             ) { _, bytes ->
-                if (threadID == threadIDCurrent)
-                {
+                if (threadID == threadIDCurrent) {
                     if (entriesFound == 0) this.entriesFound.clear()
                     this.entriesFound.add(dbManager.decodeEntry(bytes) as Song)
                     entriesFound++
                 }
             }
         }
-        if (threadID == threadIDCurrent)
-        {
-            if (entriesFound == 0)
-            {
+        if (threadID == threadIDCurrent) {
+            if (entriesFound == 0) {
                 this.entriesFound.clear()
-            } else
-            {
+            } else {
                 MXLog.log(
                     module(), MXLog.LogType.INFO, "$entriesFound entries loaded (in $timeInMillis ms)",
                     moduleNameLong()

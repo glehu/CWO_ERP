@@ -4,8 +4,7 @@ import db.CwODB
 import db.Index
 import java.io.RandomAccessFile
 
-interface IDBManager : IModule
-{
+interface IDBManager : IModule {
     fun saveEntry(
         entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,
         raf: RandomAccessFile, indexManager: Any,

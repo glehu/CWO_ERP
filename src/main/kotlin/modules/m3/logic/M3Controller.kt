@@ -1,8 +1,8 @@
 package modules.m3.logic
 
 import db.CwODB
-import kotlinx.serialization.ExperimentalSerializationApi
 import interfaces.IModule
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.Invoice
 import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.InvoiceViewerWizard
@@ -13,21 +13,18 @@ import modules.mx.m3GlobalIndex
 import tornadofx.Controller
 
 @ExperimentalSerializationApi
-class M3Controller : IModule, Controller()
-{
+class M3Controller : IModule, Controller() {
     override fun moduleNameLong() = "M3Controller"
     override fun module() = "M3"
 
     private val wizard = find<InvoiceConfiguratorWizard>()
     val db: CwODB by inject()
 
-    fun openWizardNewInvoice()
-    {
+    fun openWizardNewInvoice() {
         wizard.invoice.item = InvoiceProperty()
         wizard.isComplete = false
         wizard.onComplete {
-            if (wizard.invoice.seller.value !== null)
-            {
+            if (wizard.invoice.seller.value !== null) {
                 val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
                 M3DBManager().saveEntry(
                     getInvoiceFromInvoiceProperty(wizard.invoice.item), db, -1L, -1, raf, m3GlobalIndex
@@ -41,13 +38,11 @@ class M3Controller : IModule, Controller()
         wizard.openModal(block = true)
     }
 
-    fun showInvoice(invoice: Invoice)
-    {
+    fun showInvoice(invoice: Invoice) {
         val wizard = find<InvoiceViewerWizard>()
         wizard.invoice.item = getInvoicePropertyFromInvoice(invoice)
         wizard.onComplete {
-            if (wizard.invoice.uID.value != -1)
-            {
+            if (wizard.invoice.uID.value != -1) {
                 val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
                 M3DBManager().saveEntry(
                     entry = getInvoiceFromInvoiceProperty(wizard.invoice.item),

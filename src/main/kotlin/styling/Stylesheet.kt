@@ -5,15 +5,12 @@ import javafx.scene.text.FontWeight
 import tornadofx.*
 import tornadofx.Stylesheet
 
-class Stylesheet : Stylesheet()
-{
-    companion object
-    {
+class Stylesheet : Stylesheet() {
+    companion object {
         val fieldsetBorder by cssclass()
     }
 
-    init
-    {
+    init {
         root {
             unsafe("-fx-accent", Color.web("#1e74c6", 1.0))
             unsafe("-fx-base", Color.web("#24282b", 1.0))  //former 373e43

@@ -1,7 +1,6 @@
 package interfaces
 
-interface IModule
-{
+interface IModule {
     fun moduleNameLong(): String
     fun module(): String
 }

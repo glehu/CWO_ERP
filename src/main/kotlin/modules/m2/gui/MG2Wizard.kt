@@ -3,20 +3,17 @@ package modules.m2.gui
 import modules.m2.misc.ContactModel
 import tornadofx.*
 
-class ContactConfiguratorWizard : Wizard("Add new contact")
-{
+class ContactConfiguratorWizard : Wizard("Add new contact") {
     val contact: ContactModel by inject()
 
-    init
-    {
+    init {
         enableStepLinks = true
         showHeader = false
         add(NewContactMainData::class)
     }
 }
 
-class NewContactMainData : Fragment("Main")
-{
+class NewContactMainData : Fragment("Main") {
     private val contact: ContactModel by inject()
 
     //----------------------------------v
@@ -45,8 +42,7 @@ class NewContactMainData : Fragment("Main")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = contact.commit()
     }
 }

@@ -1,13 +1,14 @@
 package modules.mx.gui
 
-import styling.Stylesheet
 import javafx.scene.layout.Priority
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.api.gui.GSpotify
+import styling.Stylesheet
 import tornadofx.*
 
 
-class MGXAPI : View("API")
-{
+@ExperimentalSerializationApi
+class MGXAPI : View("API") {
     override val root = borderpane {
         center = vbox(10) {
             style {

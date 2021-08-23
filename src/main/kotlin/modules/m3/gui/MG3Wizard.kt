@@ -6,32 +6,27 @@ import modules.m3.misc.InvoiceModel
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class InvoiceConfiguratorWizard : Wizard("Add new invoice")
-{
+class InvoiceConfiguratorWizard : Wizard("Add new invoice") {
     val invoice: InvoiceModel by inject()
 
-    init
-    {
+    init {
         enableStepLinks = true
         add(NewInvoiceMainData::class)
     }
 }
 
 @ExperimentalSerializationApi
-class InvoiceViewerWizard : Wizard("View an invoice")
-{
+class InvoiceViewerWizard : Wizard("View an invoice") {
     val invoice: InvoiceModel by inject()
 
-    init
-    {
+    init {
         enableStepLinks = true
         add(NewInvoiceMainData::class)
     }
 }
 
 @ExperimentalSerializationApi
-class NewInvoiceMainData : Fragment("Main")
-{
+class NewInvoiceMainData : Fragment("Main") {
     private val invoice: InvoiceModel by inject()
     private val m2controller: M2Controller by inject()
 
@@ -99,8 +94,7 @@ class NewInvoiceMainData : Fragment("Main")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = invoice.commit()
     }
 }

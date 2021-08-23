@@ -16,8 +16,7 @@ import tornadofx.Controller
 import java.io.File
 import java.io.RandomAccessFile
 
-class CwODB : IModule, Controller()
-{
+class CwODB : IModule, Controller() {
     override fun moduleNameLong() = "CwODB"
     override fun module() = "DB"
 
@@ -25,14 +24,12 @@ class CwODB : IModule, Controller()
     fun saveEntry(
         entryBytes: ByteArray, uID: Int, posDB: Long, byteSize: Int,
         module: String, raf: RandomAccessFile
-    ): Pair<Long, Int>
-    {
+    ): Pair<Long, Int> {
         //Save the new byteSize to determine if the old entry can be overridden with the new entry (<= size)
         //instead of adding the new entry at the end of the database (> size)
         val byteSizeNew = entryBytes.size
         var canOverride = false
-        if (byteSizeNew <= byteSize)
-        {
+        if (byteSizeNew <= byteSize) {
             canOverride = true
         }
         //Loading the database file for the entry to be saved in
@@ -53,11 +50,9 @@ class CwODB : IModule, Controller()
         val indexError = false
 
         //If the byteSize of the new entry is greater than the old one we have to attach the new entry at the end
-        if (!canOverride)
-        {
+        if (!canOverride) {
             indexText = lastEntryFile.readText()
-            if (indexText.isNotEmpty())
-            {
+            if (indexText.isNotEmpty()) {
                 val lastEntryIndex = Json.decodeFromString<IndexContent>(indexText)
                 //Now we get the previous PosInDatabase and ByteSize
                 val indexPosInDB = lastEntryIndex.pos
@@ -67,28 +62,24 @@ class CwODB : IModule, Controller()
                 //Now add the current entry's byteSize to the previous posInDatabase
                 posDBNew += previousByteSize
             } else posDBNew = 0L
-        } else
-        {
+        } else {
             //Old entry can be overridden since the byteSize is less or equal to the old one
             posDBNew = posDB
         }
 
-        if (!indexError)
-        {
+        if (!indexError) {
             //Save the serialized entry to the determined destination file
             writeDBEntry(entryBytes, posDBNew, raf)
 
             //If we saved a preexisting entry we have to delete the old entry
             //...if the new byteSize is greater than the old one
-            if (posDB > -1L && !canOverride)
-            {
+            if (posDB > -1L && !canOverride) {
                 val emptyEntry = ByteArray(byteSize)
                 val emptyRaf = openRandomFileAccess(module, RafMode.READWRITE)
                 writeDBEntry(emptyEntry, posDB, emptyRaf)
                 closeRandomFileAccess(emptyRaf)
             }
-            if (!canOverride)
-            {
+            if (!canOverride) {
                 getLastEntryFile(module).writeText(
                     Json.encodeToString(IndexContent(uID, "", posDBNew, byteSizeNew))
                 )
@@ -104,38 +95,31 @@ class CwODB : IModule, Controller()
         module: String, maxSearchResults: Int = maxSearchResultsGlobal,
         indexManager: IIndexManager,
         updateProgress: (Int, ByteArray) -> Unit
-    )
-    {
+    ) {
         var counter = 0
         var entryBytes: ByteArray
 
-        if (getDatabaseFile(module).isFile)
-        {
+        if (getDatabaseFile(module).isFile) {
             val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
             //Determines the type of search that will be done depending on the search string
-            val filteredMap: Map<Int, IndexContent> = if (!isGetAll(searchText))
-            {
+            val filteredMap: Map<Int, IndexContent> = if (!isGetAll(searchText)) {
                 //Search text -> Search for specific entries
-                if (exactSearch)
-                {
+                if (exactSearch) {
                     //Literal search
                     indexManager.indexList[ixNr]!!.indexMap.filterValues {
                         it.content.contains(searchText)
                     }
-                } else
-                {
+                } else {
                     //Regex search
                     indexManager.indexList[ixNr]!!.indexMap.filterValues {
                         it.content.contains(searchText.toRegex())
                     }
                 }
-            } else
-            {
+            } else {
                 //No search text -> Show all entries
                 indexManager.indexList[ixNr]!!.indexMap
             }
-            for ((key, indexContent) in filteredMap)
-            {
+            for ((key, indexContent) in filteredMap) {
                 entryBytes = readDBEntry(indexContent.pos, indexContent.byteSize, raf)
                 counter++
                 //Callback
@@ -145,11 +129,9 @@ class CwODB : IModule, Controller()
         }
     }
 
-    private fun isGetAll(searchText: String): Boolean
-    {
+    private fun isGetAll(searchText: String): Boolean {
         var getAll = false
-        when (searchText)
-        {
+        when (searchText) {
             "" -> getAll = true
             "*" -> getAll = true
         }
@@ -157,11 +139,9 @@ class CwODB : IModule, Controller()
     }
 
     @ExperimentalSerializationApi
-    fun getEntryFromUniqueID(uID: Int, module: String, index: Index): ByteArray
-    {
+    fun getEntryFromUniqueID(uID: Int, module: String, index: Index): ByteArray {
         lateinit var entryBytes: ByteArray
-        if (getDatabaseFile(module).isFile)
-        {
+        if (getDatabaseFile(module).isFile) {
             val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
             val indexContent = index.indexMap[uID]
             entryBytes = readDBEntry(indexContent!!.pos, indexContent.byteSize, raf)
@@ -170,26 +150,23 @@ class CwODB : IModule, Controller()
         return entryBytes
     }
 
-    enum class RafMode
-    {
+    enum class RafMode {
         READ, WRITE, READWRITE
     }
 
-    fun openRandomFileAccess(module: String, mode: RafMode): RandomAccessFile
-    {
-        val rafMode: String = when(mode)
-        {
+    fun openRandomFileAccess(module: String, mode: RafMode): RandomAccessFile {
+        val rafMode: String = when (mode) {
             RafMode.READ -> "r"
             RafMode.WRITE -> "w"
             RafMode.READWRITE -> "rw"
         }
         return RandomAccessFile(getDatabaseFile(module), rafMode)
     }
+
     fun closeRandomFileAccess(randAccessFile: RandomAccessFile) = randAccessFile.close()
 
     @ExperimentalSerializationApi
-    fun readDBEntry(posInDatabase: Long, byteSize: Int, randAccessFile: RandomAccessFile): ByteArray
-    {
+    fun readDBEntry(posInDatabase: Long, byteSize: Int, randAccessFile: RandomAccessFile): ByteArray {
         //We now read from the file
         val entry = ByteArray(byteSize)
         if (posInDatabase > 0) randAccessFile.seek(posInDatabase)
@@ -198,40 +175,34 @@ class CwODB : IModule, Controller()
     }
 
     @ExperimentalSerializationApi
-    fun writeDBEntry(entry: ByteArray, posInDatabase: Long, raf: RandomAccessFile)
-    {
+    fun writeDBEntry(entry: ByteArray, posInDatabase: Long, raf: RandomAccessFile) {
         if (posInDatabase > 0) raf.seek(posInDatabase)
         raf.write(entry)
     }
 
-    fun setLastUniqueID(uniqueID: Int, module: String)
-    {
+    fun setLastUniqueID(uniqueID: Int, module: String) {
         val nuFile = getNuFile(module)
         val uniqueIDString = uniqueID.toString()
         nuFile.writeText(uniqueIDString)
     }
 
-    fun getLastUniqueID(module: String): Int
-    {
+    fun getLastUniqueID(module: String): Int {
         checkNuFile(module)
         val nuFile = getNuFile(module)
         val lastUniqueIDNumber: Int
         val lastUniqueIDString: String = nuFile.readText()
-        lastUniqueIDNumber = if (lastUniqueIDString.isNotEmpty())
-        {
+        lastUniqueIDNumber = if (lastUniqueIDString.isNotEmpty()) {
             Integer.parseInt(lastUniqueIDString)
         } else 0
         return lastUniqueIDNumber
     }
 
-    private fun checkNuFile(module: String): Boolean
-    {
+    private fun checkNuFile(module: String): Boolean {
         var ok = false
         val nuPath = File(getModulePath(module))
         if (!nuPath.isDirectory) nuPath.mkdirs()
         val nuFile = getNuFile(module)
-        if (!nuFile.isFile)
-        {
+        if (!nuFile.isFile) {
             ok = false
             nuFile.createNewFile()
             if (nuFile.isFile) ok = true
@@ -239,14 +210,12 @@ class CwODB : IModule, Controller()
         return ok
     }
 
-    private fun checkLastEntryFile(module: String): Boolean
-    {
+    private fun checkLastEntryFile(module: String): Boolean {
         var ok = false
         val nuPath = File(getModulePath(module))
         if (!nuPath.isDirectory) nuPath.mkdirs()
         val nuFile = getLastEntryFile(module)
-        if (!nuFile.isFile)
-        {
+        if (!nuFile.isFile) {
             ok = false
             nuFile.createNewFile()
             if (nuFile.isFile) ok = true
@@ -255,14 +224,12 @@ class CwODB : IModule, Controller()
     }
 
     @ExperimentalSerializationApi
-    fun checkIndexFile(module: String, ixNr: Int): Boolean
-    {
+    fun checkIndexFile(module: String, ixNr: Int): Boolean {
         var ok = false
         val nuPath = File(getModulePath(module))
         if (!nuPath.isDirectory) nuPath.mkdirs()
         val nuFile = getIndexFile(module, ixNr)
-        if (!nuFile.isFile)
-        {
+        if (!nuFile.isFile) {
             ok = false
             nuFile.createNewFile()
             //Now add an empty indexer to be used later
@@ -272,10 +239,8 @@ class CwODB : IModule, Controller()
         return ok
     }
 
-    fun resetModuleDatabase(module: String)
-    {
-        if (File(getModulePath(module)).isDirectory)
-        {
+    fun resetModuleDatabase(module: String) {
+        if (File(getModulePath(module)).isDirectory) {
             File("${getModulePath(module)}\\$module.db").delete()
             File("${getModulePath(module)}\\$module.nu").delete()
             for (i in 0..99) File("${getModulePath(module)}\\$module.ix$i").delete()
@@ -284,33 +249,28 @@ class CwODB : IModule, Controller()
     }
 
     @ExperimentalSerializationApi
-    fun getIndex(module: String, ixNr: Int): Index
-    {
+    fun getIndex(module: String, ixNr: Int): Index {
         MXLog.log(module, MXLog.LogType.INFO, "Deserializing index $ixNr for $module...", moduleNameLong())
         checkIndexFile(module, ixNr)
         return Json.decodeFromString(getIndexFile(module, ixNr).readText())
     }
 
-    fun getLastChange(module: String): MXLastChange
-    {
+    fun getLastChange(module: String): MXLastChange {
         val lastChangeFile = getLastChangeDateHexFile(module)
         val lastChange: MXLastChange
-        if (!lastChangeFile.isFile)
-        {
+        if (!lastChangeFile.isFile) {
             lastChangeFile.createNewFile()
             lastChange = MXLastChange(
                 -1, getUnixTimestampHex(), activeUser.username
             )
             setLastChangeValues(module, lastChange)
-        } else
-        {
+        } else {
             lastChange = Json.decodeFromString(lastChangeFile.readText())
         }
         return lastChange
     }
 
-    fun setLastChangeValues(module: String, lastChange: MXLastChange)
-    {
+    fun setLastChangeValues(module: String, lastChange: MXLastChange) {
         getLastChangeDateHexFile(module).writeText(Json.encodeToString(lastChange))
     }
 

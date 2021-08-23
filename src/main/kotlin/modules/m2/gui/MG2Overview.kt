@@ -1,16 +1,15 @@
 package modules.m2.gui
 
+import interfaces.IOverview
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
-import interfaces.IOverview
-import styling.Stylesheet
 import modules.m2.logic.M2Controller
 import modules.mx.rightButtonsWidth
+import styling.Stylesheet
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MG2Overview : IOverview, View("M2 Contacts")
-{
+class MG2Overview : IOverview, View("M2 Contacts") {
     private val m2Controller: M2Controller by inject()
     override val root = borderpane {
         right = vbox {

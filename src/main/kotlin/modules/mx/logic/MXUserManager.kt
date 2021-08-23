@@ -1,5 +1,6 @@
 package modules.mx.logic
 
+import interfaces.IModule
 import javafx.collections.ObservableList
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
@@ -7,9 +8,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import interfaces.IModule
-import modules.mx.*
+import modules.mx.MXCredentials
+import modules.mx.MXUser
+import modules.mx.getModulePath
 import modules.mx.gui.MGXUser
+import modules.mx.token
 import tornadofx.Controller
 import tornadofx.MultiValue
 import java.io.File
@@ -17,28 +20,23 @@ import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
-class MXUserManager : IModule, Controller()
-{
+class MXUserManager : IModule, Controller() {
     override fun moduleNameLong() = "MXPasswordManager"
     override fun module() = "MX"
 
     @ExperimentalSerializationApi
-    fun login(username: String, password: String): Boolean
-    {
+    fun login(username: String, password: String): Boolean {
         return compareCredentials(username, password, getCredentials())
     }
 
     @ExperimentalSerializationApi
-    fun getUser(username: String): MXUser?
-    {
+    fun getUser(username: String): MXUser? {
         return getCredentials().credentials[username]
     }
 
-    fun updateUser(userNew: MXUser, userOriginal: MXUser, credentials: MXCredentials)
-    {
+    fun updateUser(userNew: MXUser, userOriginal: MXUser, credentials: MXCredentials) {
         //Check if username changed
-        if (userNew.username != userOriginal.username)
-        {
+        if (userNew.username != userOriginal.username) {
             //Username changed => Recreate user entry in map since keys are constant
             credentials.credentials.remove(userOriginal.username)
         }
@@ -46,22 +44,19 @@ class MXUserManager : IModule, Controller()
         writeCredentials(credentials)
     }
 
-    fun deleteUser(user: MXUser, credentials: MXCredentials)
-    {
+    fun deleteUser(user: MXUser, credentials: MXCredentials) {
         credentials.credentials.remove(user.username)
         writeCredentials(credentials)
     }
 
     @ExperimentalSerializationApi
-    fun getCredentials(): MXCredentials
-    {
+    fun getCredentials(): MXCredentials {
         val credentialsFile = getCredentialsFile()
         if (!credentialsFile.isFile) initializeCredentials(credentialsFile)
         return Json.decodeFromString(credentialsFile.readText())
     }
 
-    private fun writeCredentials(credentials: MXCredentials)
-    {
+    private fun writeCredentials(credentials: MXCredentials) {
         getCredentialsFile().writeText(Json.encodeToString(credentials))
         MXLog.log("MX", MXLog.LogType.INFO, "Credentials updated", moduleNameLong())
     }
@@ -69,12 +64,10 @@ class MXUserManager : IModule, Controller()
     private fun getCredentialsFile() = File("${getModulePath("MX")}\\credentials.dat")
 
     @ExperimentalSerializationApi
-    private fun compareCredentials(username: String, password: String, credentials: MXCredentials): Boolean
-    {
+    private fun compareCredentials(username: String, password: String, credentials: MXCredentials): Boolean {
         var successful = false
         val user = credentials.credentials[username]
-        if (user != null && user.password == encrypt(password, token))
-        {
+        if (user != null && user.password == encrypt(password, token)) {
             successful = true
             startupRoutines(user)
             MXLog.log(
@@ -87,8 +80,7 @@ class MXUserManager : IModule, Controller()
     }
 
     @ExperimentalSerializationApi
-    private fun initializeCredentials(credentialsFile: File)
-    {
+    private fun initializeCredentials(credentialsFile: File) {
         val user = MXUser("admin", encrypt("admin", token))
         startupRoutines(user)
         credentialsFile.createNewFile()
@@ -98,13 +90,11 @@ class MXUserManager : IModule, Controller()
         credentialsFile.writeText(Json.encodeToString(credentials))
     }
 
-    enum class CredentialsType
-    {
+    enum class CredentialsType {
         MAIN
     }
 
-    fun encrypt(input: String, token: String): String
-    {
+    fun encrypt(input: String, token: String): String {
         val cipher = Cipher.getInstance("AES")
         val keySpec = SecretKeySpec(token.toByteArray(), "AES")
         cipher.init(Cipher.ENCRYPT_MODE, keySpec)
@@ -112,8 +102,7 @@ class MXUserManager : IModule, Controller()
         return Base64.getEncoder().encodeToString(encrypt)
     }
 
-    fun decrypt(input: String, token: String): String
-    {
+    fun decrypt(input: String, token: String): String {
         val cipher = Cipher.getInstance("AES")
         val keySpec = SecretKeySpec(token.toByteArray(), "AES")
         cipher.init(Cipher.DECRYPT_MODE, keySpec)
@@ -125,19 +114,18 @@ class MXUserManager : IModule, Controller()
         if (hasRight) MultiValue(arrayOf(Color.GREEN)) else MultiValue(arrayOf(Color.RED))
 
     @ExperimentalSerializationApi
-    fun addUser(credentials: MXCredentials, users: ObservableList<MXUser>) = showUser(MXUser("", ""), credentials, users)
+    fun addUser(credentials: MXCredentials, users: ObservableList<MXUser>) =
+        showUser(MXUser("", ""), credentials, users)
 
     @ExperimentalSerializationApi
-    fun getUsers(users: ObservableList<MXUser>, credentials: MXCredentials): ObservableList<MXUser>
-    {
+    fun getUsers(users: ObservableList<MXUser>, credentials: MXCredentials): ObservableList<MXUser> {
         users.clear()
         for ((_, v) in credentials.credentials) users.add(v)
         return users
     }
 
     @ExperimentalSerializationApi
-    fun showUser(user: MXUser, credentials: MXCredentials, users: ObservableList<MXUser>)
-    {
+    fun showUser(user: MXUser, credentials: MXCredentials, users: ObservableList<MXUser>) {
         MGXUser(user, credentials).openModal(block = true)
         getUsers(users, credentials)
     }

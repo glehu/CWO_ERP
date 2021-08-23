@@ -12,8 +12,7 @@ import tornadofx.*
 import java.io.File
 
 @ExperimentalSerializationApi
-class MG2Import : Fragment("Contact Data Import")
-{
+class MG2Import : Fragment("Contact Data Import") {
     private val contactSchema: ContactModel = ContactModel()
     private val m2controller: M2Import by inject()
     private val progressProperty = SimpleIntegerProperty()

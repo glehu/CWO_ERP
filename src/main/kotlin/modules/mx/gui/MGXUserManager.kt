@@ -8,8 +8,7 @@ import modules.mx.rightButtonsWidth
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MGXUserManager : View("User Management")
-{
+class MGXUserManager : View("User Management") {
     private val userManager: MXUserManager by inject()
 
     @ExperimentalSerializationApi

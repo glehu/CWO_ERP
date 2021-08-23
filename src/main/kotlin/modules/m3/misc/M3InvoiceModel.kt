@@ -5,12 +5,13 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import modules.m3.Invoice
+import tornadofx.ItemViewModel
+import tornadofx.getValue
+import tornadofx.setValue
 import java.time.LocalDate
-import tornadofx.*
 import java.time.format.DateTimeFormatter
 
-class InvoiceProperty
-{
+class InvoiceProperty {
     val uIDProperty = SimpleIntegerProperty(-1)
     var uID: Int by uIDProperty
     val sellerProperty = SimpleStringProperty()
@@ -31,8 +32,7 @@ class InvoiceProperty
     var paid: Double by paidProperty
 }
 
-class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty())
-{
+class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     val uID = bind(InvoiceProperty::uIDProperty)
     val seller = bind(InvoiceProperty::sellerProperty)
     val sellerUID = bind(InvoiceProperty::sellerUIDProperty)
@@ -44,8 +44,7 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty())
     var paid = bind(InvoiceProperty::paidProperty)
 }
 
-fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty
-{
+fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty {
     val invoiceProperty = InvoiceProperty()
     invoiceProperty.uID = invoice.uID
     invoiceProperty.seller = invoice.seller
@@ -59,8 +58,7 @@ fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty
     return invoiceProperty
 }
 
-fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): Invoice
-{
+fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): Invoice {
     val invoice = Invoice(-1)
     invoice.uID = invoiceProperty.uID
     invoice.seller = invoiceProperty.seller

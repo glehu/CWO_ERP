@@ -2,17 +2,16 @@ package modules.m2.logic
 
 import db.CwODB
 import db.Index
+import interfaces.IDBManager
+import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
-import interfaces.IDBManager
-import interfaces.IModule
 import modules.m2.Contact
 import java.io.RandomAccessFile
 
-class M2DBManager : IModule, IDBManager
-{
+class M2DBManager : IModule, IDBManager {
     override fun moduleNameLong() = "M2DBManager"
     override fun module() = "M2"
 
@@ -21,8 +20,7 @@ class M2DBManager : IModule, IDBManager
         entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,
         raf: RandomAccessFile, indexManager: Any,
         indexWriteToDisk: Boolean
-    ): Int
-    {
+    ): Int {
         entry as Contact
         indexManager as M2IndexManager
         entry.initialize()
@@ -33,14 +31,12 @@ class M2DBManager : IModule, IDBManager
     }
 
     @ExperimentalSerializationApi
-    override fun getEntry(uID: Int, cwodb: CwODB, index: Index): Any
-    {
+    override fun getEntry(uID: Int, cwodb: CwODB, index: Index): Any {
         return decodeEntry(cwodb.getEntryFromUniqueID(uID, "M2", index)) as Contact
     }
 
     @ExperimentalSerializationApi
-    override fun decodeEntry(entry: ByteArray): Any
-    {
+    override fun decodeEntry(entry: ByteArray): Any {
         return ProtoBuf.decodeFromByteArray(entry) as Contact
     }
 }

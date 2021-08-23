@@ -15,8 +15,7 @@ import java.io.File
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class M2Import : IModule, Controller()
-{
+class M2Import : IModule, Controller() {
     override fun moduleNameLong() = "M2Import"
     override fun module() = "M2"
 
@@ -27,8 +26,7 @@ class M2Import : IModule, Controller()
         contactSchema: ContactModel,
         birthdayHeaderName: String,
         updateProgress: (Pair<Int, String>) -> Unit
-    )
-    {
+    ) {
         MXLog.log(module(), MXLog.LogType.INFO, "Data import start", moduleNameLong())
         val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
         val dbManager = M2DBManager()
@@ -51,8 +49,7 @@ class M2Import : IModule, Controller()
 
                     dbManager.saveEntry(contact, db, -1L, -1, raf, m2GlobalIndex, false)
                     updateProgress(Pair(counter, "Importing data..."))
-                    if (counter % 5000 == 0)
-                    {
+                    if (counter % 5000 == 0) {
                         MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}", moduleNameLong())
                         runBlocking { launch { m2GlobalIndex.writeIndexData() } }
                     }
@@ -73,8 +70,7 @@ class M2Import : IModule, Controller()
         )
     }
 
-    private fun import(from: String, default: String = "?"): String
-    {
+    private fun import(from: String, default: String = "?"): String {
         return if (from != "null") from else default
     }
 }

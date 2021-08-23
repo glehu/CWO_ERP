@@ -1,16 +1,15 @@
 package modules.m1.gui
 
-import styling.Stylesheet
+import interfaces.IOverview
 import javafx.scene.layout.Priority
 import kotlinx.serialization.ExperimentalSerializationApi
-import interfaces.IOverview
 import modules.m1.logic.M1Controller
 import modules.mx.rightButtonsWidth
+import styling.Stylesheet
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MG1Overview : IOverview, View("M1 Discography")
-{
+class MG1Overview : IOverview, View("M1 Discography") {
     private val m1Controller: M1Controller by inject()
 
     override val root = borderpane {

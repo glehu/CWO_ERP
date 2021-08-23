@@ -7,8 +7,7 @@ import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue
 
-class MXUserModelProperty
-{
+class MXUserModelProperty {
     //Credentials
     val usernameProperty = SimpleStringProperty("")
     var username: String by usernameProperty
@@ -26,8 +25,7 @@ class MXUserModelProperty
     var canAccessM3 by canAccessM3Property
 }
 
-class MXUserModel(user: MXUserModelProperty) : ItemViewModel<MXUserModelProperty>(user)
-{
+class MXUserModel(user: MXUserModelProperty) : ItemViewModel<MXUserModelProperty>(user) {
     val username = bind(MXUserModelProperty::usernameProperty)
     val password = bind(MXUserModelProperty::passwordProperty)
     val canAccessMX = bind(MXUserModelProperty::canAccessMXProperty)
@@ -36,8 +34,7 @@ class MXUserModel(user: MXUserModelProperty) : ItemViewModel<MXUserModelProperty
     val canAccessM3 = bind(MXUserModelProperty::canAccessM3Property)
 }
 
-fun getUserPropertyFromUser(user: MXUser): MXUserModelProperty
-{
+fun getUserPropertyFromUser(user: MXUser): MXUserModelProperty {
     val userProperty = MXUserModelProperty()
     userProperty.username = user.username
     userProperty.password = user.password
@@ -48,8 +45,7 @@ fun getUserPropertyFromUser(user: MXUser): MXUserModelProperty
     return userProperty
 }
 
-fun getUserFromUserProperty(userProperty: MXUserModelProperty): MXUser
-{
+fun getUserFromUserProperty(userProperty: MXUserModelProperty): MXUser {
     val user = MXUser(userProperty.username, userProperty.password)
     user.canAccessMX = userProperty.canAccessMX
     user.canAccessM1 = userProperty.canAccessM1

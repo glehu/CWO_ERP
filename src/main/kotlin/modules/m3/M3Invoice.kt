@@ -1,14 +1,13 @@
 package modules.m3
 
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
 import interfaces.IEntry
 import interfaces.IInvoice
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.Serializable
 import modules.mx.m3GlobalIndex
 
 @Serializable
-data class Invoice(override var uID: Int) : IEntry, IInvoice
-{
+data class Invoice(override var uID: Int) : IEntry, IInvoice {
     //*************************************************
     //********************** User Input Data **********
     //*************************************************
@@ -40,8 +39,7 @@ data class Invoice(override var uID: Int) : IEntry, IInvoice
     var isIncome: Boolean = false
 
     @ExperimentalSerializationApi
-    override fun initialize()
-    {
+    override fun initialize() {
         if (uID == -1) uID = m3GlobalIndex.getUID()
         if (price > 0) isIncome = true
     }

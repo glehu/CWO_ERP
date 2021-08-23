@@ -1,6 +1,7 @@
 package modules.m2.gui
 
 import db.CwODB
+import interfaces.IModule
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
@@ -8,7 +9,6 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
-import interfaces.IModule
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
 import modules.m2.logic.M2Controller
@@ -20,8 +20,7 @@ import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class MG2ContactFinder : IModule, View("M2 Contacts")
-{
+class MG2ContactFinder : IModule, View("M2 Contacts") {
     override fun moduleNameLong() = "MG2ContactFinder"
     override fun module() = "M2"
     val db: CwODB by inject()
@@ -62,15 +61,13 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                     readonlyColumn("F.Name", Contact::firstName).prefWidth(250.0)
                     readonlyColumn("City", Contact::city).prefWidth(200.0)
                     onUserSelect(1) {
-                        if (song.uID.value == -2)
-                        {
+                        if (song.uID.value == -2) {
                             //Data transfer
                             song.uID.value = it.uID
                             song.name.value = it.name
                             song.commit()
                             close()
-                        } else
-                        {
+                        } else {
                             m2Controller.showContact(it.uID)
                             //startSearch()
                             searchText.text = ""
@@ -83,16 +80,14 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
         }
     }
 
-    private fun startSearch()
-    {
+    private fun startSearch() {
         runAsync {
             threadIDCurrent.value++
             searchForContacts(threadIDCurrent.value)
         }
     }
 
-    private fun searchForContacts(threadID: Int)
-    {
+    private fun searchForContacts(threadID: Int) {
         var entriesFound = 0
         val timeInMillis = measureTimeMillis {
             val dbManager = M2DBManager()
@@ -106,15 +101,13 @@ class MG2ContactFinder : IModule, View("M2 Contacts")
                 m2GlobalIndex
             ) { _, bytes ->
                 //Add the contacts to the table
-                if (threadID == threadIDCurrent.value)
-                {
+                if (threadID == threadIDCurrent.value) {
                     contactsFound.add(dbManager.decodeEntry(bytes) as Contact)
                     entriesFound++
                 }
             }
         }
-        if (threadID == threadIDCurrent.value)
-        {
+        if (threadID == threadIDCurrent.value) {
             MXLog.log(
                 module(), MXLog.LogType.INFO, "$entriesFound contacts loaded (in $timeInMillis ms)",
                 moduleNameLong()

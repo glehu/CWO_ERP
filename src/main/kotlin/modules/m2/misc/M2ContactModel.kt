@@ -11,8 +11,7 @@ import tornadofx.setValue
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class ContactProperty
-{
+class ContactProperty {
 
     val uIDProperty = SimpleIntegerProperty(-1)
     var uID: Int by uIDProperty
@@ -64,8 +63,7 @@ class ContactProperty
     var spotifyID: String by spotifyIDProperty
 }
 
-class ContactModel : ItemViewModel<ContactProperty>(ContactProperty())
-{
+class ContactModel : ItemViewModel<ContactProperty>(ContactProperty()) {
     val uID = bind(ContactProperty::uIDProperty)
     val name = bind(ContactProperty::nameProperty)
     val firstName = bind(ContactProperty::firstNameProperty)
@@ -84,8 +82,7 @@ class ContactModel : ItemViewModel<ContactProperty>(ContactProperty())
     val spotifyID = bind(ContactProperty::spotifyIDProperty)
 }
 
-fun getContactPropertyFromContact(contact: Contact): ContactProperty
-{
+fun getContactPropertyFromContact(contact: Contact): ContactProperty {
     val contactProperty = ContactProperty()
     //For contactModel to be serialized, it has to be inserted into contact
     //---------------------------------v
@@ -126,8 +123,7 @@ fun getContactPropertyFromContact(contact: Contact): ContactProperty
     return contactProperty
 }
 
-fun getContactFromProperty(contactProperty: ContactProperty): Contact
-{
+fun getContactFromProperty(contactProperty: ContactProperty): Contact {
     val contact = Contact(-1, contactProperty.name)
     //For contactModel to be serialized, it has to be inserted into contact
     //---------------------------------v

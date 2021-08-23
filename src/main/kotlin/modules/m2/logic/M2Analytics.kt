@@ -1,15 +1,14 @@
 package modules.m2.logic
 
 import db.CwODB
-import kotlinx.serialization.ExperimentalSerializationApi
 import interfaces.IModule
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
 import modules.mx.logic.MXLog
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
-class M2Analytics : IModule, Controller()
-{
+class M2Analytics : IModule, Controller() {
     override fun moduleNameLong() = "M2Analytics"
     override fun module() = "M2"
     val db: CwODB by inject()
@@ -19,8 +18,7 @@ class M2Analytics : IModule, Controller()
         indexManager: M2IndexManager,
         amount: Int = -1,
         updateProgress: (Pair<Int, String>) -> Unit
-    ): MutableMap<String, Double>
-    {
+    ): MutableMap<String, Double> {
         val dbManager = M2DBManager()
         val tempMap = mutableMapOf<String, Double>()
         lateinit var sortedMap: MutableMap<String, Double>
@@ -36,37 +34,29 @@ class M2Analytics : IModule, Controller()
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping city data..."))
                 val contact: Contact = dbManager.decodeEntry(entryBytes) as Contact
-                if (contact.uID != -1)
-                {
+                if (contact.uID != -1) {
                     city = contact.city.uppercase()
                     contactCount += 1.0
-                    if (tempMap.containsKey(city))
-                    {
+                    if (tempMap.containsKey(city)) {
                         tempMap[city] = tempMap[city]!! + 1.0
                     } else tempMap[city] = 1.0
                 }
             }
-            if (amount != -1)
-            {
+            if (amount != -1) {
                 sortedMap = mutableMapOf()
                 tempMap.entries.sortedBy { it.value }.reversed().forEach { sortedMap[it.key] = it.value }
-                for ((k, v) in sortedMap)
-                {
-                    if (amountCount < amount)
-                    {
+                for ((k, v) in sortedMap) {
+                    if (amountCount < amount) {
                         map[k] = v
-                    } else
-                    {
+                    } else {
                         //Here we sum the remaining entries
-                        if (map.containsKey("..."))
-                        {
+                        if (map.containsKey("...")) {
                             map["..."] = map["..."]!! + v
                         } else map["..."] = v
                     }
                     amountCount++
                 }
-            } else
-            {
+            } else {
                 map = tempMap
             }
             map["[amount]"] = contactCount

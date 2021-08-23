@@ -1,7 +1,6 @@
 package interfaces
 
-interface IEntry
-{
+interface IEntry {
     var uID: Int
     fun initialize()
 }

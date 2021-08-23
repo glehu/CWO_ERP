@@ -8,8 +8,7 @@ import tornadofx.setValue
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class SongPropertyMainData
-{
+class SongPropertyMainData {
     //----------------------------------v
     //----------- Main Data ------------|
     //----------------------------------^
@@ -45,8 +44,7 @@ class SongPropertyMainData
     var vibe: String by vibeProperty
 }
 
-class SongPropertyMainDataModel : ItemViewModel<SongPropertyMainData>()
-{
+class SongPropertyMainDataModel : ItemViewModel<SongPropertyMainData>() {
     val uID = bind(SongPropertyMainData::uIDProperty)
     val name = bind(SongPropertyMainData::nameProperty)
     val vocalist = bind(SongPropertyMainData::vocalistProperty)
@@ -64,8 +62,7 @@ class SongPropertyMainDataModel : ItemViewModel<SongPropertyMainData>()
     val vibe = bind(SongPropertyMainData::vibeProperty)
 }
 
-class SongPropertyCompletionState
-{
+class SongPropertyCompletionState {
     //----------------------------------v
     //------- State of Completion ------|
     //----------------------------------^
@@ -83,8 +80,7 @@ class SongPropertyCompletionState
     var masteringState: String by masteringStateProperty
 }
 
-class SongPropertyCompletionStateModel : ItemViewModel<SongPropertyCompletionState>()
-{
+class SongPropertyCompletionStateModel : ItemViewModel<SongPropertyCompletionState>() {
     val songState = bind(SongPropertyCompletionState::songStateProperty)
     val instruState = bind(SongPropertyCompletionState::instruStateProperty)
     val lyricsState = bind(SongPropertyCompletionState::lyricsStateProperty)
@@ -93,8 +89,7 @@ class SongPropertyCompletionStateModel : ItemViewModel<SongPropertyCompletionSta
     val masteringState = bind(SongPropertyCompletionState::masteringStateProperty)
 }
 
-class SongPropertyPromotionData
-{
+class SongPropertyPromotionData {
     //----------------------------------v
     //--------- Promotion Data ---------|
     //----------------------------------^
@@ -108,16 +103,14 @@ class SongPropertyPromotionData
     var exclusiveChannel: String by exclusiveChannelProperty
 }
 
-class SongPropertyPromotionDataModel : ItemViewModel<SongPropertyPromotionData>()
-{
+class SongPropertyPromotionDataModel : ItemViewModel<SongPropertyPromotionData>() {
     val isPromoted = bind(SongPropertyPromotionData::isPromotedProperty)
     val distributed = bind(SongPropertyPromotionData::distributedProperty)
     val isExclusiveRelease = bind(SongPropertyPromotionData::isExclusiveReleaseProperty)
     val exclusiveChannel = bind(SongPropertyPromotionData::exclusiveChannelProperty)
 }
 
-class SongPropertyFinancialData
-{
+class SongPropertyFinancialData {
     //----------------------------------v
     //--------- Financial Data ---------|
     //----------------------------------^
@@ -129,15 +122,13 @@ class SongPropertyFinancialData
     var moneyGainedSponsor by moneyGainedSponsorProperty
 }
 
-class SongPropertyFinancialDataModel : ItemViewModel<SongPropertyFinancialData>()
-{
+class SongPropertyFinancialDataModel : ItemViewModel<SongPropertyFinancialData>() {
     val moneySpent = bind(SongPropertyFinancialData::moneySpentProperty)
     val moneyGainedStreams = bind(SongPropertyFinancialData::moneyGainedStreamsProperty)
     val moneyGainedSponsor = bind(SongPropertyFinancialData::moneyGainedSponsorProperty)
 }
 
-class SongPropertyAvailabilityData
-{
+class SongPropertyAvailabilityData {
     //----------------------------------v
     //------- Availability Data --------|
     //----------------------------------^
@@ -153,8 +144,7 @@ class SongPropertyAvailabilityData
     var onSoundCloud by onSoundcloudProperty
 }
 
-class SongPropertyAvailabilityDataModel : ItemViewModel<SongPropertyAvailabilityData>()
-{
+class SongPropertyAvailabilityDataModel : ItemViewModel<SongPropertyAvailabilityData>() {
     val isPublic = bind(SongPropertyAvailabilityData::isPublicProperty)
     val releaseDate = bind(SongPropertyAvailabilityData::releaseDateProperty)
     val onSpotify = bind(SongPropertyAvailabilityData::onSpotifyProperty)
@@ -162,8 +152,7 @@ class SongPropertyAvailabilityDataModel : ItemViewModel<SongPropertyAvailability
     val onSoundcloud = bind(SongPropertyAvailabilityData::onSoundcloudProperty)
 }
 
-class SongPropertyVisualizationData
-{
+class SongPropertyVisualizationData {
     //----------------------------------v
     //------- Visualization Data -------|
     //----------------------------------^
@@ -175,15 +164,13 @@ class SongPropertyVisualizationData
     var hasRealMV by hasRealMVProperty
 }
 
-class SongPropertyVisualizationDataModel : ItemViewModel<SongPropertyVisualizationData>()
-{
+class SongPropertyVisualizationDataModel : ItemViewModel<SongPropertyVisualizationData>() {
     val hasVisualizer = bind(SongPropertyVisualizationData::hasVisualizerProperty)
     val hasAnimeMV = bind(SongPropertyVisualizationData::hasAnimeMVProperty)
     val hasRealMV = bind(SongPropertyVisualizationData::hasRealMVProperty)
 }
 
-class SongPropertyAlbumEPData
-{
+class SongPropertyAlbumEPData {
     //----------------------------------v
     //---------- Album/EP Data ---------|
     //----------------------------------^
@@ -197,16 +184,14 @@ class SongPropertyAlbumEPData
     var albumUID: Int by albumUIDProperty
 }
 
-class SongPropertyAlbumEPDataModel : ItemViewModel<SongPropertyAlbumEPData>()
-{
+class SongPropertyAlbumEPDataModel : ItemViewModel<SongPropertyAlbumEPData>() {
     val inAlbum = bind(SongPropertyAlbumEPData::inAlbumProperty)
     val nameAlbum = bind(SongPropertyAlbumEPData::nameAlbumProperty)
     val typeAlbum = bind(SongPropertyAlbumEPData::typeAlbumProperty)
     val albumUID = bind(SongPropertyAlbumEPData::albumUIDProperty)
 }
 
-class SongPropertyStatisticsData
-{
+class SongPropertyStatisticsData {
     //----------------------------------v
     //-------- Statistics Data ---------|
     //----------------------------------^
@@ -218,15 +203,13 @@ class SongPropertyStatisticsData
     var playsSoundCloud by playsSoundCloudProperty
 }
 
-class SongPropertyStatisticsDataModel : ItemViewModel<SongPropertyStatisticsData>()
-{
+class SongPropertyStatisticsDataModel : ItemViewModel<SongPropertyStatisticsData>() {
     val playsSpotify = bind(SongPropertyStatisticsData::playsSpotifyProperty)
     val playsYouTube = bind(SongPropertyStatisticsData::playsYouTubeProperty)
     val playsSoundCloud = bind(SongPropertyStatisticsData::playsSoundCloudProperty)
 }
 
-class SongPropertyCollaborationData
-{
+class SongPropertyCollaborationData {
     //----------------------------------v
     //---------- Feature Data ----------|
     //----------------------------------^
@@ -252,8 +235,7 @@ class SongPropertyCollaborationData
     var coProducer2UID: Int by coProducer2UIDProperty
 }
 
-class SongPropertyCollaborationDataModel : ItemViewModel<SongPropertyCollaborationData>()
-{
+class SongPropertyCollaborationDataModel : ItemViewModel<SongPropertyCollaborationData>() {
     val coVocalist1 = bind(SongPropertyCollaborationData::coVocalist1Property)
     val coVocalist1UID = bind(SongPropertyCollaborationData::coVocalist1UIDProperty)
     val coVocalist2 = bind(SongPropertyCollaborationData::coVocalist2Property)
@@ -265,8 +247,7 @@ class SongPropertyCollaborationDataModel : ItemViewModel<SongPropertyCollaborati
 }
 
 
-class SongPropertyCopyrightData
-{
+class SongPropertyCopyrightData {
     //----------------------------------v
     //--------- Copyright Data ---------|
     //----------------------------------^
@@ -278,15 +259,13 @@ class SongPropertyCopyrightData
     var containsExplicitLyrics by containsExplicitLyricsProperty
 }
 
-class SongPropertyCopyrightDataModel : ItemViewModel<SongPropertyCopyrightData>()
-{
+class SongPropertyCopyrightDataModel : ItemViewModel<SongPropertyCopyrightData>() {
     val isProtected = bind(SongPropertyCopyrightData::isProtectedProperty)
     val containsCRMaterial = bind(SongPropertyCopyrightData::containsCRMaterialProperty)
     val containsExplicitLyrics = bind(SongPropertyCopyrightData::containsExplicitLyricsProperty)
 }
 
-class SongPropertyMiscData
-{
+class SongPropertyMiscData {
     //----------------------------------v
     //----------- Misc Data ------------|
     //----------------------------------^
@@ -308,8 +287,7 @@ class SongPropertyMiscData
     var spotifyID: String by spotifyIDProperty
 }
 
-class SongPropertyMiscDataModel : ItemViewModel<SongPropertyMiscData>()
-{
+class SongPropertyMiscDataModel : ItemViewModel<SongPropertyMiscData>() {
     val inspiredByArtist = bind(SongPropertyMiscData::inspiredByArtistProperty)
     val inspiredBySong = bind(SongPropertyMiscData::inspiredBySongProperty)
     val dawUsed = bind(SongPropertyMiscData::dawUsedProperty)
@@ -318,8 +296,7 @@ class SongPropertyMiscDataModel : ItemViewModel<SongPropertyMiscData>()
     val spotifyID = bind(SongPropertyMiscData::spotifyIDProperty)
 }
 
-fun getSongPropertyMainData(song: Song): SongPropertyMainData
-{
+fun getSongPropertyMainData(song: Song): SongPropertyMainData {
     val songPropertyMainData = SongPropertyMainData()
     //---------------------------------v
     //----------- Main Data -----------|
@@ -342,8 +319,7 @@ fun getSongPropertyMainData(song: Song): SongPropertyMainData
     return songPropertyMainData
 }
 
-fun getSongPropertyCompletionState(song: Song): SongPropertyCompletionState
-{
+fun getSongPropertyCompletionState(song: Song): SongPropertyCompletionState {
     val songPropertyCompletionState = SongPropertyCompletionState()
     //----------------------------------v
     //------- State of Completion ------|
@@ -357,8 +333,7 @@ fun getSongPropertyCompletionState(song: Song): SongPropertyCompletionState
     return songPropertyCompletionState
 }
 
-fun getSongPropertyPromotionData(song: Song): SongPropertyPromotionData
-{
+fun getSongPropertyPromotionData(song: Song): SongPropertyPromotionData {
     val songPropertyPromotionData = SongPropertyPromotionData()
     //---------------------------------v
     //--------- Promotion Data --------|
@@ -370,8 +345,7 @@ fun getSongPropertyPromotionData(song: Song): SongPropertyPromotionData
     return songPropertyPromotionData
 }
 
-fun getSongPropertyFinancialData(song: Song): SongPropertyFinancialData
-{
+fun getSongPropertyFinancialData(song: Song): SongPropertyFinancialData {
     val songPropertyFinancialData = SongPropertyFinancialData()
     //---------------------------------v
     //--------- Financial Data --------|
@@ -382,8 +356,7 @@ fun getSongPropertyFinancialData(song: Song): SongPropertyFinancialData
     return songPropertyFinancialData
 }
 
-fun getSongPropertyAvailabilityData(song: Song): SongPropertyAvailabilityData
-{
+fun getSongPropertyAvailabilityData(song: Song): SongPropertyAvailabilityData {
     val songPropertyAvailabilityData = SongPropertyAvailabilityData()
     //For songModel to be serialized, it has to be inserted into song
     //---------------------------------v
@@ -398,8 +371,7 @@ fun getSongPropertyAvailabilityData(song: Song): SongPropertyAvailabilityData
     return songPropertyAvailabilityData
 }
 
-fun getSongPropertyVisualizationData(song: Song): SongPropertyVisualizationData
-{
+fun getSongPropertyVisualizationData(song: Song): SongPropertyVisualizationData {
     val songPropertyVisualizationData = SongPropertyVisualizationData()
     //---------------------------------v
     //------- Visualization Data ------|
@@ -410,8 +382,7 @@ fun getSongPropertyVisualizationData(song: Song): SongPropertyVisualizationData
     return songPropertyVisualizationData
 }
 
-fun getSongPropertyAlbumEPData(song: Song): SongPropertyAlbumEPData
-{
+fun getSongPropertyAlbumEPData(song: Song): SongPropertyAlbumEPData {
     val songPropertyAlbumEPData = SongPropertyAlbumEPData()
     //---------------------------------v
     //---------- Album/EP Data --------|
@@ -423,8 +394,7 @@ fun getSongPropertyAlbumEPData(song: Song): SongPropertyAlbumEPData
     return songPropertyAlbumEPData
 }
 
-fun getSongPropertyStatisticsData(song: Song): SongPropertyStatisticsData
-{
+fun getSongPropertyStatisticsData(song: Song): SongPropertyStatisticsData {
     val songPropertyP2 = SongPropertyStatisticsData()
     //---------------------------------v
     //-------- Statistics Data --------|
@@ -435,8 +405,7 @@ fun getSongPropertyStatisticsData(song: Song): SongPropertyStatisticsData
     return songPropertyP2
 }
 
-fun getSongPropertyCollaborationData(song: Song): SongPropertyCollaborationData
-{
+fun getSongPropertyCollaborationData(song: Song): SongPropertyCollaborationData {
     val songPropertyCollaborationData = SongPropertyCollaborationData()
     //---------------------------------v
     //---------- Feature Data ---------|
@@ -455,8 +424,7 @@ fun getSongPropertyCollaborationData(song: Song): SongPropertyCollaborationData
     return songPropertyCollaborationData
 }
 
-fun getSongPropertyCopyrightData(song: Song): SongPropertyCopyrightData
-{
+fun getSongPropertyCopyrightData(song: Song): SongPropertyCopyrightData {
     val songPropertyCopyrightData = SongPropertyCopyrightData()
     //---------------------------------v
     //--------- Copyright Data --------|
@@ -467,8 +435,7 @@ fun getSongPropertyCopyrightData(song: Song): SongPropertyCopyrightData
     return songPropertyCopyrightData
 }
 
-fun getSongPropertyMiscData(song: Song): SongPropertyMiscData
-{
+fun getSongPropertyMiscData(song: Song): SongPropertyMiscData {
     val songPropertyMiscData = SongPropertyMiscData()
     //---------------------------------v
     //----------- Misc Data -----------|
@@ -486,8 +453,7 @@ fun getSongPropertyMiscData(song: Song): SongPropertyMiscData
     return songPropertyMiscData
 }
 
-fun getSongFromProperty(song: Song, songPropertyMainData: SongPropertyMainData): Song
-{
+fun getSongFromProperty(song: Song, songPropertyMainData: SongPropertyMainData): Song {
     //val song = Song(-1, songPropertyP1.name)
     //---------------------------------v
     //----------- Main Data -----------|
@@ -510,8 +476,7 @@ fun getSongFromProperty(song: Song, songPropertyMainData: SongPropertyMainData):
     return song
 }
 
-fun getSongFromProperty(song: Song, songPropertyCompletionState: SongPropertyCompletionState): Song
-{
+fun getSongFromProperty(song: Song, songPropertyCompletionState: SongPropertyCompletionState): Song {
     //val song = Song(-1, songPropertyP1.name)
     //----------------------------------v
     //------- State of Completion ------|
@@ -525,8 +490,7 @@ fun getSongFromProperty(song: Song, songPropertyCompletionState: SongPropertyCom
     return song
 }
 
-fun getSongFromProperty(song: Song, songPropertyPromotionData: SongPropertyPromotionData): Song
-{
+fun getSongFromProperty(song: Song, songPropertyPromotionData: SongPropertyPromotionData): Song {
     //val song = Song(-1, songPropertyP1.name)
     //---------------------------------v
     //--------- Promotion Data --------|
@@ -538,8 +502,7 @@ fun getSongFromProperty(song: Song, songPropertyPromotionData: SongPropertyPromo
     return song
 }
 
-fun getSongFromProperty(song: Song, songPropertyFinancialData: SongPropertyFinancialData): Song
-{
+fun getSongFromProperty(song: Song, songPropertyFinancialData: SongPropertyFinancialData): Song {
     //val song = Song(-1, songPropertyP1.name)
     //---------------------------------v
     //--------- Financial Data --------|
@@ -550,8 +513,7 @@ fun getSongFromProperty(song: Song, songPropertyFinancialData: SongPropertyFinan
     return song
 }
 
-fun getSongFromProperty(song: Song, songPropertyAvailabilityData: SongPropertyAvailabilityData): Song
-{
+fun getSongFromProperty(song: Song, songPropertyAvailabilityData: SongPropertyAvailabilityData): Song {
     //---------------------------------v
     //------- Availability Data -------|
     //---------------------------------^
@@ -563,8 +525,7 @@ fun getSongFromProperty(song: Song, songPropertyAvailabilityData: SongPropertyAv
     return song
 }
 
-fun getSongFromProperty(song: Song, songPropertyVisualizationData: SongPropertyVisualizationData): Song
-{
+fun getSongFromProperty(song: Song, songPropertyVisualizationData: SongPropertyVisualizationData): Song {
     //---------------------------------v
     //------- Visualization Data ------|
     //---------------------------------^
@@ -574,8 +535,7 @@ fun getSongFromProperty(song: Song, songPropertyVisualizationData: SongPropertyV
     return song
 }
 
-fun getSongFromProperty(song: Song, songPropertyAlbumEPData: SongPropertyAlbumEPData): Song
-{
+fun getSongFromProperty(song: Song, songPropertyAlbumEPData: SongPropertyAlbumEPData): Song {
     //---------------------------------v
     //---------- Album/EP Data --------|
     //---------------------------------^
@@ -586,8 +546,7 @@ fun getSongFromProperty(song: Song, songPropertyAlbumEPData: SongPropertyAlbumEP
     return song
 }
 
-fun getSongFromProperty(song: Song, songPropertyStatisticsData: SongPropertyStatisticsData): Song
-{
+fun getSongFromProperty(song: Song, songPropertyStatisticsData: SongPropertyStatisticsData): Song {
     //---------------------------------v
     //-------- Statistics Data --------|
     //---------------------------------^
@@ -597,8 +556,7 @@ fun getSongFromProperty(song: Song, songPropertyStatisticsData: SongPropertyStat
     return song
 }
 
-fun getSongFromProperty(song: Song, songPropertyCollaborationData: SongPropertyCollaborationData): Song
-{
+fun getSongFromProperty(song: Song, songPropertyCollaborationData: SongPropertyCollaborationData): Song {
     //---------------------------------v
     //---------- Feature Data ---------|
     //---------------------------------^
@@ -616,8 +574,7 @@ fun getSongFromProperty(song: Song, songPropertyCollaborationData: SongPropertyC
     return song
 }
 
-fun getSongFromProperty(song: Song, songPropertyCopyrightData: SongPropertyCopyrightData): Song
-{
+fun getSongFromProperty(song: Song, songPropertyCopyrightData: SongPropertyCopyrightData): Song {
     //---------------------------------v
     //--------- Copyright Data --------|
     //---------------------------------^
@@ -627,8 +584,7 @@ fun getSongFromProperty(song: Song, songPropertyCopyrightData: SongPropertyCopyr
     return song
 }
 
-fun getSongFromProperty(song: Song, songPropertyMiscData: SongPropertyMiscData): Song
-{
+fun getSongFromProperty(song: Song, songPropertyMiscData: SongPropertyMiscData): Song {
     //---------------------------------v
     //----------- Misc Data -----------|
     //---------------------------------^

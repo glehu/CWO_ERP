@@ -11,8 +11,7 @@ import modules.mx.logic.MXAPI
 import modules.mx.logic.MXLog
 
 @ExperimentalSerializationApi
-class SpotifyAPI : IModule, IAPI
-{
+class SpotifyAPI : IModule, IAPI {
     override fun moduleNameLong() = "SpotifyAPI"
     override fun module() = "M1"
 
@@ -20,8 +19,7 @@ class SpotifyAPI : IModule, IAPI
     override val auth = SpotifyAUTH()
     override val apiName = "spotify"
 
-    fun getAccountData(): SpotifyUserProfileJson
-    {
+    fun getAccountData(): SpotifyUserProfileJson {
         lateinit var userData: SpotifyUserProfileJson
         val client = auth.getAuthClient(MXAPI.Companion.AuthType.TOKEN)
         runBlocking {
@@ -35,27 +33,22 @@ class SpotifyAPI : IModule, IAPI
         return userData
     }
 
-    fun getArtistAlbumList(artistSpotifyID: String): ArrayList<SpotifyAlbumListJson>
-    {
+    fun getArtistAlbumList(artistSpotifyID: String): ArrayList<SpotifyAlbumListJson> {
         var albumList: SpotifyAlbumListJson
         val albumListTotal = ArrayList<SpotifyAlbumListJson>()
         var finished = false
         var url = "https://api.spotify.com/v1/artists/$artistSpotifyID/albums?limit=50"
-        if (artistSpotifyID.isNotEmpty())
-        {
+        if (artistSpotifyID.isNotEmpty()) {
             val client = auth.getAuthClient(MXAPI.Companion.AuthType.TOKEN)
             runBlocking {
                 launch {
-                    while (!finished)
-                    {
+                    while (!finished) {
                         albumList = client.get(url)
                         albumListTotal.add(albumList)
                         MXLog.log(module(), MXLog.LogType.COM, "Spotify album list received", moduleNameLong())
-                        if (albumList.next == null)
-                        {
+                        if (albumList.next == null) {
                             finished = true
-                        } else
-                        {
+                        } else {
                             url = albumList.next!!
                         }
                     }
@@ -66,8 +59,7 @@ class SpotifyAPI : IModule, IAPI
         return albumListTotal
     }
 
-    fun getArtist(artistSpotifyID: String): SpotifyArtistJson
-    {
+    fun getArtist(artistSpotifyID: String): SpotifyArtistJson {
         lateinit var artistData: SpotifyArtistJson
         val client = auth.getAuthClient(MXAPI.Companion.AuthType.TOKEN)
         runBlocking {
@@ -80,12 +72,10 @@ class SpotifyAPI : IModule, IAPI
         return artistData
     }
 
-    fun getMultipleArtists(spotifyIDs: List<String>): SpotifyArtistListJson
-    {
+    fun getMultipleArtists(spotifyIDs: List<String>): SpotifyArtistListJson {
         var artistDataList = SpotifyArtistListJson()
         val separatedIDs: StringBuilder = StringBuilder()
-        for ((counter, id) in spotifyIDs.withIndex())
-        {
+        for ((counter, id) in spotifyIDs.withIndex()) {
             separatedIDs.append(id)
             if (counter != spotifyIDs.size) separatedIDs.append(",")
         }
@@ -100,27 +90,22 @@ class SpotifyAPI : IModule, IAPI
         return artistDataList
     }
 
-    fun getSongListFromAlbum(albumSpotifyID: String): ArrayList<SpotifyTracklistJson>
-    {
+    fun getSongListFromAlbum(albumSpotifyID: String): ArrayList<SpotifyTracklistJson> {
         var songList: SpotifyTracklistJson
         val songListTotal = ArrayList<SpotifyTracklistJson>()
         var finished = false
         var url = "https://api.spotify.com/v1/albums/$albumSpotifyID/tracks?limit=50"
-        if (albumSpotifyID.isNotEmpty())
-        {
+        if (albumSpotifyID.isNotEmpty()) {
             val client = auth.getAuthClient(MXAPI.Companion.AuthType.TOKEN)
             runBlocking {
                 launch {
-                    while (!finished)
-                    {
+                    while (!finished) {
                         songList = client.get(url)
                         songListTotal.add(songList)
                         MXLog.log(module(), MXLog.LogType.COM, "Spotify song list received", moduleNameLong())
-                        if (songList.next == null)
-                        {
+                        if (songList.next == null) {
                             finished = true
-                        } else
-                        {
+                        } else {
                             url = songList.next!!
                         }
                     }

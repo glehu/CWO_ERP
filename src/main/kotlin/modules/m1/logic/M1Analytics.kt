@@ -8,14 +8,12 @@ import modules.mx.logic.MXLog
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
-class M1Analytics : IModule, Controller()
-{
+class M1Analytics : IModule, Controller() {
     override fun moduleNameLong() = "M1Analytics"
     override fun module() = "M1"
     val db: CwODB by inject()
 
-    enum class DistType
-    {
+    enum class DistType {
         GENRE, TYPE
     }
 
@@ -24,8 +22,7 @@ class M1Analytics : IModule, Controller()
         indexManager: M1IndexManager,
         distType: DistType,
         updateProgress: (Pair<Int, String>) -> Unit
-    ): MutableMap<String, Double>
-    {
+    ): MutableMap<String, Double> {
         var songCount = 0.0
         val map = mutableMapOf<String, Double>()
         val dbManager = M1DBManager()
@@ -38,19 +35,15 @@ class M1Analytics : IModule, Controller()
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping data..."))
                 val song: Song = dbManager.decodeEntry(entryBytes) as Song
-                if (song.uID != -1)
-                {
+                if (song.uID != -1) {
                     songCount += 1.0
-                    distTypeData = when(distType)
-                    {
+                    distTypeData = when (distType) {
                         DistType.GENRE -> song.genre
                         DistType.TYPE -> song.type
                     }
-                    if (map.containsKey(distTypeData))
-                    {
+                    if (map.containsKey(distTypeData)) {
                         map[distTypeData] = map[distTypeData]!! + 1.0
-                    } else
-                    {
+                    } else {
                         map[distTypeData] = 1.0
                     }
                 }

@@ -10,8 +10,7 @@ import modules.mx.m1GlobalIndex
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MG1Analytics : Fragment("Genre distribution")
-{
+class MG1Analytics : Fragment("Genre distribution") {
     val db: CwODB by inject()
     private val m1controller: M1Analytics by inject()
     private val progressProperty = SimpleIntegerProperty()
@@ -52,14 +51,11 @@ class MG1Analytics : Fragment("Genre distribution")
         }
     }
 
-    private fun showPiechart(genreDist: MutableMap<String, Double>)
-    {
+    private fun showPiechart(genreDist: MutableMap<String, Double>) {
         piechart("Distribution for ${genreDist["[amount]"]!!.toInt()} entries") {
             data.clear()
-            for ((k, v) in genreDist)
-            {
-                if (k != "[amount]")
-                {
+            for ((k, v) in genreDist) {
+                if (k != "[amount]") {
                     data.add(PieChart.Data("$k (${v.toInt()})", v))
                 }
             }

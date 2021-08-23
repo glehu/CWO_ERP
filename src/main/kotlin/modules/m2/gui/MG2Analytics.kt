@@ -10,8 +10,7 @@ import modules.mx.m2GlobalIndex
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MG2Analytics : Fragment("City distribution")
-{
+class MG2Analytics : Fragment("City distribution") {
     val db: CwODB by inject()
     private val m2controller: M2Analytics by inject()
     private val progressProperty = SimpleIntegerProperty()
@@ -51,14 +50,11 @@ class MG2Analytics : Fragment("City distribution")
         }
     }
 
-    private fun showPiechart(cityDist: MutableMap<String, Double>)
-    {
+    private fun showPiechart(cityDist: MutableMap<String, Double>) {
         piechart("City distribution for ${cityDist["[amount]"]!!.toInt()} contacts") {
             data.clear()
-            for ((k, v) in cityDist)
-            {
-                if (k != "[amount]")
-                {
+            for ((k, v) in cityDist) {
+                if (k != "[amount]") {
                     data.add(PieChart.Data("$k (${v.toInt()})", v))
                 }
             }

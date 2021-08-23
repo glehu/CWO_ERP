@@ -11,8 +11,7 @@ import modules.mx.rightButtonsWidth
 import modules.mx.token
 import tornadofx.*
 
-class MGXUser(user: MXUser, credentials: MXCredentials) : Fragment("User")
-{
+class MGXUser(user: MXUser, credentials: MXCredentials) : Fragment("User") {
     private val userManager: MXUserManager by inject()
     private val userModel = MXUserModel(getUserPropertyFromUser(user))
     private val originalUser = user.copy()

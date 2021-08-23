@@ -13,8 +13,7 @@ import modules.mx.logic.readAndSetIniValues
 import tornadofx.*
 import java.io.File
 
-class MGXPreferences : View("Preferences")
-{
+class MGXPreferences : View("Preferences") {
     private val encryptionKeyProperty = SimpleStringProperty(getRandomString(16, true))
     private val dataPathProperty = SimpleStringProperty(System.getProperty("user.dir"))
     private val maxSearchResultsProperty = SimpleIntegerProperty(10_000)
@@ -22,8 +21,7 @@ class MGXPreferences : View("Preferences")
     override val root = form {
         setPrefSize(600.0, 200.0)
         val iniFile = getIniFile()
-        if (!iniFile.isFile)
-        {
+        if (!iniFile.isFile) {
             //Now we have to initialize it
             iniFile.createNewFile()
             iniFile.writeText(
@@ -36,8 +34,7 @@ class MGXPreferences : View("Preferences")
                     )
                 )
             )
-        } else
-        {
+        } else {
             val iniFileText = iniFile.readText()
             val iniVal = Json.decodeFromString<MXIni>(iniFileText)
             encryptionKeyProperty.value = iniVal.token

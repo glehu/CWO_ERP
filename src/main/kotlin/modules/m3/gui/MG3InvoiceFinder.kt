@@ -1,6 +1,7 @@
 package modules.m3.gui
 
 import db.CwODB
+import interfaces.IModule
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
@@ -8,7 +9,6 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
-import interfaces.IModule
 import modules.m2.logic.M2Controller
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
@@ -21,8 +21,7 @@ import tornadofx.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class MG3InvoiceFinder : IModule, View("M3 Invoices")
-{
+class MG3InvoiceFinder : IModule, View("M3 Invoices") {
     override fun moduleNameLong() = "MG3InvoiceFinder"
     override fun module() = "M3"
     val db: CwODB by inject()
@@ -109,16 +108,14 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
         }
     }
 
-    private fun startSearch()
-    {
+    private fun startSearch() {
         runAsync {
             threadIDCurrent.value++
             searchForInvoices(threadIDCurrent.value)
         }
     }
 
-    private fun searchForInvoices(threadID: Int)
-    {
+    private fun searchForInvoices(threadID: Int) {
         var entriesFound = 0
         val timeInMillis = measureTimeMillis {
             val dbManager = M3DBManager()
@@ -132,15 +129,13 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices")
                 m3GlobalIndex
             ) { _, bytes ->
                 //Add the contacts to the table
-                if (threadID == threadIDCurrent.value)
-                {
+                if (threadID == threadIDCurrent.value) {
                     contactsFound.add(dbManager.decodeEntry(bytes) as Invoice)
                     entriesFound++
                 }
             }
         }
-        if (threadID == threadIDCurrent.value)
-        {
+        if (threadID == threadIDCurrent.value) {
             MXLog.log(
                 module(), MXLog.LogType.INFO, "$entriesFound invoices loaded (in $timeInMillis ms)",
                 moduleNameLong()

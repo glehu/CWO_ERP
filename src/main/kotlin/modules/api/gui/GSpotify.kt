@@ -17,8 +17,7 @@ import styling.Stylesheet.Companion.fieldsetBorder
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class GSpotify : View("Spotify API")
-{
+class GSpotify : View("Spotify API") {
     private val sAUTH = SpotifyAUTH()
     private val sAPI = SpotifyAPI()
     private val controller: SpotifyController by inject()
@@ -85,15 +84,13 @@ class GSpotify : View("Spotify API")
                         field("Artist SpotifyID") { textfield(artistSpotifyIDProperty) }
                         button("Import Album List") {
                             action {
-                                if (artistSpotifyIDProperty.value != null)
-                                {
+                                if (artistSpotifyIDProperty.value != null) {
                                     runAsync {
                                         val albumListJson = sAPI.getArtistAlbumList(
                                             artistSpotifyIDProperty.value
                                         )
                                         var entriesAdded = 0
-                                        for (albumList: SpotifyAlbumListJson in albumListJson)
-                                        {
+                                        for (albumList: SpotifyAlbumListJson in albumListJson) {
                                             M1Import().importSpotifyAlbumList(albumList, entriesAdded) {
                                                 entriesAdded = it.first
                                                 updateMessage(it.second + "$entriesAdded")
@@ -154,14 +151,12 @@ class GSpotify : View("Spotify API")
         }
     }
 
-    private fun updateUserData()
-    {
+    private fun updateUserData() {
         val userData = sAPI.getAccountData()
         showUserData(userData)
     }
 
-    fun showTokenData(tokenData: SpotifyAuthCallbackJson)
-    {
+    fun showTokenData(tokenData: SpotifyAuthCallbackJson) {
         accessTokenProperty.value = tokenData.accessToken
         generatedAtUnixTimestampProperty.value = tokenData.generatedAtUnixTimestamp.toString()
         expiresInProperty.value = tokenData.expiresIn
@@ -169,14 +164,12 @@ class GSpotify : View("Spotify API")
         refreshTokenProperty.value = tokenData.refreshToken
     }
 
-    private fun showUserData(userData: SpotifyUserProfileJson)
-    {
+    private fun showUserData(userData: SpotifyUserProfileJson) {
         accountNameProperty.value = userData.display_name
         accountTypeProperty.value = userData.type
         accountProductProperty.value = userData.product
         accountIDProperty.value = userData.id
-        if (userData.followers["total"] != null)
-        {
+        if (userData.followers["total"] != null) {
             accountFollowersProperty.value = userData.followers["total"]
         }
     }

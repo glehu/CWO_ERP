@@ -1,10 +1,10 @@
 package modules.m1.logic
 
 import db.CwODB
+import interfaces.IModule
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import interfaces.IModule
 import modules.m1.Song
 import modules.m1.misc.getGenreList
 import modules.mx.logic.MXLog
@@ -15,21 +15,18 @@ import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
-class M1Benchmark : IModule, Controller()
-{
+class M1Benchmark : IModule, Controller() {
     override fun moduleNameLong() = "M1Benchmark"
     override fun module() = "M1"
 
     val db: CwODB by inject()
 
-    fun insertRandomEntries(amount: Int)
-    {
+    fun insertRandomEntries(amount: Int) {
         MXLog.log(module(), MXLog.LogType.INFO, "Benchmark entry insertion start", moduleNameLong())
         val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
         val dbManager = M1DBManager()
         val timeInMillis = measureTimeMillis {
-            for (i in 1..amount)
-            {
+            for (i in 1..amount) {
                 val song = Song(-1, getRandomString(10L))
                 //Fill it with data
                 song.vocalist = getRandomString(10L)
@@ -37,8 +34,7 @@ class M1Benchmark : IModule, Controller()
                 song.genre = getRandomGenre()
                 song.releaseDate = "01.01.1000"
                 dbManager.saveEntry(song, db, -1L, -1, raf, m1GlobalIndex, false)
-                if (i % 5000 == 0)
-                {
+                if (i % 5000 == 0) {
                     MXLog.log(module(), MXLog.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}", moduleNameLong())
                     runBlocking { launch { m1GlobalIndex.writeIndexData() } }
                 }
@@ -53,8 +49,7 @@ class M1Benchmark : IModule, Controller()
         )
     }
 
-    private fun getRandomGenre(): String
-    {
+    private fun getRandomGenre(): String {
         val genres = getGenreList()
         return genres[Random.nextInt(0, genres.size)]
     }

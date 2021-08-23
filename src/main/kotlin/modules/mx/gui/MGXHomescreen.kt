@@ -20,33 +20,27 @@ import styling.Stylesheet
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class)
-{
+class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
     override fun moduleNameLong() = "CWO ERP"
     override fun module() = "MX"
 
-    override fun start(stage: Stage)
-    {
+    override fun start(stage: Stage) {
         super.start(stage)
         stage.isMaximized = true
     }
 
-    override fun stop()
-    {
+    override fun stop() {
         MXLog.log(module(), MXLog.LogType.INFO, "Shutting down server...", moduleNameLong())
-        try
-        {
+        try {
             server.serverEngine.stop(100L, 100L)
-        } finally
-        {
+        } finally {
             super.stop()
         }
     }
 }
 
 @ExperimentalSerializationApi
-class MXGLogin : Fragment("CWO ERP")
-{
+class MXGLogin : Fragment("CWO ERP") {
     private val loginUser = MXUserModel(getUserPropertyFromUser(MXUser("", "")))
     private val userManager: MXUserManager by inject()
     override val root = borderpane {
@@ -71,13 +65,11 @@ class MXGLogin : Fragment("CWO ERP")
                     action {
                         var loginSuccess = false
                         runAsyncWithProgress {
-                            if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty())
-                            {
+                            if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty()) {
                                 loginSuccess = userManager.login(loginUser.username.value, loginUser.password.value)
                             }
                         } ui {
-                            if (loginSuccess)
-                            {
+                            if (loginSuccess) {
                                 replaceWith<MXGUserInterface>()
                             } else loginUser.password.value = ""
                         }
@@ -89,8 +81,7 @@ class MXGLogin : Fragment("CWO ERP")
 }
 
 @ExperimentalSerializationApi
-class MXGUserInterface : View("CWO ERP")
-{
+class MXGUserInterface : View("CWO ERP") {
     override val root = borderpane {
         top = menubar {
             menu("Menu") {

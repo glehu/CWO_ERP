@@ -16,8 +16,7 @@ import modules.mx.logic.MXLog
 import tornadofx.Controller
 
 @ExperimentalSerializationApi
-class M2IndexManager : IModule, IIndexManager, Controller()
-{
+class M2IndexManager : IModule, IIndexManager, Controller() {
     override fun moduleNameLong() = "M2IndexManager"
     override fun module() = "M2"
     override var module = module()
@@ -35,8 +34,7 @@ class M2IndexManager : IModule, IIndexManager, Controller()
     override val indexList = mutableMapOf<Int, Index>()
     override var lastUID = -1
 
-    init
-    {
+    init {
         MXLog.log(module(), MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
         indexList[0] = db.getIndex(module(), 0)
         indexList[1] = db.getIndex(module(), 1)
@@ -47,8 +45,7 @@ class M2IndexManager : IModule, IIndexManager, Controller()
         MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
     }
 
-    override fun getIndexUserSelection(): ArrayList<String>
-    {
+    override fun getIndexUserSelection(): ArrayList<String> {
         return arrayListOf("1-Name", "2-City")
     }
 
@@ -65,8 +62,7 @@ class M2IndexManager : IModule, IIndexManager, Controller()
         setLastChangeData(entry.uID, activeUser)
     }
 
-    override suspend fun writeIndexData()
-    {
+    override suspend fun writeIndexData() {
         db.getIndexFile(module(), 0).writeText(Json.encodeToString(indexList[0]))
         db.getIndexFile(module(), 1).writeText(Json.encodeToString(indexList[1]))
         db.getIndexFile(module(), 2).writeText(Json.encodeToString(indexList[2]))
@@ -75,29 +71,25 @@ class M2IndexManager : IModule, IIndexManager, Controller()
 
     //**** **** **** **** **** INDICES **** **** **** **** ****
     //Index 0 (Contact.uID)
-    override fun buildIndex0(entry: Any, posDB: Long, byteSize: Int)
-    {
+    override fun buildIndex0(entry: Any, posDB: Long, byteSize: Int) {
         entry as Contact
         indexList[0]!!.indexMap[entry.uID] = IndexContent(entry.uID, "${entry.uID}", posDB, byteSize)
     }
 
     //Index 1 (Contact.name)
-    private fun buildIndex1(contact: Contact, posDB: Long, byteSize: Int)
-    {
+    private fun buildIndex1(contact: Contact, posDB: Long, byteSize: Int) {
         val formatted = indexFormat(contact.name).uppercase()
         indexList[1]!!.indexMap[contact.uID] = IndexContent(contact.uID, formatted, posDB, byteSize)
     }
 
     //Index 2 (Contact.city)
-    private fun buildIndex2(contact: Contact, posDB: Long, byteSize: Int)
-    {
+    private fun buildIndex2(contact: Contact, posDB: Long, byteSize: Int) {
         val formatted = indexFormat(contact.city).uppercase()
         indexList[2]!!.indexMap[contact.uID] = IndexContent(contact.uID, formatted, posDB, byteSize)
     }
 
     //Index 3 (Contact.spotifyID)
-    private fun buildIndex3(contact: Contact, posDB: Long, byteSize: Int)
-    {
+    private fun buildIndex3(contact: Contact, posDB: Long, byteSize: Int) {
         val formatted = contact.spotifyID
         indexList[3]!!.indexMap[contact.uID] = IndexContent(contact.uID, formatted, posDB, byteSize)
     }

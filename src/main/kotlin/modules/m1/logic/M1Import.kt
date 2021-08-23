@@ -20,8 +20,7 @@ import java.io.RandomAccessFile
 import java.time.LocalDate
 import kotlin.system.measureTimeMillis
 
-class M1Import : IModule, Controller()
-{
+class M1Import : IModule, Controller() {
     override fun moduleNameLong() = "M1Import"
     override fun module() = "M1"
 
@@ -32,8 +31,7 @@ class M1Import : IModule, Controller()
         albumListJson: SpotifyAlbumListJson,
         entriesAdded: Int = 0,
         updateProgress: (Pair<Int, String>) -> Unit
-    )
-    {
+    ) {
         MXLog.log(module(), MXLog.LogType.INFO, "Spotify album list import start", moduleNameLong())
 
         var albumEntry: Song
@@ -41,12 +39,10 @@ class M1Import : IModule, Controller()
         val m2raf = db.openRandomFileAccess("M2", CwODB.RafMode.READWRITE)
         var counter = entriesAdded
         val timeInMillis = measureTimeMillis {
-            for (album: SpotifyAlbumJson in albumListJson.albums)
-            {
+            for (album: SpotifyAlbumJson in albumListJson.albums) {
                 counter++
                 albumEntry = createOrSaveAlbum(album, raf, m2raf)
-                for (trackList: SpotifyTracklistJson in SpotifyAPI().getSongListFromAlbum(album.id))
-                {
+                for (trackList: SpotifyTracklistJson in SpotifyAPI().getSongListFromAlbum(album.id)) {
                     createOrSaveTracksOfAlbum(trackList, albumEntry, raf, m2raf, counter)
                     {
                         counter = it.first
@@ -75,8 +71,7 @@ class M1Import : IModule, Controller()
         m2raf: RandomAccessFile,
         entriesAdded: Int = 0,
         updateProgress: (Pair<Int, String>) -> Unit
-    )
-    {
+    ) {
         val m1DBManager = M1DBManager()
         var song: Song
         var uID: Int
@@ -84,20 +79,17 @@ class M1Import : IModule, Controller()
         var byteSize: Int
         var counter = entriesAdded
 
-        for (track: SpotifyTrackJson in trackList.tracks)
-        {
+        for (track: SpotifyTrackJson in trackList.tracks) {
             counter++
             //New album or existing album
             val filteredMap = m1GlobalIndex.indexList[5]!!.indexMap.filterValues {
                 it.content.contains(track.id)
             }
-            if (filteredMap.isEmpty())
-            {
+            if (filteredMap.isEmpty()) {
                 pos = -1
                 byteSize = -1
                 song = Song(-1, "")
-            } else
-            {
+            } else {
                 val indexContent = filteredMap.values.first()
                 uID = indexContent.uID
                 pos = indexContent.pos
@@ -134,8 +126,7 @@ class M1Import : IModule, Controller()
     }
 
     @ExperimentalSerializationApi
-    private fun createOrSaveAlbum(album: SpotifyAlbumJson, raf: RandomAccessFile, m2raf: RandomAccessFile): Song
-    {
+    private fun createOrSaveAlbum(album: SpotifyAlbumJson, raf: RandomAccessFile, m2raf: RandomAccessFile): Song {
         val m1DBManager = M1DBManager()
         val song: Song
         val uID: Int
@@ -147,13 +138,11 @@ class M1Import : IModule, Controller()
         val filteredMap = m1GlobalIndex.indexList[5]!!.indexMap.filterValues {
             it.content.contains(album.id)
         }
-        if (filteredMap.isEmpty())
-        {
+        if (filteredMap.isEmpty()) {
             pos = -1
             byteSize = -1
             song = Song(-1, "")
-        } else
-        {
+        } else {
             val indexContent = filteredMap.values.first()
             uID = indexContent.uID
             pos = indexContent.pos
@@ -167,8 +156,7 @@ class M1Import : IModule, Controller()
         //Generic data
         song.name = album.name
 
-        when (album.releaseDatePrecision)
-        {
+        when (album.releaseDatePrecision) {
             "day" -> releaseDate = album.releaseDate
             "month" -> releaseDate = album.releaseDate + "-01"
             "year" -> releaseDate = album.releaseDate + "-01-01"
@@ -200,19 +188,16 @@ class M1Import : IModule, Controller()
     }
 
     @ExperimentalSerializationApi
-    private fun createOrSaveArtistsOfAlbum(artists: List<SpotifyArtistJson>, song: Song, m2raf: RandomAccessFile)
-    {
+    private fun createOrSaveArtistsOfAlbum(artists: List<SpotifyArtistJson>, song: Song, m2raf: RandomAccessFile) {
         val m2DBManager = M2DBManager()
         var contact: Contact
         var artistUID: Int
         var filteredMap: Map<Int, IndexContent>
-        for ((artistCounter, artist: SpotifyArtistJson) in artists.withIndex())
-        {
+        for ((artistCounter, artist: SpotifyArtistJson) in artists.withIndex()) {
             filteredMap = m2GlobalIndex.indexList[3]!!.indexMap.filterValues {
                 it.content.contains(artist.id)
             }
-            if (filteredMap.isEmpty())
-            {
+            if (filteredMap.isEmpty()) {
                 contact = Contact(-1, artist.name)
                 contact.spotifyID = artist.id
                 contact.birthdate = getDefaultDate()
@@ -226,28 +211,23 @@ class M1Import : IModule, Controller()
                         indexManager = m2GlobalIndex,
                         indexWriteToDisk = false
                     )
-            } else
-            {
+            } else {
                 val indexContent = filteredMap.values.first()
                 contact = m2DBManager.getEntry(indexContent.uID, db, m2GlobalIndex.indexList[3]!!) as Contact
                 artistUID = contact.uID
             }
-            when (artistCounter)
-            {
-                0 ->
-                {
+            when (artistCounter) {
+                0 -> {
                     song.vocalist = artist.name
                     song.vocalistUID = artistUID
                 }
 
-                1 ->
-                {
+                1 -> {
                     song.coVocalist1 = artist.name
                     song.coVocalist1UID = artistUID
                 }
 
-                2 ->
-                {
+                2 -> {
                     song.coVocalist2 = artist.name
                     song.coVocalist2UID = artistUID
                 }

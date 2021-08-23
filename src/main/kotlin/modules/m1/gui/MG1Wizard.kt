@@ -10,8 +10,7 @@ import tornadofx.*
 
 //This Wizard is used to create new songs
 @ExperimentalSerializationApi
-class SongConfiguratorWizard : Wizard("Add new entry")
-{
+class SongConfiguratorWizard : Wizard("Add new entry") {
     val songMainData: SongPropertyMainDataModel by inject()
     val songCompletionState: SongPropertyCompletionStateModel by inject()
     val songPromotionData: SongPropertyPromotionDataModel by inject()
@@ -24,8 +23,7 @@ class SongConfiguratorWizard : Wizard("Add new entry")
     val songCopyrightData: SongPropertyCopyrightDataModel by inject()
     val songMiscData: SongPropertyMiscDataModel by inject()
 
-    init
-    {
+    init {
         enableStepLinks = true
         add(SongMainData::class)
         add(SongCompletionState::class)
@@ -42,8 +40,7 @@ class SongConfiguratorWizard : Wizard("Add new entry")
 }
 
 @ExperimentalSerializationApi
-class SongMainData : Fragment("Main")
-{
+class SongMainData : Fragment("Main") {
     val db: CwODB by inject()
     private val m2controller: M2Controller by inject()
 
@@ -66,8 +63,7 @@ class SongMainData : Fragment("Main")
                     textfield(songMainData.vocalist) {
                         contextmenu {
                             item("Show contact").action {
-                                if (songMainData.vocalistUID.value != -1)
-                                {
+                                if (songMainData.vocalistUID.value != -1) {
                                     m2controller.showContact(songMainData.vocalistUID.value)
                                 }
                                 songMainData.vocalist.value =
@@ -166,14 +162,12 @@ class SongMainData : Fragment("Main")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songMainData.commit()
     }
 }
 
-class SongCompletionState : Fragment("Completion State")
-{
+class SongCompletionState : Fragment("Completion State") {
     private val songCompletionState: SongPropertyCompletionStateModel by inject()
 
     //----------------------------------v
@@ -209,14 +203,12 @@ class SongCompletionState : Fragment("Completion State")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songCompletionState.commit()
     }
 }
 
-class SongPromotionData : Fragment("Promotion")
-{
+class SongPromotionData : Fragment("Promotion") {
     private val songPromotionData: SongPropertyPromotionDataModel by inject()
 
     //----------------------------------v
@@ -231,14 +223,12 @@ class SongPromotionData : Fragment("Promotion")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songPromotionData.commit()
     }
 }
 
-class SongFinancialData : Fragment("Finances")
-{
+class SongFinancialData : Fragment("Finances") {
     private val songFinancialData: SongPropertyFinancialDataModel by inject()
 
     //----------------------------------v
@@ -252,14 +242,12 @@ class SongFinancialData : Fragment("Finances")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songFinancialData.commit()
     }
 }
 
-class SongAvailabilityData : Fragment("Availability")
-{
+class SongAvailabilityData : Fragment("Availability") {
     private val songAvailabilityData: SongPropertyAvailabilityDataModel by inject()
 
     //----------------------------------v
@@ -277,14 +265,12 @@ class SongAvailabilityData : Fragment("Availability")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songAvailabilityData.commit()
     }
 }
 
-class SongVisualizationData : Fragment("Visualization")
-{
+class SongVisualizationData : Fragment("Visualization") {
     private val songVisualizationData: SongPropertyVisualizationDataModel by inject()
 
     //----------------------------------v
@@ -298,15 +284,13 @@ class SongVisualizationData : Fragment("Visualization")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songVisualizationData.commit()
     }
 }
 
 @ExperimentalSerializationApi
-class SongAlbumEPData : Fragment("Album/EP")
-{
+class SongAlbumEPData : Fragment("Album/EP") {
     private val songAlbumEPData: SongPropertyAlbumEPDataModel by inject()
     private val albumTypeList = FXCollections.observableArrayList(getAlbumTypeList())!!
     private val m1controller: M1Controller by inject()
@@ -338,14 +322,12 @@ class SongAlbumEPData : Fragment("Album/EP")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songAlbumEPData.commit()
     }
 }
 
-class SongStatisticsData : Fragment("Statistics")
-{
+class SongStatisticsData : Fragment("Statistics") {
     private val songStatisticsData: SongPropertyStatisticsDataModel by inject()
 
     //----------------------------------v
@@ -359,15 +341,13 @@ class SongStatisticsData : Fragment("Statistics")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songStatisticsData.commit()
     }
 }
 
 @ExperimentalSerializationApi
-class SongCollaborationData : Fragment("Collaboration")
-{
+class SongCollaborationData : Fragment("Collaboration") {
     private val m2controller: M2Controller by inject()
     private val songCollaborationData: SongPropertyCollaborationDataModel by inject()
 
@@ -385,8 +365,7 @@ class SongCollaborationData : Fragment("Collaboration")
                         textfield(songCollaborationData.coVocalist1) {
                             contextmenu {
                                 item("Show contact").action {
-                                    if (songCollaborationData.coVocalist1UID.value != -1)
-                                    {
+                                    if (songCollaborationData.coVocalist1UID.value != -1) {
                                         m2controller.showContact(songCollaborationData.coVocalist1UID.value)
                                     }
                                     songCollaborationData.coVocalist1.value =
@@ -483,14 +462,12 @@ class SongCollaborationData : Fragment("Collaboration")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songCollaborationData.commit()
     }
 }
 
-class SongCopyrightData : Fragment("Copyright")
-{
+class SongCopyrightData : Fragment("Copyright") {
     private val songCopyrightData: SongPropertyCopyrightDataModel by inject()
 
     //----------------------------------v
@@ -506,14 +483,12 @@ class SongCopyrightData : Fragment("Copyright")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songCopyrightData.commit()
     }
 }
 
-class SongMiscData : Fragment("Misc")
-{
+class SongMiscData : Fragment("Misc") {
     private val songMiscData: SongPropertyMiscDataModel by inject()
 
     //----------------------------------v
@@ -549,8 +524,7 @@ class SongMiscData : Fragment("Misc")
         }
     }
 
-    override fun onSave()
-    {
+    override fun onSave() {
         isComplete = songMiscData.commit()
     }
 }

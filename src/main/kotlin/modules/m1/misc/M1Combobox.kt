@@ -1,7 +1,6 @@
 package modules.m1.misc
 
-fun getGenreList(): ArrayList<String>
-{
+fun getGenreList(): ArrayList<String> {
     return arrayListOf(
         "Blues",
         "Dubstep",
@@ -23,8 +22,7 @@ fun getGenreList(): ArrayList<String>
     )
 }
 
-fun getSongTypeList(): ArrayList<String>
-{
+fun getSongTypeList(): ArrayList<String> {
     return arrayListOf(
         "Track",
         "Single",
@@ -33,8 +31,7 @@ fun getSongTypeList(): ArrayList<String>
     )
 }
 
-fun getAlbumTypeList(): ArrayList<String>
-{
+fun getAlbumTypeList(): ArrayList<String> {
     return arrayListOf(
         "Single",
         "Album/EP",
