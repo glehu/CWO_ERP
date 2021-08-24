@@ -168,7 +168,7 @@ class M1Controller : IModule, Controller() {
         } else default
     }
 
-    private fun getEntry(uID: Int): Song {
+    fun getEntry(uID: Int): Song {
         return if (uID != -1) {
             M1DBManager().getEntry(
                 uID, db, m1GlobalIndex.indexList[0]!!

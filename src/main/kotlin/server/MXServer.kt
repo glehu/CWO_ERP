@@ -7,9 +7,12 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import modules.api.gui.GSpotify
 import modules.api.json.SpotifyAuthCallbackJson
 import modules.api.logic.SpotifyAUTH
+import modules.m1.logic.M1Controller
 import modules.mx.logic.MXLog
 import tornadofx.find
 import tornadofx.runAsync
@@ -18,6 +21,8 @@ import tornadofx.runAsync
 class MXServer : IModule {
     override fun moduleNameLong() = "Server"
     override fun module() = "MX"
+
+    lateinit var text: String
 
     val serverEngine = embeddedServer(Netty, port = 8000) {
         routing {
@@ -34,6 +39,29 @@ class MXServer : IModule {
                 find<GSpotify>().showTokenData(
                     SpotifyAUTH().getAccessTokenFromAuthCode(code!!) as SpotifyAuthCallbackJson
                 )
+            }
+            //----------------------------------v
+            //------------ CWO  API ------------|
+            //----------------------------------^
+            route("/api")
+            {
+                route("/m1") {
+                    get("") {
+                        text = "/entry/{searchString}?type={type}" +
+                                "\n\ntype can be \"uid\" if the search string is a unique identifier code"
+                        call.respondText(text)
+                    }
+                    get("/entry/{searchString}") {
+                        val routePar = call.parameters["searchString"]
+                        if (routePar != null && routePar.isNotEmpty()) {
+                            val queryPar = call.request.queryParameters["type"]
+                            if (queryPar == "uid") {
+                                val entry = M1Controller().getEntry(routePar.toInt())
+                                call.respond(Json.encodeToString(entry))
+                            }
+                        }
+                    }
+                }
             }
         }
     }
