@@ -1,4 +1,4 @@
-package server
+package api.logic
 
 import interfaces.IModule
 import io.ktor.application.*
@@ -9,9 +9,8 @@ import io.ktor.server.netty.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.api.gui.GSpotify
-import modules.api.json.SpotifyAuthCallbackJson
-import modules.api.logic.SpotifyAUTH
+import api.gui.GSpotify
+import api.misc.json.SpotifyAuthCallbackJson
 import modules.m1.logic.M1Controller
 import modules.mx.logic.MXLog
 import tornadofx.find
@@ -58,6 +57,8 @@ class MXServer : IModule {
                             if (queryPar == "uid") {
                                 val entry = M1Controller().getEntry(routePar.toInt())
                                 call.respond(Json.encodeToString(entry))
+                            } else if (queryPar == "name") {
+
                             }
                         }
                     }

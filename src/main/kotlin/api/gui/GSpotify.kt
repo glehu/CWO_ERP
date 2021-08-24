@@ -1,15 +1,15 @@
-package modules.api.gui
+package api.gui
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.api.json.SpotifyAlbumListJson
-import modules.api.json.SpotifyAuthCallbackJson
-import modules.api.json.SpotifyUserProfileJson
-import modules.api.logic.SpotifyAPI
-import modules.api.logic.SpotifyAUTH
-import modules.api.logic.SpotifyController
+import api.misc.json.SpotifyAlbumListJson
+import api.misc.json.SpotifyAuthCallbackJson
+import api.misc.json.SpotifyUserProfileJson
+import api.logic.SpotifyAPI
+import api.logic.SpotifyAUTH
+import api.logic.SpotifyController
 import modules.m1.logic.M1Import
 import modules.mx.gui.MGXProgressbar
 import modules.mx.rightButtonsWidth

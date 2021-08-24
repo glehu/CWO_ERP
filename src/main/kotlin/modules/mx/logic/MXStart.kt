@@ -9,7 +9,7 @@ import modules.m3.logic.M3IndexManager
 import modules.mx.*
 import modules.mx.gui.CWOMainGUI
 import modules.mx.gui.showPreferences
-import server.MXServer
+import api.logic.MXServer
 import tornadofx.launch
 import java.io.File
 

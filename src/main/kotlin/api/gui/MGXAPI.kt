@@ -1,8 +1,7 @@
-package modules.mx.gui
+package api.gui
 
 import javafx.scene.layout.Priority
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.api.gui.GSpotify
 import styling.Stylesheet
 import tornadofx.*
 

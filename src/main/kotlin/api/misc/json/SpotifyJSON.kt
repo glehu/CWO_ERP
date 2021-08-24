@@ -1,4 +1,4 @@
-package modules.api.json
+package api.misc.json
 
 import interfaces.ITokenData
 import kotlinx.serialization.SerialName

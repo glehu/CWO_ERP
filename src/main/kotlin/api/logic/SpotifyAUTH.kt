@@ -1,4 +1,4 @@
-package modules.api.logic
+package api.logic
 
 import interfaces.IAPIAUTH
 import interfaces.IModule
@@ -12,8 +12,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.api.gui.GSpotify
-import modules.api.json.SpotifyAuthCallbackJson
+import api.gui.GSpotify
+import api.misc.json.SpotifyAuthCallbackJson
 import modules.mx.getClientSecretFile
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXAPI.Companion.getAPITokenFile

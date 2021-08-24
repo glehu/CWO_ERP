@@ -1,11 +1,11 @@
-package modules.api.logic
+package api.logic
 
 import interfaces.IAPI
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.api.json.SpotifyUserProfileJson
+import api.misc.json.SpotifyUserProfileJson
 import modules.mx.getModulePath
 import tornadofx.Controller
 import java.io.File

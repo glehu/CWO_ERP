@@ -4,7 +4,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
-import server.MXServer
+import api.logic.MXServer
 import java.io.File
 
 //*************************************************
@@ -47,4 +47,5 @@ const val rightButtonsWidth = 150.0
 var differenceFromUTC: Int = 0
 
 //Server
+@ExperimentalSerializationApi
 lateinit var server: MXServer

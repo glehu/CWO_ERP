@@ -1,4 +1,4 @@
-package modules.api.logic
+package api.logic
 
 import interfaces.IAPI
 import interfaces.IModule
@@ -6,7 +6,7 @@ import io.ktor.client.request.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.api.json.*
+import api.misc.json.*
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXLog
 

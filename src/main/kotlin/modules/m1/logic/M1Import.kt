@@ -6,8 +6,8 @@ import interfaces.IModule
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.api.json.*
-import modules.api.logic.SpotifyAPI
+import api.misc.json.*
+import api.logic.SpotifyAPI
 import modules.m1.Song
 import modules.m2.Contact
 import modules.m2.logic.M2DBManager
