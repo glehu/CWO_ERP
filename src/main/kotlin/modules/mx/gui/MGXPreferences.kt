@@ -6,18 +6,18 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.MXIni
-import modules.mx.dataPath
 import modules.mx.getIniFile
 import modules.mx.logic.getRandomString
 import modules.mx.logic.readAndSetIniValues
 import tornadofx.*
-import java.io.File
 
 class MGXPreferences : View("Preferences") {
     private val encryptionKeyProperty = SimpleStringProperty(getRandomString(16, true))
     private val dataPathProperty = SimpleStringProperty(System.getProperty("user.dir"))
     private val maxSearchResultsProperty = SimpleIntegerProperty(10_000)
     private val differenceFromUTCProperty = SimpleIntegerProperty(0)
+    private val isClientProperty = SimpleStringProperty("false")
+    private val serverIPAddressProperty = SimpleStringProperty("?")
     override val root = form {
         setPrefSize(600.0, 200.0)
         val iniFile = getIniFile()
@@ -30,7 +30,9 @@ class MGXPreferences : View("Preferences") {
                         token = encryptionKeyProperty.value,
                         dataPath = dataPathProperty.value,
                         maxSearchResults = maxSearchResultsProperty.value,
-                        differenceFromUTC = differenceFromUTCProperty.value
+                        differenceFromUTC = differenceFromUTCProperty.value,
+                        isClient = isClientProperty.value.toBoolean(),
+                        serverIPAddress = serverIPAddressProperty.value
                     )
                 )
             )
@@ -41,6 +43,8 @@ class MGXPreferences : View("Preferences") {
             dataPathProperty.value = iniVal.dataPath
             maxSearchResultsProperty.value = iniVal.maxSearchResults
             differenceFromUTCProperty.value = iniVal.differenceFromUTC
+            isClientProperty.value = iniVal.isClient.toString()
+            serverIPAddressProperty.value = iniVal.serverIPAddress
         }
         vbox {
             fieldset {
@@ -52,7 +56,7 @@ class MGXPreferences : View("Preferences") {
                     button("<") {
                         tooltip("Choose path")
                         action {
-                            val dataPathChosen = chooseDirectory("Choose data path", File(dataPath))
+                            val dataPathChosen = chooseDirectory("Choose data path") //, File(dataPath))
                             if (dataPathChosen != null) dataPathProperty.value = dataPathChosen.absolutePath
                         }
                     }
@@ -63,6 +67,12 @@ class MGXPreferences : View("Preferences") {
                 field("Difference from UTC in hours") {
                     textfield(differenceFromUTCProperty) { prefWidth = 200.0 }
                 }
+                field("Is client") {
+                    combobox(isClientProperty, listOf("true", "false")) { prefWidth = 200.0 }
+                }
+                field("Server IP Address") {
+                    textfield(serverIPAddressProperty) { prefWidth = 200.0 }
+                }
                 button("Save") {
                     shortcut("Enter")
                 }.action {
@@ -72,7 +82,9 @@ class MGXPreferences : View("Preferences") {
                                 token = encryptionKeyProperty.value,
                                 dataPath = dataPathProperty.value,
                                 maxSearchResults = maxSearchResultsProperty.value,
-                                differenceFromUTC = differenceFromUTCProperty.value
+                                differenceFromUTC = differenceFromUTCProperty.value,
+                                isClient = isClientProperty.value.toBoolean(),
+                                serverIPAddress = serverIPAddressProperty.value
                             )
                         )
                     )

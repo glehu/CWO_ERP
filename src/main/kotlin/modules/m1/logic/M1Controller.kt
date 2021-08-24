@@ -1,5 +1,6 @@
 package modules.m1.logic
 
+import api.misc.json.M1EntryListJson
 import db.CwODB
 import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -9,7 +10,9 @@ import modules.m1.gui.MG1EntryFinder
 import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.misc.*
 import modules.m2.logic.M2Controller
+import modules.mx.isClientGlobal
 import modules.mx.m1GlobalIndex
+import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
 import tornadofx.Scope
 
@@ -124,38 +127,40 @@ class M1Controller : IModule, Controller() {
         wizard.songCopyrightData.item = getSongPropertyCopyrightData(song)
         wizard.songMiscData.item = getSongPropertyMiscData(song)
 
-        //Sync album data
-        val album = getEntry(wizard.songAlbumEPData.item.albumUID)
-        if (album.uID != -1) {
-            wizard.songAlbumEPData.item.nameAlbum = album.name
-            wizard.songAlbumEPData.item.typeAlbum = album.type
-        }
+        if (!isClientGlobal) {
+            //Sync album data
+            val album = getEntry(wizard.songAlbumEPData.item.albumUID)
+            if (album.uID != -1) {
+                wizard.songAlbumEPData.item.nameAlbum = album.name
+                wizard.songAlbumEPData.item.typeAlbum = album.type
+            }
 
-        //Sync contact data
-        wizard.songMainData.item.mixing =
-            m2Controller.getContactName(
-                wizard.songMainData.item.mixingUID, wizard.songMainData.item.mixing
-            )
-        wizard.songMainData.item.mastering =
-            m2Controller.getContactName(
-                wizard.songMainData.item.masteringUID, wizard.songMainData.item.mastering
-            )
-        wizard.songCollaborationData.item.coVocalist1 =
-            m2Controller.getContactName(
-                wizard.songCollaborationData.item.coVocalist1UID, wizard.songCollaborationData.item.coVocalist1
-            )
-        wizard.songCollaborationData.item.coVocalist2 =
-            m2Controller.getContactName(
-                wizard.songCollaborationData.item.coVocalist2UID, wizard.songCollaborationData.item.coVocalist2
-            )
-        wizard.songCollaborationData.item.coProducer1 =
-            m2Controller.getContactName(
-                wizard.songCollaborationData.item.coProducer1UID, wizard.songCollaborationData.item.coProducer1
-            )
-        wizard.songCollaborationData.item.coProducer2 =
-            m2Controller.getContactName(
-                wizard.songCollaborationData.item.coProducer2UID, wizard.songCollaborationData.item.coProducer2
-            )
+            //Sync contact data
+            wizard.songMainData.item.mixing =
+                m2Controller.getContactName(
+                    wizard.songMainData.item.mixingUID, wizard.songMainData.item.mixing
+                )
+            wizard.songMainData.item.mastering =
+                m2Controller.getContactName(
+                    wizard.songMainData.item.masteringUID, wizard.songMainData.item.mastering
+                )
+            wizard.songCollaborationData.item.coVocalist1 =
+                m2Controller.getContactName(
+                    wizard.songCollaborationData.item.coVocalist1UID, wizard.songCollaborationData.item.coVocalist1
+                )
+            wizard.songCollaborationData.item.coVocalist2 =
+                m2Controller.getContactName(
+                    wizard.songCollaborationData.item.coVocalist2UID, wizard.songCollaborationData.item.coVocalist2
+                )
+            wizard.songCollaborationData.item.coProducer1 =
+                m2Controller.getContactName(
+                    wizard.songCollaborationData.item.coProducer1UID, wizard.songCollaborationData.item.coProducer1
+                )
+            wizard.songCollaborationData.item.coProducer2 =
+                m2Controller.getContactName(
+                    wizard.songCollaborationData.item.coProducer2UID, wizard.songCollaborationData.item.coProducer2
+                )
+        }
 
         wizard.onComplete {
             saveEntry()
@@ -174,5 +179,23 @@ class M1Controller : IModule, Controller() {
                 uID, db, m1GlobalIndex.indexList[0]!!
             ) as Song
         } else Song(-1, "")
+    }
+
+    fun getEntryListJson(searchText: String, ixNr: Int): M1EntryListJson {
+        val resultsListJson = M1EntryListJson(0, arrayListOf())
+        var resultCounter = 0
+        db.getEntriesFromSearchString(
+            searchText = searchText.uppercase(),
+            ixNr = ixNr,
+            exactSearch = false,
+            module = module(),
+            maxSearchResults = maxSearchResultsGlobal,
+            indexManager = m1GlobalIndex
+        ) { _, bytes ->
+            resultCounter++
+            resultsListJson.resultsList.add(bytes)
+        }
+        resultsListJson.resultsAmount = resultCounter
+        return resultsListJson
     }
 }

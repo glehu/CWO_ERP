@@ -1,5 +1,6 @@
 package modules.mx.logic
 
+import api.logic.MXServer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -9,7 +10,6 @@ import modules.m3.logic.M3IndexManager
 import modules.mx.*
 import modules.mx.gui.CWOMainGUI
 import modules.mx.gui.showPreferences
-import api.logic.MXServer
 import tornadofx.launch
 import java.io.File
 
@@ -30,6 +30,8 @@ fun readAndSetIniValues() {
     dataPath = iniVal.dataPath
     maxSearchResultsGlobal = iniVal.maxSearchResults
     differenceFromUTC = iniVal.differenceFromUTC
+    isClientGlobal = iniVal.isClient
+    serverIPAddressGlobal = iniVal.serverIPAddress
 }
 
 @ExperimentalSerializationApi
@@ -50,6 +52,8 @@ fun startupRoutines(user: MXUser) {
     m1GlobalIndex = M1IndexManager()
     m2GlobalIndex = M2IndexManager()
     m3GlobalIndex = M3IndexManager()
-    //Start embedded server
-    server = MXServer()
+    if (!isClientGlobal) {
+        //Start embedded server
+        server = MXServer()
+    }
 }

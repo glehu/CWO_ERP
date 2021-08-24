@@ -46,6 +46,8 @@ const val rightButtonsWidth = 150.0
 //Time
 var differenceFromUTC: Int = 0
 
-//Server
+//Server/Client
 @ExperimentalSerializationApi
 lateinit var server: MXServer
+var isClientGlobal: Boolean = false
+var serverIPAddressGlobal: String = "?"

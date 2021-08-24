@@ -8,5 +8,7 @@ data class MXIni(
     @SerialName("encryption key") var token: String,
     @SerialName("data path") var dataPath: String,
     @SerialName("max search results") var maxSearchResults: Int,
-    @SerialName("difference from utc in hours") var differenceFromUTC: Int
+    @SerialName("difference from utc in hours") var differenceFromUTC: Int,
+    @SerialName("client") var isClient: Boolean,
+    @SerialName("server ip address") var serverIPAddress: String
 )

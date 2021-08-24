@@ -1,16 +1,18 @@
 package api.logic
 
+import api.gui.GSpotify
+import api.misc.json.SpotifyAuthCallbackJson
 import interfaces.IModule
 import io.ktor.application.*
+import io.ktor.features.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import api.gui.GSpotify
-import api.misc.json.SpotifyAuthCallbackJson
 import modules.m1.logic.M1Controller
 import modules.mx.logic.MXLog
 import tornadofx.find
@@ -24,6 +26,12 @@ class MXServer : IModule {
     lateinit var text: String
 
     val serverEngine = embeddedServer(Netty, port = 8000) {
+        install(ContentNegotiation) {
+            json(Json {
+                prettyPrint = true
+                isLenient = true
+            })
+        }
         routing {
             get("/") {
                 MXLog.log(module(), MXLog.LogType.COM, "User Connected", moduleNameLong())
@@ -55,10 +63,9 @@ class MXServer : IModule {
                         if (routePar != null && routePar.isNotEmpty()) {
                             val queryPar = call.request.queryParameters["type"]
                             if (queryPar == "uid") {
-                                val entry = M1Controller().getEntry(routePar.toInt())
-                                call.respond(Json.encodeToString(entry))
+                                call.respond(Json.encodeToString(M1Controller().getEntry(routePar.toInt())))
                             } else if (queryPar == "name") {
-
+                                call.respond(M1Controller().getEntryListJson(routePar, 1))
                             }
                         }
                     }
