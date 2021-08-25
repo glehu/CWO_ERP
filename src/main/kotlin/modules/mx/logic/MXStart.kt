@@ -32,6 +32,12 @@ fun readAndSetIniValues() {
     differenceFromUTC = iniVal.differenceFromUTC
     isClientGlobal = iniVal.isClient
     serverIPAddressGlobal = iniVal.serverIPAddress
+
+    //Customize title
+    titleGlobal += when (iniVal.isClient) {
+        false -> " Server"
+        true -> " Client"
+    }
 }
 
 @ExperimentalSerializationApi

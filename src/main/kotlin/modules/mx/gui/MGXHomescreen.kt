@@ -8,14 +8,12 @@ import modules.m1.gui.MG1Overview
 import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2Overview
 import modules.m3.gui.MG3InvoiceFinder
-import modules.mx.MXUser
-import modules.mx.activeUser
+import modules.mx.*
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.logic.loginRoutines
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
-import modules.mx.server
 import styling.Stylesheet
 import tornadofx.*
 
@@ -32,7 +30,9 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
     override fun stop() {
         MXLog.log(module(), MXLog.LogType.INFO, "Shutting down server...", moduleNameLong())
         try {
-            server.serverEngine.stop(100L, 100L)
+            if (!isClientGlobal) {
+                server.serverEngine.stop(100L, 100L)
+            }
         } finally {
             super.stop()
         }
@@ -81,7 +81,7 @@ class MXGLogin : Fragment("CWO ERP") {
 }
 
 @ExperimentalSerializationApi
-class MXGUserInterface : View("CWO ERP") {
+class MXGUserInterface : View(titleGlobal) {
     override val root = borderpane {
         top = menubar {
             menu("Menu") {

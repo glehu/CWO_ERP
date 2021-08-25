@@ -24,6 +24,9 @@ lateinit var m3GlobalIndex: M3IndexManager
 //********************** MISCELLANEOUS ************
 //*************************************************
 
+//Instance title
+var titleGlobal: String = "CWO ERP"
+
 //Active user
 var activeUser: MXUser = MXUser("", "")
 

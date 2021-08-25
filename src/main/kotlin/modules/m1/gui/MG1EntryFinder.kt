@@ -42,6 +42,7 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
     private val ixNrList = FXCollections.observableArrayList(m1GlobalIndex.getIndexUserSelection())!!
     private val threadIDCurrentProperty = SimpleIntegerProperty()
     private var threadIDCurrent by threadIDCurrentProperty
+    private val client = SpotifyAUTH().getAuthClient(MXAPI.Companion.AuthType.NONE)
     override val root = borderpane {
         center = form {
             entriesFound.clear()
@@ -122,18 +123,18 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
                     }
                 }
             } else if (isClientGlobal) {
-                val client = SpotifyAUTH().getAuthClient(MXAPI.Companion.AuthType.NONE)
-                runBlocking {
-                    launch {
-                        val entryListJson: M1EntryListJson = client.get(
-                            "http://$serverIPAddressGlobal/api/m1/entry/${searchText.text}?type=name"
-                        )
-                        client.close()
-                        if (threadID == threadIDCurrent) {
-                            this@MG1EntryFinder.entriesFound.clear()
-                            for (entryBytes: ByteArray in entryListJson.resultsList) {
-                                entriesFound++
-                                this@MG1EntryFinder.entriesFound.add(dbManager.decodeEntry(entryBytes) as Song)
+                if (searchText.text.isNotEmpty()) {
+                    runBlocking {
+                        launch {
+                            val entryListJson: M1EntryListJson = client.get(
+                                "http://$serverIPAddressGlobal/api/m1/entry/${searchText.text}?type=name"
+                            )
+                            if (threadID == threadIDCurrent) {
+                                this@MG1EntryFinder.entriesFound.clear()
+                                for (entryBytes: ByteArray in entryListJson.resultsList) {
+                                    entriesFound++
+                                    this@MG1EntryFinder.entriesFound.add(dbManager.decodeEntry(entryBytes) as Song)
+                                }
                             }
                         }
                     }
