@@ -14,6 +14,7 @@ import modules.m2.Contact
 import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import tornadofx.Controller
+import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
 class M2IndexManager : IModule, IIndexManager, Controller() {
@@ -32,7 +33,7 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
     //*************************************************
 
     override val indexList = mutableMapOf<Int, Index>()
-    override var lastUID = -1
+    override var lastUID = AtomicInteger(-1)
 
     init {
         MXLog.log(module(), MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
@@ -49,7 +50,6 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
         return arrayListOf("1-Name", "2-City")
     }
 
-    @ExperimentalSerializationApi
     override fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean) = runBlocking {
         entry as Contact
         buildIndex0(entry, posDB, byteSize)

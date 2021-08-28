@@ -5,6 +5,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import modules.mx.m1GlobalIndex
 
+@ExperimentalSerializationApi
 @Serializable
 data class Song(override var uID: Int, var name: String) : IEntry {
     //*************************************************
@@ -121,8 +122,7 @@ data class Song(override var uID: Int, var name: String) : IEntry {
     //----------------------------------^
     var spotifyID: String = "?"
 
-    @ExperimentalSerializationApi
     override fun initialize() {
-        if (uID == -1) uID = m1GlobalIndex.getUID()
+        if (uID == -1) uID = m1GlobalIndex.getUID().toInt()
     }
 }

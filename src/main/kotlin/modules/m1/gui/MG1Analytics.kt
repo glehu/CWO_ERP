@@ -21,7 +21,7 @@ class MG1Analytics : Fragment("Genre distribution") {
         vbox {
             button("Genre Distribution") {
                 action {
-                    maxEntries = m1controller.db.getLastUniqueID("M1")
+                    maxEntries = m1controller.db.getLastUniqueID("M1").toInt()
                     runAsync {
                         val genreDist =
                             m1controller.getDistributionChartData(m1GlobalIndex, M1Analytics.DistType.GENRE) {
@@ -35,7 +35,7 @@ class MG1Analytics : Fragment("Genre distribution") {
             }
             button("Type Distribution") {
                 action {
-                    maxEntries = m1controller.db.getLastUniqueID("M1")
+                    maxEntries = m1controller.db.getLastUniqueID("M1").toInt()
                     runAsync {
                         val genreDist =
                             m1controller.getDistributionChartData(m1GlobalIndex, M1Analytics.DistType.TYPE) {

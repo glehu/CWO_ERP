@@ -15,12 +15,13 @@ import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
 import java.io.File
 import java.io.RandomAccessFile
+import java.util.concurrent.atomic.AtomicInteger
 
+@ExperimentalSerializationApi
 class CwODB : IModule, Controller() {
     override fun moduleNameLong() = "CwODB"
     override fun module() = "DB"
 
-    @ExperimentalSerializationApi
     fun saveEntry(
         entryBytes: ByteArray, uID: Int, posDB: Long, byteSize: Int,
         module: String, raf: RandomAccessFile
@@ -88,7 +89,6 @@ class CwODB : IModule, Controller() {
         return Pair(posDBNew, byteSizeNew)
     }
 
-    @ExperimentalSerializationApi
     // Returns an array of all entries that fit the search criteria
     fun getEntriesFromSearchString(
         searchText: String, ixNr: Int, exactSearch: Boolean,
@@ -138,7 +138,6 @@ class CwODB : IModule, Controller() {
         return getAll
     }
 
-    @ExperimentalSerializationApi
     fun getEntryFromUniqueID(uID: Int, module: String, index: Index): ByteArray {
         lateinit var entryBytes: ByteArray
         if (getDatabaseFile(module).isFile) {
@@ -165,8 +164,7 @@ class CwODB : IModule, Controller() {
 
     fun closeRandomFileAccess(randAccessFile: RandomAccessFile) = randAccessFile.close()
 
-    @ExperimentalSerializationApi
-    fun readDBEntry(posInDatabase: Long, byteSize: Int, randAccessFile: RandomAccessFile): ByteArray {
+    private fun readDBEntry(posInDatabase: Long, byteSize: Int, randAccessFile: RandomAccessFile): ByteArray {
         //We now read from the file
         val entry = ByteArray(byteSize)
         if (posInDatabase > 0) randAccessFile.seek(posInDatabase)
@@ -174,26 +172,25 @@ class CwODB : IModule, Controller() {
         return entry
     }
 
-    @ExperimentalSerializationApi
-    fun writeDBEntry(entry: ByteArray, posInDatabase: Long, raf: RandomAccessFile) {
+    private fun writeDBEntry(entry: ByteArray, posInDatabase: Long, raf: RandomAccessFile) {
         if (posInDatabase > 0) raf.seek(posInDatabase)
         raf.write(entry)
     }
 
-    fun setLastUniqueID(uniqueID: Int, module: String) {
+    fun setLastUniqueID(uniqueID: AtomicInteger, module: String) {
         val nuFile = getNuFile(module)
         val uniqueIDString = uniqueID.toString()
         nuFile.writeText(uniqueIDString)
     }
 
-    fun getLastUniqueID(module: String): Int {
+    fun getLastUniqueID(module: String): AtomicInteger {
         checkNuFile(module)
         val nuFile = getNuFile(module)
-        val lastUniqueIDNumber: Int
+        val lastUniqueIDNumber: AtomicInteger
         val lastUniqueIDString: String = nuFile.readText()
         lastUniqueIDNumber = if (lastUniqueIDString.isNotEmpty()) {
-            Integer.parseInt(lastUniqueIDString)
-        } else 0
+            AtomicInteger((lastUniqueIDString).toInt())
+        } else AtomicInteger(0)
         return lastUniqueIDNumber
     }
 
@@ -223,7 +220,6 @@ class CwODB : IModule, Controller() {
         return ok
     }
 
-    @ExperimentalSerializationApi
     fun checkIndexFile(module: String, ixNr: Int): Boolean {
         var ok = false
         val nuPath = File(getModulePath(module))
@@ -248,7 +244,6 @@ class CwODB : IModule, Controller() {
         }
     }
 
-    @ExperimentalSerializationApi
     fun getIndex(module: String, ixNr: Int): Index {
         MXLog.log(module, MXLog.LogType.INFO, "Deserializing index $ixNr for $module...", moduleNameLong())
         checkIndexFile(module, ixNr)

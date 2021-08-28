@@ -134,33 +134,33 @@ class M1Controller : IModule, Controller() {
                 wizard.songAlbumEPData.item.nameAlbum = album.name
                 wizard.songAlbumEPData.item.typeAlbum = album.type
             }
-
-            //Sync contact data
-            wizard.songMainData.item.mixing =
-                m2Controller.getContactName(
-                    wizard.songMainData.item.mixingUID, wizard.songMainData.item.mixing
-                )
-            wizard.songMainData.item.mastering =
-                m2Controller.getContactName(
-                    wizard.songMainData.item.masteringUID, wizard.songMainData.item.mastering
-                )
-            wizard.songCollaborationData.item.coVocalist1 =
-                m2Controller.getContactName(
-                    wizard.songCollaborationData.item.coVocalist1UID, wizard.songCollaborationData.item.coVocalist1
-                )
-            wizard.songCollaborationData.item.coVocalist2 =
-                m2Controller.getContactName(
-                    wizard.songCollaborationData.item.coVocalist2UID, wizard.songCollaborationData.item.coVocalist2
-                )
-            wizard.songCollaborationData.item.coProducer1 =
-                m2Controller.getContactName(
-                    wizard.songCollaborationData.item.coProducer1UID, wizard.songCollaborationData.item.coProducer1
-                )
-            wizard.songCollaborationData.item.coProducer2 =
-                m2Controller.getContactName(
-                    wizard.songCollaborationData.item.coProducer2UID, wizard.songCollaborationData.item.coProducer2
-                )
         }
+
+        //Sync contact data
+        wizard.songMainData.item.mixing =
+            m2Controller.getContactName(
+                wizard.songMainData.item.mixingUID, wizard.songMainData.item.mixing
+            )
+        wizard.songMainData.item.mastering =
+            m2Controller.getContactName(
+                wizard.songMainData.item.masteringUID, wizard.songMainData.item.mastering
+            )
+        wizard.songCollaborationData.item.coVocalist1 =
+            m2Controller.getContactName(
+                wizard.songCollaborationData.item.coVocalist1UID, wizard.songCollaborationData.item.coVocalist1
+            )
+        wizard.songCollaborationData.item.coVocalist2 =
+            m2Controller.getContactName(
+                wizard.songCollaborationData.item.coVocalist2UID, wizard.songCollaborationData.item.coVocalist2
+            )
+        wizard.songCollaborationData.item.coProducer1 =
+            m2Controller.getContactName(
+                wizard.songCollaborationData.item.coProducer1UID, wizard.songCollaborationData.item.coProducer1
+            )
+        wizard.songCollaborationData.item.coProducer2 =
+            m2Controller.getContactName(
+                wizard.songCollaborationData.item.coProducer2UID, wizard.songCollaborationData.item.coProducer2
+            )
 
         wizard.onComplete {
             saveEntry()

@@ -2,6 +2,7 @@ package interfaces
 
 import db.CwODB
 import db.Index
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.MXLastChange
 import modules.mx.MXUser
 import modules.mx.logic.MXTimestamp.MXTimestamp.convUnixHexToUnixTimestamp
@@ -9,11 +10,13 @@ import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
+@ExperimentalSerializationApi
 interface IIndexManager : IModule {
     val db: CwODB
     val indexList: Map<Int, Index>
-    var lastUID: Int
+    var lastUID: AtomicInteger
     var module: String
     var moduleDescription: String
     var lastChangeDateHex: String
@@ -21,8 +24,8 @@ interface IIndexManager : IModule {
     var lastChangeDateLocal: String
     var lastChangeUser: String
 
-    fun getUID(): Int {
-        lastUID++
+    fun getUID(): AtomicInteger {
+        lastUID.getAndIncrement()
         db.setLastUniqueID(lastUID, module())
         return lastUID
     }

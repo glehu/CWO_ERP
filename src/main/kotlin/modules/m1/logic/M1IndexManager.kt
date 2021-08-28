@@ -14,6 +14,7 @@ import modules.m1.Song
 import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import tornadofx.Controller
+import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
 class M1IndexManager : IModule, IIndexManager, Controller() {
@@ -31,7 +32,7 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
     //*************************************************
 
     override val indexList = mutableMapOf<Int, Index>()
-    override var lastUID = -1
+    override var lastUID = AtomicInteger(-1)
 
     init {
         MXLog.log(module(), MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
@@ -50,7 +51,6 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
         return arrayListOf("1-Name", "2-Vocalist", "3-Producer", "4-Genre")
     }
 
-    @ExperimentalSerializationApi
     override fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean) = runBlocking {
         entry as Song
         buildIndex0(entry, posDB, byteSize)

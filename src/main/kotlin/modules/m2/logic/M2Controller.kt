@@ -12,6 +12,7 @@ import modules.m2.gui.MG2Import
 import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import modules.m2.misc.getContactPropertyFromContact
+import modules.mx.isClientGlobal
 import modules.mx.m2GlobalIndex
 import tornadofx.Controller
 import tornadofx.Scope
@@ -75,7 +76,7 @@ class M2Controller : IModule, Controller() {
     }
 
     fun getContactName(uID: Int, default: String): String {
-        return if (uID != -1) {
+        return if (uID != -1 && !isClientGlobal) {
             val contact = M2DBManager().getEntry(
                 uID, db, m2GlobalIndex.indexList[0]!!
             ) as Contact

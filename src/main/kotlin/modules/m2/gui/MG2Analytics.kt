@@ -34,7 +34,7 @@ class MG2Analytics : Fragment("City distribution") {
             }
             button("Start") {
                 action {
-                    maxEntries = m2controller.db.getLastUniqueID("M2")
+                    maxEntries = m2controller.db.getLastUniqueID("M2").toInt()
                     runAsync {
                         val cityDist = m2controller.getChartDataOnCityDistribution(m2GlobalIndex, numberOfCities)
                         {
