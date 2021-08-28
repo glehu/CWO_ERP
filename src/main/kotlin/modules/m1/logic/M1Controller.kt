@@ -144,6 +144,14 @@ class M1Controller : IModule, Controller() {
         }
 
         //Sync contact data
+        wizard.songMainData.item.vocalist =
+            m2Controller.getContactName(
+                wizard.songMainData.item.vocalistUID, wizard.songMainData.item.vocalist
+            )
+        wizard.songMainData.item.producer =
+            m2Controller.getContactName(
+                wizard.songMainData.item.producerUID, wizard.songMainData.item.producer
+            )
         wizard.songMainData.item.mixing =
             m2Controller.getContactName(
                 wizard.songMainData.item.mixingUID, wizard.songMainData.item.mixing

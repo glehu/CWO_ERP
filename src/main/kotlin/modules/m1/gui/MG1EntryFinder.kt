@@ -67,16 +67,8 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
                 tableview(entriesFound) {
                     readonlyColumn("ID", Song::uID).prefWidth(65.0)
                     readonlyColumn("Name", Song::name).prefWidth(310.0)
-                    readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
-                        rowItem.vocalist = text
-                        textFill = Color.LIGHTGRAY
-                    }
-                    readonlyColumn("Producer", Song::producer).prefWidth(200.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer)
-                        rowItem.producer = text
-                        textFill = Color.LIGHTGRAY
-                    }
+                    readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0)
+                    readonlyColumn("Producer", Song::producer).prefWidth(200.0)
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
                         m1Controller.showSong(it)
