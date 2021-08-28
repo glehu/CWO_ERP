@@ -1,6 +1,7 @@
 package modules.mx.gui
 
 import interfaces.IModule
+import io.ktor.util.*
 import javafx.scene.control.TabPane
 import javafx.stage.Stage
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -17,6 +18,7 @@ import modules.mx.misc.getUserPropertyFromUser
 import styling.Stylesheet
 import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
     override fun moduleNameLong() = "CWO ERP"
@@ -39,6 +41,7 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
     }
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MXGLogin : Fragment("CWO ERP") {
     private val loginUser = MXUserModel(getUserPropertyFromUser(MXUser("", "")))
@@ -80,6 +83,7 @@ class MXGLogin : Fragment("CWO ERP") {
     }
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MXGUserInterface : View(titleGlobal) {
     override val root = borderpane {

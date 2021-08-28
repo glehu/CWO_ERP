@@ -10,12 +10,14 @@ import api.misc.json.SpotifyUserProfileJson
 import api.logic.SpotifyAPI
 import api.logic.SpotifyAUTH
 import api.logic.SpotifyController
+import io.ktor.util.*
 import modules.m1.logic.M1Import
 import modules.mx.gui.MGXProgressbar
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet.Companion.fieldsetBorder
 import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class GSpotify : View("Spotify API") {
     private val sAUTH = SpotifyAUTH()

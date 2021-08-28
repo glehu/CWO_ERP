@@ -2,6 +2,7 @@ package modules.mx.gui
 
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -11,6 +12,7 @@ import modules.mx.logic.getRandomString
 import modules.mx.logic.readAndSetIniValues
 import tornadofx.*
 
+@ExperimentalSerializationApi
 class MGXPreferences : View("Preferences") {
     private val encryptionKeyProperty = SimpleStringProperty(getRandomString(16, true))
     private val dataPathProperty = SimpleStringProperty(System.getProperty("user.dir"))
@@ -96,4 +98,5 @@ class MGXPreferences : View("Preferences") {
     }
 }
 
+@ExperimentalSerializationApi
 fun showPreferences() = FX.find<MGXPreferences>().openModal(block = true)

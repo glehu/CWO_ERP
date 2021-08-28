@@ -11,11 +11,11 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import modules.m3.Invoice
 import java.io.RandomAccessFile
 
+@ExperimentalSerializationApi
 class M3DBManager : IModule, IDBManager {
     override fun moduleNameLong() = "M3DBManager"
     override fun module() = "M3"
 
-    @ExperimentalSerializationApi
     override fun saveEntry(
         entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,
         raf: RandomAccessFile, indexManager: Any,
@@ -30,12 +30,10 @@ class M3DBManager : IModule, IDBManager {
         return entry.uID
     }
 
-    @ExperimentalSerializationApi
     override fun getEntry(uID: Int, cwodb: CwODB, index: Index): Any {
         return decodeEntry(cwodb.getEntryFromUniqueID(uID, module(), index)) as Invoice
     }
 
-    @ExperimentalSerializationApi
     override fun decodeEntry(entry: ByteArray): Any {
         return ProtoBuf.decodeFromByteArray(entry) as Invoice
     }

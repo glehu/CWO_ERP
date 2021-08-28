@@ -1,13 +1,14 @@
 package modules.m1.logic
 
+import api.logic.SpotifyAPI
+import api.misc.json.*
 import db.CwODB
 import db.IndexContent
 import interfaces.IModule
+import io.ktor.util.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import api.misc.json.*
-import api.logic.SpotifyAPI
 import modules.m1.Song
 import modules.m2.Contact
 import modules.m2.logic.M2DBManager
@@ -20,6 +21,8 @@ import java.io.RandomAccessFile
 import java.time.LocalDate
 import kotlin.system.measureTimeMillis
 
+@ExperimentalSerializationApi
+@InternalAPI
 class M1Import : IModule, Controller() {
     override fun moduleNameLong() = "M1Import"
     override fun module() = "M1"

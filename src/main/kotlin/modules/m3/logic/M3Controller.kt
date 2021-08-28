@@ -2,6 +2,7 @@ package modules.m3.logic
 
 import db.CwODB
 import interfaces.IModule
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.Invoice
 import modules.m3.gui.InvoiceConfiguratorWizard
@@ -12,6 +13,7 @@ import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.mx.m3GlobalIndex
 import tornadofx.Controller
 
+@InternalAPI
 @ExperimentalSerializationApi
 class M3Controller : IModule, Controller() {
     override fun moduleNameLong() = "M3Controller"

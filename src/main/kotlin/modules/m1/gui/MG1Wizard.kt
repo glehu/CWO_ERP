@@ -1,6 +1,7 @@
 package modules.m1.gui
 
 import db.CwODB
+import io.ktor.util.*
 import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Controller
@@ -9,6 +10,7 @@ import modules.m2.logic.M2Controller
 import tornadofx.*
 
 //This Wizard is used to create new songs
+@InternalAPI
 @ExperimentalSerializationApi
 class SongConfiguratorWizard : Wizard("Add new entry") {
     val songMainData: SongPropertyMainDataModel by inject()
@@ -39,6 +41,7 @@ class SongConfiguratorWizard : Wizard("Add new entry") {
     }
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 class SongMainData : Fragment("Main") {
     val db: CwODB by inject()
@@ -289,6 +292,7 @@ class SongVisualizationData : Fragment("Visualization") {
     }
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 class SongAlbumEPData : Fragment("Album/EP") {
     private val songAlbumEPData: SongPropertyAlbumEPDataModel by inject()
@@ -346,6 +350,7 @@ class SongStatisticsData : Fragment("Statistics") {
     }
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 class SongCollaborationData : Fragment("Collaboration") {
     private val m2controller: M2Controller by inject()

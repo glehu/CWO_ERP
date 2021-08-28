@@ -2,6 +2,7 @@ package modules.m3.gui
 
 import db.CwODB
 import interfaces.IModule
+import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
@@ -20,6 +21,7 @@ import modules.mx.rightButtonsWidth
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MG3InvoiceFinder : IModule, View("M3 Invoices") {
     override fun moduleNameLong() = "MG3InvoiceFinder"

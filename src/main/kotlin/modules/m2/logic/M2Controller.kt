@@ -1,7 +1,12 @@
 package modules.m2.logic
 
+import api.logic.SpotifyAUTH
 import db.CwODB
 import interfaces.IModule
+import io.ktor.client.request.*
+import io.ktor.util.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
@@ -13,11 +18,15 @@ import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import modules.m2.misc.getContactPropertyFromContact
 import modules.mx.isClientGlobal
+import modules.mx.logic.MXAPI
+import modules.mx.m1GlobalIndex
 import modules.mx.m2GlobalIndex
+import modules.mx.server
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
 
+@InternalAPI
 @ExperimentalSerializationApi
 class M2Controller : IModule, Controller() {
     override fun moduleNameLong() = "M2Controller"
@@ -25,6 +34,8 @@ class M2Controller : IModule, Controller() {
 
     private val wizard = find<ContactConfiguratorWizard>()
     val db: CwODB by inject()
+
+    val client = SpotifyAUTH().getAuthClient(MXAPI.Companion.AuthType.NONE)
 
     fun searchEntry() {
         find<MG2ContactFinder>().openModal()
@@ -75,13 +86,38 @@ class M2Controller : IModule, Controller() {
         return contact
     }
 
+    fun getEntryBytes(uID: Int): ByteArray {
+        return if (uID != -1) {
+            db.getEntryFromUniqueID(uID, module(), m2GlobalIndex.indexList[0]!!)
+        } else byteArrayOf()
+    }
+
     fun getContactName(uID: Int, default: String): String {
-        return if (uID != -1 && !isClientGlobal) {
-            val contact = M2DBManager().getEntry(
-                uID, db, m2GlobalIndex.indexList[0]!!
-            ) as Contact
-            contact.name
+        return if (uID != -1) {
+            getContact(uID).name
         } else default
+    }
+
+    private fun getContact(uID: Int): Contact {
+        lateinit var contact: Contact
+        if (uID != -1) {
+            if (!isClientGlobal) {
+                contact = M2DBManager().getEntry(
+                    uID, db, m2GlobalIndex.indexList[0]!!
+                ) as Contact
+            } else {
+                runBlocking {
+                    launch {
+                        contact = M2DBManager().decodeEntry(
+                            client.get(
+                                "${getApiUrl()}entry/$uID?type=uid"
+                            )
+                        ) as Contact
+                    }
+                }
+            }
+        } else contact = Contact(-1, "")
+        return contact
     }
 
     fun showContact(uID: Int) {

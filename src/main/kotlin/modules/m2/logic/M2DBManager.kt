@@ -11,11 +11,11 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import modules.m2.Contact
 import java.io.RandomAccessFile
 
+@ExperimentalSerializationApi
 class M2DBManager : IModule, IDBManager {
     override fun moduleNameLong() = "M2DBManager"
     override fun module() = "M2"
 
-    @ExperimentalSerializationApi
     override fun saveEntry(
         entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,
         raf: RandomAccessFile, indexManager: Any,
@@ -30,12 +30,10 @@ class M2DBManager : IModule, IDBManager {
         return entry.uID
     }
 
-    @ExperimentalSerializationApi
     override fun getEntry(uID: Int, cwodb: CwODB, index: Index): Any {
         return decodeEntry(cwodb.getEntryFromUniqueID(uID, "M2", index)) as Contact
     }
 
-    @ExperimentalSerializationApi
     override fun decodeEntry(entry: ByteArray): Any {
         return ProtoBuf.decodeFromByteArray(entry) as Contact
     }

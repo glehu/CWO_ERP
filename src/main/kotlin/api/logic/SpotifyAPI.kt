@@ -7,9 +7,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import api.misc.json.*
+import io.ktor.client.call.*
+import io.ktor.client.features.*
+import io.ktor.util.*
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXLog
 
+@InternalAPI
 @ExperimentalSerializationApi
 class SpotifyAPI : IModule, IAPI {
     override fun moduleNameLong() = "SpotifyAPI"

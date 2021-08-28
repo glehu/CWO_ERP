@@ -1,5 +1,6 @@
 package modules.mx.gui
 
+import io.ktor.util.*
 import javafx.collections.ObservableList
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.MXUser
@@ -7,6 +8,7 @@ import modules.mx.logic.MXUserManager
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MGXUserManager : View("User Management") {
     private val userManager: MXUserManager by inject()

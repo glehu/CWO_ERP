@@ -1,6 +1,8 @@
 package modules.mx.gui
 
+import io.ktor.util.*
 import javafx.scene.paint.Color
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.MXCredentials
 import modules.mx.MXUser
 import modules.mx.logic.MXUserManager
@@ -11,6 +13,8 @@ import modules.mx.rightButtonsWidth
 import modules.mx.token
 import tornadofx.*
 
+@ExperimentalSerializationApi
+@InternalAPI
 class MGXUser(user: MXUser, credentials: MXCredentials) : Fragment("User") {
     private val userManager: MXUserManager by inject()
     private val userModel = MXUserModel(getUserPropertyFromUser(user))

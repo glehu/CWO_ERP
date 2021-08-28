@@ -10,14 +10,15 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m1.logic.M1Controller
+import modules.m2.logic.M2Controller
 import modules.mx.logic.MXLog
-import tornadofx.find
-import tornadofx.runAsync
+import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MXServer : IModule {
     override fun moduleNameLong() = "Server"
@@ -53,19 +54,25 @@ class MXServer : IModule {
             route("/api")
             {
                 route("/m1") {
-                    get("") {
-                        text = "/entry/{searchString}?type={type}" +
-                                "\n\ntype can be \"uid\" if the search string is a unique identifier code"
-                        call.respondText(text)
-                    }
                     get("/entry/{searchString}") {
                         val routePar = call.parameters["searchString"]
                         if (routePar != null && routePar.isNotEmpty()) {
                             val queryPar = call.request.queryParameters["type"]
                             if (queryPar == "uid") {
-                                call.respond(Json.encodeToString(M1Controller().getEntry(routePar.toInt())))
+                                call.respond(M1Controller().getEntryBytes(routePar.toInt()))
                             } else if (queryPar == "name") {
-                                call.respond(M1Controller().getEntryListJson(routePar, 1))
+                                call.respond(M1Controller().getEntryBytesListJson(routePar, 1))
+                            }
+                        }
+                    }
+                }
+                route("/m2") {
+                    get("/entry/{searchString}") {
+                        val routePar = call.parameters["searchString"]
+                        if (routePar != null && routePar.isNotEmpty()) {
+                            val queryPar = call.request.queryParameters["type"]
+                            if (queryPar == "uid") {
+                                call.respond(M2Controller().getEntryBytes(routePar.toInt()))
                             }
                         }
                     }

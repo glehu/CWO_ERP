@@ -1,10 +1,12 @@
 package modules.m3.gui
 
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Controller
 import modules.m3.misc.InvoiceModel
 import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class InvoiceConfiguratorWizard : Wizard("Add new invoice") {
     val invoice: InvoiceModel by inject()
@@ -15,6 +17,7 @@ class InvoiceConfiguratorWizard : Wizard("Add new invoice") {
     }
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 class InvoiceViewerWizard : Wizard("View an invoice") {
     val invoice: InvoiceModel by inject()
@@ -25,6 +28,7 @@ class InvoiceViewerWizard : Wizard("View an invoice") {
     }
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 class NewInvoiceMainData : Fragment("Main") {
     private val invoice: InvoiceModel by inject()

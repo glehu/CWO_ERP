@@ -1,6 +1,7 @@
 package modules.mx.logic
 
 import interfaces.IModule
+import io.ktor.util.*
 import javafx.collections.ObservableList
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
@@ -20,16 +21,16 @@ import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
+@InternalAPI
+@ExperimentalSerializationApi
 class MXUserManager : IModule, Controller() {
     override fun moduleNameLong() = "MXPasswordManager"
     override fun module() = "MX"
 
-    @ExperimentalSerializationApi
     fun login(username: String, password: String): Boolean {
         return compareCredentials(username, password, getCredentials())
     }
 
-    @ExperimentalSerializationApi
     fun getUser(username: String): MXUser? {
         return getCredentials().credentials[username]
     }
@@ -49,7 +50,6 @@ class MXUserManager : IModule, Controller() {
         writeCredentials(credentials)
     }
 
-    @ExperimentalSerializationApi
     fun getCredentials(): MXCredentials {
         val credentialsFile = getCredentialsFile()
         if (!credentialsFile.isFile) initializeCredentials(credentialsFile)
@@ -63,7 +63,6 @@ class MXUserManager : IModule, Controller() {
 
     private fun getCredentialsFile() = File("${getModulePath("MX")}\\credentials.dat")
 
-    @ExperimentalSerializationApi
     private fun compareCredentials(username: String, password: String, credentials: MXCredentials): Boolean {
         var successful = false
         val user = credentials.credentials[username]
@@ -79,7 +78,6 @@ class MXUserManager : IModule, Controller() {
         return successful
     }
 
-    @ExperimentalSerializationApi
     private fun initializeCredentials(credentialsFile: File) {
         val user = MXUser("admin", encrypt("admin", token))
         startupRoutines(user)
@@ -113,18 +111,15 @@ class MXUserManager : IModule, Controller() {
     fun getRightsCellColor(hasRight: Boolean): MultiValue<Paint> =
         if (hasRight) MultiValue(arrayOf(Color.GREEN)) else MultiValue(arrayOf(Color.RED))
 
-    @ExperimentalSerializationApi
     fun addUser(credentials: MXCredentials, users: ObservableList<MXUser>) =
         showUser(MXUser("", ""), credentials, users)
 
-    @ExperimentalSerializationApi
     fun getUsers(users: ObservableList<MXUser>, credentials: MXCredentials): ObservableList<MXUser> {
         users.clear()
         for ((_, v) in credentials.credentials) users.add(v)
         return users
     }
 
-    @ExperimentalSerializationApi
     fun showUser(user: MXUser, credentials: MXCredentials, users: ObservableList<MXUser>) {
         MGXUser(user, credentials).openModal(block = true)
         getUsers(users, credentials)

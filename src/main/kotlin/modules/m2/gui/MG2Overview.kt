@@ -1,6 +1,7 @@
 package modules.m2.gui
 
 import interfaces.IOverview
+import io.ktor.util.*
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Controller
@@ -8,6 +9,7 @@ import modules.mx.rightButtonsWidth
 import styling.Stylesheet
 import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MG2Overview : IOverview, View("M2 Contacts") {
     private val m2Controller: M2Controller by inject()

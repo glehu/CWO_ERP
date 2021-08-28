@@ -6,10 +6,12 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import api.misc.json.SpotifyUserProfileJson
+import io.ktor.util.*
 import modules.mx.getModulePath
 import tornadofx.Controller
 import java.io.File
 
+@InternalAPI
 @ExperimentalSerializationApi
 class SpotifyController : IAPI, Controller() {
     override val apiName = "spotify"

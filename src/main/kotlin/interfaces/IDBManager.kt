@@ -2,8 +2,10 @@ package interfaces
 
 import db.CwODB
 import db.Index
+import kotlinx.serialization.ExperimentalSerializationApi
 import java.io.RandomAccessFile
 
+@ExperimentalSerializationApi
 interface IDBManager : IModule {
     fun saveEntry(
         entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,

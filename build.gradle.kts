@@ -34,7 +34,7 @@ dependencies {
     implementation("io.ktor:ktor-client-auth:1.6.2")
     implementation("io.ktor:ktor-serialization:1.6.2")
     implementation("ch.qos.logback:logback-classic:1.2.5")
-    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.15.2")
+    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.0.0")
 }
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"

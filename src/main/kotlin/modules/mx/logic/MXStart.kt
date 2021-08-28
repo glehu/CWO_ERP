@@ -1,6 +1,7 @@
 package modules.mx.logic
 
 import api.logic.MXServer
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -13,17 +14,20 @@ import modules.mx.gui.showPreferences
 import tornadofx.launch
 import java.io.File
 
+@InternalAPI
 @ExperimentalSerializationApi
 fun main() {
     launch<CWOMainGUI>()
 }
 
+@ExperimentalSerializationApi
 fun loginRoutines() {
     //Search for the .ini file to set up the software
     if (!getIniFile().isFile) showPreferences()
     else readAndSetIniValues()
 }
 
+@ExperimentalSerializationApi
 fun readAndSetIniValues() {
     val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
     token = iniVal.token
@@ -40,6 +44,7 @@ fun readAndSetIniValues() {
     }
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 fun startupRoutines(user: MXUser) {
     //Set active user

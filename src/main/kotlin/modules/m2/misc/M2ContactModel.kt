@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
 import tornadofx.ItemViewModel
 import tornadofx.getValue
@@ -82,6 +83,7 @@ class ContactModel : ItemViewModel<ContactProperty>(ContactProperty()) {
     val spotifyID = bind(ContactProperty::spotifyIDProperty)
 }
 
+@ExperimentalSerializationApi
 fun getContactPropertyFromContact(contact: Contact): ContactProperty {
     val contactProperty = ContactProperty()
     //For contactModel to be serialized, it has to be inserted into contact
@@ -123,6 +125,7 @@ fun getContactPropertyFromContact(contact: Contact): ContactProperty {
     return contactProperty
 }
 
+@ExperimentalSerializationApi
 fun getContactFromProperty(contactProperty: ContactProperty): Contact {
     val contact = Contact(-1, contactProperty.name)
     //For contactModel to be serialized, it has to be inserted into contact

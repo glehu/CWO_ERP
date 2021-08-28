@@ -8,12 +8,12 @@ import modules.mx.logic.MXLog
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
+@ExperimentalSerializationApi
 class M2Analytics : IModule, Controller() {
     override fun moduleNameLong() = "M2Analytics"
     override fun module() = "M2"
     val db: CwODB by inject()
 
-    @ExperimentalSerializationApi
     fun getChartDataOnCityDistribution(
         indexManager: M2IndexManager,
         amount: Int = -1,

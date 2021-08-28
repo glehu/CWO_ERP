@@ -5,6 +5,7 @@ import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
 import api.logic.MXServer
+import io.ktor.util.*
 import java.io.File
 
 //*************************************************
@@ -50,6 +51,7 @@ const val rightButtonsWidth = 150.0
 var differenceFromUTC: Int = 0
 
 //Server/Client
+@InternalAPI
 @ExperimentalSerializationApi
 lateinit var server: MXServer
 var isClientGlobal: Boolean = false

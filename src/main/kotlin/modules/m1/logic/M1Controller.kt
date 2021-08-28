@@ -1,8 +1,13 @@
 package modules.m1.logic
 
+import api.logic.SpotifyAUTH
 import api.misc.json.M1EntryListJson
 import db.CwODB
 import interfaces.IModule
+import io.ktor.client.request.*
+import io.ktor.util.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.gui.MG1Analytics
@@ -11,11 +16,13 @@ import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.misc.*
 import modules.m2.logic.M2Controller
 import modules.mx.isClientGlobal
+import modules.mx.logic.MXAPI
 import modules.mx.m1GlobalIndex
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
 import tornadofx.Scope
 
+@InternalAPI
 @ExperimentalSerializationApi
 class M1Controller : IModule, Controller() {
     override fun moduleNameLong() = "M1Controller"
@@ -23,6 +30,8 @@ class M1Controller : IModule, Controller() {
 
     val db: CwODB by inject()
     private val m2Controller: M2Controller by inject()
+
+    val client = SpotifyAUTH().getAuthClient(MXAPI.Companion.AuthType.NONE)
 
     fun searchEntry() {
         find<MG1EntryFinder>().openModal()
@@ -127,13 +136,11 @@ class M1Controller : IModule, Controller() {
         wizard.songCopyrightData.item = getSongPropertyCopyrightData(song)
         wizard.songMiscData.item = getSongPropertyMiscData(song)
 
-        if (!isClientGlobal) {
-            //Sync album data
-            val album = getEntry(wizard.songAlbumEPData.item.albumUID)
-            if (album.uID != -1) {
-                wizard.songAlbumEPData.item.nameAlbum = album.name
-                wizard.songAlbumEPData.item.typeAlbum = album.type
-            }
+        //Sync album data
+        val album = getEntry(wizard.songAlbumEPData.item.albumUID)
+        if (album.uID != -1) {
+            wizard.songAlbumEPData.item.nameAlbum = album.name
+            wizard.songAlbumEPData.item.typeAlbum = album.type
         }
 
         //Sync contact data
@@ -167,21 +174,41 @@ class M1Controller : IModule, Controller() {
         }
     }
 
+    fun getEntryBytes(uID: Int): ByteArray {
+        return if (uID != -1) {
+            db.getEntryFromUniqueID(uID, module(), m1GlobalIndex.indexList[0]!!)
+        } else byteArrayOf()
+    }
+
     private fun getEntryName(uID: Int, default: String): String {
         return if (uID != -1) {
             getEntry(uID).name
         } else default
     }
 
-    fun getEntry(uID: Int): Song {
-        return if (uID != -1) {
-            M1DBManager().getEntry(
-                uID, db, m1GlobalIndex.indexList[0]!!
-            ) as Song
-        } else Song(-1, "")
+    private fun getEntry(uID: Int): Song {
+        lateinit var song: Song
+        if (uID != -1) {
+            if (!isClientGlobal) {
+                song = M1DBManager().getEntry(
+                    uID, db, m1GlobalIndex.indexList[0]!!
+                ) as Song
+            } else {
+                runBlocking {
+                    launch {
+                        song = M1DBManager().decodeEntry(
+                            client.get(
+                                "${getApiUrl()}entry/$uID?type=uid"
+                            )
+                        ) as Song
+                    }
+                }
+            }
+        } else song = Song(-1, "")
+        return song
     }
 
-    fun getEntryListJson(searchText: String, ixNr: Int): M1EntryListJson {
+    fun getEntryBytesListJson(searchText: String, ixNr: Int): M1EntryListJson {
         val resultsListJson = M1EntryListJson(0, arrayListOf())
         var resultCounter = 0
         db.getEntriesFromSearchString(

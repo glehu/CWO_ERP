@@ -1,10 +1,10 @@
 package modules.m1.gui
 
-import api.logic.SpotifyAUTH
 import api.misc.json.M1EntryListJson
 import db.CwODB
 import interfaces.IModule
 import io.ktor.client.request.*
+import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
@@ -20,14 +20,13 @@ import modules.m1.logic.M1Controller
 import modules.m1.logic.M1DBManager
 import modules.m2.logic.M2Controller
 import modules.mx.isClientGlobal
-import modules.mx.logic.MXAPI
 import modules.mx.logic.MXLog
 import modules.mx.m1GlobalIndex
 import modules.mx.maxSearchResultsGlobal
-import modules.mx.serverIPAddressGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MG1EntryFinder : IModule, View("M1 Discography") {
     override fun moduleNameLong() = "MG1EntryFinder"
@@ -42,7 +41,6 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
     private val ixNrList = FXCollections.observableArrayList(m1GlobalIndex.getIndexUserSelection())!!
     private val threadIDCurrentProperty = SimpleIntegerProperty()
     private var threadIDCurrent by threadIDCurrentProperty
-    private val client = SpotifyAUTH().getAuthClient(MXAPI.Companion.AuthType.NONE)
     override val root = borderpane {
         center = form {
             entriesFound.clear()
@@ -70,18 +68,14 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
                     readonlyColumn("ID", Song::uID).prefWidth(65.0)
                     readonlyColumn("Name", Song::name).prefWidth(310.0)
                     readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0).cellFormat {
-                        if (!isClientGlobal) {
-                            text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
-                            rowItem.vocalist = text
-                            textFill = Color.LIGHTGRAY
-                        }
+                        text = m2Controller.getContactName(rowItem.vocalistUID, rowItem.vocalist)
+                        rowItem.vocalist = text
+                        textFill = Color.LIGHTGRAY
                     }
                     readonlyColumn("Producer", Song::producer).prefWidth(200.0).cellFormat {
-                        if (!isClientGlobal) {
-                            text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer)
-                            rowItem.producer = text
-                            textFill = Color.LIGHTGRAY
-                        }
+                        text = m2Controller.getContactName(rowItem.producerUID, rowItem.producer)
+                        rowItem.producer = text
+                        textFill = Color.LIGHTGRAY
                     }
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
@@ -126,8 +120,8 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
                 if (searchText.text.isNotEmpty()) {
                     runBlocking {
                         launch {
-                            val entryListJson: M1EntryListJson = client.get(
-                                "http://$serverIPAddressGlobal/api/m1/entry/${searchText.text}?type=name"
+                            val entryListJson: M1EntryListJson = m1Controller.client.get(
+                                "${getApiUrl()}entry/${searchText.text}?type=name"
                             )
                             if (threadID == threadIDCurrent) {
                                 this@MG1EntryFinder.entriesFound.clear()

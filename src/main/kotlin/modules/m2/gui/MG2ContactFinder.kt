@@ -2,6 +2,7 @@ package modules.m2.gui
 
 import db.CwODB
 import interfaces.IModule
+import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
@@ -19,6 +20,7 @@ import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MG2ContactFinder : IModule, View("M2 Contacts") {
     override fun moduleNameLong() = "MG2ContactFinder"

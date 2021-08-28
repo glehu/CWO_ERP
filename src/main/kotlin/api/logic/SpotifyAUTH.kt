@@ -14,6 +14,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import api.gui.GSpotify
 import api.misc.json.SpotifyAuthCallbackJson
+import io.ktor.client.call.*
+import io.ktor.util.*
 import modules.mx.getClientSecretFile
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXAPI.Companion.getAPITokenFile
@@ -22,6 +24,7 @@ import modules.mx.logic.MXTimestamp
 import tornadofx.find
 import java.net.URLEncoder
 
+@InternalAPI
 @ExperimentalSerializationApi
 class SpotifyAUTH : IModule, IAPIAUTH {
     override fun moduleNameLong() = "SpotifyAUTH"

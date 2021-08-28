@@ -8,6 +8,7 @@ import modules.mx.logic.MXLog
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
+@ExperimentalSerializationApi
 class M1Analytics : IModule, Controller() {
     override fun moduleNameLong() = "M1Analytics"
     override fun module() = "M1"

@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.Invoice
 import tornadofx.ItemViewModel
 import tornadofx.getValue
@@ -44,6 +45,7 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     var paid = bind(InvoiceProperty::paidProperty)
 }
 
+@ExperimentalSerializationApi
 fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty {
     val invoiceProperty = InvoiceProperty()
     invoiceProperty.uID = invoice.uID
@@ -58,6 +60,7 @@ fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty {
     return invoiceProperty
 }
 
+@ExperimentalSerializationApi
 fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): Invoice {
     val invoice = Invoice(-1)
     invoice.uID = invoiceProperty.uID
