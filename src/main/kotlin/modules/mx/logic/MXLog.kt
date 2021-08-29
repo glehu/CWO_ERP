@@ -3,6 +3,7 @@ package modules.mx.logic
 import interfaces.IModule
 import modules.mx.activeUser
 import modules.mx.getModulePath
+import modules.mx.isClientGlobal
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestampFromUnix
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestamp
 import tornadofx.runAsync
@@ -21,11 +22,13 @@ class MXLog {
         private fun getLogFile(module: String) = File("${getLogPath(module)}\\${module}_log.txt")
 
         fun log(module: String, type: LogType, text: String, caller: String, write: Boolean = true) {
-            val logText = "<$type><${activeUser.username}> $caller :> $text\n"
-            print(logText)
-            if (write) {
-                runAsync {
-                    getLogFile(module).appendText("${getUTCTimestampFromUnix(getUnixTimestamp())}$logText")
+            if (!isClientGlobal) {
+                val logText = "<$type><${activeUser.username}> $caller :> $text\n"
+                print(logText)
+                if (write) {
+                    runAsync {
+                        getLogFile(module).appendText("${getUTCTimestampFromUnix(getUnixTimestamp())}$logText")
+                    }
                 }
             }
         }

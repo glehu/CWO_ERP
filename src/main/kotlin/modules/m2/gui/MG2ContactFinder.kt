@@ -1,7 +1,10 @@
 package modules.m2.gui
 
+import api.logic.getCWOClient
+import api.misc.json.M1EntryListJson
 import db.CwODB
 import interfaces.IModule
+import io.ktor.client.request.*
 import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
@@ -9,11 +12,15 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
 import modules.m2.logic.M2Controller
 import modules.m2.logic.M2DBManager
+import modules.mx.activeUser
+import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
 import modules.mx.m2GlobalIndex
 import modules.mx.maxSearchResultsGlobal
@@ -32,12 +39,13 @@ class MG2ContactFinder : IModule, View("M2 Contacts") {
     private var exactSearch: CheckBox by singleAssign()
     private var contactsFound: ObservableList<Contact> = observableListOf(Contact(-1, ""))
     private var ixNr = SimpleStringProperty()
-    private val ixNrList = FXCollections.observableArrayList(m2GlobalIndex.getIndexUserSelection())!!
-    private val threadIDCurrent = SimpleIntegerProperty()
+    private val ixNrList = FXCollections.observableArrayList(m2Controller.getIndexUserSelection())!!
+    private val threadIDCurrentProperty = SimpleIntegerProperty()
+    private var threadIDCurrent by threadIDCurrentProperty
     override val root = borderpane {
         center = form {
             contactsFound.clear()
-            threadIDCurrent.value = 0
+            threadIDCurrent = 0
             fieldset {
                 field("Search") {
                     searchText = textfield {
@@ -70,7 +78,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts") {
                             song.commit()
                             close()
                         } else {
-                            m2Controller.showContact(it.uID)
+                            m2Controller.showContact(it)
                             //startSearch()
                             searchText.text = ""
                             close()
@@ -84,32 +92,50 @@ class MG2ContactFinder : IModule, View("M2 Contacts") {
 
     private fun startSearch() {
         runAsync {
-            threadIDCurrent.value++
-            searchForContacts(threadIDCurrent.value)
+            threadIDCurrent++
+            searchForContacts(threadIDCurrent)
         }
     }
 
     private fun searchForContacts(threadID: Int) {
         var entriesFound = 0
+        val dbManager = M2DBManager()
         val timeInMillis = measureTimeMillis {
-            val dbManager = M2DBManager()
-            contactsFound.clear()
-            db.getEntriesFromSearchString(
-                searchText.text.uppercase(),
-                ixNr.value.substring(0, 1).toInt(),
-                exactSearch.isSelected,
-                module(),
-                maxSearchResultsGlobal,
-                m2GlobalIndex
-            ) { _, bytes ->
-                //Add the contacts to the table
-                if (threadID == threadIDCurrent.value) {
-                    contactsFound.add(dbManager.decodeEntry(bytes) as Contact)
-                    entriesFound++
+            if (!isClientGlobal) {
+                contactsFound.clear()
+                db.getEntriesFromSearchString(
+                    searchText.text.uppercase(),
+                    ixNr.value.substring(0, 1).toInt(),
+                    exactSearch.isSelected,
+                    module(),
+                    maxSearchResultsGlobal,
+                    m2GlobalIndex
+                ) { _, bytes ->
+                    //Add the contacts to the table
+                    if (threadID == threadIDCurrent) {
+                        contactsFound.add(dbManager.decodeEntry(bytes) as Contact)
+                        entriesFound++
+                    }
+                }
+            } else if (isClientGlobal) {
+                if (searchText.text.isNotEmpty()) {
+                    runBlocking {
+                        launch {
+                            val entryListJson: M1EntryListJson = getCWOClient(activeUser.username, activeUser.password)
+                                .get("${getApiUrl()}entry/${searchText.text}?type=name")
+                            if (threadID == threadIDCurrent) {
+                                this@MG2ContactFinder.contactsFound.clear()
+                                for (entryBytes: ByteArray in entryListJson.resultsList) {
+                                    entriesFound++
+                                    this@MG2ContactFinder.contactsFound.add(dbManager.decodeEntry(entryBytes) as Contact)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-        if (threadID == threadIDCurrent.value) {
+        if (threadID == threadIDCurrent) {
             MXLog.log(
                 module(), MXLog.LogType.INFO, "$entriesFound contacts loaded (in $timeInMillis ms)",
                 moduleNameLong()

@@ -33,7 +33,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices") {
     private var exactSearch: CheckBox by singleAssign()
     private var contactsFound: ObservableList<Invoice> = observableListOf(Invoice(-1))
     private var ixNr = SimpleStringProperty()
-    private val ixNrList = FXCollections.observableArrayList(m3GlobalIndex.getIndexUserSelection())!!
+    private val ixNrList = FXCollections.observableArrayList(m3Controller.getIndexUserSelection())!!
     private val threadIDCurrent = SimpleIntegerProperty()
     override val root = borderpane {
         center = form {

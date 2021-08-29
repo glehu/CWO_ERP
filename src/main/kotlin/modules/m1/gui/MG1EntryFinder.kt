@@ -1,5 +1,6 @@
 package modules.m1.gui
 
+import api.logic.getCWOClient
 import api.misc.json.M1EntryListJson
 import db.CwODB
 import interfaces.IModule
@@ -18,6 +19,7 @@ import modules.m1.Song
 import modules.m1.logic.M1Controller
 import modules.m1.logic.M1DBManager
 import modules.m2.logic.M2Controller
+import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
 import modules.mx.m1GlobalIndex
@@ -37,7 +39,7 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
     private var exactSearch: CheckBox by singleAssign()
     private var entriesFound: ObservableList<Song> = observableListOf(Song(-1, ""))
     private var ixNr = SimpleStringProperty()
-    private val ixNrList = FXCollections.observableArrayList(m1GlobalIndex.getIndexUserSelection())!!
+    private val ixNrList = FXCollections.observableArrayList(m1Controller.getIndexUserSelection())!!
     private val threadIDCurrentProperty = SimpleIntegerProperty()
     private var threadIDCurrent by threadIDCurrentProperty
     override val root = borderpane {
@@ -111,9 +113,8 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
                 if (searchText.text.isNotEmpty()) {
                     runBlocking {
                         launch {
-                            val entryListJson: M1EntryListJson = m1Controller.client.get(
-                                "${getApiUrl()}entry/${searchText.text}?type=name"
-                            )
+                            val entryListJson: M1EntryListJson = getCWOClient(activeUser.username, activeUser.password)
+                                .get("${getApiUrl()}entry/${searchText.text}?type=name")
                             if (threadID == threadIDCurrent) {
                                 this@MG1EntryFinder.entriesFound.clear()
                                 for (entryBytes: ByteArray in entryListJson.resultsList) {

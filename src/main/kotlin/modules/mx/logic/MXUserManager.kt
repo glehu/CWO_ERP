@@ -1,14 +1,14 @@
 package modules.mx.logic
 
-import api.logic.SpotifyAUTH
-import api.misc.json.M1EntryListJson
-import interfaces.IAPIAUTH
+import api.logic.getCWOClient
 import interfaces.IModule
 import io.ktor.client.request.*
 import io.ktor.util.*
 import javafx.collections.ObservableList
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -21,6 +21,9 @@ import java.io.File
 import java.util.*
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -73,10 +76,16 @@ class MXUserManager : IModule, Controller() {
         val user = credentials.credentials[username]
         if (user != null && user.password == encrypt(password, token)) {
             successful = true
-            startupRoutines(user)
-            MXLog.log(
-                "MX", MXLog.LogType.INFO, "User \"$username\" login successful", moduleNameLong()
-            )
+            if (activeUser.username.isEmpty()) activeUser = user
+            if (!isClientGlobal) {
+                MXLog.log(
+                    "MX", MXLog.LogType.INFO, "User \"$username\" login successful", moduleNameLong()
+                )
+            } else {
+                MXLog.log(
+                    "MX", MXLog.LogType.COM, "User \"$username\" login successful", moduleNameLong()
+                )
+            }
         } else MXLog.log(
             "MX", MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials", moduleNameLong()
         )
@@ -85,12 +94,19 @@ class MXUserManager : IModule, Controller() {
 
     private fun compareCredentialsServer(username: String, password: String): Boolean {
         var successful = false
+        val client = getCWOClient(username, password)
+        runBlocking {
+            launch {
+                successful = client.get("${getServerUrl()}login")
+            }
+        }
+        if (successful) activeUser = MXUser(username, password)
         return successful
     }
 
     private fun initializeCredentials(credentialsFile: File) {
         val user = MXUser("admin", encrypt("admin", token))
-        startupRoutines(user)
+        //startupRoutines()
         credentialsFile.createNewFile()
         user.canAccessMX = true
         val credentials = MXCredentials(CredentialsType.MAIN)

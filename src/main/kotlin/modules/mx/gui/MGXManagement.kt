@@ -4,6 +4,7 @@ import api.gui.MGXAPI
 import io.ktor.util.*
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
+import modules.mx.isClientGlobal
 import tornadofx.View
 import tornadofx.tabpane
 
@@ -15,6 +16,6 @@ class MGXManagement : View("MX Management") {
 
         tab<MGXUserManager>()
         tab<MGXDatabaseManager>()
-        tab<MGXAPI>()
+        if (!isClientGlobal) tab<MGXAPI>() //TODO client work
     }
 }

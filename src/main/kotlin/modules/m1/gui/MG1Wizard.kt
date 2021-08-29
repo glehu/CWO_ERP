@@ -69,11 +69,6 @@ class SongMainData : Fragment("Main") {
                                 if (songMainData.vocalistUID.value != -1) {
                                     m2controller.showContact(songMainData.vocalistUID.value)
                                 }
-                                songMainData.vocalist.value =
-                                    m2controller.getContactName(
-                                        songMainData.vocalistUID.value,
-                                        songMainData.vocalist.value
-                                    )
                             }
                             item("Load contact").action {
                                 val contact = m2controller.selectAndReturnContact()
@@ -93,11 +88,6 @@ class SongMainData : Fragment("Main") {
                                 if (songMainData.producerUID.value != -1) m2controller.showContact(
                                     songMainData.producerUID.value
                                 )
-                                songMainData.producer.value =
-                                    m2controller.getContactName(
-                                        songMainData.producerUID.value,
-                                        songMainData.producer.value
-                                    )
                             }
                             item("Load contact").action {
                                 val contact = m2controller.selectAndReturnContact()

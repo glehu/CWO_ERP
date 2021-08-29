@@ -1,13 +1,19 @@
 package modules.m2.logic
 
-import api.logic.SpotifyAUTH
+import api.logic.getCWOClient
+import api.misc.json.M1EntryJson
+import api.misc.json.M2EntryJson
+import api.misc.json.M2EntryListJson
 import db.CwODB
 import interfaces.IModule
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.protobuf.ProtoBuf
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
 import modules.m2.gui.ContactConfiguratorWizard
@@ -17,11 +23,7 @@ import modules.m2.gui.MG2Import
 import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import modules.m2.misc.getContactPropertyFromContact
-import modules.mx.isClientGlobal
-import modules.mx.logic.MXAPI
-import modules.mx.m1GlobalIndex
-import modules.mx.m2GlobalIndex
-import modules.mx.server
+import modules.mx.*
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
@@ -35,7 +37,7 @@ class M2Controller : IModule, Controller() {
     private val wizard = find<ContactConfiguratorWizard>()
     val db: CwODB by inject()
 
-    val client = SpotifyAUTH().getAuthClient(MXAPI.Companion.AuthType.NONE)
+    val client = getCWOClient(activeUser.username, activeUser.password)
 
     fun searchEntry() {
         find<MG2ContactFinder>().openModal()
@@ -46,11 +48,24 @@ class M2Controller : IModule, Controller() {
         wizard.contact.commit()
         if (!wizard.contact.isValid) isComplete = false
         if (isComplete) {
-            val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-            wizard.contact.uID.value = M2DBManager().saveEntry(
-                getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, m2GlobalIndex
-            )
-            db.closeRandomFileAccess(raf)
+            if (!isClientGlobal) {
+                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
+                wizard.contact.uID.value = M2DBManager().saveEntry(
+                    getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, m2GlobalIndex
+                )
+                db.closeRandomFileAccess(raf)
+            } else {
+                val entry = getContactFromProperty(wizard.contact.item)
+                runBlocking {
+                    launch {
+                        wizard.contact.uID.value =
+                            client.post("${getApiUrl()}saveentry") {
+                                contentType(ContentType.Application.Json)
+                                body = M2EntryJson(entry.uID, ProtoBuf.encodeToByteArray(entry))
+                            }
+                    }
+                }
+            }
             wizard.isComplete = false
         }
     }
@@ -121,7 +136,10 @@ class M2Controller : IModule, Controller() {
     }
 
     fun showContact(uID: Int) {
-        val contact = M2DBManager().getEntry(uID, db, m2GlobalIndex.indexList[0]!!) as Contact
+        showContact(getContact(uID))
+    }
+
+    fun showContact(contact: Contact) {
         val wizard = find<ContactConfiguratorWizard>()
         wizard.contact.item = getContactPropertyFromContact(contact)
         wizard.onComplete {
@@ -138,9 +156,41 @@ class M2Controller : IModule, Controller() {
                 this.db.closeRandomFileAccess(raf)
                 wizard.contact.item = ContactProperty()
                 wizard.isComplete = false
-                //wizard.close()
             }
         }
-        //wizard.openWindow(block = true)
+    }
+
+    fun getEntryBytesListJson(searchText: String, ixNr: Int): M2EntryListJson {
+        val resultsListJson = M2EntryListJson(0, arrayListOf())
+        var resultCounter = 0
+        db.getEntriesFromSearchString(
+            searchText = searchText.uppercase(),
+            ixNr = ixNr,
+            exactSearch = false,
+            module = module(),
+            maxSearchResults = maxSearchResultsGlobal,
+            indexManager = m2GlobalIndex
+        ) { _, bytes ->
+            resultCounter++
+            resultsListJson.resultsList.add(bytes)
+        }
+        resultsListJson.resultsAmount = resultCounter
+        return resultsListJson
+    }
+
+    fun getIndexUserSelection(): ArrayList<String> {
+        lateinit var indexUserSelection: ArrayList<String>
+        if (!isClientGlobal) {
+            indexUserSelection = m1GlobalIndex.getIndexUserSelection()
+        } else {
+            runBlocking {
+                launch {
+                    indexUserSelection =
+                        getCWOClient(activeUser.username, activeUser.password)
+                            .get("${getApiUrl()}indexselection")
+                }
+            }
+        }
+        return indexUserSelection
     }
 }

@@ -3,13 +3,13 @@ package api.misc.json
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class M1EntryListJson(
+data class M2EntryListJson(
     var resultsAmount: Int,
     val resultsList: ArrayList<ByteArray>
 )
 
 @Serializable
-data class M1EntryJson(
+data class M2EntryJson(
     var uID: Int,
     var entry: ByteArray
 ) {

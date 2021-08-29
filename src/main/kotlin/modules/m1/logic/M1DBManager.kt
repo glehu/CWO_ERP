@@ -1,5 +1,6 @@
 package modules.m1.logic
 
+import api.misc.json.M1EntryJson
 import db.CwODB
 import db.Index
 import interfaces.IDBManager

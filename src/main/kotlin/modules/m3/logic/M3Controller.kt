@@ -1,8 +1,12 @@
 package modules.m3.logic
 
+import api.logic.getCWOClient
 import db.CwODB
 import interfaces.IModule
+import io.ktor.client.request.*
 import io.ktor.util.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.Invoice
 import modules.m3.gui.InvoiceConfiguratorWizard
@@ -10,6 +14,9 @@ import modules.m3.gui.InvoiceViewerWizard
 import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
+import modules.mx.activeUser
+import modules.mx.isClientGlobal
+import modules.mx.m1GlobalIndex
 import modules.mx.m3GlobalIndex
 import tornadofx.Controller
 
@@ -57,9 +64,23 @@ class M3Controller : IModule, Controller() {
                 this.db.closeRandomFileAccess(raf)
                 wizard.invoice.item = InvoiceProperty()
                 wizard.isComplete = false
-                wizard.close()
             }
         }
-        wizard.openModal(block = true)
+    }
+
+    fun getIndexUserSelection(): ArrayList<String> {
+        lateinit var indexUserSelection: ArrayList<String>
+        if (!isClientGlobal) {
+            indexUserSelection = m1GlobalIndex.getIndexUserSelection()
+        } else {
+            runBlocking {
+                launch {
+                    indexUserSelection =
+                        getCWOClient(activeUser.username, activeUser.password)
+                            .get("${getApiUrl()}indexselection")
+                }
+            }
+        }
+        return indexUserSelection
     }
 }

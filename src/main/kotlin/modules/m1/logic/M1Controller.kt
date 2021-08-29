@@ -1,22 +1,26 @@
 package modules.m1.logic
 
-import api.logic.SpotifyAUTH
+import api.logic.getCWOClient
+import api.misc.json.M1EntryJson
 import api.misc.json.M1EntryListJson
 import db.CwODB
 import interfaces.IModule
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.protobuf.ProtoBuf
 import modules.m1.Song
 import modules.m1.gui.MG1Analytics
 import modules.m1.gui.MG1EntryFinder
 import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.misc.*
 import modules.m2.logic.M2Controller
+import modules.mx.activeUser
 import modules.mx.isClientGlobal
-import modules.mx.logic.MXAPI
 import modules.mx.m1GlobalIndex
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
@@ -31,7 +35,7 @@ class M1Controller : IModule, Controller() {
     val db: CwODB by inject()
     private val m2Controller: M2Controller by inject()
 
-    val client = SpotifyAUTH().getAuthClient(MXAPI.Companion.AuthType.NONE)
+    val client = getCWOClient(activeUser.username, activeUser.password)
 
     fun searchEntry() {
         find<MG1EntryFinder>().openModal()
@@ -53,16 +57,29 @@ class M1Controller : IModule, Controller() {
             wizard.songCollaborationData.commit()
             wizard.songCopyrightData.commit()
             wizard.songMiscData.commit()
-            val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-            wizard.songMainData.uID.value = M1DBManager().saveEntry(
-                entry = getSongFromProperties(wizard),
-                cwodb = db,
-                posDB = -1L,
-                byteSize = -1,
-                raf = raf,
-                indexManager = m1GlobalIndex
-            )
-            db.closeRandomFileAccess(raf)
+            if (!isClientGlobal) {
+                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
+                wizard.songMainData.uID.value = M1DBManager().saveEntry(
+                    entry = getSongFromProperties(wizard),
+                    cwodb = db,
+                    posDB = -1L,
+                    byteSize = -1,
+                    raf = raf,
+                    indexManager = m1GlobalIndex
+                )
+                db.closeRandomFileAccess(raf)
+            } else {
+                val entry = getSongFromProperties(wizard)
+                runBlocking {
+                    launch {
+                        wizard.songMainData.uID.value =
+                            client.post("${getApiUrl()}saveentry") {
+                                contentType(ContentType.Application.Json)
+                                body = M1EntryJson(entry.uID, ProtoBuf.encodeToByteArray(entry))
+                            }
+                    }
+                }
+            }
             wizard.isComplete = false
         } else wizard.songMainData.validate()
     }
@@ -205,9 +222,7 @@ class M1Controller : IModule, Controller() {
                 runBlocking {
                     launch {
                         song = M1DBManager().decodeEntry(
-                            client.get(
-                                "${getApiUrl()}entry/$uID?type=uid"
-                            )
+                            client.get("${getApiUrl()}entry/$uID?type=uid")
                         ) as Song
                     }
                 }
@@ -232,5 +247,19 @@ class M1Controller : IModule, Controller() {
         }
         resultsListJson.resultsAmount = resultCounter
         return resultsListJson
+    }
+
+    fun getIndexUserSelection(): ArrayList<String> {
+        lateinit var indexUserSelection: ArrayList<String>
+        if (!isClientGlobal) {
+            indexUserSelection = m1GlobalIndex.getIndexUserSelection()
+        } else {
+            runBlocking {
+                launch {
+                    indexUserSelection = client.get("${getApiUrl()}indexselection")
+                }
+            }
+        }
+        return indexUserSelection
     }
 }

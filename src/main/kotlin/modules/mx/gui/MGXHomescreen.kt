@@ -13,6 +13,7 @@ import modules.mx.*
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.logic.checkInstallation
+import modules.mx.logic.startupRoutines
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
 import styling.Stylesheet
@@ -73,6 +74,7 @@ class MXGLogin : Fragment("CWO ERP") {
                             }
                         } ui {
                             if (loginSuccess) {
+                                startupRoutines()
                                 replaceWith<MXGUserInterface>()
                             } else loginUser.password.value = ""
                         }
@@ -119,7 +121,7 @@ class MXGUserInterface : View(titleGlobal) {
 
             if (activeUser.canAccessM1) tab<MG1Overview>()
             if (activeUser.canAccessM2) tab<MG2Overview>()
-            if (activeUser.canAccessM3) tab<MG3InvoiceFinder>()
+            //if (activeUser.canAccessM3) tab<MG3InvoiceFinder>()
             if (activeUser.canAccessMX) tab<MGXManagement>()
         }
     }
