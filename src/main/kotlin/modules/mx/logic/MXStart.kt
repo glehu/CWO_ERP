@@ -21,7 +21,7 @@ fun main() {
 }
 
 @ExperimentalSerializationApi
-fun loginRoutines() {
+fun checkInstallation() {
     //Search for the .ini file to set up the software
     if (!getIniFile().isFile) showPreferences()
     else readAndSetIniValues()

@@ -1,6 +1,10 @@
 package modules.mx.logic
 
+import api.logic.SpotifyAUTH
+import api.misc.json.M1EntryListJson
+import interfaces.IAPIAUTH
 import interfaces.IModule
+import io.ktor.client.request.*
 import io.ktor.util.*
 import javafx.collections.ObservableList
 import javafx.scene.paint.Color
@@ -9,11 +13,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.mx.MXCredentials
-import modules.mx.MXUser
-import modules.mx.getModulePath
+import modules.mx.*
 import modules.mx.gui.MGXUser
-import modules.mx.token
 import tornadofx.Controller
 import tornadofx.MultiValue
 import java.io.File
@@ -28,7 +29,11 @@ class MXUserManager : IModule, Controller() {
     override fun module() = "MX"
 
     fun login(username: String, password: String): Boolean {
-        return compareCredentials(username, password, getCredentials())
+        return if (!isClientGlobal) {
+            compareCredentials(username, password, getCredentials())
+        } else {
+            compareCredentialsServer(username, password)
+        }
     }
 
     fun getUser(username: String): MXUser? {
@@ -75,6 +80,11 @@ class MXUserManager : IModule, Controller() {
         } else MXLog.log(
             "MX", MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials", moduleNameLong()
         )
+        return successful
+    }
+
+    private fun compareCredentialsServer(username: String, password: String): Boolean {
+        var successful = false
         return successful
     }
 

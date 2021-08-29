@@ -22,6 +22,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1-native-mt")
     implementation("no.tornado:tornadofx:1.7.20")
+    implementation("io.ktor:ktor-network-tls-certificates:1.6.2")
     implementation("io.ktor:ktor-server-core:1.6.2")
     implementation("io.ktor:ktor-server-netty:1.6.2")
     implementation("io.ktor:ktor-client-core:1.6.2")

@@ -12,7 +12,7 @@ import modules.m3.gui.MG3InvoiceFinder
 import modules.mx.*
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
-import modules.mx.logic.loginRoutines
+import modules.mx.logic.checkInstallation
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
 import styling.Stylesheet
@@ -30,9 +30,9 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
     }
 
     override fun stop() {
-        MXLog.log(module(), MXLog.LogType.INFO, "Shutting down server...", moduleNameLong())
         try {
             if (!isClientGlobal) {
+                MXLog.log(module(), MXLog.LogType.INFO, "Shutting down server...", moduleNameLong())
                 server.serverEngine.stop(100L, 100L)
             }
         } finally {
@@ -53,7 +53,7 @@ class MXGLogin : Fragment("CWO ERP") {
             }
         }
         center = form {
-            loginRoutines()
+            checkInstallation()
             fieldset("Login Credentials") {
                 addClass(Stylesheet.fieldsetBorder)
                 vbox {
