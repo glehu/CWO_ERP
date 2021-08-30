@@ -9,6 +9,7 @@ import modules.m1.gui.MG1Overview
 import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2Overview
 import modules.m3.gui.MG3InvoiceFinder
+import modules.m3.gui.MG3Overview
 import modules.mx.*
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
@@ -121,7 +122,7 @@ class MXGUserInterface : View(titleGlobal) {
 
             if (activeUser.canAccessM1) tab<MG1Overview>()
             if (activeUser.canAccessM2) tab<MG2Overview>()
-            //if (activeUser.canAccessM3) tab<MG3InvoiceFinder>()
+            if (activeUser.canAccessM3) tab<MG3Overview>()
             if (activeUser.canAccessMX) tab<MGXManagement>()
         }
     }

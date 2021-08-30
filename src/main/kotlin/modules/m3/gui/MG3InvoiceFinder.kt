@@ -1,7 +1,10 @@
 package modules.m3.gui
 
+import api.logic.getCWOClient
+import api.misc.json.M1EntryListJson
 import db.CwODB
 import interfaces.IModule
+import io.ktor.client.request.*
 import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
@@ -9,15 +12,18 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Controller
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
 import modules.m3.logic.M3DBManager
+import modules.mx.activeUser
+import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
 import modules.mx.m3GlobalIndex
 import modules.mx.maxSearchResultsGlobal
-import modules.mx.rightButtonsWidth
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
@@ -28,17 +34,17 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices") {
     override fun module() = "M3"
     val db: CwODB by inject()
     private val m3Controller: M3Controller by inject()
-    private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
-    private var contactsFound: ObservableList<Invoice> = observableListOf(Invoice(-1))
+    private var invoicesFound: ObservableList<Invoice> = observableListOf(Invoice(-1))
     private var ixNr = SimpleStringProperty()
     private val ixNrList = FXCollections.observableArrayList(m3Controller.getIndexUserSelection())!!
-    private val threadIDCurrent = SimpleIntegerProperty()
+    private val threadIDCurrentProperty = SimpleIntegerProperty()
+    private var threadIDCurrent by threadIDCurrentProperty
     override val root = borderpane {
         center = form {
-            contactsFound.clear()
-            threadIDCurrent.value = 0
+            invoicesFound.clear()
+            threadIDCurrent = 0
             fieldset {
                 field("Search") {
                     searchText = textfield {
@@ -53,91 +59,75 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices") {
                 }
                 fieldset("Index")
                 {
-                    ixNr.value = "1-Seller"
+                    ixNr.value = ixNrList[0]
                     combobox(ixNr, ixNrList) {
                         tooltip("Selects the index file that will be searched in.")
                     }
                 }
-                tableview(contactsFound) {
+                tableview(invoicesFound) {
                     readonlyColumn("ID", Invoice::uID).prefWidth(65.0)
-                    readonlyColumn("Seller", Invoice::seller).prefWidth(350.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.sellerUID, rowItem.seller)
-                        rowItem.seller = text
-                    }
-                    readonlyColumn("Buyer", Invoice::buyer).prefWidth(350.0).cellFormat {
-                        text = m2Controller.getContactName(rowItem.buyerUID, rowItem.buyer)
-                        rowItem.buyer = text
-                    }
+                    readonlyColumn("Seller", Invoice::seller).prefWidth(350.0)
+                    readonlyColumn("Buyer", Invoice::buyer).prefWidth(350.0)
                     readonlyColumn("Text", Invoice::text).prefWidth(200.0)
                     onUserSelect(1) {
                         m3Controller.showInvoice(it)
-                        startSearch()
+                        searchText.text = ""
+                        close()
                     }
+                    isFocusTraversable = false
                 }
-            }
-        }
-        right = vbox {
-            //Main functions
-            button("New Invoice") {
-                action {
-                    m3Controller.openWizardNewInvoice()
-                    startSearch()
-                }
-                tooltip("Add a new song to the database.")
-                prefWidth = rightButtonsWidth
-            }
-            //Analytics functions
-            button("Analytics") {
-                //action { m3Controller.openAnalytics() }
-                tooltip("Display a chart to show the distribution of genres.")
-                prefWidth = rightButtonsWidth
-            }
-            //Maintenance functions
-            button("Rebuild indices") {
-                //TODO: Not yet implemented
-                isDisable = true
-                tooltip("Rebuilds all indices in case of faulty indices.")
-                prefWidth = rightButtonsWidth
-            }
-            //Data import
-            button("Data Import") {
-                //TODO: Not yet implemented
-                isDisable = true
-                //action { m3Controller.openDataImport() }
-                tooltip("Import contact data from a .csv file.")
-                prefWidth = rightButtonsWidth
             }
         }
     }
 
     private fun startSearch() {
         runAsync {
-            threadIDCurrent.value++
-            searchForInvoices(threadIDCurrent.value)
+            threadIDCurrent++
+            searchForInvoices(threadIDCurrent)
         }
     }
 
     private fun searchForInvoices(threadID: Int) {
         var entriesFound = 0
+        val dbManager = M3DBManager()
         val timeInMillis = measureTimeMillis {
-            val dbManager = M3DBManager()
-            contactsFound.clear()
-            db.getEntriesFromSearchString(
-                searchText.text.uppercase(),
-                ixNr.value.substring(0, 1).toInt(),
-                exactSearch.isSelected,
-                module(),
-                maxSearchResultsGlobal,
-                m3GlobalIndex
-            ) { _, bytes ->
-                //Add the contacts to the table
-                if (threadID == threadIDCurrent.value) {
-                    contactsFound.add(dbManager.decodeEntry(bytes) as Invoice)
-                    entriesFound++
+            if (!isClientGlobal) {
+                invoicesFound.clear()
+                db.getEntriesFromSearchString(
+                    searchText.text.uppercase(),
+                    ixNr.value.substring(0, 1).toInt(),
+                    exactSearch.isSelected,
+                    module(),
+                    maxSearchResultsGlobal,
+                    m3GlobalIndex
+                ) { _, bytes ->
+                    //Add the contacts to the table
+                    if (threadID == threadIDCurrent) {
+                        invoicesFound.add(dbManager.decodeEntry(bytes) as Invoice)
+                        entriesFound++
+                    }
+                }
+            } else if (isClientGlobal) {
+                if (searchText.text.isNotEmpty()) {
+                    runBlocking {
+                        launch {
+                            val entryListJson: M1EntryListJson = getCWOClient(activeUser.username, activeUser.password)
+                                .get("${getApiUrl()}entry/${searchText.text}?type=name")
+                            if (threadID == threadIDCurrent) {
+                                this@MG3InvoiceFinder.invoicesFound.clear()
+                                for (entryBytes: ByteArray in entryListJson.resultsList) {
+                                    entriesFound++
+                                    this@MG3InvoiceFinder.invoicesFound.add(
+                                        dbManager.decodeEntry(entryBytes) as Invoice
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-        if (threadID == threadIDCurrent.value) {
+        if (threadID == threadIDCurrent) {
             MXLog.log(
                 module(), MXLog.LogType.INFO, "$entriesFound invoices loaded (in $timeInMillis ms)",
                 moduleNameLong()

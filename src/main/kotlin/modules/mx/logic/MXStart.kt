@@ -23,31 +23,9 @@ fun main() {
 @ExperimentalSerializationApi
 fun checkInstallation() {
     //Search for the .ini file to set up the software
-    if (!getIniFile().isFile) showPreferences()
-    else readAndSetIniValues()
-}
-
-@ExperimentalSerializationApi
-fun readAndSetIniValues() {
-    val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
-    token = iniVal.token
-    dataPath = iniVal.dataPath
-    maxSearchResultsGlobal = iniVal.maxSearchResults
-    differenceFromUTC = iniVal.differenceFromUTC
-    isClientGlobal = iniVal.isClient
-    serverIPAddressGlobal = iniVal.serverIPAddress
-
-    //Customize title
-    titleGlobal += when (iniVal.isClient) {
-        false -> " Server"
-        true -> " Client"
-    }
-}
-
-@InternalAPI
-@ExperimentalSerializationApi
-fun startupRoutines() {
-    //Set active user
+    if (!getIniFile().isFile) {
+        showPreferences()
+    } else readAndSetIniValues()
     if (!isClientGlobal) {
         //Check if all data paths and files exist
         if (!File(getModulePath("MX")).isDirectory) File(getModulePath("MX")).mkdirs()
@@ -59,6 +37,29 @@ fun startupRoutines() {
         MXLog.checkLogFile("M1", true)
         MXLog.checkLogFile("M2", true)
         MXLog.checkLogFile("M3", true)
+    }
+}
+
+@ExperimentalSerializationApi
+fun readAndSetIniValues() {
+    val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
+    token = iniVal.token
+    dataPath = iniVal.dataPath
+    maxSearchResultsGlobal = iniVal.maxSearchResults
+    differenceFromUTC = iniVal.differenceFromUTC
+    isClientGlobal = iniVal.isClient
+    serverIPAddressGlobal = iniVal.serverIPAddress
+    //Customize title
+    titleGlobal += when (iniVal.isClient) {
+        true -> " Client"
+        false -> " Server"
+    }
+}
+
+@InternalAPI
+@ExperimentalSerializationApi
+fun startupRoutines() {
+    if (!isClientGlobal) {
         //Load IndexManagers
         m1GlobalIndex = M1IndexManager()
         m2GlobalIndex = M2IndexManager()

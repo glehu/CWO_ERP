@@ -73,7 +73,6 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
                         m1Controller.showSong(it)
-                        //startSearch()
                         searchText.text = ""
                         close()
                     }

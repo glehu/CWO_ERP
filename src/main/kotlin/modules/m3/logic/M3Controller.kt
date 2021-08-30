@@ -1,23 +1,26 @@
 package modules.m3.logic
 
 import api.logic.getCWOClient
+import api.misc.json.M2EntryJson
+import api.misc.json.M2EntryListJson
+import api.misc.json.M3EntryListJson
 import db.CwODB
 import interfaces.IModule
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.protobuf.ProtoBuf
 import modules.m3.Invoice
 import modules.m3.gui.InvoiceConfiguratorWizard
-import modules.m3.gui.InvoiceViewerWizard
+import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
-import modules.mx.activeUser
-import modules.mx.isClientGlobal
-import modules.mx.m1GlobalIndex
-import modules.mx.m3GlobalIndex
+import modules.mx.*
 import tornadofx.Controller
 
 @InternalAPI
@@ -29,26 +32,47 @@ class M3Controller : IModule, Controller() {
     private val wizard = find<InvoiceConfiguratorWizard>()
     val db: CwODB by inject()
 
-    fun openWizardNewInvoice() {
+    val client = getCWOClient(activeUser.username, activeUser.password)
+
+    fun searchEntry() {
+        find<MG3InvoiceFinder>().openModal()
+    }
+
+    fun newEntry() {
         wizard.invoice.item = InvoiceProperty()
+        wizard.invoice.validate()
         wizard.isComplete = false
-        wizard.onComplete {
-            if (wizard.invoice.seller.value !== null) {
+    }
+
+    fun saveEntry() {
+        var isComplete = true
+        wizard.invoice.commit()
+        if (!wizard.invoice.isValid) isComplete = false
+        if (isComplete) {
+            if (!isClientGlobal) {
                 val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-                M3DBManager().saveEntry(
+                wizard.invoice.uID.value = M3DBManager().saveEntry(
                     getInvoiceFromInvoiceProperty(wizard.invoice.item), db, -1L, -1, raf, m3GlobalIndex
                 )
                 db.closeRandomFileAccess(raf)
-                wizard.invoice.item = InvoiceProperty()
-                wizard.isComplete = false
-                wizard.close()
+            } else {
+                val entry = getInvoiceFromInvoiceProperty(wizard.invoice.item)
+                runBlocking {
+                    launch {
+                        wizard.invoice.uID.value =
+                            client.post("${getApiUrl()}saveentry") {
+                                contentType(ContentType.Application.Json)
+                                body = M2EntryJson(entry.uID, ProtoBuf.encodeToByteArray(entry))
+                            }
+                    }
+                }
             }
+            wizard.isComplete = false
         }
-        wizard.openModal(block = true)
     }
 
     fun showInvoice(invoice: Invoice) {
-        val wizard = find<InvoiceViewerWizard>()
+        val wizard = find<InvoiceConfiguratorWizard>()
         wizard.invoice.item = getInvoicePropertyFromInvoice(invoice)
         wizard.onComplete {
             if (wizard.invoice.uID.value != -1) {
@@ -68,10 +92,34 @@ class M3Controller : IModule, Controller() {
         }
     }
 
+    fun getEntryBytesListJson(searchText: String, ixNr: Int): M3EntryListJson {
+        val resultsListJson = M3EntryListJson(0, arrayListOf())
+        var resultCounter = 0
+        db.getEntriesFromSearchString(
+            searchText = searchText.uppercase(),
+            ixNr = ixNr,
+            exactSearch = false,
+            module = module(),
+            maxSearchResults = maxSearchResultsGlobal,
+            indexManager = m3GlobalIndex
+        ) { _, bytes ->
+            resultCounter++
+            resultsListJson.resultsList.add(bytes)
+        }
+        resultsListJson.resultsAmount = resultCounter
+        return resultsListJson
+    }
+
+    fun getEntryBytes(uID: Int): ByteArray {
+        return if (uID != -1) {
+            db.getEntryFromUniqueID(uID, module(), m3GlobalIndex.indexList[0]!!)
+        } else byteArrayOf()
+    }
+
     fun getIndexUserSelection(): ArrayList<String> {
         lateinit var indexUserSelection: ArrayList<String>
         if (!isClientGlobal) {
-            indexUserSelection = m1GlobalIndex.getIndexUserSelection()
+            indexUserSelection = m3GlobalIndex.getIndexUserSelection()
         } else {
             runBlocking {
                 launch {

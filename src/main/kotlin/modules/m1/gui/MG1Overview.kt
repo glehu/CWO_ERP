@@ -13,7 +13,6 @@ import tornadofx.*
 @ExperimentalSerializationApi
 class MG1Overview : IOverview, View("M1 Discography") {
     private val m1Controller: M1Controller by inject()
-
     override val root = borderpane {
         right = vbox {
             button("Search") {

@@ -1,7 +1,6 @@
 package modules.m2.logic
 
 import api.logic.getCWOClient
-import api.misc.json.M1EntryJson
 import api.misc.json.M2EntryJson
 import api.misc.json.M2EntryListJson
 import db.CwODB
@@ -72,7 +71,6 @@ class M2Controller : IModule, Controller() {
 
     fun newEntry() {
         wizard.contact.item = ContactProperty()
-
         wizard.contact.validate()
         wizard.isComplete = false
     }
@@ -181,7 +179,7 @@ class M2Controller : IModule, Controller() {
     fun getIndexUserSelection(): ArrayList<String> {
         lateinit var indexUserSelection: ArrayList<String>
         if (!isClientGlobal) {
-            indexUserSelection = m1GlobalIndex.getIndexUserSelection()
+            indexUserSelection = m2GlobalIndex.getIndexUserSelection()
         } else {
             runBlocking {
                 launch {

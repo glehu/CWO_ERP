@@ -19,17 +19,6 @@ class InvoiceConfiguratorWizard : Wizard("Add new invoice") {
 
 @InternalAPI
 @ExperimentalSerializationApi
-class InvoiceViewerWizard : Wizard("View an invoice") {
-    val invoice: InvoiceModel by inject()
-
-    init {
-        enableStepLinks = true
-        add(NewInvoiceMainData::class)
-    }
-}
-
-@InternalAPI
-@ExperimentalSerializationApi
 class NewInvoiceMainData : Fragment("Main") {
     private val invoice: InvoiceModel by inject()
     private val m2controller: M2Controller by inject()
@@ -39,6 +28,9 @@ class NewInvoiceMainData : Fragment("Main") {
     //----------------------------------^
     override val root = form {
         fieldset("Invoice") {
+            field("UID") {
+                textfield(invoice.uID).isEditable = false
+            }
             field("Seller") {
                 hbox {
                     textfield(invoice.seller) {

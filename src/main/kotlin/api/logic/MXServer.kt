@@ -3,6 +3,7 @@ package api.logic
 import api.gui.GSpotify
 import api.misc.json.M1EntryJson
 import api.misc.json.M2EntryJson
+import api.misc.json.M3EntryJson
 import api.misc.json.SpotifyAuthCallbackJson
 import db.CwODB
 import interfaces.IModule
@@ -26,10 +27,14 @@ import modules.m1.logic.M1DBManager
 import modules.m2.Contact
 import modules.m2.logic.M2Controller
 import modules.m2.logic.M2DBManager
+import modules.m3.Invoice
+import modules.m3.logic.M3Controller
+import modules.m3.logic.M3DBManager
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.m1GlobalIndex
 import modules.mx.m2GlobalIndex
+import modules.mx.m3GlobalIndex
 import tornadofx.Controller
 
 @InternalAPI
@@ -149,6 +154,38 @@ class MXServer : IModule, Controller() {
                                     byteSize = -1,
                                     raf = raf,
                                     indexManager = m2GlobalIndex
+                                )
+                            )
+                            CwODB().closeRandomFileAccess(raf)
+                        }
+                    }
+                    route("/m3") {
+                        get("/indexselection") {
+                            call.respond(m3GlobalIndex.getIndexUserSelection())
+                        }
+                        get("/entry/{searchString}") {
+                            val routePar = call.parameters["searchString"]
+                            if (routePar != null && routePar.isNotEmpty()) {
+                                val queryPar = call.request.queryParameters["type"]
+                                if (queryPar == "uid") {
+                                    call.respond(M3Controller().getEntryBytes(routePar.toInt()))
+                                } else if (queryPar == "name") {
+                                    call.respond(M3Controller().getEntryBytesListJson(routePar, 1))
+                                }
+                            }
+                        }
+                        post("/saveentry") {
+                            val entryJson: M3EntryJson = call.receive()
+                            val entry = ProtoBuf.decodeFromByteArray<Invoice>(entryJson.entry)
+                            val raf = CwODB().openRandomFileAccess("M3", CwODB.RafMode.READWRITE)
+                            call.respond(
+                                M3DBManager().saveEntry(
+                                    entry = entry,
+                                    cwodb = CwODB(),
+                                    posDB = -1L,
+                                    byteSize = -1,
+                                    raf = raf,
+                                    indexManager = m3GlobalIndex
                                 )
                             )
                             CwODB().closeRandomFileAccess(raf)
