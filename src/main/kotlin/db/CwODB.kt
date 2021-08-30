@@ -22,27 +22,19 @@ class CwODB : IModule, Controller() {
     override fun moduleNameLong() = "CwODB"
     override fun module() = "DB"
 
+    /**
+     * Used to save the ByteArray of an entry (achieved by serialization) and store it in the database.
+     * @return the position in the database and the byte size of the stored entry
+     */
     fun saveEntry(
         entryBytes: ByteArray, uID: Int, posDB: Long, byteSize: Int,
         module: String, raf: RandomAccessFile
     ): Pair<Long, Int> {
-        //Save the new byteSize to determine if the old entry can be overridden with the new entry (<= size)
-        //instead of adding the new entry at the end of the database (> size)
         val byteSizeNew = entryBytes.size
         var canOverride = false
         if (byteSizeNew <= byteSize) {
             canOverride = true
         }
-        //Loading the database file for the entry to be saved in
-        /* Since we are creating a new entry the entry's position in the database will be at the end
-           To calculate "the end" we need the position and length of the last entry
-
-           We will index the entry in both the sub indices (e.g. ix1 to index the entry name) and the main index
-           The main index will only contain the most basic data uniqueID, posInDatabase and byteSize
-
-           We will also store the latest added entry to determine the byteSize for the next added entry
-           This will save a huge amount of time when adding new entries to an already big database
-         */
         checkLastEntryFile(module)
         val lastEntryFile = getLastEntryFile(module)
         val indexText: String
@@ -89,7 +81,10 @@ class CwODB : IModule, Controller() {
         return Pair(posDBNew, byteSizeNew)
     }
 
-    // Returns an array of all entries that fit the search criteria
+    /**
+     * Used to search for entries in the database with the provided search string and the index number.
+     * @return ByteArray of matched entry as callback for all matched entries.
+     */
     fun getEntriesFromSearchString(
         searchText: String, ixNr: Int, exactSearch: Boolean,
         module: String, maxSearchResults: Int = maxSearchResultsGlobal,
@@ -138,6 +133,10 @@ class CwODB : IModule, Controller() {
         return getAll
     }
 
+    /**
+     * Used to retrieve a single entry with the provided unique identifier.
+     * @return the ByteArray of the entry
+     */
     fun getEntryFromUniqueID(uID: Int, module: String, index: Index): ByteArray {
         lateinit var entryBytes: ByteArray
         if (getDatabaseFile(module).isFile) {
@@ -153,6 +152,11 @@ class CwODB : IModule, Controller() {
         READ, WRITE, READWRITE
     }
 
+    /**
+     * Used to open a new RandomAccessFile instance, e.g. to initiate the process of saving a new entry.
+     * The usage has to be declared by providing one of the RafModes (READ, WRITE or READWRITE)
+     * @return a RandomAccessFile instance
+     */
     fun openRandomFileAccess(module: String, mode: RafMode): RandomAccessFile {
         val rafMode: String = when (mode) {
             RafMode.READ -> "r"
@@ -162,7 +166,12 @@ class CwODB : IModule, Controller() {
         return RandomAccessFile(getDatabaseFile(module), rafMode)
     }
 
-    fun closeRandomFileAccess(randAccessFile: RandomAccessFile) = randAccessFile.close()
+    /**
+     * Used to close a previously created instance of a RandomAccessFile.
+     */
+    fun closeRandomFileAccess(randAccessFile: RandomAccessFile) {
+        randAccessFile.close()
+    }
 
     private fun readDBEntry(posInDatabase: Long, byteSize: Int, randAccessFile: RandomAccessFile): ByteArray {
         //We now read from the file
@@ -220,7 +229,7 @@ class CwODB : IModule, Controller() {
         return ok
     }
 
-    fun checkIndexFile(module: String, ixNr: Int): Boolean {
+    private fun checkIndexFile(module: String, ixNr: Int): Boolean {
         var ok = false
         val nuPath = File(getModulePath(module))
         if (!nuPath.isDirectory) nuPath.mkdirs()
@@ -235,6 +244,9 @@ class CwODB : IModule, Controller() {
         return ok
     }
 
+    /**
+     * Used to reset a module's database including index files. Logfiles remain untouched by this operation.
+     */
     fun resetModuleDatabase(module: String) {
         if (File(getModulePath(module)).isDirectory) {
             File("${getModulePath(module)}\\$module.db").delete()
@@ -244,6 +256,9 @@ class CwODB : IModule, Controller() {
         }
     }
 
+    /**
+     * @return an instance of Index to be used in IndexManagers
+     */
     fun getIndex(module: String, ixNr: Int): Index {
         MXLog.log(module, MXLog.LogType.INFO, "Deserializing index $ixNr for $module...", moduleNameLong())
         checkIndexFile(module, ixNr)

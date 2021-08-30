@@ -10,7 +10,7 @@ import modules.mx.m1GlobalIndex
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MG1Analytics : Fragment("Genre distribution") {
+class MG1Analytics : Fragment("Analytics") {
     val db: CwODB by inject()
     private val m1controller: M1Analytics by inject()
     private val progressProperty = SimpleIntegerProperty()
@@ -20,6 +20,7 @@ class MG1Analytics : Fragment("Genre distribution") {
         setPrefSize(800.0, 600.0)
         vbox {
             button("Genre Distribution") {
+                prefWidth = 200.0
                 action {
                     maxEntries = m1controller.db.getLastUniqueID("M1").toInt()
                     runAsync {
@@ -34,6 +35,7 @@ class MG1Analytics : Fragment("Genre distribution") {
                 }
             }
             button("Type Distribution") {
+                prefWidth = 200.0
                 action {
                     maxEntries = m1controller.db.getLastUniqueID("M1").toInt()
                     runAsync {

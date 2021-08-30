@@ -10,7 +10,7 @@ import modules.mx.m2GlobalIndex
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MG2Analytics : Fragment("City distribution") {
+class MG2Analytics : Fragment("Analytics") {
     val db: CwODB by inject()
     private val m2controller: M2Analytics by inject()
     private val progressProperty = SimpleIntegerProperty()
@@ -32,7 +32,8 @@ class MG2Analytics : Fragment("City distribution") {
                     }
                 }
             }
-            button("Start") {
+            button("City distribution") {
+                prefWidth = 200.0
                 action {
                     maxEntries = m2controller.db.getLastUniqueID("M2").toInt()
                     runAsync {
