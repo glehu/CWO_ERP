@@ -21,6 +21,9 @@ class MXLog {
         private fun getLogPath(module: String) = "${getModulePath(module)}\\log"
         private fun getLogFile(module: String) = File("${getLogPath(module)}\\${module}_log.txt")
 
+        /**
+         * Writes a log message to the disk.
+         */
         fun log(module: String, type: LogType, text: String, caller: String, write: Boolean = true) {
             if (!isClientGlobal) {
                 val logText = "<$type><${activeUser.username}> $caller :> $text\n"
@@ -33,6 +36,9 @@ class MXLog {
             }
         }
 
+        /**
+         * Checks a log file and creates it if it's missing and createIfMissing is set to true.
+         */
         fun checkLogFile(module: String, createIfMissing: Boolean, log: Boolean = true): Boolean {
             val logPath = File(getLogPath(module))
             if (!logPath.isDirectory) {
@@ -53,6 +59,9 @@ class MXLog {
             return false //Default no
         }
 
+        /**
+         * Deletes a single log file of a provided module.
+         */
         fun deleteLogFile(module: String) {
             if (checkLogFile(module, false)) {
                 getLogFile(module).delete()
@@ -61,6 +70,9 @@ class MXLog {
             }
         }
 
+        /**
+         * Deletes all log files across all modules.
+         */
         fun deleteLogFiles() {
             deleteLogFile("MX")
             for (moduleNr in 1..99) {

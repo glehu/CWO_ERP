@@ -12,8 +12,16 @@ fun String.extractNumbers(): String {
     return numberExtractor.find(this)!!.value
 }
 
-fun getDefaultDate() = "01.01.1970"
+/**
+ * @return the default date (01.01.1970)
+ */
+fun getDefaultDate(): String {
+    return "01.01.1970"
+}
 
+/**
+ * @return a random string (letters or numbers) of a certain length.
+ */
 fun getRandomString(size: Long, numbers: Boolean = false): String {
     val dictionary = if (!numbers) "ABCDEFGHIJKLMNOPQRSTUVWXYZ" else "123456789"
     return Random().ints(size, 0, dictionary.length)
