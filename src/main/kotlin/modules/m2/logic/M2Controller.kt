@@ -22,7 +22,10 @@ import modules.m2.gui.MG2Import
 import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import modules.m2.misc.getContactPropertyFromContact
-import modules.mx.*
+import modules.mx.activeUser
+import modules.mx.isClientGlobal
+import modules.mx.m2GlobalIndex
+import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
@@ -92,9 +95,7 @@ class M2Controller : IModule, Controller() {
         setInScope(dataTransfer, newScope)
         find<MG2ContactFinder>(newScope).openModal(block = true)
         contact = if (dataTransfer.name.value != null) {
-            M2DBManager().getEntry(
-                dataTransfer.uID.value, db, m2GlobalIndex.indexList[0]!!
-            ) as Contact
+            getContact(dataTransfer.uID.value)
         } else Contact(-1, "")
         return contact
     }
