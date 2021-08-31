@@ -24,12 +24,18 @@ interface IIndexManager : IModule {
     var lastChangeDateLocal: String
     var lastChangeUser: String
 
+    /**
+     * @return a new unique identifier as an AtomicInteger.
+     */
     fun getUID(): AtomicInteger {
         lastUID.getAndIncrement()
         db.setLastUniqueID(lastUID, module())
         return lastUID
     }
 
+    /**
+     * Deprecated
+     */
     fun setLastChangeData(uID: Int, activeUser: MXUser) {
         lastChangeDateHex = getUnixTimestampHex()
         val lastChange = MXLastChange(uID, lastChangeDateHex, activeUser.username)
@@ -37,6 +43,9 @@ interface IIndexManager : IModule {
         getLastChangeDates()
     }
 
+    /**
+     * Used to retrieve the last change dates from their unix hex values.
+     */
     fun getLastChangeDates() {
         val lastChange = updateLastChangeData()
         lastChangeDateHex = lastChange.unixHex
@@ -54,6 +63,9 @@ interface IIndexManager : IModule {
         }
     }
 
+    /**
+     * Used to format an input string to be used as an index value. Any non-alphanumerical character gets filtered out.
+     */
     fun indexFormat(text: String): String {
         val songNameArray = text.uppercase(Locale.getDefault()).toCharArray()
         var formatted = ""
@@ -69,8 +81,20 @@ interface IIndexManager : IModule {
 
     fun updateLastUID() = db.getLastUniqueID(module())
     fun updateLastChangeData() = db.getLastChange(module())
+
+    /**
+     * @return an ArrayList<String> of all available indices for searches.
+     */
     fun getIndexUserSelection(): ArrayList<String>
+
+    /**
+     * Used to generate all indices for an entry.
+     */
     fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean = true)
     fun buildIndex0(entry: Any, posDB: Long, byteSize: Int)
+
+    /**
+     * Writes the index values stored in the RAM into the database.
+     */
     suspend fun writeIndexData()
 }

@@ -186,12 +186,18 @@ class CwODB : IModule, Controller() {
         raf.write(entry)
     }
 
+    /**
+     * Used to write the last unique identifier to the database.
+     */
     fun setLastUniqueID(uniqueID: AtomicInteger, module: String) {
         val nuFile = getNuFile(module)
         val uniqueIDString = uniqueID.toString()
         nuFile.writeText(uniqueIDString)
     }
 
+    /**
+     * @return the last unique identifier as an AtomicInteger
+     */
     fun getLastUniqueID(module: String): AtomicInteger {
         checkNuFile(module)
         val nuFile = getNuFile(module)
@@ -265,6 +271,9 @@ class CwODB : IModule, Controller() {
         return Json.decodeFromString(getIndexFile(module, ixNr).readText())
     }
 
+    /**
+     * Deprecated
+     */
     fun getLastChange(module: String): MXLastChange {
         val lastChangeFile = getLastChangeDateHexFile(module)
         val lastChange: MXLastChange
@@ -280,11 +289,20 @@ class CwODB : IModule, Controller() {
         return lastChange
     }
 
+    /**
+     * Deprecated
+     */
     fun setLastChangeValues(module: String, lastChange: MXLastChange) {
         getLastChangeDateHexFile(module).writeText(Json.encodeToString(lastChange))
     }
 
-    fun getIndexFile(module: String, ixNr: Int) = File("${getModulePath(module)}\\$module.ix$ixNr")
+    /**
+     * @return the index file of a provided module
+     */
+    fun getIndexFile(module: String, ixNr: Int): File {
+        return File("${getModulePath(module)}\\$module.ix$ixNr")
+    }
+
     private fun getLastEntryFile(module: String) = File("${getModulePath(module)}\\lastentry.db")
     private fun getDatabaseFile(module: String) = File("${getModulePath(module)}\\$module.db")
     private fun getNuFile(module: String) = File("${getModulePath(module)}\\$module.nu")
