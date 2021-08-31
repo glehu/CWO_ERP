@@ -19,14 +19,15 @@ class M3DBManager : IModule, IDBManager {
     override fun saveEntry(
         entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,
         raf: RandomAccessFile, indexManager: Any,
-        indexWriteToDisk: Boolean
+        indexWriteToDisk: Boolean,
+        userName: String
     ): Int {
         entry as Invoice
         indexManager as M3IndexManager
         entry.initialize()
         val songSerialized = ProtoBuf.encodeToByteArray(entry)
         val (posDBX, byteSizeX) = cwodb.saveEntry(songSerialized, entry.uID, posDB, byteSize, module(), raf)
-        indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk)
+        indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, userName)
         return entry.uID
     }
 

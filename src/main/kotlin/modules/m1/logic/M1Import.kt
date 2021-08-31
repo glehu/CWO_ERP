@@ -12,6 +12,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m2.Contact
 import modules.m2.logic.M2DBManager
+import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.getDefaultDate
 import modules.mx.m1GlobalIndex
@@ -121,7 +122,8 @@ class M1Import : IModule, Controller() {
                 byteSize = byteSize,
                 raf = raf,
                 indexManager = m1GlobalIndex,
-                indexWriteToDisk = false
+                indexWriteToDisk = false,
+                userName = activeUser.username
             )
             MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong())
             updateProgress(Pair(counter, "Importing spotify tracks..."))
@@ -184,7 +186,8 @@ class M1Import : IModule, Controller() {
             byteSize = byteSize,
             raf = raf,
             indexManager = m1GlobalIndex,
-            indexWriteToDisk = false
+            indexWriteToDisk = false,
+            userName = activeUser.username
         )
         MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong())
         return song
@@ -212,7 +215,8 @@ class M1Import : IModule, Controller() {
                         byteSize = -1,
                         raf = m2raf,
                         indexManager = m2GlobalIndex,
-                        indexWriteToDisk = false
+                        indexWriteToDisk = false,
+                        userName = activeUser.username
                     )
             } else {
                 val indexContent = filteredMap.values.first()

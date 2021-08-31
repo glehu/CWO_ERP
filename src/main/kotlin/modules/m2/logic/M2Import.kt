@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
 import modules.m2.misc.ContactModel
+import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.m2GlobalIndex
 import tornadofx.Controller
@@ -47,7 +48,15 @@ class M2Import : IModule, Controller() {
                     contact.birthdate = import(row[birthdayHeaderName].toString(), "01.01.1980")
                     contact.country = import(row[contactSchema.country.value].toString())
 
-                    dbManager.saveEntry(contact, db, -1L, -1, raf, m2GlobalIndex, false)
+                    dbManager.saveEntry(
+                        entry = contact, db,
+                        posDB = -1L,
+                        byteSize = -1,
+                        raf = raf,
+                        indexManager = m2GlobalIndex,
+                        indexWriteToDisk = false,
+                        userName = activeUser.username
+                    )
                     updateProgress(Pair(counter, "Importing data..."))
                     if (counter % 5000 == 0) {
                         MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}", moduleNameLong())

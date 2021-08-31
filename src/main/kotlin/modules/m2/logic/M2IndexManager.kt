@@ -11,7 +11,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m2.Contact
-import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
@@ -50,7 +49,13 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
         return arrayListOf("1-Name", "2-City")
     }
 
-    override fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean) = runBlocking {
+    override fun indexEntry(
+        entry: Any,
+        posDB: Long,
+        byteSize: Int,
+        writeToDisk: Boolean,
+        userName: String
+    ) = runBlocking {
         entry as Contact
         buildIndex0(entry, posDB, byteSize)
         buildIndex1(entry, posDB, byteSize)
@@ -59,7 +64,7 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
         if (writeToDisk) launch {
             writeIndexData()
         }
-        setLastChangeData(entry.uID, activeUser)
+        setLastChangeData(entry.uID, userName)
     }
 
     override suspend fun writeIndexData() {

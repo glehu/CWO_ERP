@@ -53,7 +53,13 @@ class M2Controller : IModule, Controller() {
             if (!isClientGlobal) {
                 val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
                 wizard.contact.uID.value = M2DBManager().saveEntry(
-                    getContactFromProperty(wizard.contact.item), db, -1L, -1, raf, m2GlobalIndex
+                    entry = getContactFromProperty(wizard.contact.item),
+                    cwodb = db,
+                    posDB = -1L,
+                    byteSize = -1,
+                    raf = raf,
+                    indexManager = m2GlobalIndex,
+                    userName = activeUser.username
                 )
                 db.closeRandomFileAccess(raf)
             } else {
@@ -150,7 +156,9 @@ class M2Controller : IModule, Controller() {
                     posDB = m2GlobalIndex.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.pos,
                     byteSize = m2GlobalIndex.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.byteSize,
                     raf = raf,
-                    indexManager = m2GlobalIndex
+                    indexManager = m2GlobalIndex,
+                    indexWriteToDisk = true,
+                    userName = activeUser.username
                 )
                 this.db.closeRandomFileAccess(raf)
                 wizard.contact.item = ContactProperty()

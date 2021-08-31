@@ -4,7 +4,6 @@ import db.CwODB
 import db.Index
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.MXLastChange
-import modules.mx.MXUser
 import modules.mx.logic.MXTimestamp.MXTimestamp.convUnixHexToUnixTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
@@ -36,9 +35,9 @@ interface IIndexManager : IModule {
     /**
      * Deprecated
      */
-    fun setLastChangeData(uID: Int, activeUser: MXUser) {
+    fun setLastChangeData(uID: Int, userName: String) {
         lastChangeDateHex = getUnixTimestampHex()
-        val lastChange = MXLastChange(uID, lastChangeDateHex, activeUser.username)
+        val lastChange = MXLastChange(uID, lastChangeDateHex, userName)
         db.setLastChangeValues(module, lastChange)
         getLastChangeDates()
     }
@@ -90,7 +89,14 @@ interface IIndexManager : IModule {
     /**
      * Used to generate all indices for an entry.
      */
-    fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean = true)
+    fun indexEntry(
+        entry: Any,
+        posDB: Long,
+        byteSize: Int,
+        writeToDisk: Boolean = true,
+        userName: String
+    )
+
     fun buildIndex0(entry: Any, posDB: Long, byteSize: Int)
 
     /**

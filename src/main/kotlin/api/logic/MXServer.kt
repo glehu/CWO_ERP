@@ -121,7 +121,9 @@ class MXServer : IModule, Controller() {
                                     posDB = -1L,
                                     byteSize = -1,
                                     raf = raf,
-                                    indexManager = m1GlobalIndex
+                                    indexManager = m1GlobalIndex,
+                                    indexWriteToDisk = true,
+                                    userName = call.principal<UserIdPrincipal>()!!.name
                                 )
                             )
                             CwODB().closeRandomFileAccess(raf)
@@ -153,7 +155,9 @@ class MXServer : IModule, Controller() {
                                     posDB = -1L,
                                     byteSize = -1,
                                     raf = raf,
-                                    indexManager = m2GlobalIndex
+                                    indexManager = m2GlobalIndex,
+                                    indexWriteToDisk = true,
+                                    userName = call.principal<UserIdPrincipal>()!!.name
                                 )
                             )
                             CwODB().closeRandomFileAccess(raf)
@@ -185,7 +189,9 @@ class MXServer : IModule, Controller() {
                                     posDB = -1L,
                                     byteSize = -1,
                                     raf = raf,
-                                    indexManager = m3GlobalIndex
+                                    indexManager = m3GlobalIndex,
+                                    indexWriteToDisk = true,
+                                    userName = call.principal<UserIdPrincipal>()!!.name
                                 )
                             )
                             CwODB().closeRandomFileAccess(raf)

@@ -11,9 +11,14 @@ interface IDBManager : IModule {
      * Saves an entry to the database.
      */
     fun saveEntry(
-        entry: Any, cwodb: CwODB, posDB: Long, byteSize: Int,
-        raf: RandomAccessFile, indexManager: Any,
-        indexWriteToDisk: Boolean = true
+        entry: Any,
+        cwodb: CwODB,
+        posDB: Long,
+        byteSize: Int,
+        raf: RandomAccessFile,
+        indexManager: Any,
+        indexWriteToDisk: Boolean = true,
+        userName: String
     ): Int
 
     /**

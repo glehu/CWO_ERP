@@ -65,7 +65,9 @@ class M1Controller : IModule, Controller() {
                     posDB = -1L,
                     byteSize = -1,
                     raf = raf,
-                    indexManager = m1GlobalIndex
+                    indexManager = m1GlobalIndex,
+                    indexWriteToDisk = true,
+                    userName = activeUser.username
                 )
                 db.closeRandomFileAccess(raf)
             } else {

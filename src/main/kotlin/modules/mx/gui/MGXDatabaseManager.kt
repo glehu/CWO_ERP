@@ -28,7 +28,7 @@ class MGXDatabaseManager : View("Databases") {
                 action {
                     CwODB().resetModuleDatabase("M1")
                     m1GlobalIndex = M1IndexManager()
-                    m1GlobalIndex.setLastChangeData(-1, activeUser)
+                    m1GlobalIndex.setLastChangeData(-1, activeUser.username)
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
@@ -38,7 +38,7 @@ class MGXDatabaseManager : View("Databases") {
                 action {
                     CwODB().resetModuleDatabase("M2")
                     m2GlobalIndex = M2IndexManager()
-                    m2GlobalIndex.setLastChangeData(-1, activeUser)
+                    m2GlobalIndex.setLastChangeData(-1, activeUser.username)
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth
@@ -48,7 +48,7 @@ class MGXDatabaseManager : View("Databases") {
                 action {
                     CwODB().resetModuleDatabase("M3")
                     m3GlobalIndex = M3IndexManager()
-                    m3GlobalIndex.setLastChangeData(-1, activeUser)
+                    m3GlobalIndex.setLastChangeData(-1, activeUser.username)
                     updateDatabases()
                 }
                 prefWidth = rightButtonsWidth

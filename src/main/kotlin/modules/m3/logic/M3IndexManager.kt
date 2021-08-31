@@ -49,7 +49,13 @@ class M3IndexManager : IModule, IIndexManager, Controller() {
         return arrayListOf("1-Seller", "2-Buyer")
     }
 
-    override fun indexEntry(entry: Any, posDB: Long, byteSize: Int, writeToDisk: Boolean) = runBlocking {
+    override fun indexEntry(
+        entry: Any,
+        posDB: Long,
+        byteSize: Int,
+        writeToDisk: Boolean,
+        userName: String
+    ) = runBlocking {
         entry as Invoice
         buildIndex0(entry, posDB, byteSize)
         buildIndex1(entry, posDB, byteSize)
@@ -57,7 +63,7 @@ class M3IndexManager : IModule, IIndexManager, Controller() {
         if (writeToDisk) launch {
             writeIndexData()
         }
-        setLastChangeData(entry.uID, activeUser)
+        setLastChangeData(entry.uID, userName)
     }
 
     override suspend fun writeIndexData() {

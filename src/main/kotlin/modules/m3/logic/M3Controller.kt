@@ -2,7 +2,6 @@ package modules.m3.logic
 
 import api.logic.getCWOClient
 import api.misc.json.M2EntryJson
-import api.misc.json.M2EntryListJson
 import api.misc.json.M3EntryListJson
 import db.CwODB
 import interfaces.IModule
@@ -52,7 +51,14 @@ class M3Controller : IModule, Controller() {
             if (!isClientGlobal) {
                 val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
                 wizard.invoice.uID.value = M3DBManager().saveEntry(
-                    getInvoiceFromInvoiceProperty(wizard.invoice.item), db, -1L, -1, raf, m3GlobalIndex
+                    entry = getInvoiceFromInvoiceProperty(wizard.invoice.item),
+                    cwodb = db,
+                    posDB = -1L,
+                    byteSize = -1,
+                    raf = raf,
+                    indexManager = m3GlobalIndex,
+                    indexWriteToDisk = true,
+                    userName = activeUser.username
                 )
                 db.closeRandomFileAccess(raf)
             } else {
@@ -83,7 +89,9 @@ class M3Controller : IModule, Controller() {
                     posDB = m3GlobalIndex.indexList[0]!!.indexMap[wizard.invoice.item.uID]!!.pos,
                     byteSize = m3GlobalIndex.indexList[0]!!.indexMap[wizard.invoice.item.uID]!!.byteSize,
                     raf = raf,
-                    indexManager = m3GlobalIndex
+                    indexManager = m3GlobalIndex,
+                    indexWriteToDisk = true,
+                    userName = activeUser.username
                 )
                 this.db.closeRandomFileAccess(raf)
                 wizard.invoice.item = InvoiceProperty()
