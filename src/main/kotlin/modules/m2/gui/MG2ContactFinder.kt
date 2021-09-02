@@ -22,6 +22,7 @@ import modules.m2.logic.M2DBManager
 import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
+import modules.mx.logic.indexFormat
 import modules.mx.m2GlobalIndex
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
@@ -103,7 +104,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts") {
             if (!isClientGlobal) {
                 contactsFound.clear()
                 db.getEntriesFromSearchString(
-                    searchText.text.uppercase(),
+                    indexFormat(searchText.text),
                     ixNr.value.substring(0, 1).toInt(),
                     exactSearch.isSelected,
                     module(),
@@ -121,7 +122,11 @@ class MG2ContactFinder : IModule, View("M2 Contacts") {
                     runBlocking {
                         launch {
                             val entryListJson: M1EntryListJson = getCWOClient(activeUser.username, activeUser.password)
-                                .get("${getApiUrl()}entry/${searchText.text}?type=name")
+                                .get(
+                                    getApiUrl() +
+                                            "entry/${indexFormat(searchText.text)}" +
+                                            "?type=name"
+                                )
                             if (threadID == threadIDCurrent) {
                                 this@MG2ContactFinder.contactsFound.clear()
                                 for (entryBytes: ByteArray in entryListJson.resultsList) {

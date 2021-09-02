@@ -13,6 +13,24 @@ fun String.extractNumbers(): String {
 }
 
 /**
+ * Used to format an input string to be used as an index value. The string gets converted to uppercase letters and
+ * whitespaces get filtered out.
+ * @return the index formatted string
+ */
+fun indexFormat(text: String): String {
+    val songNameArray = text.uppercase(Locale.getDefault()).toCharArray()
+    var formatted = ""
+    for (i in songNameArray.indices) {
+        //Anything but whitespaces
+        val regex = "^\\s$".toRegex()
+        if (!regex.matches(songNameArray[i].toString())) {
+            formatted += songNameArray[i]
+        }
+    }
+    return formatted
+}
+
+/**
  * @return the default date (01.01.1970)
  */
 fun getDefaultDate(): String {

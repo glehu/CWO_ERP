@@ -11,8 +11,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.Invoice
-import modules.mx.activeUser
 import modules.mx.logic.MXLog
+import modules.mx.logic.indexFormat
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 

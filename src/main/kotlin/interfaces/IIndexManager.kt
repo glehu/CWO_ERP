@@ -8,7 +8,6 @@ import modules.mx.logic.MXTimestamp.MXTimestamp.convUnixHexToUnixTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
-import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
@@ -60,22 +59,6 @@ interface IIndexManager : IModule {
             lastChangeDateUTC = ""
             lastChangeDateLocal = ""
         }
-    }
-
-    /**
-     * Used to format an input string to be used as an index value. Any non-alphanumerical character gets filtered out.
-     */
-    fun indexFormat(text: String): String {
-        val songNameArray = text.uppercase(Locale.getDefault()).toCharArray()
-        var formatted = ""
-        for (i in songNameArray.indices) {
-            //Only alphanumerical characters (letters and numbers)
-            val regex = "^[A-Z]?[0-9]?$".toRegex()
-            if (regex.matches(songNameArray[i].toString())) {
-                formatted += songNameArray[i]
-            }
-        }
-        return formatted
     }
 
     fun updateLastUID() = db.getLastUniqueID(module())

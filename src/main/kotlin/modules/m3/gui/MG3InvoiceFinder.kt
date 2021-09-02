@@ -3,6 +3,7 @@ package modules.m3.gui
 import api.logic.getCWOClient
 import api.misc.json.M1EntryListJson
 import db.CwODB
+import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.client.request.*
 import io.ktor.util.*
@@ -15,13 +16,13 @@ import javafx.scene.control.TextField
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m2.logic.M2Controller
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
 import modules.m3.logic.M3DBManager
 import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
+import modules.mx.logic.indexFormat
 import modules.mx.m3GlobalIndex
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
@@ -94,7 +95,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices") {
             if (!isClientGlobal) {
                 invoicesFound.clear()
                 db.getEntriesFromSearchString(
-                    searchText.text.uppercase(),
+                    indexFormat(searchText.text),
                     ixNr.value.substring(0, 1).toInt(),
                     exactSearch.isSelected,
                     module(),
@@ -112,7 +113,11 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices") {
                     runBlocking {
                         launch {
                             val entryListJson: M1EntryListJson = getCWOClient(activeUser.username, activeUser.password)
-                                .get("${getApiUrl()}entry/${searchText.text}?type=name")
+                                .get(
+                                    getApiUrl() +
+                                            "entry/${indexFormat(searchText.text)}" +
+                                            "?type=name"
+                                )
                             if (threadID == threadIDCurrent) {
                                 this@MG3InvoiceFinder.invoicesFound.clear()
                                 for (entryBytes: ByteArray in entryListJson.resultsList) {

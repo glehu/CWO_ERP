@@ -22,6 +22,7 @@ import modules.m2.logic.M2Controller
 import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
+import modules.mx.logic.indexFormat
 import modules.mx.m1GlobalIndex
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
@@ -95,7 +96,7 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
         val timeInMillis = measureTimeMillis {
             if (!isClientGlobal) {
                 db.getEntriesFromSearchString(
-                    searchText.text.uppercase(),
+                    indexFormat(searchText.text),
                     ixNr.value.substring(0, 1).toInt(),
                     exactSearch.isSelected,
                     module(),
@@ -113,7 +114,11 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
                     runBlocking {
                         launch {
                             val entryListJson: M1EntryListJson = getCWOClient(activeUser.username, activeUser.password)
-                                .get("${getApiUrl()}entry/${searchText.text}?type=name")
+                                .get(
+                                    getApiUrl() +
+                                            "entry/${indexFormat(searchText.text)}" +
+                                            "?type=name"
+                                )
                             if (threadID == threadIDCurrent) {
                                 this@MG1EntryFinder.entriesFound.clear()
                                 for (entryBytes: ByteArray in entryListJson.resultsList) {

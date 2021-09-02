@@ -12,6 +12,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m2.Contact
 import modules.mx.logic.MXLog
+import modules.mx.logic.indexFormat
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
