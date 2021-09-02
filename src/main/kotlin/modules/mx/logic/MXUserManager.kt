@@ -39,10 +39,6 @@ class MXUserManager : IModule, Controller() {
         }
     }
 
-    fun getUser(username: String): MXUser? {
-        return getCredentials().credentials[username]
-    }
-
     fun updateUser(userNew: MXUser, userOriginal: MXUser, credentials: MXCredentials) {
         //Check if username changed
         if (userNew.username != userOriginal.username) {

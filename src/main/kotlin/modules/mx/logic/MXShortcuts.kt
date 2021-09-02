@@ -7,11 +7,6 @@ import kotlin.streams.asSequence
 //---------- USEFUL FUNCTIONS ---------|
 //-------------------------------------^
 
-fun String.extractNumbers(): String {
-    val numberExtractor = "[0-9]+".toRegex()
-    return numberExtractor.find(this)!!.value
-}
-
 /**
  * Used to format an input string to be used as an index value. The string gets converted to uppercase letters and
  * whitespaces get filtered out.

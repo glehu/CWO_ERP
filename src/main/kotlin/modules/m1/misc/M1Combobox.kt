@@ -16,6 +16,7 @@ fun getGenreList(): ArrayList<String> {
         "Punk Rock",
         "Punk",
         "RnB",
+        "Rock",
         "Techno",
         "Trance",
         "Trap"
