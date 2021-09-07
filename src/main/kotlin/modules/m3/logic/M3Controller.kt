@@ -22,10 +22,7 @@ import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.ItemConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.misc.*
-import modules.mx.activeUser
-import modules.mx.isClientGlobal
-import modules.mx.m3GlobalIndex
-import modules.mx.maxSearchResultsGlobal
+import modules.mx.*
 import tornadofx.Controller
 import tornadofx.observableListOf
 
@@ -165,5 +162,27 @@ class M3Controller : IModule, Controller() {
             if (v.isNotEmpty()) items.add(Json.decodeFromString(v))
         }
         return items
+    }
+
+    fun getInvoice(uID: Int): Invoice {
+        lateinit var invoice: Invoice
+        if (uID != -1) {
+            if (!isClientGlobal) {
+                invoice = M3DBManager().getEntry(
+                    uID, db, m2GlobalIndex.indexList[0]!!
+                ) as Invoice
+            } else {
+                runBlocking {
+                    launch {
+                        invoice = M3DBManager().decodeEntry(
+                            client.get(
+                                "${getApiUrl()}entry/$uID?type=uid"
+                            )
+                        ) as Invoice
+                    }
+                }
+            }
+        } else invoice = Invoice(-1)
+        return invoice
     }
 }

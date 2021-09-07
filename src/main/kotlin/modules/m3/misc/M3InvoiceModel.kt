@@ -1,14 +1,27 @@
 package modules.m3.misc
 
-import javafx.beans.property.*
+import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import modules.m3.Invoice
+import modules.m3.M3Item
 import tornadofx.ItemViewModel
 import tornadofx.getValue
+import tornadofx.observableListOf
 import tornadofx.setValue
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.iterator
+import kotlin.collections.set
 
+@ExperimentalSerializationApi
 class InvoiceProperty {
     val uIDProperty = SimpleIntegerProperty(-1)
     var uID: Int by uIDProperty
@@ -28,11 +41,10 @@ class InvoiceProperty {
     var price: Double by priceProperty
     val paidProperty = SimpleDoubleProperty()
     var paid: Double by paidProperty
-    val itemsProperty = SimpleMapProperty<Int, String>()
-    var items by itemsProperty
-
+    val itemsProperty = observableListOf<M3Item>()
 }
 
+@ExperimentalSerializationApi
 class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     val uID = bind(InvoiceProperty::uIDProperty)
     val seller = bind(InvoiceProperty::sellerProperty)
@@ -58,8 +70,8 @@ fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty {
     invoiceProperty.text = invoice.text
     invoiceProperty.price = invoice.price
     invoiceProperty.paid = invoice.paid
-    for ((k, v) in invoice.items) {
-        invoiceProperty.items[k] = v
+    for ((_, v) in invoice.items) {
+        invoiceProperty.itemsProperty.add(Json.decodeFromString(v))
     }
     return invoiceProperty
 }
@@ -76,8 +88,8 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): Invoice {
     invoice.text = invoiceProperty.text
     invoice.price = invoiceProperty.price
     invoice.paid = invoiceProperty.paid
-    for ((k, v) in invoiceProperty.items) {
-        invoice.items[k] = v
+    for (item in invoiceProperty.itemsProperty) {
+        invoice.items[invoice.items.size] = Json.encodeToString(item)
     }
     return invoice
 }

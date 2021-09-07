@@ -3,6 +3,8 @@ package modules.m3.gui
 import io.ktor.util.*
 import javafx.collections.ObservableList
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import modules.m2.logic.M2Controller
 import modules.m3.M3Item
 import modules.m3.logic.M3Controller
@@ -96,13 +98,12 @@ class NewInvoiceMainData : Fragment("Main") {
 class NewInvoiceItemData : Fragment("Items") {
     private val invoice: InvoiceModel by inject()
     private val m3Controller: M3Controller by inject()
-    var items: ObservableList<M3Item> = observableListOf(M3Item(-1, ""))
 
     //----------------------------------v
     //----------- Main Data ------------|
     //----------------------------------^
     override val root = form {
-        items.clear()
+        getItems()
         fieldset {
             field("Price") {
                 hbox {
@@ -112,7 +113,7 @@ class NewInvoiceItemData : Fragment("Items") {
                     label("EUR") { paddingHorizontal = 20 }
                 }
             }
-            tableview(items) {
+            tableview(invoice.items) {
                 readonlyColumn("Description", M3Item::description).prefWidth = 250.0
                 readonlyColumn("Price", M3Item::price).prefWidth = 150.0
                 readonlyColumn("Amount", M3Item::amount)
@@ -123,10 +124,17 @@ class NewInvoiceItemData : Fragment("Items") {
                     val item = m3Controller.createAndReturnItem()
                     item.initialize()
                     invoice.price += (item.price * item.amount)
-                    items.add(item)
+                    invoice.items.value.add(item)
                 }
             }
         }
+    }
+
+    private fun getItems() {
+        if (invoice.items.value.isNotEmpty()) {
+            invoice.items.value.clear()
+            invoice.items.value = m3Controller.getItemsFromInvoiceProperty(invoice.item)
+        } else invoice.items.value.clear()
     }
 
     override fun onSave() {
