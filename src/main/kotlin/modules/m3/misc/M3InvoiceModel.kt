@@ -1,9 +1,6 @@
 package modules.m3.misc
 
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
+import javafx.beans.property.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.Invoice
 import tornadofx.ItemViewModel
@@ -31,6 +28,9 @@ class InvoiceProperty {
     var price: Double by priceProperty
     val paidProperty = SimpleDoubleProperty()
     var paid: Double by paidProperty
+    val itemsProperty = SimpleMapProperty<Int, String>()
+    var items by itemsProperty
+
 }
 
 class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
@@ -43,6 +43,7 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     var text = bind(InvoiceProperty::textProperty)
     var price = bind(InvoiceProperty::priceProperty)
     var paid = bind(InvoiceProperty::paidProperty)
+    var items = bind(InvoiceProperty::itemsProperty)
 }
 
 @ExperimentalSerializationApi
@@ -57,6 +58,9 @@ fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty {
     invoiceProperty.text = invoice.text
     invoiceProperty.price = invoice.price
     invoiceProperty.paid = invoice.paid
+    for ((k, v) in invoice.items) {
+        invoiceProperty.items[k] = v
+    }
     return invoiceProperty
 }
 
@@ -72,5 +76,8 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): Invoice {
     invoice.text = invoiceProperty.text
     invoice.price = invoiceProperty.price
     invoice.paid = invoiceProperty.paid
+    for ((k, v) in invoiceProperty.items) {
+        invoice.items[k] = v
+    }
     return invoice
 }

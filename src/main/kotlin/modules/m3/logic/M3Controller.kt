@@ -8,19 +8,26 @@ import interfaces.IModule
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.util.*
+import javafx.collections.ObservableList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import modules.m3.Invoice
+import modules.m3.M3Item
 import modules.m3.gui.InvoiceConfiguratorWizard
+import modules.m3.gui.ItemConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
-import modules.m3.misc.InvoiceProperty
-import modules.m3.misc.getInvoiceFromInvoiceProperty
-import modules.m3.misc.getInvoicePropertyFromInvoice
-import modules.mx.*
+import modules.m3.misc.*
+import modules.mx.activeUser
+import modules.mx.isClientGlobal
+import modules.mx.m3GlobalIndex
+import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
+import tornadofx.observableListOf
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -138,5 +145,25 @@ class M3Controller : IModule, Controller() {
             }
         }
         return indexUserSelection
+    }
+
+    fun createAndReturnItem(): M3Item {
+        val item = M3Item(-1, "")
+        val wizard = ItemConfiguratorWizard()
+        wizard.showHeader = false
+        wizard.showSteps = false
+        wizard.item.item = getItemPropertyFromItem(item)
+        wizard.openModal(block = true)
+        return getItemFromItemProperty(wizard.item.item)
+    }
+
+    fun getItemsFromInvoiceProperty(invoiceProperty: InvoiceProperty): ObservableList<M3Item> {
+        val invoice = getInvoiceFromInvoiceProperty(invoiceProperty)
+        val items: ObservableList<M3Item> = observableListOf(M3Item(-1, ""))
+        items.clear()
+        for ((_, v) in invoice.items) {
+            if (v.isNotEmpty()) items.add(Json.decodeFromString(v))
+        }
+        return items
     }
 }

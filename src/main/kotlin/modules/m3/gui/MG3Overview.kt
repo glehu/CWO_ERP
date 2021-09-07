@@ -2,6 +2,7 @@ package modules.m3.gui
 
 import interfaces.IOverview
 import io.ktor.util.*
+import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.logic.M3Controller
@@ -60,6 +61,11 @@ class MG3Overview : IOverview, View("M3 Invoices") {
                     fieldset("Main Data") {
                         add(NewInvoiceMainData::class)
                         addClass(Stylesheet.fieldsetBorder)
+                    }
+                    fieldset {
+                        add(NewInvoiceItemData::class)
+                        addClass(Stylesheet.fieldsetBorder)
+                        hgrow = Priority.ALWAYS
                     }
                 }
             }

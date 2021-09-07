@@ -1,8 +1,11 @@
 package modules.m3.gui
 
 import io.ktor.util.*
+import javafx.collections.ObservableList
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Controller
+import modules.m3.M3Item
+import modules.m3.logic.M3Controller
 import modules.m3.misc.InvoiceModel
 import tornadofx.*
 
@@ -14,6 +17,7 @@ class InvoiceConfiguratorWizard : Wizard("Add new invoice") {
     init {
         enableStepLinks = true
         add(NewInvoiceMainData::class)
+        add(NewInvoiceItemData::class)
     }
 }
 
@@ -27,7 +31,7 @@ class NewInvoiceMainData : Fragment("Main") {
     //----------- Main Data ------------|
     //----------------------------------^
     override val root = form {
-        fieldset("Invoice") {
+        fieldset {
             field("UID") {
                 textfield(invoice.uID).isEditable = false
             }
@@ -71,6 +75,35 @@ class NewInvoiceMainData : Fragment("Main") {
             }
             field("Date") { datepicker(invoice.date).required() }
             field("Text") { textfield(invoice.text).required() }
+            field("Paid") {
+                hbox {
+                    textfield(invoice.paid) {
+                        prefWidth = 100.0
+                    }
+                    label("EUR") { paddingHorizontal = 20 }
+                }
+            }
+        }
+    }
+
+    override fun onSave() {
+        isComplete = invoice.commit()
+    }
+}
+
+@InternalAPI
+@ExperimentalSerializationApi
+class NewInvoiceItemData : Fragment("Items") {
+    private val invoice: InvoiceModel by inject()
+    private val m3Controller: M3Controller by inject()
+    val items: ObservableList<M3Item> = observableListOf(M3Item(-1, ""))
+
+    //----------------------------------v
+    //----------- Main Data ------------|
+    //----------------------------------^
+    override val root = form {
+        items.clear()
+        fieldset {
             field("Price") {
                 hbox {
                     textfield(invoice.price) {
@@ -79,12 +112,19 @@ class NewInvoiceMainData : Fragment("Main") {
                     label("EUR") { paddingHorizontal = 20 }
                 }
             }
-            field("Paid") {
-                hbox {
-                    textfield(invoice.paid) {
-                        prefWidth = 100.0
-                    }
-                    label("EUR") { paddingHorizontal = 20 }
+            tableview(items) {
+                readonlyColumn("Description", M3Item::description)
+                readonlyColumn("Price", M3Item::price)
+                readonlyColumn("Amount", M3Item::amount)
+                readonlyColumn("User", M3Item::userName)
+                this.columnResizePolicy = SmartResize.POLICY
+            }
+            button("Add Position") {
+                action {
+                    val item = m3Controller.createAndReturnItem()
+                    item.initialize()
+                    invoice.price += item.price
+                    items.add(item)
                 }
             }
         }

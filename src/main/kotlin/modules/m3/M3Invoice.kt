@@ -33,6 +33,13 @@ data class Invoice(override var uID: Int) : IEntry, IInvoice {
     var price: Double = 0.0
     var paid: Double = 0.0
 
+    /**
+     * This map contains the items of the invoice.
+     *
+     * The key is the position number inside the invoice. The value is the JSON serialized item line.
+     */
+    var items: MutableMap<Int, String> = mutableMapOf()
+
     //*************************************************
     //****************** Auto Generated Data **********
     //*************************************************
