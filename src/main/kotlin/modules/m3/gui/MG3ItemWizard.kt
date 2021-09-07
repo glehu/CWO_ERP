@@ -25,15 +25,18 @@ class NewItemMainData : Fragment("Main") {
     //----------- Main Data ------------|
     //----------------------------------^
     override val root = form {
+        prefWidth = 500.0
         fieldset {
             field("UID") {
-                textfield(item.uID).isEditable = false
+                label(item.uID)
             }
-            field("Description") { textfield(item.description).required() }
+            field("Description") {
+                textfield(item.description).required()
+            }
             field("Price") {
                 hbox {
                     textfield(item.price) {
-                        prefWidth = 100.0
+                        prefWidth = 200.0
                     }.required()
                     label("EUR") { paddingHorizontal = 20 }
                 }

@@ -9,7 +9,7 @@ import modules.mx.activeUser
 @Serializable
 data class M3Item(override var uID: Int, var description: String) : IEntry {
     var price: Double = 0.0
-    var amount: Int = 0
+    var amount: Int = 1
     var userName: String = ""
 
     override fun initialize() {

@@ -96,7 +96,7 @@ class NewInvoiceMainData : Fragment("Main") {
 class NewInvoiceItemData : Fragment("Items") {
     private val invoice: InvoiceModel by inject()
     private val m3Controller: M3Controller by inject()
-    val items: ObservableList<M3Item> = observableListOf(M3Item(-1, ""))
+    var items: ObservableList<M3Item> = observableListOf(M3Item(-1, ""))
 
     //----------------------------------v
     //----------- Main Data ------------|
@@ -113,17 +113,16 @@ class NewInvoiceItemData : Fragment("Items") {
                 }
             }
             tableview(items) {
-                readonlyColumn("Description", M3Item::description)
-                readonlyColumn("Price", M3Item::price)
+                readonlyColumn("Description", M3Item::description).prefWidth = 250.0
+                readonlyColumn("Price", M3Item::price).prefWidth = 150.0
                 readonlyColumn("Amount", M3Item::amount)
-                readonlyColumn("User", M3Item::userName)
-                this.columnResizePolicy = SmartResize.POLICY
+                readonlyColumn("User", M3Item::userName).prefWidth = 250.0
             }
             button("Add Position") {
                 action {
                     val item = m3Controller.createAndReturnItem()
                     item.initialize()
-                    invoice.price += item.price
+                    invoice.price += (item.price * item.amount)
                     items.add(item)
                 }
             }
