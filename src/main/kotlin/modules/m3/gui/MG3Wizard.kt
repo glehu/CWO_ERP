@@ -32,7 +32,7 @@ class NewInvoiceMainData : Fragment("Main") {
     override val root = form {
         fieldset {
             field("UID") {
-                textfield(invoice.uID).isEditable = false
+                label(invoice.uID)
             }
             field("Seller") {
                 hbox {
@@ -50,7 +50,6 @@ class NewInvoiceMainData : Fragment("Main") {
                             }
                         }
                     }.required()
-                    label(invoice.sellerUID) { paddingHorizontal = 20 }
                 }
             }
             field("Buyer") {
@@ -69,7 +68,6 @@ class NewInvoiceMainData : Fragment("Main") {
                             }
                         }
                     }.required()
-                    label(invoice.buyerUID) { paddingHorizontal = 20 }
                 }
             }
             field("Date") { datepicker(invoice.date).required() }

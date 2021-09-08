@@ -3,6 +3,7 @@ package modules.m1.gui
 import db.CwODB
 import io.ktor.util.*
 import javafx.collections.FXCollections
+import javafx.scene.layout.Priority
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Controller
 import modules.m1.misc.*
@@ -58,7 +59,7 @@ class SongMainData : Fragment("Main") {
     override val root = form {
         fieldset {
             field("UID") {
-                textfield(songMainData.uID).isEditable = false
+                label(songMainData.uID)
             }
             field("Name") { textfield(songMainData.name).required() }
             field("Vocalist") {
@@ -96,7 +97,6 @@ class SongMainData : Fragment("Main") {
                             }
                         }
                     }
-                    label(songMainData.producerUID) { paddingHorizontal = 20 }
                 }
             }
             field("Mixing") {
@@ -120,7 +120,6 @@ class SongMainData : Fragment("Main") {
                             }
                         }
                     }
-                    label(songMainData.mixingUID) { paddingHorizontal = 20 }
                 }
             }
             field("Mastering") {
@@ -144,7 +143,6 @@ class SongMainData : Fragment("Main") {
                             }
                         }
                     }
-                    label(songMainData.masteringUID) { paddingHorizontal = 20 }
                 }
             }
             field("Type") { combobox(songMainData.type, typeList) }

@@ -154,16 +154,6 @@ class M3Controller : IModule, Controller() {
         return getItemFromItemProperty(wizard.item.item)
     }
 
-    fun getItemsFromInvoiceProperty(invoiceProperty: InvoiceProperty): ObservableList<M3Item> {
-        val items: ObservableList<M3Item> = observableListOf(M3Item(-1, ""))
-        items.clear()
-        val invoice = getInvoiceFromInvoiceProperty(invoiceProperty)
-        for ((_, v) in invoice.items) {
-            if (v.isNotEmpty()) items.add(Json.decodeFromString(v))
-        }
-        return items
-    }
-
     fun getInvoice(uID: Int): Invoice {
         lateinit var invoice: Invoice
         if (uID != -1) {

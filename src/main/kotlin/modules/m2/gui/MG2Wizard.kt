@@ -22,7 +22,7 @@ class NewContactMainData : Fragment("Main") {
     override val root = form {
         fieldset {
             field("UID") {
-                textfield(contact.uID).isEditable = false
+                label(contact.uID)
             }
             field("Name") { textfield(contact.name).required() }
             field("First Name") { textfield(contact.firstName) }
