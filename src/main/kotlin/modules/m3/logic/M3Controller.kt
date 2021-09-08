@@ -185,4 +185,11 @@ class M3Controller : IModule, Controller() {
         } else invoice = Invoice(-1)
         return invoice
     }
+
+    fun calculate(invoice: InvoiceProperty) {
+        invoice.price = 0.0
+        for (item in invoice.itemsProperty) {
+            invoice.price += (item.price * item.amount)
+        }
+    }
 }

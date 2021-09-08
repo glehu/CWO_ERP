@@ -125,18 +125,15 @@ class NewInvoiceItemData : Fragment("Items") {
                 isFocusTraversable = false
                 regainFocusAfterEdit()
                 onEditCommit {
-                    invoice.price.value = 0.0
-                    for (item in invoice.items.value) {
-                        invoice.price.value += (item.price * item.amount)
-                    }
+                    m3Controller.calculate(invoice.item)
                 }
             }
             button("Add Position") {
                 action {
                     val item = m3Controller.createAndReturnItem()
                     item.initialize()
-                    invoice.price += (item.price * item.amount)
                     invoice.items.value.add(item)
+                    m3Controller.calculate(invoice.item)
                 }
             }
         }
