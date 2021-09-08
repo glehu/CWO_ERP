@@ -12,6 +12,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import javafx.scene.layout.Priority
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -45,6 +46,7 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
     private var threadIDCurrent by threadIDCurrentProperty
     override val root = borderpane {
         center = form {
+            prefWidth = 1200.0
             entriesFound.clear()
             threadIDCurrent = 0
             fieldset {

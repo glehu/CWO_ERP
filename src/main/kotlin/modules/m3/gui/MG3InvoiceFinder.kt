@@ -44,6 +44,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices") {
     private var threadIDCurrent by threadIDCurrentProperty
     override val root = borderpane {
         center = form {
+            prefWidth = 1200.0
             invoicesFound.clear()
             threadIDCurrent = 0
             fieldset {
@@ -67,9 +68,9 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices") {
                 }
                 tableview(invoicesFound) {
                     readonlyColumn("ID", Invoice::uID).prefWidth(65.0)
-                    readonlyColumn("Seller", Invoice::seller).prefWidth(350.0)
-                    readonlyColumn("Buyer", Invoice::buyer).prefWidth(350.0)
-                    readonlyColumn("Text", Invoice::text).prefWidth(200.0)
+                    readonlyColumn("Seller", Invoice::seller).prefWidth(300.0)
+                    readonlyColumn("Buyer", Invoice::buyer).prefWidth(300.0)
+                    readonlyColumn("Text", Invoice::text).prefWidth(400.0)
                     onUserSelect(1) {
                         m3Controller.showInvoice(it)
                         searchText.text = ""

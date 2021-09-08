@@ -45,6 +45,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts") {
     private var threadIDCurrent by threadIDCurrentProperty
     override val root = borderpane {
         center = form {
+            prefWidth = 1200.0
             contactsFound.clear()
             threadIDCurrent = 0
             fieldset {
