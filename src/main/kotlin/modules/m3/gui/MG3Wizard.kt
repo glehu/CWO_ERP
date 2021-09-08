@@ -1,10 +1,7 @@
 package modules.m3.gui
 
 import io.ktor.util.*
-import javafx.collections.ObservableList
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import modules.m2.logic.M2Controller
 import modules.m3.M3Item
 import modules.m3.logic.M3Controller
@@ -103,21 +100,36 @@ class NewInvoiceItemData : Fragment("Items") {
     //----------- Main Data ------------|
     //----------------------------------^
     override val root = form {
-        getItems()
         fieldset {
             field("Price") {
                 hbox {
                     textfield(invoice.price) {
                         prefWidth = 100.0
+                        isEditable = false
                     }.required()
                     label("EUR") { paddingHorizontal = 20 }
                 }
             }
             tableview(invoice.items) {
+                isEditable = true
                 readonlyColumn("Description", M3Item::description).prefWidth = 250.0
-                readonlyColumn("Price", M3Item::price).prefWidth = 150.0
-                readonlyColumn("Amount", M3Item::amount)
+                column("Price", M3Item::price) {
+                    makeEditable()
+                    prefWidth = 250.0
+                }
+                column("Amount", M3Item::amount) {
+                    makeEditable()
+                    prefWidth = 100.0
+                }
                 readonlyColumn("User", M3Item::userName).prefWidth = 250.0
+                isFocusTraversable = false
+                regainFocusAfterEdit()
+                onEditCommit {
+                    invoice.price.value = 0.0
+                    for (item in invoice.items.value) {
+                        invoice.price.value += (item.price * item.amount)
+                    }
+                }
             }
             button("Add Position") {
                 action {
@@ -128,13 +140,6 @@ class NewInvoiceItemData : Fragment("Items") {
                 }
             }
         }
-    }
-
-    private fun getItems() {
-        if (invoice.items.value.isNotEmpty()) {
-            invoice.items.value.clear()
-            invoice.items.value = m3Controller.getItemsFromInvoiceProperty(invoice.item)
-        } else invoice.items.value.clear()
     }
 
     override fun onSave() {
