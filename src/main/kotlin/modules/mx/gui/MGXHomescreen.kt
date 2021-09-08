@@ -8,7 +8,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.MG1Overview
 import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2Overview
-import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.gui.MG3Overview
 import modules.mx.*
 import modules.mx.logic.MXLog
@@ -113,7 +112,11 @@ class MXGUserInterface : View(titleGlobal) {
             }
             menu("Dev-Tools") {
                 menu("Benchmark (M1)") {
-                    item("Insert random songs").action { M1Benchmark().insertRandomEntries(1000000) }
+                    item("Insert random songs").action {
+                        M1Benchmark().insertRandomEntries(
+                            10_000_000
+                        )
+                    }
                 }
             }
         }
