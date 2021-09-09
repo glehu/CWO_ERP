@@ -45,7 +45,7 @@ class M2Import : IModule, Controller() {
                     contact.country = import(row[contactSchema.country.value].toString())
 
                     save(
-                        entry = contact, posDB = -1L,
+                        entry = contact,
                         raf = raf,
                         indexManager = m2GlobalIndex,
                         indexWriteToDisk = false,

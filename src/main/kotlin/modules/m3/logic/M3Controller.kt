@@ -80,8 +80,6 @@ class M3Controller : IModule, Controller() {
                 val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
                 save(
                     entry = getInvoiceFromInvoiceProperty(wizard.invoice.item),
-                    posDB = m3GlobalIndex.indexList[0]!!.indexMap[wizard.invoice.item.uID]!!.pos,
-                    byteSize = m3GlobalIndex.indexList[0]!!.indexMap[wizard.invoice.item.uID]!!.byteSize,
                     raf = raf,
                     indexManager = m3GlobalIndex,
                     indexWriteToDisk = true,

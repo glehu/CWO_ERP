@@ -176,8 +176,6 @@ class MXServer : IModule, Controller() {
                             call.respond(
                                 save(
                                     entry = entry,
-                                    posDB = -1L,
-                                    byteSize = -1,
                                     raf = raf,
                                     indexManager = m3GlobalIndex,
                                     indexWriteToDisk = true,

@@ -75,7 +75,6 @@ class SongMainData : Fragment("Main") {
                             }
                         }
                     }
-                    label(songMainData.vocalistUID) { paddingHorizontal = 20 }
                 }
             }
             field("Producer") {

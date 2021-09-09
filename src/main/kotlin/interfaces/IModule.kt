@@ -23,14 +23,27 @@ interface IModule {
      */
     fun save(
         entry: IEntry,
-        posDB: Long = -1L,
-        byteSize: Int = -1,
         raf: RandomAccessFile,
         indexManager: IIndexManager,
         indexWriteToDisk: Boolean = true,
         userName: String = activeUser.username
     ): Int {
         val protoBuf = ProtoBuf { serializersModule = serializersModuleGlobal }
+        val posDB: Long
+        val byteSize: Int
+        if (entry.uID != -1) {
+            val index = indexManager.indexList[0]!!.indexMap[entry.uID]
+            if (index != null) {
+                posDB = index.pos
+                byteSize = index.byteSize
+            } else {
+                posDB = -1L
+                byteSize = -1
+            }
+        } else {
+            posDB = -1L
+            byteSize = -1
+        }
         entry.initialize()
         val entrySerialized = protoBuf.encodeToByteArray(entry)
         val (posDBX, byteSizeX) = CwODB.saveEntry(

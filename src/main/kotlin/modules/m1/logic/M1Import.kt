@@ -74,8 +74,6 @@ class M1Import : IModule, Controller() {
     ) {
         var song: Song
         var uID: Int
-        var pos: Long
-        var byteSize: Int
         var counter = entriesAdded
 
         for (track: SpotifyTrackJson in trackList.tracks) {
@@ -85,14 +83,10 @@ class M1Import : IModule, Controller() {
                 it.content.contains(track.id)
             }
             if (filteredMap.isEmpty()) {
-                pos = -1
-                byteSize = -1
                 song = Song(-1, "")
             } else {
                 val indexContent = filteredMap.values.first()
                 uID = indexContent.uID
-                pos = indexContent.pos
-                byteSize = indexContent.byteSize
                 song = get(uID, m1GlobalIndex.indexList[5]!!) as Song
             }
 
@@ -112,8 +106,6 @@ class M1Import : IModule, Controller() {
             //Save the song
             save(
                 entry = song,
-                posDB = pos,
-                byteSize = byteSize,
                 raf = raf,
                 indexManager = m1GlobalIndex,
                 indexWriteToDisk = false,
@@ -127,8 +119,6 @@ class M1Import : IModule, Controller() {
     private fun createOrSaveAlbum(album: SpotifyAlbumJson, raf: RandomAccessFile, m2raf: RandomAccessFile): Song {
         val song: Song
         val uID: Int
-        val pos: Long
-        val byteSize: Int
         var releaseDate: String = getDefaultDate()
 
         //New album or existing album
@@ -136,14 +126,10 @@ class M1Import : IModule, Controller() {
             it.content.contains(album.id)
         }
         if (filteredMap.isEmpty()) {
-            pos = -1
-            byteSize = -1
             song = Song(-1, "")
         } else {
             val indexContent = filteredMap.values.first()
             uID = indexContent.uID
-            pos = indexContent.pos
-            byteSize = indexContent.byteSize
             song = get(uID, m1GlobalIndex.indexList[5]!!) as Song
         }
 
@@ -173,8 +159,6 @@ class M1Import : IModule, Controller() {
         //Save the song
         save(
             entry = song,
-            posDB = pos,
-            byteSize = byteSize,
             raf = raf,
             indexManager = m1GlobalIndex,
             indexWriteToDisk = false,

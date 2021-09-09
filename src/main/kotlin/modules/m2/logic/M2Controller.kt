@@ -146,8 +146,6 @@ class M2Controller : IModule, Controller() {
                 val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
                 save(
                     entry = getContactFromProperty(wizard.contact.item),
-                    posDB = m2GlobalIndex.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.pos,
-                    byteSize = m2GlobalIndex.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.byteSize,
                     raf = raf,
                     indexManager = m2GlobalIndex,
                     indexWriteToDisk = true,
