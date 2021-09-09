@@ -12,7 +12,7 @@ import modules.m1.logic.M1IndexManager
 import modules.m2.Contact
 import modules.m2.logic.M2IndexManager
 import modules.m3.Invoice
-import modules.m3.Item
+import modules.m3.M3Item
 import modules.m3.logic.M3IndexManager
 import java.io.File
 
@@ -22,7 +22,7 @@ val serializersModuleGlobal = SerializersModule {
         subclass(Song::class, serializer())
         subclass(Contact::class, serializer())
         subclass(Invoice::class, serializer())
-        subclass(Item::class, serializer())
+        subclass(M3Item::class, serializer())
     }
 }
 

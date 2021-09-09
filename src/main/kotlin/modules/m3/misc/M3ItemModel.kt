@@ -4,7 +4,7 @@ import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m3.Item
+import modules.m3.M3Item
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue
@@ -32,7 +32,7 @@ class M3ItemModel : ItemViewModel<M3ItemProperty>() {
 }
 
 @ExperimentalSerializationApi
-fun getItemPropertyFromItem(item: Item): M3ItemProperty {
+fun getItemPropertyFromItem(item: M3Item): M3ItemProperty {
     val itemProperty = M3ItemProperty()
     itemProperty.description = item.description
     itemProperty.price = item.price
@@ -43,8 +43,8 @@ fun getItemPropertyFromItem(item: Item): M3ItemProperty {
 }
 
 @ExperimentalSerializationApi
-fun getItemFromItemProperty(itemProperty: M3ItemProperty): Item {
-    val item = Item(-1, "")
+fun getItemFromItemProperty(itemProperty: M3ItemProperty): M3Item {
+    val item = M3Item(-1, "")
     item.description = itemProperty.description
     item.price = itemProperty.price
     item.amount = itemProperty.amount

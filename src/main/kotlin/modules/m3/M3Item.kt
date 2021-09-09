@@ -8,7 +8,7 @@ import modules.mx.activeUser
 
 @ExperimentalSerializationApi
 @Serializable
-data class Item(
+data class M3Item(
     @SerialName("i")
     override var uID: Int,
     @SerialName("d")

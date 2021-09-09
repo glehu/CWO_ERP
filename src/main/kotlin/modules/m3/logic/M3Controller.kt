@@ -14,7 +14,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
 import modules.m3.Invoice
-import modules.m3.Item
+import modules.m3.M3Item
 import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.ItemConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
@@ -133,8 +133,8 @@ class M3Controller : IModule, Controller() {
         return indexUserSelection
     }
 
-    fun createAndReturnItem(): Item {
-        val item = Item(-1, "")
+    fun createAndReturnItem(): M3Item {
+        val item = M3Item(-1, "")
         val wizard = ItemConfiguratorWizard()
         wizard.showHeader = false
         wizard.showSteps = false

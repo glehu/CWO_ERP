@@ -9,7 +9,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.Invoice
-import modules.m3.Item
+import modules.m3.M3Item
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.observableListOf
@@ -41,7 +41,7 @@ class InvoiceProperty {
     var price: Double by priceProperty
     val paidProperty = SimpleDoubleProperty()
     var paid: Double by paidProperty
-    val itemsProperty = observableListOf<Item>()
+    val itemsProperty = observableListOf<M3Item>()
 }
 
 @ExperimentalSerializationApi
