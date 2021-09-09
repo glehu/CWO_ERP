@@ -7,7 +7,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.misc.getGenreList
-import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.getRandomString
 import modules.mx.m1GlobalIndex
@@ -20,12 +19,9 @@ class M1Benchmark : IModule, Controller() {
     override fun moduleNameLong() = "M1Benchmark"
     override fun module() = "M1"
 
-    val db: CwODB by inject()
-
     fun insertRandomEntries(amount: Int) {
         MXLog.log(module(), MXLog.LogType.INFO, "Benchmark entry insertion start", moduleNameLong())
-        val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-        val dbManager = M1DBManager()
+        val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
         val timeInMillis = measureTimeMillis {
             for (i in 1..amount) {
                 val song = Song(-1, getRandomString(10L))
@@ -34,15 +30,11 @@ class M1Benchmark : IModule, Controller() {
                 song.producer = getRandomString(10L)
                 song.genre = getRandomGenre()
                 song.releaseDate = "01.01.1000"
-                dbManager.saveEntry(
+                save(
                     entry = song,
-                    cwodb = db,
-                    posDB = -1L,
-                    byteSize = -1,
                     raf = raf,
                     indexManager = m1GlobalIndex,
                     indexWriteToDisk = false,
-                    userName = activeUser.username
                 )
                 if (i % 5000 == 0) {
                     MXLog.log(module(), MXLog.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}", moduleNameLong())
@@ -50,7 +42,7 @@ class M1Benchmark : IModule, Controller() {
                 }
             }
         }
-        db.closeRandomFileAccess(raf)
+        CwODB.closeRandomFileAccess(raf)
         MXLog.log(
             module(),
             MXLog.LogType.INFO,

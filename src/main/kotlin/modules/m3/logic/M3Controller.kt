@@ -8,23 +8,19 @@ import interfaces.IModule
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.util.*
-import javafx.collections.ObservableList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToByteArray
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import modules.m3.Invoice
-import modules.m3.M3Item
+import modules.m3.Item
 import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.ItemConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.misc.*
 import modules.mx.*
 import tornadofx.Controller
-import tornadofx.observableListOf
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -33,7 +29,6 @@ class M3Controller : IModule, Controller() {
     override fun module() = "M3"
 
     private val wizard = find<InvoiceConfiguratorWizard>()
-    val db: CwODB by inject()
 
     val client = getCWOClient(activeUser.username, activeUser.password)
 
@@ -53,18 +48,14 @@ class M3Controller : IModule, Controller() {
         if (!wizard.invoice.isValid) isComplete = false
         if (isComplete) {
             if (!isClientGlobal) {
-                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-                wizard.invoice.uID.value = M3DBManager().saveEntry(
+                val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+                wizard.invoice.uID.value = save(
                     entry = getInvoiceFromInvoiceProperty(wizard.invoice.item),
-                    cwodb = db,
-                    posDB = -1L,
-                    byteSize = -1,
                     raf = raf,
                     indexManager = m3GlobalIndex,
                     indexWriteToDisk = true,
-                    userName = activeUser.username
                 )
-                db.closeRandomFileAccess(raf)
+                CwODB.closeRandomFileAccess(raf)
             } else {
                 val entry = getInvoiceFromInvoiceProperty(wizard.invoice.item)
                 runBlocking {
@@ -86,18 +77,16 @@ class M3Controller : IModule, Controller() {
         wizard.invoice.item = getInvoicePropertyFromInvoice(invoice)
         wizard.onComplete {
             if (wizard.invoice.uID.value != -1) {
-                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-                M3DBManager().saveEntry(
+                val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+                save(
                     entry = getInvoiceFromInvoiceProperty(wizard.invoice.item),
-                    cwodb = db,
                     posDB = m3GlobalIndex.indexList[0]!!.indexMap[wizard.invoice.item.uID]!!.pos,
                     byteSize = m3GlobalIndex.indexList[0]!!.indexMap[wizard.invoice.item.uID]!!.byteSize,
                     raf = raf,
                     indexManager = m3GlobalIndex,
                     indexWriteToDisk = true,
-                    userName = activeUser.username
                 )
-                this.db.closeRandomFileAccess(raf)
+                CwODB.closeRandomFileAccess(raf)
                 wizard.invoice.item = InvoiceProperty()
                 wizard.isComplete = false
             }
@@ -107,7 +96,7 @@ class M3Controller : IModule, Controller() {
     fun getEntryBytesListJson(searchText: String, ixNr: Int): M3EntryListJson {
         val resultsListJson = M3EntryListJson(0, arrayListOf())
         var resultCounter = 0
-        db.getEntriesFromSearchString(
+        CwODB.getEntriesFromSearchString(
             searchText = searchText.uppercase(),
             ixNr = ixNr,
             exactSearch = false,
@@ -124,7 +113,7 @@ class M3Controller : IModule, Controller() {
 
     fun getEntryBytes(uID: Int): ByteArray {
         return if (uID != -1) {
-            db.getEntryFromUniqueID(uID, module(), m3GlobalIndex.indexList[0]!!)
+            CwODB.getEntryFromUniqueID(uID, module(), m3GlobalIndex.indexList[0]!!)
         } else byteArrayOf()
     }
 
@@ -144,8 +133,8 @@ class M3Controller : IModule, Controller() {
         return indexUserSelection
     }
 
-    fun createAndReturnItem(): M3Item {
-        val item = M3Item(-1, "")
+    fun createAndReturnItem(): Item {
+        val item = Item(-1, "")
         val wizard = ItemConfiguratorWizard()
         wizard.showHeader = false
         wizard.showSteps = false
@@ -158,13 +147,13 @@ class M3Controller : IModule, Controller() {
         lateinit var invoice: Invoice
         if (uID != -1) {
             if (!isClientGlobal) {
-                invoice = M3DBManager().getEntry(
-                    uID, db, m2GlobalIndex.indexList[0]!!
+                invoice = get(
+                    uID, m2GlobalIndex.indexList[0]!!
                 ) as Invoice
             } else {
                 runBlocking {
                     launch {
-                        invoice = M3DBManager().decodeEntry(
+                        invoice = decode(
                             client.get(
                                 "${getApiUrl()}entry/$uID?type=uid"
                             )

@@ -5,6 +5,7 @@ import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.mx.logic.MXLog
+import modules.mx.m1GlobalIndex
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
@@ -12,7 +13,6 @@ import kotlin.system.measureTimeMillis
 class M1Analytics : IModule, Controller() {
     override fun moduleNameLong() = "M1Analytics"
     override fun module() = "M1"
-    val db: CwODB by inject()
 
     enum class DistType {
         GENRE, TYPE
@@ -20,22 +20,24 @@ class M1Analytics : IModule, Controller() {
 
     @ExperimentalSerializationApi
     fun getDistributionChartData(
-        indexManager: M1IndexManager,
         distType: DistType,
         updateProgress: (Pair<Int, String>) -> Unit
     ): MutableMap<String, Double> {
         var songCount = 0.0
         val map = mutableMapOf<String, Double>()
-        val dbManager = M1DBManager()
         var distTypeData: String
         MXLog.log(module(), MXLog.LogType.INFO, "Distribution analysis start", moduleNameLong())
         val timeInMS = measureTimeMillis {
-            db.getEntriesFromSearchString(
-                "", 0, false, module(), -1, indexManager
+            CwODB.getEntriesFromSearchString(
+                searchText = "",
+                ixNr = 0,
+                exactSearch = false,
+                maxSearchResults = -1,
+                indexManager = m1GlobalIndex
             )
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping data..."))
-                val song: Song = dbManager.decodeEntry(entryBytes) as Song
+                val song = decode(entryBytes) as Song
                 if (song.uID != -1) {
                     songCount += 1.0
                     distTypeData = when (distType) {

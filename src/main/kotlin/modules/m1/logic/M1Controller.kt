@@ -32,7 +32,6 @@ class M1Controller : IModule, Controller() {
     override fun moduleNameLong() = "M1Controller"
     override fun module() = "M1"
 
-    val db: CwODB by inject()
     private val m2Controller: M2Controller by inject()
 
     val client = getCWOClient(activeUser.username, activeUser.password)
@@ -58,18 +57,14 @@ class M1Controller : IModule, Controller() {
             wizard.songCopyrightData.commit()
             wizard.songMiscData.commit()
             if (!isClientGlobal) {
-                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-                wizard.songMainData.uID.value = M1DBManager().saveEntry(
+                val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+                wizard.songMainData.uID.value = save(
                     entry = getSongFromProperties(wizard),
-                    cwodb = db,
-                    posDB = -1L,
-                    byteSize = -1,
                     raf = raf,
                     indexManager = m1GlobalIndex,
                     indexWriteToDisk = true,
-                    userName = activeUser.username
                 )
-                db.closeRandomFileAccess(raf)
+                CwODB.closeRandomFileAccess(raf)
             } else {
                 val entry = getSongFromProperties(wizard)
                 runBlocking {
@@ -118,8 +113,8 @@ class M1Controller : IModule, Controller() {
         setInScope(dataTransfer, newScope)
         tornadofx.find<MG1EntryFinder>(newScope).openModal(block = true)
         entry = if (dataTransfer.name.value != null) {
-            M1DBManager().getEntry(
-                dataTransfer.uID.value, db, m1GlobalIndex.indexList[0]!!
+            get(
+                dataTransfer.uID.value, m1GlobalIndex.indexList[0]!!
             ) as Song
         } else Song(-1, "")
         return entry
@@ -203,7 +198,7 @@ class M1Controller : IModule, Controller() {
 
     fun getEntryBytes(uID: Int): ByteArray {
         return if (uID != -1) {
-            db.getEntryFromUniqueID(uID, module(), m1GlobalIndex.indexList[0]!!)
+            CwODB.getEntryFromUniqueID(uID, module(), m1GlobalIndex.indexList[0]!!)
         } else byteArrayOf()
     }
 
@@ -217,13 +212,13 @@ class M1Controller : IModule, Controller() {
         lateinit var song: Song
         if (uID != -1) {
             if (!isClientGlobal) {
-                song = M1DBManager().getEntry(
-                    uID, db, m1GlobalIndex.indexList[0]!!
+                song = get(
+                    uID, m1GlobalIndex.indexList[0]!!
                 ) as Song
             } else {
                 runBlocking {
                     launch {
-                        song = M1DBManager().decodeEntry(
+                        song = decode(
                             client.get("${getApiUrl()}entry/$uID?type=uid")
                         ) as Song
                     }
@@ -236,12 +231,10 @@ class M1Controller : IModule, Controller() {
     fun getEntryBytesListJson(searchText: String, ixNr: Int): M1EntryListJson {
         val resultsListJson = M1EntryListJson(0, arrayListOf())
         var resultCounter = 0
-        db.getEntriesFromSearchString(
+        CwODB.getEntriesFromSearchString(
             searchText = searchText.uppercase(),
             ixNr = ixNr,
             exactSearch = false,
-            module = module(),
-            maxSearchResults = maxSearchResultsGlobal,
             indexManager = m1GlobalIndex
         ) { _, bytes ->
             resultCounter++

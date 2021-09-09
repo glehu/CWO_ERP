@@ -1,12 +1,30 @@
 package modules.mx
 
-import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.logic.M1IndexManager
-import modules.m2.logic.M2IndexManager
-import modules.m3.logic.M3IndexManager
 import api.logic.MXServer
+import interfaces.IEntry
 import io.ktor.util.*
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.serializer
+import modules.m1.Song
+import modules.m1.logic.M1IndexManager
+import modules.m2.Contact
+import modules.m2.logic.M2IndexManager
+import modules.m3.Invoice
+import modules.m3.Item
+import modules.m3.logic.M3IndexManager
 import java.io.File
+
+@ExperimentalSerializationApi
+val serializersModuleGlobal = SerializersModule {
+    polymorphic(IEntry::class) {
+        subclass(Song::class, serializer())
+        subclass(Contact::class, serializer())
+        subclass(Invoice::class, serializer())
+        subclass(Item::class, serializer())
+    }
+}
 
 //*************************************************
 //********************** INDEX MANAGERS ***********

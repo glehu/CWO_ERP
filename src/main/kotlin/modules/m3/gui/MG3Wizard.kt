@@ -3,7 +3,7 @@ package modules.m3.gui
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Controller
-import modules.m3.M3Item
+import modules.m3.Item
 import modules.m3.logic.M3Controller
 import modules.m3.misc.InvoiceModel
 import tornadofx.*
@@ -110,16 +110,16 @@ class NewInvoiceItemData : Fragment("Items") {
             }
             tableview(invoice.items) {
                 isEditable = true
-                readonlyColumn("Description", M3Item::description).prefWidth = 250.0
-                column("Price", M3Item::price) {
+                readonlyColumn("Description", Item::description).prefWidth = 250.0
+                column("Price", Item::price) {
                     makeEditable()
                     prefWidth = 250.0
                 }
-                column("Amount", M3Item::amount) {
+                column("Amount", Item::amount) {
                     makeEditable()
                     prefWidth = 100.0
                 }
-                readonlyColumn("User", M3Item::userName).prefWidth = 250.0
+                readonlyColumn("User", Item::userName).prefWidth = 250.0
                 isFocusTraversable = false
                 regainFocusAfterEdit()
                 onEditCommit {

@@ -23,13 +23,10 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import modules.m1.Song
 import modules.m1.logic.M1Controller
-import modules.m1.logic.M1DBManager
 import modules.m2.Contact
 import modules.m2.logic.M2Controller
-import modules.m2.logic.M2DBManager
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
-import modules.m3.logic.M3DBManager
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.m1GlobalIndex
@@ -113,20 +110,17 @@ class MXServer : IModule, Controller() {
                         post("/saveentry") {
                             val entryJson: M1EntryJson = call.receive()
                             val entry = ProtoBuf.decodeFromByteArray<Song>(entryJson.entry)
-                            val raf = CwODB().openRandomFileAccess("M1", CwODB.RafMode.READWRITE)
+                            val raf = CwODB.openRandomFileAccess("M1", CwODB.CwODB.RafMode.READWRITE)
                             call.respond(
-                                M1DBManager().saveEntry(
+                                save(
                                     entry = entry,
-                                    cwodb = CwODB(),
-                                    posDB = -1L,
-                                    byteSize = -1,
                                     raf = raf,
                                     indexManager = m1GlobalIndex,
                                     indexWriteToDisk = true,
                                     userName = call.principal<UserIdPrincipal>()!!.name
                                 )
                             )
-                            CwODB().closeRandomFileAccess(raf)
+                            CwODB.closeRandomFileAccess(raf)
                         }
                     }
                     route("/m2") {
@@ -147,20 +141,17 @@ class MXServer : IModule, Controller() {
                         post("/saveentry") {
                             val entryJson: M2EntryJson = call.receive()
                             val entry = ProtoBuf.decodeFromByteArray<Contact>(entryJson.entry)
-                            val raf = CwODB().openRandomFileAccess("M2", CwODB.RafMode.READWRITE)
+                            val raf = CwODB.openRandomFileAccess("M2", CwODB.CwODB.RafMode.READWRITE)
                             call.respond(
-                                M2DBManager().saveEntry(
+                                save(
                                     entry = entry,
-                                    cwodb = CwODB(),
-                                    posDB = -1L,
-                                    byteSize = -1,
                                     raf = raf,
                                     indexManager = m2GlobalIndex,
                                     indexWriteToDisk = true,
                                     userName = call.principal<UserIdPrincipal>()!!.name
                                 )
                             )
-                            CwODB().closeRandomFileAccess(raf)
+                            CwODB.closeRandomFileAccess(raf)
                         }
                     }
                     route("/m3") {
@@ -181,11 +172,10 @@ class MXServer : IModule, Controller() {
                         post("/saveentry") {
                             val entryJson: M3EntryJson = call.receive()
                             val entry = ProtoBuf.decodeFromByteArray<Invoice>(entryJson.entry)
-                            val raf = CwODB().openRandomFileAccess("M3", CwODB.RafMode.READWRITE)
+                            val raf = CwODB.openRandomFileAccess("M3", CwODB.CwODB.RafMode.READWRITE)
                             call.respond(
-                                M3DBManager().saveEntry(
+                                save(
                                     entry = entry,
-                                    cwodb = CwODB(),
                                     posDB = -1L,
                                     byteSize = -1,
                                     raf = raf,
@@ -194,7 +184,7 @@ class MXServer : IModule, Controller() {
                                     userName = call.principal<UserIdPrincipal>()!!.name
                                 )
                             )
-                            CwODB().closeRandomFileAccess(raf)
+                            CwODB.closeRandomFileAccess(raf)
                         }
                     }
                 }

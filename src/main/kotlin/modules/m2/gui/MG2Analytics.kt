@@ -1,6 +1,5 @@
 package modules.m2.gui
 
-import db.CwODB
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.chart.PieChart
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -11,7 +10,6 @@ import tornadofx.*
 
 @ExperimentalSerializationApi
 class MG2Analytics : Fragment("Analytics") {
-    val db: CwODB by inject()
     private val m2controller: M2Analytics by inject()
     private val progressProperty = SimpleIntegerProperty()
     private var progressN by progressProperty
@@ -35,7 +33,7 @@ class MG2Analytics : Fragment("Analytics") {
             button("City distribution") {
                 prefWidth = 200.0
                 action {
-                    maxEntries = m2controller.db.getLastUniqueID("M2").toInt()
+                    maxEntries = m2GlobalIndex.getLastUniqueID().toInt()
                     runAsync {
                         val cityDist = m2controller.getChartDataOnCityDistribution(m2GlobalIndex, numberOfCities)
                         {

@@ -1,6 +1,5 @@
 package modules.m2.logic
 
-import db.CwODB
 import db.Index
 import db.IndexContent
 import interfaces.IIndexManager
@@ -26,7 +25,6 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
     override var lastChangeDateUTC: String = ""
     override var lastChangeDateLocal: String = ""
     override var lastChangeUser: String = ""
-    override val db: CwODB by inject()
 
     //*************************************************
     //********************** Global Data **************
@@ -37,10 +35,10 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
 
     init {
         MXLog.log(module(), MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
-        indexList[0] = db.getIndex(module(), 0)
-        indexList[1] = db.getIndex(module(), 1)
-        indexList[2] = db.getIndex(module(), 2)
-        indexList[3] = db.getIndex(module(), 3)
+        indexList[0] = getIndex(0)
+        indexList[1] = getIndex(1)
+        indexList[2] = getIndex(2)
+        indexList[3] = getIndex(3)
         lastUID = updateLastUID()
         getLastChangeDates()
         MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
@@ -69,10 +67,10 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
     }
 
     override suspend fun writeIndexData() {
-        db.getIndexFile(module(), 0).writeText(Json.encodeToString(indexList[0]))
-        db.getIndexFile(module(), 1).writeText(Json.encodeToString(indexList[1]))
-        db.getIndexFile(module(), 2).writeText(Json.encodeToString(indexList[2]))
-        db.getIndexFile(module(), 3).writeText(Json.encodeToString(indexList[3]))
+        getIndexFile(0).writeText(Json.encodeToString(indexList[0]))
+        getIndexFile(1).writeText(Json.encodeToString(indexList[1]))
+        getIndexFile(2).writeText(Json.encodeToString(indexList[2]))
+        getIndexFile(3).writeText(Json.encodeToString(indexList[3]))
     }
 
     //**** **** **** **** **** INDICES **** **** **** **** ****

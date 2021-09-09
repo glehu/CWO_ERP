@@ -1,6 +1,5 @@
 package modules.m1.logic
 
-import db.CwODB
 import db.Index
 import db.IndexContent
 import interfaces.IIndexManager
@@ -11,7 +10,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m1.Song
-import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.indexFormat
 import tornadofx.Controller
@@ -27,7 +25,6 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
     override var lastChangeDateUTC: String = ""
     override var lastChangeDateLocal: String = ""
     override var lastChangeUser: String = ""
-    override val db: CwODB by inject()
     //*************************************************
     //********************** Global Data **************
     //*************************************************
@@ -37,12 +34,12 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
 
     init {
         MXLog.log(module(), MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
-        indexList[0] = db.getIndex(module(), 0)
-        indexList[1] = db.getIndex(module(), 1)
-        indexList[2] = db.getIndex(module(), 2)
-        indexList[3] = db.getIndex(module(), 3)
-        indexList[4] = db.getIndex(module(), 4)
-        indexList[5] = db.getIndex(module(), 5)
+        indexList[0] = getIndex(0)
+        indexList[1] = getIndex(1)
+        indexList[2] = getIndex(2)
+        indexList[3] = getIndex(3)
+        indexList[4] = getIndex(4)
+        indexList[5] = getIndex(5)
         lastUID = updateLastUID()
         getLastChangeDates()
         MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
@@ -73,12 +70,12 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
     }
 
     override suspend fun writeIndexData() {
-        db.getIndexFile(module(), 0).writeText(Json.encodeToString(indexList[0]))
-        db.getIndexFile(module(), 1).writeText(Json.encodeToString(indexList[1]))
-        db.getIndexFile(module(), 2).writeText(Json.encodeToString(indexList[2]))
-        db.getIndexFile(module(), 3).writeText(Json.encodeToString(indexList[3]))
-        db.getIndexFile(module(), 4).writeText(Json.encodeToString(indexList[4]))
-        db.getIndexFile(module(), 5).writeText(Json.encodeToString(indexList[5]))
+        getIndexFile(0).writeText(Json.encodeToString(indexList[0]))
+        getIndexFile(1).writeText(Json.encodeToString(indexList[1]))
+        getIndexFile(2).writeText(Json.encodeToString(indexList[2]))
+        getIndexFile(3).writeText(Json.encodeToString(indexList[3]))
+        getIndexFile(4).writeText(Json.encodeToString(indexList[4]))
+        getIndexFile(5).writeText(Json.encodeToString(indexList[5]))
     }
 
     //**** **** **** **** **** INDICES **** **** **** **** ****

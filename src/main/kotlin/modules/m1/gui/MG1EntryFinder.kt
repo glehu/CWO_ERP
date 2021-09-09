@@ -12,14 +12,11 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
-import javafx.scene.layout.Priority
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.logic.M1Controller
-import modules.m1.logic.M1DBManager
-import modules.m2.logic.M2Controller
 import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
@@ -34,9 +31,7 @@ import kotlin.system.measureTimeMillis
 class MG1EntryFinder : IModule, View("M1 Discography") {
     override fun moduleNameLong() = "MG1EntryFinder"
     override fun module() = "M1"
-    val db: CwODB by inject()
     private val m1Controller: M1Controller by inject()
-    private val m2Controller: M2Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
     private var entriesFound: ObservableList<Song> = observableListOf(Song(-1, ""))
@@ -94,20 +89,18 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
 
     private fun searchForEntries(threadID: Int) {
         var entriesFound = 0
-        val dbManager = M1DBManager()
         val timeInMillis = measureTimeMillis {
             if (!isClientGlobal) {
-                db.getEntriesFromSearchString(
+                CwODB.getEntriesFromSearchString(
                     indexFormat(searchText.text),
                     ixNr.value.substring(0, 1).toInt(),
                     exactSearch.isSelected,
-                    module(),
                     maxSearchResultsGlobal,
-                    m1GlobalIndex
+                    m1GlobalIndex,
                 ) { _, bytes ->
                     if (threadID == threadIDCurrent) {
                         if (entriesFound == 0) this.entriesFound.clear()
-                        this.entriesFound.add(dbManager.decodeEntry(bytes) as Song)
+                        this.entriesFound.add(decode(bytes) as Song)
                         entriesFound++
                     }
                 }
@@ -125,7 +118,7 @@ class MG1EntryFinder : IModule, View("M1 Discography") {
                                 this@MG1EntryFinder.entriesFound.clear()
                                 for (entryBytes: ByteArray in entryListJson.resultsList) {
                                     entriesFound++
-                                    this@MG1EntryFinder.entriesFound.add(dbManager.decodeEntry(entryBytes) as Song)
+                                    this@MG1EntryFinder.entriesFound.add(decode(entryBytes) as Song)
                                 }
                             }
                         }

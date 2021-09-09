@@ -12,14 +12,12 @@ import kotlin.system.measureTimeMillis
 class M2Analytics : IModule, Controller() {
     override fun moduleNameLong() = "M2Analytics"
     override fun module() = "M2"
-    val db: CwODB by inject()
 
     fun getChartDataOnCityDistribution(
         indexManager: M2IndexManager,
         amount: Int = -1,
         updateProgress: (Pair<Int, String>) -> Unit
     ): MutableMap<String, Double> {
-        val dbManager = M2DBManager()
         val tempMap = mutableMapOf<String, Double>()
         lateinit var sortedMap: MutableMap<String, Double>
         var map = mutableMapOf<String, Double>()
@@ -28,12 +26,15 @@ class M2Analytics : IModule, Controller() {
         var city: String
         MXLog.log(module(), MXLog.LogType.INFO, "City distribution analysis start", moduleNameLong())
         val timeInMS = measureTimeMillis {
-            db.getEntriesFromSearchString(
-                "", 0, false, module(), -1, indexManager
+            CwODB.getEntriesFromSearchString(
+                searchText = "",
+                ixNr = 0,
+                exactSearch = false,
+                indexManager = indexManager
             )                       // shout out blkghst
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping city data..."))
-                val contact: Contact = dbManager.decodeEntry(entryBytes) as Contact
+                val contact: Contact = decode(entryBytes) as Contact
                 if (contact.uID != -1) {
                     city = contact.city.uppercase()
                     contactCount += 1.0

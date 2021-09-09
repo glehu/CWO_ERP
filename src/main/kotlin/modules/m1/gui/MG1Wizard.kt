@@ -1,9 +1,7 @@
 package modules.m1.gui
 
-import db.CwODB
 import io.ktor.util.*
 import javafx.collections.FXCollections
-import javafx.scene.layout.Priority
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Controller
 import modules.m1.misc.*
@@ -45,7 +43,6 @@ class SongConfiguratorWizard : Wizard("Add new entry") {
 @InternalAPI
 @ExperimentalSerializationApi
 class SongMainData : Fragment("Main") {
-    val db: CwODB by inject()
     private val m2controller: M2Controller by inject()
 
     private val songMainData: SongPropertyMainDataModel by inject()

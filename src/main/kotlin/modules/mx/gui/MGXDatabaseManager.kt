@@ -26,7 +26,7 @@ class MGXDatabaseManager : View("Databases") {
             }
             button("Reset M1") {
                 action {
-                    CwODB().resetModuleDatabase("M1")
+                    CwODB.resetModuleDatabase("M1")
                     m1GlobalIndex = M1IndexManager()
                     m1GlobalIndex.setLastChangeData(-1, activeUser.username)
                     updateDatabases()
@@ -36,7 +36,7 @@ class MGXDatabaseManager : View("Databases") {
             }
             button("Reset M2") {
                 action {
-                    CwODB().resetModuleDatabase("M2")
+                    CwODB.resetModuleDatabase("M2")
                     m2GlobalIndex = M2IndexManager()
                     m2GlobalIndex.setLastChangeData(-1, activeUser.username)
                     updateDatabases()
@@ -46,7 +46,7 @@ class MGXDatabaseManager : View("Databases") {
             }
             button("Reset M3") {
                 action {
-                    CwODB().resetModuleDatabase("M3")
+                    CwODB.resetModuleDatabase("M3")
                     m3GlobalIndex = M3IndexManager()
                     m3GlobalIndex.setLastChangeData(-1, activeUser.username)
                     updateDatabases()

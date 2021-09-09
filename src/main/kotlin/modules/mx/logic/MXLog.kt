@@ -1,6 +1,7 @@
 package modules.mx.logic
 
 import interfaces.IModule
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
@@ -14,6 +15,7 @@ class MXLog {
         INFO, WARNING, ERROR, COM
     }
 
+    @ExperimentalSerializationApi
     companion object MXLog : IModule {
         override fun moduleNameLong() = "MXLog"
         override fun module() = "MX"

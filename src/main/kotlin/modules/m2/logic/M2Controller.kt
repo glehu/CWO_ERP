@@ -25,7 +25,6 @@ import modules.m2.misc.getContactPropertyFromContact
 import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.m2GlobalIndex
-import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
@@ -37,7 +36,6 @@ class M2Controller : IModule, Controller() {
     override fun module() = "M2"
 
     private val wizard = find<ContactConfiguratorWizard>()
-    val db: CwODB by inject()
 
     val client = getCWOClient(activeUser.username, activeUser.password)
 
@@ -51,17 +49,13 @@ class M2Controller : IModule, Controller() {
         if (!wizard.contact.isValid) isComplete = false
         if (isComplete) {
             if (!isClientGlobal) {
-                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-                wizard.contact.uID.value = M2DBManager().saveEntry(
+                val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+                wizard.contact.uID.value = save(
                     entry = getContactFromProperty(wizard.contact.item),
-                    cwodb = db,
-                    posDB = -1L,
-                    byteSize = -1,
                     raf = raf,
                     indexManager = m2GlobalIndex,
-                    userName = activeUser.username
                 )
-                db.closeRandomFileAccess(raf)
+                CwODB.closeRandomFileAccess(raf)
             } else {
                 val entry = getContactFromProperty(wizard.contact.item)
                 runBlocking {
@@ -108,7 +102,7 @@ class M2Controller : IModule, Controller() {
 
     fun getEntryBytes(uID: Int): ByteArray {
         return if (uID != -1) {
-            db.getEntryFromUniqueID(uID, module(), m2GlobalIndex.indexList[0]!!)
+            CwODB.getEntryFromUniqueID(uID, module(), m2GlobalIndex.indexList[0]!!)
         } else byteArrayOf()
     }
 
@@ -122,13 +116,13 @@ class M2Controller : IModule, Controller() {
         lateinit var contact: Contact
         if (uID != -1) {
             if (!isClientGlobal) {
-                contact = M2DBManager().getEntry(
-                    uID, db, m2GlobalIndex.indexList[0]!!
+                contact = get(
+                    uID, m2GlobalIndex.indexList[0]!!
                 ) as Contact
             } else {
                 runBlocking {
                     launch {
-                        contact = M2DBManager().decodeEntry(
+                        contact = decode(
                             client.get(
                                 "${getApiUrl()}entry/$uID?type=uid"
                             )
@@ -149,18 +143,16 @@ class M2Controller : IModule, Controller() {
         wizard.contact.item = getContactPropertyFromContact(contact)
         wizard.onComplete {
             if (wizard.contact.uID.value != -1) {
-                val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-                M2DBManager().saveEntry(
+                val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+                save(
                     entry = getContactFromProperty(wizard.contact.item),
-                    cwodb = db,
                     posDB = m2GlobalIndex.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.pos,
                     byteSize = m2GlobalIndex.indexList[0]!!.indexMap[wizard.contact.item.uID]!!.byteSize,
                     raf = raf,
                     indexManager = m2GlobalIndex,
                     indexWriteToDisk = true,
-                    userName = activeUser.username
                 )
-                this.db.closeRandomFileAccess(raf)
+                CwODB.closeRandomFileAccess(raf)
                 wizard.contact.item = ContactProperty()
                 wizard.isComplete = false
             }
@@ -170,12 +162,10 @@ class M2Controller : IModule, Controller() {
     fun getEntryBytesListJson(searchText: String, ixNr: Int): M2EntryListJson {
         val resultsListJson = M2EntryListJson(0, arrayListOf())
         var resultCounter = 0
-        db.getEntriesFromSearchString(
+        CwODB.getEntriesFromSearchString(
             searchText = searchText.uppercase(),
             ixNr = ixNr,
             exactSearch = false,
-            module = module(),
-            maxSearchResults = maxSearchResultsGlobal,
             indexManager = m2GlobalIndex
         ) { _, bytes ->
             resultCounter++

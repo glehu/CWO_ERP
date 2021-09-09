@@ -11,7 +11,6 @@ import tornadofx.*
 
 @ExperimentalSerializationApi
 class MG1Analytics : Fragment("Analytics") {
-    val db: CwODB by inject()
     private val m1controller: M1Analytics by inject()
     private val progressProperty = SimpleIntegerProperty()
     private var progressN by progressProperty
@@ -22,10 +21,10 @@ class MG1Analytics : Fragment("Analytics") {
             button("Genre Distribution") {
                 prefWidth = 200.0
                 action {
-                    maxEntries = m1controller.db.getLastUniqueID("M1").toInt()
+                    maxEntries = m1GlobalIndex.getLastUniqueID().toInt()
                     runAsync {
                         val genreDist =
-                            m1controller.getDistributionChartData(m1GlobalIndex, M1Analytics.DistType.GENRE) {
+                            m1controller.getDistributionChartData(M1Analytics.DistType.GENRE) {
                                 progressN = it.first
                                 updateProgress(it.first.toDouble(), maxEntries.toDouble())
                                 updateMessage("${it.second} (${it.first} / $maxEntries)")
@@ -37,10 +36,10 @@ class MG1Analytics : Fragment("Analytics") {
             button("Type Distribution") {
                 prefWidth = 200.0
                 action {
-                    maxEntries = m1controller.db.getLastUniqueID("M1").toInt()
+                    maxEntries = m1GlobalIndex.getLastUniqueID().toInt()
                     runAsync {
                         val genreDist =
-                            m1controller.getDistributionChartData(m1GlobalIndex, M1Analytics.DistType.TYPE) {
+                            m1controller.getDistributionChartData(M1Analytics.DistType.TYPE) {
                                 progressN = it.first
                                 updateProgress(it.first.toDouble(), maxEntries.toDouble())
                                 updateMessage("${it.second} (${it.first} / $maxEntries)")

@@ -11,8 +11,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m2.Contact
-import modules.m2.logic.M2DBManager
-import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.logic.getDefaultDate
 import modules.mx.m1GlobalIndex
@@ -28,8 +26,6 @@ class M1Import : IModule, Controller() {
     override fun moduleNameLong() = "M1Import"
     override fun module() = "M1"
 
-    val db: CwODB by inject()
-
     @ExperimentalSerializationApi
     fun importSpotifyAlbumList(
         albumListJson: SpotifyAlbumListJson,
@@ -39,8 +35,8 @@ class M1Import : IModule, Controller() {
         MXLog.log(module(), MXLog.LogType.INFO, "Spotify album list import start", moduleNameLong())
 
         var albumEntry: Song
-        val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-        val m2raf = db.openRandomFileAccess("M2", CwODB.RafMode.READWRITE)
+        val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+        val m2raf = CwODB.openRandomFileAccess("M2", CwODB.CwODB.RafMode.READWRITE)
         var counter = entriesAdded
         val timeInMillis = measureTimeMillis {
             for (album: SpotifyAlbumJson in albumListJson.albums) {
@@ -57,8 +53,8 @@ class M1Import : IModule, Controller() {
         }
         runBlocking { launch { m1GlobalIndex.writeIndexData() } }
         runBlocking { launch { m2GlobalIndex.writeIndexData() } }
-        db.closeRandomFileAccess(raf)
-        db.closeRandomFileAccess(m2raf)
+        CwODB.closeRandomFileAccess(raf)
+        CwODB.closeRandomFileAccess(m2raf)
         MXLog.log(
             module(),
             MXLog.LogType.INFO,
@@ -76,7 +72,6 @@ class M1Import : IModule, Controller() {
         entriesAdded: Int = 0,
         updateProgress: (Pair<Int, String>) -> Unit
     ) {
-        val m1DBManager = M1DBManager()
         var song: Song
         var uID: Int
         var pos: Long
@@ -98,7 +93,7 @@ class M1Import : IModule, Controller() {
                 uID = indexContent.uID
                 pos = indexContent.pos
                 byteSize = indexContent.byteSize
-                song = m1DBManager.getEntry(uID, db, m1GlobalIndex.indexList[5]!!) as Song
+                song = get(uID, m1GlobalIndex.indexList[5]!!) as Song
             }
 
             //Spotify META Data
@@ -115,15 +110,13 @@ class M1Import : IModule, Controller() {
             createOrSaveArtistsOfAlbum(track.artists, song, m2raf)
 
             //Save the song
-            m1DBManager.saveEntry(
+            save(
                 entry = song,
-                cwodb = db,
                 posDB = pos,
                 byteSize = byteSize,
                 raf = raf,
                 indexManager = m1GlobalIndex,
                 indexWriteToDisk = false,
-                userName = activeUser.username
             )
             MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong())
             updateProgress(Pair(counter, "Importing spotify tracks..."))
@@ -132,7 +125,6 @@ class M1Import : IModule, Controller() {
 
     @ExperimentalSerializationApi
     private fun createOrSaveAlbum(album: SpotifyAlbumJson, raf: RandomAccessFile, m2raf: RandomAccessFile): Song {
-        val m1DBManager = M1DBManager()
         val song: Song
         val uID: Int
         val pos: Long
@@ -152,7 +144,7 @@ class M1Import : IModule, Controller() {
             uID = indexContent.uID
             pos = indexContent.pos
             byteSize = indexContent.byteSize
-            song = m1DBManager.getEntry(uID, db, m1GlobalIndex.indexList[5]!!) as Song
+            song = get(uID, m1GlobalIndex.indexList[5]!!) as Song
         }
 
         //Spotify META Data
@@ -179,15 +171,13 @@ class M1Import : IModule, Controller() {
         createOrSaveArtistsOfAlbum(album.artists, song, m2raf)
 
         //Save the song
-        m1DBManager.saveEntry(
+        save(
             entry = song,
-            cwodb = db,
             posDB = pos,
             byteSize = byteSize,
             raf = raf,
             indexManager = m1GlobalIndex,
             indexWriteToDisk = false,
-            userName = activeUser.username
         )
         MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong())
         return song
@@ -195,7 +185,6 @@ class M1Import : IModule, Controller() {
 
     @ExperimentalSerializationApi
     private fun createOrSaveArtistsOfAlbum(artists: List<SpotifyArtistJson>, song: Song, m2raf: RandomAccessFile) {
-        val m2DBManager = M2DBManager()
         var contact: Contact
         var artistUID: Int
         var filteredMap: Map<Int, IndexContent>
@@ -207,20 +196,15 @@ class M1Import : IModule, Controller() {
                 contact = Contact(-1, artist.name)
                 contact.spotifyID = artist.id
                 contact.birthdate = getDefaultDate()
-                artistUID = m2DBManager
-                    .saveEntry(
-                        entry = contact,
-                        cwodb = db,
-                        posDB = -1,
-                        byteSize = -1,
-                        raf = m2raf,
-                        indexManager = m2GlobalIndex,
-                        indexWriteToDisk = false,
-                        userName = activeUser.username
-                    )
+                artistUID = save(
+                    entry = contact,
+                    raf = m2raf,
+                    indexManager = m2GlobalIndex,
+                    indexWriteToDisk = false,
+                )
             } else {
                 val indexContent = filteredMap.values.first()
-                contact = m2DBManager.getEntry(indexContent.uID, db, m2GlobalIndex.indexList[3]!!) as Contact
+                contact = get(indexContent.uID, m2GlobalIndex.indexList[3]!!, m2GlobalIndex.module) as Contact
                 artistUID = contact.uID
             }
             when (artistCounter) {

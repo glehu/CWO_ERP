@@ -1,5 +1,8 @@
 package interfaces
 
+import kotlinx.serialization.ExperimentalSerializationApi
+
+@ExperimentalSerializationApi
 interface IEntry {
     /**
      * The entry's unique identifier.

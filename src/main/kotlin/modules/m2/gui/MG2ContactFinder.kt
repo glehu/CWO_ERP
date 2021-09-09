@@ -18,13 +18,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
 import modules.m2.logic.M2Controller
-import modules.m2.logic.M2DBManager
 import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
 import modules.mx.logic.indexFormat
 import modules.mx.m2GlobalIndex
-import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
@@ -33,7 +31,6 @@ import kotlin.system.measureTimeMillis
 class MG2ContactFinder : IModule, View("M2 Contacts") {
     override fun moduleNameLong() = "MG2ContactFinder"
     override fun module() = "M2"
-    val db: CwODB by inject()
     private val m2Controller: M2Controller by inject()
     private val song: SongPropertyMainDataModel by inject()
     private var searchText: TextField by singleAssign()
@@ -100,21 +97,18 @@ class MG2ContactFinder : IModule, View("M2 Contacts") {
 
     private fun searchForContacts(threadID: Int) {
         var entriesFound = 0
-        val dbManager = M2DBManager()
         val timeInMillis = measureTimeMillis {
             if (!isClientGlobal) {
                 contactsFound.clear()
-                db.getEntriesFromSearchString(
-                    indexFormat(searchText.text),
-                    ixNr.value.substring(0, 1).toInt(),
-                    exactSearch.isSelected,
-                    module(),
-                    maxSearchResultsGlobal,
-                    m2GlobalIndex
+                CwODB.getEntriesFromSearchString(
+                    searchText = indexFormat(searchText.text),
+                    ixNr = ixNr.value.substring(0, 1).toInt(),
+                    exactSearch = exactSearch.isSelected,
+                    indexManager = m2GlobalIndex
                 ) { _, bytes ->
                     //Add the contacts to the table
                     if (threadID == threadIDCurrent) {
-                        contactsFound.add(dbManager.decodeEntry(bytes) as Contact)
+                        contactsFound.add(decode(bytes) as Contact)
                         entriesFound++
                     }
                 }
@@ -132,7 +126,7 @@ class MG2ContactFinder : IModule, View("M2 Contacts") {
                                 this@MG2ContactFinder.contactsFound.clear()
                                 for (entryBytes: ByteArray in entryListJson.resultsList) {
                                     entriesFound++
-                                    this@MG2ContactFinder.contactsFound.add(dbManager.decodeEntry(entryBytes) as Contact)
+                                    this@MG2ContactFinder.contactsFound.add(decode(entryBytes) as Contact)
                                 }
                             }
                         }

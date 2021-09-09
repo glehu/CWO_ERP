@@ -3,7 +3,6 @@ package modules.m3.gui
 import api.logic.getCWOClient
 import api.misc.json.M1EntryListJson
 import db.CwODB
-import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.client.request.*
 import io.ktor.util.*
@@ -18,13 +17,11 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
-import modules.m3.logic.M3DBManager
 import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
 import modules.mx.logic.indexFormat
 import modules.mx.m3GlobalIndex
-import modules.mx.maxSearchResultsGlobal
 import tornadofx.*
 import kotlin.system.measureTimeMillis
 
@@ -33,7 +30,6 @@ import kotlin.system.measureTimeMillis
 class MG3InvoiceFinder : IModule, View("M3 Invoices") {
     override fun moduleNameLong() = "MG3InvoiceFinder"
     override fun module() = "M3"
-    val db: CwODB by inject()
     private val m3Controller: M3Controller by inject()
     private var searchText: TextField by singleAssign()
     private var exactSearch: CheckBox by singleAssign()
@@ -91,21 +87,18 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices") {
 
     private fun searchForInvoices(threadID: Int) {
         var entriesFound = 0
-        val dbManager = M3DBManager()
         val timeInMillis = measureTimeMillis {
             if (!isClientGlobal) {
                 invoicesFound.clear()
-                db.getEntriesFromSearchString(
-                    indexFormat(searchText.text),
-                    ixNr.value.substring(0, 1).toInt(),
-                    exactSearch.isSelected,
-                    module(),
-                    maxSearchResultsGlobal,
-                    m3GlobalIndex
+                CwODB.getEntriesFromSearchString(
+                    searchText = indexFormat(searchText.text),
+                    ixNr = ixNr.value.substring(0, 1).toInt(),
+                    exactSearch = exactSearch.isSelected,
+                    indexManager = m3GlobalIndex
                 ) { _, bytes ->
                     //Add the contacts to the table
                     if (threadID == threadIDCurrent) {
-                        invoicesFound.add(dbManager.decodeEntry(bytes) as Invoice)
+                        invoicesFound.add(decode(bytes) as Invoice)
                         entriesFound++
                     }
                 }
@@ -124,7 +117,7 @@ class MG3InvoiceFinder : IModule, View("M3 Invoices") {
                                 for (entryBytes: ByteArray in entryListJson.resultsList) {
                                     entriesFound++
                                     this@MG3InvoiceFinder.invoicesFound.add(
-                                        dbManager.decodeEntry(entryBytes) as Invoice
+                                        decode(entryBytes) as Invoice
                                     )
                                 }
                             }

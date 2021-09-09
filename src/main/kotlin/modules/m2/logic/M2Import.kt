@@ -8,7 +8,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
 import modules.m2.misc.ContactModel
-import modules.mx.activeUser
 import modules.mx.logic.MXLog
 import modules.mx.m2GlobalIndex
 import tornadofx.Controller
@@ -20,8 +19,6 @@ class M2Import : IModule, Controller() {
     override fun moduleNameLong() = "M2Import"
     override fun module() = "M2"
 
-    val db: CwODB by inject()
-
     fun importData(
         file: File,
         contactSchema: ContactModel,
@@ -29,8 +26,7 @@ class M2Import : IModule, Controller() {
         updateProgress: (Pair<Int, String>) -> Unit
     ) {
         MXLog.log(module(), MXLog.LogType.INFO, "Data import start", moduleNameLong())
-        val raf = db.openRandomFileAccess(module(), CwODB.RafMode.READWRITE)
-        val dbManager = M2DBManager()
+        val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
         var counter = 0
         val timeInMillis = measureTimeMillis {
             csvReader {
@@ -48,14 +44,11 @@ class M2Import : IModule, Controller() {
                     contact.birthdate = import(row[birthdayHeaderName].toString(), "01.01.1980")
                     contact.country = import(row[contactSchema.country.value].toString())
 
-                    dbManager.saveEntry(
-                        entry = contact, db,
-                        posDB = -1L,
-                        byteSize = -1,
+                    save(
+                        entry = contact, posDB = -1L,
                         raf = raf,
                         indexManager = m2GlobalIndex,
                         indexWriteToDisk = false,
-                        userName = activeUser.username
                     )
                     updateProgress(Pair(counter, "Importing data..."))
                     if (counter % 5000 == 0) {
@@ -66,11 +59,11 @@ class M2Import : IModule, Controller() {
             }
             MXLog.log(
                 module(), MXLog.LogType.INFO,
-                "Data Insertion uID ${db.getLastUniqueID(module())}", moduleNameLong()
+                "Data Insertion uID ${m2GlobalIndex.getLastUniqueID()}", moduleNameLong()
             )
             runBlocking { launch { m2GlobalIndex.writeIndexData() } }
         }
-        db.closeRandomFileAccess(raf)
+        CwODB.closeRandomFileAccess(raf)
         MXLog.log(
             module(),
             MXLog.LogType.INFO,
