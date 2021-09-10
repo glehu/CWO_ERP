@@ -19,14 +19,17 @@ import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.ItemConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.misc.*
-import modules.mx.*
+import modules.mx.activeUser
+import modules.mx.isClientGlobal
+import modules.mx.m2GlobalIndex
+import modules.mx.m3GlobalIndex
 import tornadofx.Controller
 
 @InternalAPI
 @ExperimentalSerializationApi
 class M3Controller : IModule, Controller() {
-    override fun moduleNameLong() = "M3Controller"
-    override fun module() = "M3"
+    override val moduleNameLong = "M3Controller"
+    override val module = "M3"
 
     private val wizard = find<InvoiceConfiguratorWizard>()
 
@@ -48,7 +51,7 @@ class M3Controller : IModule, Controller() {
         if (!wizard.invoice.isValid) isComplete = false
         if (isComplete) {
             if (!isClientGlobal) {
-                val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+                val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
                 wizard.invoice.uID.value = save(
                     entry = getInvoiceFromInvoiceProperty(wizard.invoice.item),
                     raf = raf,
@@ -77,7 +80,7 @@ class M3Controller : IModule, Controller() {
         wizard.invoice.item = getInvoicePropertyFromInvoice(invoice)
         wizard.onComplete {
             if (wizard.invoice.uID.value != -1) {
-                val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+                val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
                 save(
                     entry = getInvoiceFromInvoiceProperty(wizard.invoice.item),
                     raf = raf,
@@ -98,8 +101,6 @@ class M3Controller : IModule, Controller() {
             searchText = searchText.uppercase(),
             ixNr = ixNr,
             exactSearch = false,
-            module = module(),
-            maxSearchResults = maxSearchResultsGlobal,
             indexManager = m3GlobalIndex
         ) { _, bytes ->
             resultCounter++
@@ -111,7 +112,7 @@ class M3Controller : IModule, Controller() {
 
     fun getEntryBytes(uID: Int): ByteArray {
         return if (uID != -1) {
-            CwODB.getEntryFromUniqueID(uID, module(), m3GlobalIndex.indexList[0]!!)
+            CwODB.getEntryFromUniqueID(uID, module, m3GlobalIndex.indexList[0]!!)
         } else byteArrayOf()
     }
 

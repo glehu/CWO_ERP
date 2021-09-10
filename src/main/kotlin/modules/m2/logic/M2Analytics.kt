@@ -10,8 +10,8 @@ import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
 class M2Analytics : IModule, Controller() {
-    override fun moduleNameLong() = "M2Analytics"
-    override fun module() = "M2"
+    override val moduleNameLong = "M2Analytics"
+    override val module = "M2"
 
     fun getChartDataOnCityDistribution(
         indexManager: M2IndexManager,
@@ -24,7 +24,7 @@ class M2Analytics : IModule, Controller() {
         var contactCount = 0.0
         var amountCount = 0
         var city: String
-        MXLog.log(module(), MXLog.LogType.INFO, "City distribution analysis start", moduleNameLong())
+        MXLog.log(module, MXLog.LogType.INFO, "City distribution analysis start", moduleNameLong)
         val timeInMS = measureTimeMillis {
             CwODB.getEntriesFromSearchString(
                 searchText = "",
@@ -63,8 +63,8 @@ class M2Analytics : IModule, Controller() {
             map["[amount]"] = contactCount
         }
         MXLog.log(
-            module(), MXLog.LogType.INFO, "City distribution analysis end (${timeInMS / 1000} sec)",
-            moduleNameLong()
+            module, MXLog.LogType.INFO, "City distribution analysis end (${timeInMS / 1000} sec)",
+            moduleNameLong
         )
         return map.toSortedMap()
     }

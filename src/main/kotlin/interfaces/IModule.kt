@@ -11,10 +11,10 @@ import java.io.RandomAccessFile
 
 @ExperimentalSerializationApi
 interface IModule {
-    fun moduleNameLong(): String
-    fun module(): String
+    val moduleNameLong: String
+    val module: String
     fun getServerUrl() = "http://${modules.mx.serverIPAddressGlobal}/"
-    fun getApiUrl() = "${getServerUrl()}api/${module().lowercase()}/"
+    fun getApiUrl() = "${getServerUrl()}api/${module.lowercase()}/"
 
 
     /**
@@ -49,7 +49,7 @@ interface IModule {
             uID = entry.uID,
             posDB = posDB,
             byteSize = byteSize,
-            module = indexManager.module(),
+            module = indexManager.module,
             raf = raf
         )
         indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, userName)
@@ -61,7 +61,7 @@ interface IModule {
      * It is possible to retrieve an entry of another module if that module gets passed into the function.
      * @return an entry with the provided unique identifier.
      */
-    fun get(uID: Int, index: Index, module: String = module()): IEntry {
+    fun get(uID: Int, index: Index, module: String = this.module): IEntry {
         return decode(CwODB.getEntryFromUniqueID(uID, module, index))
     }
 

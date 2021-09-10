@@ -28,8 +28,8 @@ import kotlin.collections.set
 @InternalAPI
 @ExperimentalSerializationApi
 class MXUserManager : IModule, Controller() {
-    override fun moduleNameLong() = "MXPasswordManager"
-    override fun module() = "MX"
+    override val moduleNameLong = "MXPasswordManager"
+    override val module = "MX"
 
     fun login(username: String, password: String): Boolean {
         return if (!isClientGlobal) {
@@ -62,10 +62,10 @@ class MXUserManager : IModule, Controller() {
 
     private fun writeCredentials(credentials: MXCredentials) {
         getCredentialsFile().writeText(Json.encodeToString(credentials))
-        MXLog.log("MX", MXLog.LogType.INFO, "Credentials updated", moduleNameLong())
+        MXLog.log(module, MXLog.LogType.INFO, "Credentials updated", moduleNameLong)
     }
 
-    private fun getCredentialsFile() = File("${getModulePath("MX")}\\credentials.dat")
+    private fun getCredentialsFile() = File("${getModulePath(module)}\\credentials.dat")
 
     private fun compareCredentials(username: String, password: String, credentials: MXCredentials): Boolean {
         var successful = false
@@ -75,15 +75,15 @@ class MXUserManager : IModule, Controller() {
             if (activeUser.username.isEmpty()) activeUser = user
             if (!isClientGlobal) {
                 MXLog.log(
-                    "MX", MXLog.LogType.INFO, "User \"$username\" login successful", moduleNameLong()
+                    module, MXLog.LogType.INFO, "User \"$username\" login successful", moduleNameLong
                 )
             } else {
                 MXLog.log(
-                    "MX", MXLog.LogType.COM, "User \"$username\" login successful", moduleNameLong()
+                    module, MXLog.LogType.COM, "User \"$username\" login successful", moduleNameLong
                 )
             }
         } else MXLog.log(
-            "MX", MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials", moduleNameLong()
+            module, MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials", moduleNameLong
         )
         return successful
     }

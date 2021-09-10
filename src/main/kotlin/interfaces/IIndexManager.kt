@@ -21,8 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger
 interface IIndexManager : IModule {
     val indexList: Map<Int, Index>
     var lastUID: AtomicInteger
-    var module: String
-    var moduleDescription: String
     var lastChangeDateHex: String
     var lastChangeDateUTC: String
     var lastChangeDateLocal: String
@@ -65,7 +63,7 @@ interface IIndexManager : IModule {
     }
 
     fun updateLastUID() = getLastUniqueID()
-    fun updateLastChangeData() = getLastChange(module())
+    fun updateLastChangeData() = getLastChange(module)
 
     /**
      * @return an ArrayList<String> of all available indices for searches.
@@ -94,7 +92,7 @@ interface IIndexManager : IModule {
      * @return an instance of Index to be used in IndexManagers
      */
     fun getIndex(ixNr: Int): Index {
-        MXLog.log(module, MXLog.LogType.INFO, "Deserializing index $ixNr for $module...", CwODB.moduleNameLong())
+        MXLog.log(module, MXLog.LogType.INFO, "Deserializing index $ixNr for $module...", CwODB.moduleNameLong)
         checkIndexFile(module, ixNr)
         return Json.decodeFromString(getIndexFile(ixNr).readText())
     }

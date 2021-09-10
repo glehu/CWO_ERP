@@ -20,8 +20,8 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
-    override fun moduleNameLong() = "MG2ContactFinder"
-    override fun module() = "M2"
+    override val moduleNameLong = "MG2ContactFinder"
+    override val module = "M2"
     private val m2Controller: M2Controller by inject()
     private val song: SongPropertyMainDataModel by inject()
     override var searchText: TextField by singleAssign()

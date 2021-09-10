@@ -1,23 +1,21 @@
 package api.logic
 
+import api.misc.json.*
 import interfaces.IAPI
 import interfaces.IModule
 import io.ktor.client.request.*
+import io.ktor.util.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import api.misc.json.*
-import io.ktor.client.call.*
-import io.ktor.client.features.*
-import io.ktor.util.*
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXLog
 
 @InternalAPI
 @ExperimentalSerializationApi
 class SpotifyAPI : IModule, IAPI {
-    override fun moduleNameLong() = "SpotifyAPI"
-    override fun module() = "M1"
+    override val moduleNameLong = "SpotifyAPI"
+    override val module = "M1"
 
     val controller = SpotifyController()
     override val auth = SpotifyAUTH()
@@ -29,7 +27,7 @@ class SpotifyAPI : IModule, IAPI {
         runBlocking {
             launch {
                 userData = client.get("https://api.spotify.com/v1/me")
-                MXLog.log(module(), MXLog.LogType.COM, "Spotify account data received", moduleNameLong())
+                MXLog.log(module, MXLog.LogType.COM, "Spotify account data received", moduleNameLong)
                 controller.saveUserData(userData)
                 client.close()
             }
@@ -49,7 +47,7 @@ class SpotifyAPI : IModule, IAPI {
                     while (!finished) {
                         albumList = client.get(url)
                         albumListTotal.add(albumList)
-                        MXLog.log(module(), MXLog.LogType.COM, "Spotify album list received", moduleNameLong())
+                        MXLog.log(module, MXLog.LogType.COM, "Spotify album list received", moduleNameLong)
                         if (albumList.next == null) {
                             finished = true
                         } else {
@@ -69,7 +67,7 @@ class SpotifyAPI : IModule, IAPI {
         runBlocking {
             launch {
                 artistData = client.get("https://api.spotify.com/v1/artists/$artistSpotifyID")
-                MXLog.log(module(), MXLog.LogType.COM, "Spotify artist data received", moduleNameLong())
+                MXLog.log(module, MXLog.LogType.COM, "Spotify artist data received", moduleNameLong)
                 client.close()
             }
         }
@@ -87,7 +85,7 @@ class SpotifyAPI : IModule, IAPI {
         runBlocking {
             launch {
                 artistDataList = client.get("https://api.spotify.com/v1/artists/${separatedIDs}")
-                MXLog.log(module(), MXLog.LogType.COM, "Spotify artist data received", moduleNameLong())
+                MXLog.log(module, MXLog.LogType.COM, "Spotify artist data received", moduleNameLong)
                 client.close()
             }
         }
@@ -106,7 +104,7 @@ class SpotifyAPI : IModule, IAPI {
                     while (!finished) {
                         songList = client.get(url)
                         songListTotal.add(songList)
-                        MXLog.log(module(), MXLog.LogType.COM, "Spotify song list received", moduleNameLong())
+                        MXLog.log(module, MXLog.LogType.COM, "Spotify song list received", moduleNameLong)
                         if (songList.next == null) {
                             finished = true
                         } else {

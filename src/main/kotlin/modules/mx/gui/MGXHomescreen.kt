@@ -22,8 +22,8 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
-    override fun moduleNameLong() = "CWO ERP"
-    override fun module() = "MX"
+    override val moduleNameLong = "CWO ERP"
+    override val module = "MX"
 
     override fun start(stage: Stage) {
         super.start(stage)
@@ -33,7 +33,7 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
     override fun stop() {
         try {
             if (!isClientGlobal) {
-                MXLog.log(module(), MXLog.LogType.INFO, "Shutting down server...", moduleNameLong())
+                MXLog.log(module, MXLog.LogType.INFO, "Shutting down server...", moduleNameLong)
                 server.serverEngine.stop(100L, 100L)
             }
         } finally {

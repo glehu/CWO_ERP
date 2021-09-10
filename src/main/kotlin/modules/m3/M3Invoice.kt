@@ -44,7 +44,7 @@ data class Invoice(override var uID: Int) : IEntry, IInvoice {
     //****************** Auto Generated Data **********
     //*************************************************
 
-    var isIncome: Boolean = false
+    private var isIncome: Boolean = false
 
     override fun initialize() {
         if (uID == -1) uID = m3GlobalIndex.getUID().toInt()

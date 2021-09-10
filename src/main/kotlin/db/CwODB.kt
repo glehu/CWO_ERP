@@ -16,8 +16,8 @@ import java.io.RandomAccessFile
 @ExperimentalSerializationApi
 class CwODB {
     companion object CwODB : IModule, Controller() {
-        override fun moduleNameLong() = "CwODB"
-        override fun module() = "DB"
+        override val moduleNameLong = "CwODB"
+        override val module = "DB"
 
         /**
          * Used to save the ByteArray of an entry (achieved by serialization) and store it in the database.
@@ -78,7 +78,7 @@ class CwODB {
                         Json.encodeToString(IndexContent(uID, "", posDBNew, byteSizeNew))
                     )
                 }
-            } else MXLog.log(module, MXLog.LogType.ERROR, "Serialization failed!", moduleNameLong())
+            } else MXLog.log(module, MXLog.LogType.ERROR, "Serialization failed!", moduleNameLong)
             return Pair(posDBNew, byteSizeNew)
         }
 
@@ -198,7 +198,7 @@ class CwODB {
                 File("${getModulePath(module)}\\$module.db").delete()
                 File("${getModulePath(module)}\\$module.nu").delete()
                 for (i in 0..99) File("${getModulePath(module)}\\$module.ix$i").delete()
-                MXLog.log(module, MXLog.LogType.INFO, "Reset database for $module successful", moduleNameLong())
+                MXLog.log(module, MXLog.LogType.INFO, "Reset database for $module successful", moduleNameLong)
             }
         }
 

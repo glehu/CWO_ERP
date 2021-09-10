@@ -17,8 +17,8 @@ class MXLog {
 
     @ExperimentalSerializationApi
     companion object MXLog : IModule {
-        override fun moduleNameLong() = "MXLog"
-        override fun module() = "MX"
+        override val moduleNameLong = "MXLog"
+        override val module = "MX"
 
         private fun getLogPath(module: String) = "${getModulePath(module)}\\log"
         private fun getLogFile(module: String) = File("${getLogPath(module)}\\${module}_log.txt")
@@ -53,7 +53,7 @@ class MXLog {
                 if (createIfMissing) {
                     logFile.createNewFile()
                     if (logFile.isFile) {
-                        if (log) log(module, LogType.INFO, "Log file created: $module", moduleNameLong())
+                        if (log) log(module, LogType.INFO, "Log file created: $module", moduleNameLong)
                         return true
                     }
                 } else return false
@@ -67,7 +67,7 @@ class MXLog {
         fun deleteLogFile(module: String) {
             if (checkLogFile(module, false)) {
                 getLogFile(module).delete()
-                log(module, LogType.INFO, "Log file cleared: $module", moduleNameLong())
+                log(module, LogType.INFO, "Log file cleared: $module", moduleNameLong)
                 checkLogFile(module, createIfMissing = true, log = false)
             }
         }

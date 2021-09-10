@@ -37,8 +37,8 @@ import tornadofx.Controller
 @InternalAPI
 @ExperimentalSerializationApi
 class MXServer : IModule, Controller() {
-    override fun moduleNameLong() = "Server"
-    override fun module() = "MX"
+    override val moduleNameLong = "Server"
+    override val module = "MX"
 
     private val userManager: MXUserManager by inject()
     lateinit var text: String
@@ -69,7 +69,7 @@ class MXServer : IModule, Controller() {
                 }
             }
             get("/authcallback/spotify") {
-                MXLog.log(module(), MXLog.LogType.COM, "Spotify Auth Callback received", moduleNameLong())
+                MXLog.log(module, MXLog.LogType.COM, "Spotify Auth Callback received", moduleNameLong)
                 call.respondText("CWO ERP Spotify Authorization Callback Site")
                 val code: String? = call.request.queryParameters["code"]
                 find<GSpotify>().authCodeProperty.value = code
@@ -83,10 +83,10 @@ class MXServer : IModule, Controller() {
             authenticate("auth-basic") {
                 get("/") {
                     MXLog.log(
-                        module(),
+                        module,
                         MXLog.LogType.COM,
                         "User ${call.principal<UserIdPrincipal>()?.name} Connected",
-                        moduleNameLong()
+                        moduleNameLong
                     )
                     call.respondText("Hello, ${call.principal<UserIdPrincipal>()?.name}!")
                 }

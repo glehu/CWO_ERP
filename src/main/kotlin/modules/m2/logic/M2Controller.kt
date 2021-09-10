@@ -32,8 +32,8 @@ import tornadofx.find
 @InternalAPI
 @ExperimentalSerializationApi
 class M2Controller : IModule, Controller() {
-    override fun moduleNameLong() = "M2Controller"
-    override fun module() = "M2"
+    override val moduleNameLong = "M2Controller"
+    override val module = "M2"
 
     private val wizard = find<ContactConfiguratorWizard>()
 
@@ -49,7 +49,7 @@ class M2Controller : IModule, Controller() {
         if (!wizard.contact.isValid) isComplete = false
         if (isComplete) {
             if (!isClientGlobal) {
-                val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+                val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
                 wizard.contact.uID.value = save(
                     entry = getContactFromProperty(wizard.contact.item),
                     raf = raf,
@@ -102,7 +102,7 @@ class M2Controller : IModule, Controller() {
 
     fun getEntryBytes(uID: Int): ByteArray {
         return if (uID != -1) {
-            CwODB.getEntryFromUniqueID(uID, module(), m2GlobalIndex.indexList[0]!!)
+            CwODB.getEntryFromUniqueID(uID, module, m2GlobalIndex.indexList[0]!!)
         } else byteArrayOf()
     }
 
@@ -143,7 +143,7 @@ class M2Controller : IModule, Controller() {
         wizard.contact.item = getContactPropertyFromContact(contact)
         wizard.onComplete {
             if (wizard.contact.uID.value != -1) {
-                val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+                val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
                 save(
                     entry = getContactFromProperty(wizard.contact.item),
                     raf = raf,

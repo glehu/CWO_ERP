@@ -22,15 +22,14 @@ import modules.m2.logic.M2Controller
 import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.m1GlobalIndex
-import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
 import tornadofx.Scope
 
 @InternalAPI
 @ExperimentalSerializationApi
 class M1Controller : IModule, Controller() {
-    override fun moduleNameLong() = "M1Controller"
-    override fun module() = "M1"
+    override val moduleNameLong = "M1Controller"
+    override val module = "M1"
 
     private val m2Controller: M2Controller by inject()
 
@@ -57,7 +56,7 @@ class M1Controller : IModule, Controller() {
             wizard.songCopyrightData.commit()
             wizard.songMiscData.commit()
             if (!isClientGlobal) {
-                val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+                val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
                 wizard.songMainData.uID.value = save(
                     entry = getSongFromProperties(wizard),
                     raf = raf,
@@ -198,14 +197,8 @@ class M1Controller : IModule, Controller() {
 
     fun getEntryBytes(uID: Int): ByteArray {
         return if (uID != -1) {
-            CwODB.getEntryFromUniqueID(uID, module(), m1GlobalIndex.indexList[0]!!)
+            CwODB.getEntryFromUniqueID(uID, module, m1GlobalIndex.indexList[0]!!)
         } else byteArrayOf()
-    }
-
-    private fun getEntryName(uID: Int, default: String): String {
-        return if (uID != -1) {
-            getEntry(uID).name
-        } else default
     }
 
     private fun getEntry(uID: Int): Song {

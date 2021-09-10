@@ -16,8 +16,8 @@ import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
 class M2Import : IModule, Controller() {
-    override fun moduleNameLong() = "M2Import"
-    override fun module() = "M2"
+    override val moduleNameLong = "M2Import"
+    override val module = "M2"
 
     fun importData(
         file: File,
@@ -25,8 +25,8 @@ class M2Import : IModule, Controller() {
         birthdayHeaderName: String,
         updateProgress: (Pair<Int, String>) -> Unit
     ) {
-        MXLog.log(module(), MXLog.LogType.INFO, "Data import start", moduleNameLong())
-        val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+        MXLog.log(module, MXLog.LogType.INFO, "Data import start", moduleNameLong)
+        val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
         var counter = 0
         val timeInMillis = measureTimeMillis {
             csvReader {
@@ -52,23 +52,23 @@ class M2Import : IModule, Controller() {
                     )
                     updateProgress(Pair(counter, "Importing data..."))
                     if (counter % 5000 == 0) {
-                        MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}", moduleNameLong())
+                        MXLog.log(module, MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}", moduleNameLong)
                         runBlocking { launch { m2GlobalIndex.writeIndexData() } }
                     }
                 }
             }
             MXLog.log(
-                module(), MXLog.LogType.INFO,
-                "Data Insertion uID ${m2GlobalIndex.getLastUniqueID()}", moduleNameLong()
+                module, MXLog.LogType.INFO,
+                "Data Insertion uID ${m2GlobalIndex.getLastUniqueID()}", moduleNameLong
             )
             runBlocking { launch { m2GlobalIndex.writeIndexData() } }
         }
         CwODB.closeRandomFileAccess(raf)
         MXLog.log(
-            module(),
+            module,
             MXLog.LogType.INFO,
             "Data Import end (${timeInMillis / 1000} sec)",
-            moduleNameLong()
+            moduleNameLong
         )
     }
 

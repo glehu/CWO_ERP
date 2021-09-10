@@ -23,8 +23,8 @@ import kotlin.system.measureTimeMillis
 @ExperimentalSerializationApi
 @InternalAPI
 class M1Import : IModule, Controller() {
-    override fun moduleNameLong() = "M1Import"
-    override fun module() = "M1"
+    override val moduleNameLong = "M1Import"
+    override val module = "M1"
 
     @ExperimentalSerializationApi
     fun importSpotifyAlbumList(
@@ -32,10 +32,10 @@ class M1Import : IModule, Controller() {
         entriesAdded: Int = 0,
         updateProgress: (Pair<Int, String>) -> Unit
     ) {
-        MXLog.log(module(), MXLog.LogType.INFO, "Spotify album list import start", moduleNameLong())
+        MXLog.log(module, MXLog.LogType.INFO, "Spotify album list import start", moduleNameLong)
 
         var albumEntry: Song
-        val raf = CwODB.openRandomFileAccess(module(), CwODB.CwODB.RafMode.READWRITE)
+        val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
         val m2raf = CwODB.openRandomFileAccess("M2", CwODB.CwODB.RafMode.READWRITE)
         var counter = entriesAdded
         val timeInMillis = measureTimeMillis {
@@ -56,10 +56,10 @@ class M1Import : IModule, Controller() {
         CwODB.closeRandomFileAccess(raf)
         CwODB.closeRandomFileAccess(m2raf)
         MXLog.log(
-            module(),
+            module,
             MXLog.LogType.INFO,
             "Spotify album list import end (${timeInMillis / 1000} sec)",
-            moduleNameLong()
+            moduleNameLong
         )
     }
 
@@ -110,7 +110,7 @@ class M1Import : IModule, Controller() {
                 indexManager = m1GlobalIndex,
                 indexWriteToDisk = false,
             )
-            MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong())
+            MXLog.log(module, MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong)
             updateProgress(Pair(counter, "Importing spotify tracks..."))
         }
     }
@@ -163,7 +163,7 @@ class M1Import : IModule, Controller() {
             indexManager = m1GlobalIndex,
             indexWriteToDisk = false,
         )
-        MXLog.log(module(), MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong())
+        MXLog.log(module, MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong)
         return song
     }
 

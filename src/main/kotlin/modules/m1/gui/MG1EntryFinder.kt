@@ -19,8 +19,8 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
-    override fun moduleNameLong() = "MG1EntryFinder"
-    override fun module() = "M1"
+    override val moduleNameLong = "MG1EntryFinder"
+    override val module = "M1"
     private val m1Controller: M1Controller by inject()
     override var searchText: TextField by singleAssign()
     override var exactSearch: CheckBox by singleAssign()

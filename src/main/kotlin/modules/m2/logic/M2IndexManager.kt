@@ -17,10 +17,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
 class M2IndexManager : IModule, IIndexManager, Controller() {
-    override fun moduleNameLong() = "M2IndexManager"
-    override fun module() = "M2"
-    override var module = module()
-    override var moduleDescription = "Contacts"
+    override val moduleNameLong = "M2IndexManager"
+    override val module = "M2"
     override var lastChangeDateHex: String = ""
     override var lastChangeDateUTC: String = ""
     override var lastChangeDateLocal: String = ""
@@ -34,14 +32,14 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
     override var lastUID = AtomicInteger(-1)
 
     init {
-        MXLog.log(module(), MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong())
+        MXLog.log(module, MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong)
         indexList[0] = getIndex(0)
         indexList[1] = getIndex(1)
         indexList[2] = getIndex(2)
         indexList[3] = getIndex(3)
         lastUID = updateLastUID()
         getLastChangeDates()
-        MXLog.log(module(), MXLog.LogType.INFO, "Index manager ready", moduleNameLong())
+        MXLog.log(module, MXLog.LogType.INFO, "Index manager ready", moduleNameLong)
     }
 
     override fun getIndexUserSelection(): ArrayList<String> {

@@ -27,8 +27,8 @@ import java.net.URLEncoder
 @InternalAPI
 @ExperimentalSerializationApi
 class SpotifyAUTH : IModule, IAPIAUTH {
-    override fun moduleNameLong() = "SpotifyAUTH"
-    override fun module() = "M1"
+    override val moduleNameLong = "SpotifyAUTH"
+    override val module = "M1"
 
     override val apiName = "spotify"
     override val auth: IAPIAUTH = this
@@ -70,7 +70,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
                         append("client_secret", clientSecret)
                     })
                 }
-                MXLog.log(module(), MXLog.LogType.COM, "Spotify access token obtained", moduleNameLong())
+                MXLog.log(module, MXLog.LogType.COM, "Spotify access token obtained", moduleNameLong)
                 client.close()
                 saveTokenData(tokenData)
             }
@@ -109,7 +109,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
                         append("client_secret", clientSecret)
                     })
                 }
-                MXLog.log(module(), MXLog.LogType.COM, "Spotify access token refreshed", moduleNameLong())
+                MXLog.log(module, MXLog.LogType.COM, "Spotify access token refreshed", moduleNameLong)
                 client.close()
                 tokenData.accessToken = tokenDataNew.accessToken
                 saveTokenData(tokenData)

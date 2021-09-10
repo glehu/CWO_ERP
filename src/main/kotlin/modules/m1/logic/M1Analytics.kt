@@ -11,8 +11,8 @@ import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
 class M1Analytics : IModule, Controller() {
-    override fun moduleNameLong() = "M1Analytics"
-    override fun module() = "M1"
+    override val moduleNameLong = "M1Analytics"
+    override val module = "M1"
 
     enum class DistType {
         GENRE, TYPE
@@ -26,7 +26,7 @@ class M1Analytics : IModule, Controller() {
         var songCount = 0.0
         val map = mutableMapOf<String, Double>()
         var distTypeData: String
-        MXLog.log(module(), MXLog.LogType.INFO, "Distribution analysis start", moduleNameLong())
+        MXLog.log(module, MXLog.LogType.INFO, "Distribution analysis start", moduleNameLong)
         val timeInMS = measureTimeMillis {
             CwODB.getEntriesFromSearchString(
                 searchText = "",
@@ -54,8 +54,8 @@ class M1Analytics : IModule, Controller() {
             map["[amount]"] = songCount
         }
         MXLog.log(
-            module(),
-            MXLog.LogType.INFO, "Distribution analysis end (${timeInMS / 1000} sec)", moduleNameLong()
+            module,
+            MXLog.LogType.INFO, "Distribution analysis end (${timeInMS / 1000} sec)", moduleNameLong
         )
         return map.toSortedMap()
     }

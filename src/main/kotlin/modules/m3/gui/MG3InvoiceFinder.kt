@@ -19,8 +19,8 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
-    override fun moduleNameLong() = "MG3InvoiceFinder"
-    override fun module() = "M3"
+    override val moduleNameLong = "MG3InvoiceFinder"
+    override val module = "M3"
     private val m3Controller: M3Controller by inject()
     override var searchText: TextField by singleAssign()
     override var exactSearch: CheckBox by singleAssign()

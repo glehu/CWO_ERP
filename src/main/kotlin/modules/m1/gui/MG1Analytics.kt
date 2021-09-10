@@ -1,6 +1,5 @@
 package modules.m1.gui
 
-import db.CwODB
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.chart.PieChart
 import kotlinx.serialization.ExperimentalSerializationApi
