@@ -20,6 +20,9 @@ class MGXPreferences : View("Preferences") {
     private val differenceFromUTCProperty = SimpleIntegerProperty(0)
     private val isClientProperty = SimpleStringProperty("false")
     private val serverIPAddressProperty = SimpleStringProperty("?")
+    private val jsonSerializer = Json {
+        prettyPrint = true
+    }
     override val root = form {
         setPrefSize(600.0, 200.0)
         val iniFile = getIniFile()
@@ -27,7 +30,7 @@ class MGXPreferences : View("Preferences") {
             //Now we have to initialize it
             iniFile.createNewFile()
             iniFile.writeText(
-                Json.encodeToString(
+                jsonSerializer.encodeToString(
                     MXIni(
                         token = encryptionKeyProperty.value,
                         dataPath = dataPathProperty.value,
@@ -40,7 +43,7 @@ class MGXPreferences : View("Preferences") {
             )
         } else {
             val iniFileText = iniFile.readText()
-            val iniVal = Json.decodeFromString<MXIni>(iniFileText)
+            val iniVal = jsonSerializer.decodeFromString<MXIni>(iniFileText)
             encryptionKeyProperty.value = iniVal.token
             dataPathProperty.value = iniVal.dataPath
             maxSearchResultsProperty.value = iniVal.maxSearchResults
@@ -79,7 +82,7 @@ class MGXPreferences : View("Preferences") {
                     shortcut("Enter")
                 }.action {
                     iniFile.writeText(
-                        Json.encodeToString(
+                        jsonSerializer.encodeToString(
                             MXIni(
                                 token = encryptionKeyProperty.value,
                                 dataPath = dataPathProperty.value,
