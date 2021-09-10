@@ -6,6 +6,7 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.protobuf.ProtoBuf
 import kotlinx.serialization.serializer
 import modules.m1.Song
 import modules.m1.logic.M1IndexManager
@@ -25,6 +26,9 @@ val serializersModuleGlobal = SerializersModule {
         subclass(M3Item::class, serializer())
     }
 }
+
+@ExperimentalSerializationApi
+val protoBufGlobal = ProtoBuf { serializersModuleGlobal }
 
 //*************************************************
 //********************** INDEX MANAGERS ***********

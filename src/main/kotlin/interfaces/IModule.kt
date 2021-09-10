@@ -5,9 +5,8 @@ import db.Index
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
-import kotlinx.serialization.protobuf.ProtoBuf
 import modules.mx.activeUser
-import modules.mx.serializersModuleGlobal
+import modules.mx.protoBufGlobal
 import java.io.RandomAccessFile
 
 @ExperimentalSerializationApi
@@ -28,7 +27,6 @@ interface IModule {
         indexWriteToDisk: Boolean = true,
         userName: String = activeUser.username
     ): Int {
-        val protoBuf = ProtoBuf { serializersModule = serializersModuleGlobal }
         val posDB: Long
         val byteSize: Int
         if (entry.uID != -1) {
@@ -45,7 +43,7 @@ interface IModule {
             byteSize = -1
         }
         entry.initialize()
-        val entrySerialized = protoBuf.encodeToByteArray(entry)
+        val entrySerialized = protoBufGlobal.encodeToByteArray(entry)
         val (posDBX, byteSizeX) = CwODB.saveEntry(
             entryBytes = entrySerialized,
             uID = entry.uID,
@@ -71,7 +69,6 @@ interface IModule {
      * @return a decoded entry from a provided ByteArray.
      */
     fun decode(entry: ByteArray): IEntry {
-        val protoBuf = ProtoBuf { serializersModule = serializersModuleGlobal }
-        return protoBuf.decodeFromByteArray(entry)
+        return protoBufGlobal.decodeFromByteArray(entry)
     }
 }
