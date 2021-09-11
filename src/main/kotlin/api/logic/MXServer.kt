@@ -1,14 +1,12 @@
 package api.logic
 
 import api.gui.GSpotify
-import api.misc.json.EntryJson
 import api.misc.json.SpotifyAuthCallbackJson
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
-import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
@@ -17,9 +15,6 @@ import io.ktor.server.netty.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import modules.m1.Song
-import modules.m2.Contact
-import modules.m3.Invoice
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.m1GlobalIndex
@@ -89,25 +84,10 @@ class MXServer : IModule, Controller() {
                             call.respond(m1GlobalIndex.getIndexUserSelection())
                         }
                         get("/entry/{searchString}") {
-                            val routePar = call.parameters["searchString"]
-                            if (routePar != null && routePar.isNotEmpty()) {
-                                val queryPar = call.request.queryParameters["type"]
-                                if (queryPar == "uid") {
-                                    call.respond(m1GlobalIndex.getBytes(routePar.toInt()))
-                                } else if (queryPar == "name") {
-                                    call.respond(m1GlobalIndex.getEntryBytesListJson(routePar, 1))
-                                }
-                            }
+                            call.respond(MXServerController.getEntry(call, m1GlobalIndex))
                         }
                         post("/saveentry") {
-                            val entryJson: EntryJson = call.receive()
-                            val entry = decode(entryJson.entry) as Song
-                            call.respond(
-                                m1GlobalIndex.save(
-                                    entry = entry,
-                                    userName = call.principal<UserIdPrincipal>()!!.name
-                                )
-                            )
+                            call.respond(MXServerController.saveEntry(call, m1GlobalIndex))
                         }
                     }
                     route("/m2") {
@@ -115,25 +95,10 @@ class MXServer : IModule, Controller() {
                             call.respond(m2GlobalIndex.getIndexUserSelection())
                         }
                         get("/entry/{searchString}") {
-                            val routePar = call.parameters["searchString"]
-                            if (routePar != null && routePar.isNotEmpty()) {
-                                val queryPar = call.request.queryParameters["type"]
-                                if (queryPar == "uid") {
-                                    call.respond(m2GlobalIndex.getBytes(routePar.toInt()))
-                                } else if (queryPar == "name") {
-                                    call.respond(m2GlobalIndex.getEntryBytesListJson(routePar, 1))
-                                }
-                            }
+                            call.respond(MXServerController.getEntry(call, m2GlobalIndex))
                         }
                         post("/saveentry") {
-                            val entryJson: EntryJson = call.receive()
-                            val entry = decode(entryJson.entry) as Contact
-                            call.respond(
-                                m2GlobalIndex.save(
-                                    entry = entry,
-                                    userName = call.principal<UserIdPrincipal>()!!.name
-                                )
-                            )
+                            call.respond(MXServerController.saveEntry(call, m2GlobalIndex))
                         }
                     }
                     route("/m3") {
@@ -141,25 +106,10 @@ class MXServer : IModule, Controller() {
                             call.respond(m3GlobalIndex.getIndexUserSelection())
                         }
                         get("/entry/{searchString}") {
-                            val routePar = call.parameters["searchString"]
-                            if (routePar != null && routePar.isNotEmpty()) {
-                                val queryPar = call.request.queryParameters["type"]
-                                if (queryPar == "uid") {
-                                    call.respond(m3GlobalIndex.getBytes(routePar.toInt()))
-                                } else if (queryPar == "name") {
-                                    call.respond(m3GlobalIndex.getEntryBytesListJson(routePar, 1))
-                                }
-                            }
+                            call.respond(MXServerController.getEntry(call, m3GlobalIndex))
                         }
                         post("/saveentry") {
-                            val entryJson: EntryJson = call.receive()
-                            val entry = decode(entryJson.entry) as Invoice
-                            call.respond(
-                                m3GlobalIndex.save(
-                                    entry = entry,
-                                    userName = call.principal<UserIdPrincipal>()!!.name
-                                )
-                            )
+                            call.respond(MXServerController.saveEntry(call, m3GlobalIndex))
                         }
                     }
                 }
