@@ -2,31 +2,32 @@ package api.logic
 
 import interfaces.IIndexManager
 import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.request.*
-import io.ktor.response.*
 import kotlinx.serialization.ExperimentalSerializationApi
 
 class MXServerController {
     @ExperimentalSerializationApi
     companion object Server {
-        suspend fun saveEntry(appCall: ApplicationCall, indexManager: IIndexManager): Int {
+        fun saveEntry(entry: ByteArray, indexManager: IIndexManager, username: String): Int {
             return indexManager.save(
-                entry = indexManager.decode(appCall.receive()),
-                userName = appCall.principal<UserIdPrincipal>()!!.name
+                entry = indexManager.decode(entry),
+                userName = username
             )
         }
 
-        suspend fun getEntry(appCall: ApplicationCall, indexManager: IIndexManager) {
+        fun getEntry(appCall: ApplicationCall, indexManager: IIndexManager): Any {
             val routePar = appCall.parameters["searchString"]
             if (routePar != null && routePar.isNotEmpty()) {
-                val queryPar = appCall.request.queryParameters["type"]
-                if (queryPar == "uid") {
-                    appCall.respond(indexManager.getBytes(routePar.toInt()))
-                } else if (queryPar == "name") {
-                    appCall.respond(indexManager.getEntryBytesListJson(routePar, 1))
+                return when (appCall.request.queryParameters["type"]) {
+                    "uid" -> {
+                        indexManager.getBytes(routePar.toInt())
+                    }
+                    "name" -> {
+                        indexManager.getEntryBytesListJson(routePar, 1)
+                    }
+                    else -> ""
                 }
             }
+            return ""
         }
     }
 }

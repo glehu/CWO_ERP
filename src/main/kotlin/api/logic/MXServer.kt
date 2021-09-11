@@ -7,6 +7,7 @@ import interfaces.IModule
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.serialization.*
@@ -79,40 +80,52 @@ class MXServer : IModule, Controller() {
                 }
                 route("/api")
                 {
-                    route("/m1") {
-                        get("/indexselection") {
-                            call.respond(m1GlobalIndex.getIndexUserSelection())
-                        }
-                        get("/entry/{searchString}") {
-                            call.respond(MXServerController.getEntry(call, m1GlobalIndex))
-                        }
-                        post("/saveentry") {
-                            call.respond(MXServerController.saveEntry(call, m1GlobalIndex))
-                        }
-                    }
-                    route("/m2") {
-                        get("/indexselection") {
-                            call.respond(m2GlobalIndex.getIndexUserSelection())
-                        }
-                        get("/entry/{searchString}") {
-                            call.respond(MXServerController.getEntry(call, m2GlobalIndex))
-                        }
-                        post("/saveentry") {
-                            call.respond(MXServerController.saveEntry(call, m2GlobalIndex))
-                        }
-                    }
-                    route("/m3") {
-                        get("/indexselection") {
-                            call.respond(m3GlobalIndex.getIndexUserSelection())
-                        }
-                        get("/entry/{searchString}") {
-                            call.respond(MXServerController.getEntry(call, m3GlobalIndex))
-                        }
-                        post("/saveentry") {
-                            call.respond(MXServerController.saveEntry(call, m3GlobalIndex))
-                        }
-                    }
+                    getIndexSelection(
+                        m1GlobalIndex,
+                        m2GlobalIndex,
+                        m3GlobalIndex
+                    )
+                    getEntry(
+                        m1GlobalIndex,
+                        m2GlobalIndex,
+                        m3GlobalIndex
+                    )
+                    saveEntry(
+                        m1GlobalIndex,
+                        m2GlobalIndex,
+                        m3GlobalIndex
+                    )
                 }
+            }
+        }
+    }
+
+    private fun Route.getIndexSelection(vararg indexManager: IIndexManager) {
+        for (ix in indexManager) {
+            get("${ix.module.lowercase()}/indexselection") {
+                call.respond(ix.getIndexUserSelection())
+            }
+        }
+    }
+
+    private fun Route.getEntry(vararg indexManager: IIndexManager) {
+        for (ix in indexManager) {
+            get("${ix.module.lowercase()}/entry/{searchString}") {
+                call.respond(MXServerController.getEntry(call, ix))
+            }
+        }
+    }
+
+    private fun Route.saveEntry(vararg indexManager: IIndexManager) {
+        for (ix in indexManager) {
+            get("${ix.module.lowercase()}/entry/{searchString}") {
+                call.respond(
+                    MXServerController.saveEntry(
+                        call.receive(),
+                        m1GlobalIndex,
+                        call.principal<UserIdPrincipal>()?.name!!
+                    )
+                )
             }
         }
     }
