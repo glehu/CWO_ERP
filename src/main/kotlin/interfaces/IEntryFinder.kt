@@ -68,10 +68,7 @@ interface IEntryFinder : IModule {
             if (entriesFound == 0) {
                 this.entriesFound.clear()
             } else {
-                MXLog.log(
-                    module, MXLog.LogType.INFO, "$entriesFound entries loaded (in $timeInMillis ms)",
-                    moduleNameLong
-                )
+                log(MXLog.LogType.INFO, "$entriesFound entries loaded (in $timeInMillis ms)")
             }
         }
     }

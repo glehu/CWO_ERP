@@ -29,7 +29,7 @@ class M2Analytics : IModule, Controller() {
         var contactCount = 0.0
         var amountCount = 0
         var city: String
-        MXLog.log(module, MXLog.LogType.INFO, "City distribution analysis start", moduleNameLong)
+        log(MXLog.LogType.INFO, "City distribution analysis start")
         val timeInMS = measureTimeMillis {
             CwODB.getEntriesFromSearchString(
                 searchText = "",
@@ -67,10 +67,7 @@ class M2Analytics : IModule, Controller() {
             }
             map["[amount]"] = contactCount
         }
-        MXLog.log(
-            module, MXLog.LogType.INFO, "City distribution analysis end (${timeInMS / 1000} sec)",
-            moduleNameLong
-        )
+        log(MXLog.LogType.INFO, "City distribution analysis end (${timeInMS / 1000} sec)")
         return map.toSortedMap()
     }
 }

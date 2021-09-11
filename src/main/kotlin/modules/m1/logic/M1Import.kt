@@ -36,7 +36,7 @@ class M1Import : IModule, Controller() {
         entriesAdded: Int = 0,
         updateProgress: (Pair<Int, String>) -> Unit
     ) {
-        MXLog.log(module, MXLog.LogType.INFO, "Spotify album list import start", moduleNameLong)
+        log(MXLog.LogType.INFO, "Spotify album list import start")
 
         var albumEntry: Song
         val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
@@ -59,12 +59,7 @@ class M1Import : IModule, Controller() {
         runBlocking { launch { m2GlobalIndex.writeIndexData() } }
         CwODB.closeRandomFileAccess(raf)
         CwODB.closeRandomFileAccess(m2raf)
-        MXLog.log(
-            module,
-            MXLog.LogType.INFO,
-            "Spotify album list import end (${timeInMillis / 1000} sec)",
-            moduleNameLong
-        )
+        log(MXLog.LogType.INFO, "Spotify album list import end (${timeInMillis / 1000} sec)")
     }
 
     @ExperimentalSerializationApi
@@ -113,7 +108,7 @@ class M1Import : IModule, Controller() {
                 raf = raf,
                 indexWriteToDisk = false,
             )
-            MXLog.log(module, MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong)
+            log(MXLog.LogType.INFO, "Data Insertion uID ${song.uID}")
             updateProgress(Pair(counter, "Importing spotify tracks..."))
         }
     }
@@ -165,7 +160,7 @@ class M1Import : IModule, Controller() {
             raf = raf,
             indexWriteToDisk = false,
         )
-        MXLog.log(module, MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong)
+        log(MXLog.LogType.INFO, "Data Insertion uID ${song.uID}")
         return song
     }
 

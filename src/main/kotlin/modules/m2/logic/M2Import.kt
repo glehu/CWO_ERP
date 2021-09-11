@@ -29,7 +29,7 @@ class M2Import : IModule, Controller() {
         birthdayHeaderName: String,
         updateProgress: (Pair<Int, String>) -> Unit
     ) {
-        MXLog.log(module, MXLog.LogType.INFO, "Data import start", moduleNameLong)
+        log(MXLog.LogType.INFO, "Data import start")
         val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
         var counter = 0
         val timeInMillis = measureTimeMillis {
@@ -55,24 +55,16 @@ class M2Import : IModule, Controller() {
                     )
                     updateProgress(Pair(counter, "Importing data..."))
                     if (counter % 5000 == 0) {
-                        MXLog.log(module, MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}", moduleNameLong)
+                        log(MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}")
                         runBlocking { launch { m2GlobalIndex.writeIndexData() } }
                     }
                 }
             }
-            MXLog.log(
-                module, MXLog.LogType.INFO,
-                "Data Insertion uID ${m2GlobalIndex.getLastUniqueID()}", moduleNameLong
-            )
+            log(MXLog.LogType.INFO, "Data Insertion uID ${m2GlobalIndex.getLastUniqueID()}")
             runBlocking { launch { m2GlobalIndex.writeIndexData() } }
         }
         CwODB.closeRandomFileAccess(raf)
-        MXLog.log(
-            module,
-            MXLog.LogType.INFO,
-            "Data Import end (${timeInMillis / 1000} sec)",
-            moduleNameLong
-        )
+        log(MXLog.LogType.INFO, "Data Import end (${timeInMillis / 1000} sec)")
     }
 
     private fun import(from: String, default: String = "?"): String {

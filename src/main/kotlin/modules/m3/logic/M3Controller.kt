@@ -39,9 +39,7 @@ class M3Controller : IController, Controller() {
     }
 
     override fun saveEntry() {
-        var isComplete = true
-        if (!wizard.invoice.isValid) isComplete = false
-        if (isComplete) {
+        if (wizard.invoice.isValid) {
             wizard.invoice.commit()
             wizard.invoice.uID.value = save(getInvoiceFromInvoiceProperty(wizard.invoice.item))
             wizard.isComplete = false

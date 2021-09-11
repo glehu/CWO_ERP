@@ -32,7 +32,7 @@ class SpotifyAPI : IModule, IAPI {
         runBlocking {
             launch {
                 userData = client.get("https://api.spotify.com/v1/me")
-                MXLog.log(module, MXLog.LogType.COM, "Spotify account data received", moduleNameLong)
+                log(MXLog.LogType.COM, "Spotify account data received")
                 controller.saveUserData(userData)
                 client.close()
             }
@@ -52,7 +52,7 @@ class SpotifyAPI : IModule, IAPI {
                     while (!finished) {
                         albumList = client.get(url)
                         albumListTotal.add(albumList)
-                        MXLog.log(module, MXLog.LogType.COM, "Spotify album list received", moduleNameLong)
+                        log(MXLog.LogType.COM, "Spotify album list received")
                         if (albumList.next == null) {
                             finished = true
                         } else {
@@ -72,7 +72,7 @@ class SpotifyAPI : IModule, IAPI {
         runBlocking {
             launch {
                 artistData = client.get("https://api.spotify.com/v1/artists/$artistSpotifyID")
-                MXLog.log(module, MXLog.LogType.COM, "Spotify artist data received", moduleNameLong)
+                log(MXLog.LogType.COM, "Spotify artist data received")
                 client.close()
             }
         }
@@ -90,7 +90,7 @@ class SpotifyAPI : IModule, IAPI {
         runBlocking {
             launch {
                 artistDataList = client.get("https://api.spotify.com/v1/artists/${separatedIDs}")
-                MXLog.log(module, MXLog.LogType.COM, "Spotify artist data received", moduleNameLong)
+                log(MXLog.LogType.COM, "Spotify artist data received")
                 client.close()
             }
         }
@@ -109,7 +109,7 @@ class SpotifyAPI : IModule, IAPI {
                     while (!finished) {
                         songList = client.get(url)
                         songListTotal.add(songList)
-                        MXLog.log(module, MXLog.LogType.COM, "Spotify song list received", moduleNameLong)
+                        log(MXLog.LogType.COM, "Spotify song list received")
                         if (songList.next == null) {
                             finished = true
                         } else {

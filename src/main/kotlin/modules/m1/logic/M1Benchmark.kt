@@ -24,7 +24,7 @@ class M1Benchmark : IModule, Controller() {
     }
 
     fun insertRandomEntries(amount: Int) {
-        MXLog.log(module, MXLog.LogType.INFO, "Benchmark entry insertion start", moduleNameLong)
+        log(MXLog.LogType.INFO, "Benchmark entry insertion start")
         val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
         val timeInMillis = measureTimeMillis {
             for (i in 1..amount) {
@@ -40,18 +40,13 @@ class M1Benchmark : IModule, Controller() {
                     indexWriteToDisk = false,
                 )
                 if (i % 5000 == 0) {
-                    MXLog.log(module, MXLog.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}", moduleNameLong)
+                    log(MXLog.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
                     runBlocking { launch { m1GlobalIndex.writeIndexData() } }
                 }
             }
         }
         CwODB.closeRandomFileAccess(raf)
-        MXLog.log(
-            module,
-            MXLog.LogType.INFO,
-            "Benchmark entry insertion end (${timeInMillis / 1000} sec)",
-            moduleNameLong
-        )
+        log(MXLog.LogType.INFO, "Benchmark entry insertion end (${timeInMillis / 1000} sec)")
     }
 
     private fun getRandomGenre(): String {

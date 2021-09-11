@@ -92,7 +92,7 @@ interface IIndexManager : IModule {
      * @return an instance of Index to be used in IndexManagers
      */
     fun getIndex(ixNr: Int): Index {
-        MXLog.log(module, MXLog.LogType.INFO, "Deserializing index $ixNr for $module...", CwODB.moduleNameLong)
+        log(MXLog.LogType.INFO, "Deserializing index $ixNr for $module...")
         checkIndexFile(module, ixNr)
         return Json.decodeFromString(getIndexFile(ixNr).readText())
     }

@@ -81,7 +81,7 @@ class CwODB {
                         Json.encodeToString(IndexContent(uID, "", posDBNew, byteSizeNew))
                     )
                 }
-            } else MXLog.log(module, MXLog.LogType.ERROR, "Serialization failed!", moduleNameLong)
+            } else log(MXLog.LogType.ERROR, "Serialization failed!")
             return Pair(posDBNew, byteSizeNew)
         }
 
@@ -201,7 +201,7 @@ class CwODB {
                 File("${getModulePath(module)}\\$module.db").delete()
                 File("${getModulePath(module)}\\$module.nu").delete()
                 for (i in 0..99) File("${getModulePath(module)}\\$module.ix$i").delete()
-                MXLog.log(module, MXLog.LogType.INFO, "Reset database for $module successful", moduleNameLong)
+                log(MXLog.LogType.INFO, "Reset database for $module successful")
             }
         }
 

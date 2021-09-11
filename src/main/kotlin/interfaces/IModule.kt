@@ -13,6 +13,7 @@ import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
 import modules.mx.activeUser
 import modules.mx.isClientGlobal
+import modules.mx.logic.MXLog
 import modules.mx.protoBufGlobal
 import java.io.RandomAccessFile
 
@@ -161,5 +162,14 @@ interface IModule {
             }
         }
         return indexUserSelection
+    }
+
+    fun log(logType: MXLog.LogType, text: String) {
+        MXLog.log(
+            module = module,
+            type = logType,
+            text = text,
+            caller = moduleNameLong
+        )
     }
 }

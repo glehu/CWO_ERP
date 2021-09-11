@@ -66,7 +66,7 @@ class MXUserManager : IModule, Controller() {
 
     private fun writeCredentials(credentials: MXCredentials) {
         getCredentialsFile().writeText(Json.encodeToString(credentials))
-        MXLog.log(module, MXLog.LogType.INFO, "Credentials updated", moduleNameLong)
+        log(MXLog.LogType.INFO, "Credentials updated")
     }
 
     private fun getCredentialsFile() = File("${getModulePath(module)}\\credentials.dat")
@@ -78,17 +78,11 @@ class MXUserManager : IModule, Controller() {
             successful = true
             if (activeUser.username.isEmpty()) activeUser = user
             if (!isClientGlobal) {
-                MXLog.log(
-                    module, MXLog.LogType.INFO, "User \"$username\" login successful", moduleNameLong
-                )
+                log(MXLog.LogType.INFO, "User \"$username\" login successful")
             } else {
-                MXLog.log(
-                    module, MXLog.LogType.COM, "User \"$username\" login successful", moduleNameLong
-                )
+                log(MXLog.LogType.COM, "User \"$username\" login successful")
             }
-        } else MXLog.log(
-            module, MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials", moduleNameLong
-        )
+        } else log(MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials")
         return successful
     }
 

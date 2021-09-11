@@ -35,9 +35,7 @@ class M1Controller : IController, Controller() {
     }
 
     override fun saveEntry() {
-        var isComplete = true
-        if (!wizard.songMainData.isValid) isComplete = false
-        if (isComplete) {
+        if (wizard.songMainData.isValid) {
             wizard.songMainData.commit()
             wizard.songCompletionState.commit()
             wizard.songPromotionData.commit()

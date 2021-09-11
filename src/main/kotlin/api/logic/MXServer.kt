@@ -61,11 +61,12 @@ class MXServer : IModule, Controller() {
         routing {
             authenticate("auth-basic") {
                 get("/login") {
+                    log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} login")
                     call.respond(true)
                 }
             }
             get("/authcallback/spotify") {
-                MXLog.log(module, MXLog.LogType.COM, "Spotify Auth Callback received", moduleNameLong)
+                log(MXLog.LogType.COM, "Spotify Auth Callback received")
                 call.respondText("CWO ERP Spotify Authorization Callback Site")
                 val code: String? = call.request.queryParameters["code"]
                 find<GSpotify>().authCodeProperty.value = code
@@ -78,12 +79,7 @@ class MXServer : IModule, Controller() {
             //----------------------------------^
             authenticate("auth-basic") {
                 get("/") {
-                    MXLog.log(
-                        module,
-                        MXLog.LogType.COM,
-                        "User ${call.principal<UserIdPrincipal>()?.name} Connected",
-                        moduleNameLong
-                    )
+                    log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} Connected")
                     call.respondText("Hello, ${call.principal<UserIdPrincipal>()?.name}!")
                 }
                 route("/api")

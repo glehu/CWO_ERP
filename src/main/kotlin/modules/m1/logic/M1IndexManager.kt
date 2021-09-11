@@ -36,7 +36,7 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
     override var lastUID = AtomicInteger(-1)
 
     init {
-        MXLog.log(module, MXLog.LogType.INFO, "Initializing index manager...", moduleNameLong)
+        log(MXLog.LogType.INFO, "Initializing index manager...")
         indexList[0] = getIndex(0)
         indexList[1] = getIndex(1)
         indexList[2] = getIndex(2)
@@ -45,7 +45,7 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
         indexList[5] = getIndex(5)
         lastUID = updateLastUID()
         getLastChangeDates()
-        MXLog.log(module, MXLog.LogType.INFO, "Index manager ready", moduleNameLong)
+        log(MXLog.LogType.INFO, "Index manager ready")
     }
 
     override fun getIndicesList(): ArrayList<String> {

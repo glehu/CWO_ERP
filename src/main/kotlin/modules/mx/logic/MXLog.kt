@@ -57,7 +57,7 @@ class MXLog {
                 if (createIfMissing) {
                     logFile.createNewFile()
                     if (logFile.isFile) {
-                        if (log) log(module, LogType.INFO, "Log file created: $module", moduleNameLong)
+                        if (log) log(LogType.INFO, "Log file created: $module")
                         return true
                     }
                 } else return false
@@ -71,7 +71,7 @@ class MXLog {
         fun deleteLogFile(module: String) {
             if (checkLogFile(module, false)) {
                 getLogFile(module).delete()
-                log(module, LogType.INFO, "Log file cleared: $module", moduleNameLong)
+                log(LogType.INFO, "Log file cleared: $module")
                 checkLogFile(module, createIfMissing = true, log = false)
             }
         }

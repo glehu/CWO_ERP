@@ -74,7 +74,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
                         append("client_secret", clientSecret)
                     })
                 }
-                MXLog.log(module, MXLog.LogType.COM, "Spotify access token obtained", moduleNameLong)
+                log(MXLog.LogType.COM, "Spotify access token obtained")
                 client.close()
                 saveTokenData(tokenData)
             }
@@ -113,7 +113,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
                         append("client_secret", clientSecret)
                     })
                 }
-                MXLog.log(module, MXLog.LogType.COM, "Spotify access token refreshed", moduleNameLong)
+                log(MXLog.LogType.COM, "Spotify access token refreshed")
                 client.close()
                 tokenData.accessToken = tokenDataNew.accessToken
                 saveTokenData(tokenData)
