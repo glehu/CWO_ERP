@@ -1,7 +1,7 @@
 package interfaces
 
 import api.logic.getCWOClient
-import api.misc.json.M1EntryListJson
+import api.misc.json.EntryListJson
 import db.CwODB
 import io.ktor.client.request.*
 import javafx.beans.property.SimpleIntegerProperty
@@ -12,11 +12,9 @@ import javafx.scene.control.TextField
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
 import modules.mx.logic.indexFormat
-import modules.mx.maxSearchResultsGlobal
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
@@ -28,16 +26,15 @@ interface IEntryFinder : IModule {
     val ixNrList: ObservableList<String>
     val threadIDCurrentProperty: SimpleIntegerProperty
 
-    fun searchForEntries(threadID: Int, indexManager: IIndexManager) {
+    fun searchForEntries(threadID: Int) {
         var entriesFound = 0
         val timeInMillis = measureTimeMillis {
             if (!isClientGlobal) {
                 CwODB.getEntriesFromSearchString(
-                    indexFormat(searchText.text),
-                    ixNr.value.substring(0, 1).toInt(),
-                    exactSearch.isSelected,
-                    maxSearchResultsGlobal,
-                    indexManager,
+                    searchText = indexFormat(searchText.text),
+                    ixNr = ixNr.value.substring(0, 1).toInt(),
+                    exactSearch = exactSearch.isSelected,
+                    indexManager = getIndexManager()!!,
                 ) { _, bytes ->
                     if (threadID == threadIDCurrentProperty.value) {
                         if (entriesFound == 0) this.entriesFound.clear()
@@ -49,7 +46,7 @@ interface IEntryFinder : IModule {
                 if (searchText.text.isNotEmpty()) {
                     runBlocking {
                         launch {
-                            val entryListJson: M1EntryListJson = getCWOClient(activeUser.username, activeUser.password)
+                            val entryListJson: EntryListJson = getCWOClient()
                                 .get(
                                     getApiUrl() +
                                             "entry/${indexFormat(searchText.text)}" +

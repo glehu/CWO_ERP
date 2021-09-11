@@ -2,11 +2,12 @@ package modules.m1.gui
 
 import interfaces.IEntry
 import interfaces.IEntryFinder
+import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.collections.FXCollections
+import javafx.collections.FXCollections.observableArrayList
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
@@ -21,13 +22,16 @@ import tornadofx.*
 class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
     override val moduleNameLong = "MG1EntryFinder"
     override val module = "M1"
-    private val m1Controller: M1Controller by inject()
+    override fun getIndexManager(): IIndexManager {
+        return m1GlobalIndex
+    }
     override var searchText: TextField by singleAssign()
     override var exactSearch: CheckBox by singleAssign()
     override var entriesFound: ObservableList<IEntry> = observableListOf()
     override var ixNr = SimpleStringProperty()
-    override val ixNrList = FXCollections.observableArrayList(m1Controller.getIndexUserSelection())!!
+    override val ixNrList: ObservableList<String> = observableArrayList(getIndexUserSelection())
     override val threadIDCurrentProperty = SimpleIntegerProperty()
+    private val m1Controller: M1Controller by inject()
     override val root = borderpane {
         center = form {
             prefWidth = 1200.0
@@ -39,7 +43,7 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                             textProperty().addListener { _, _, _ ->
                                 runAsync {
                                     threadIDCurrentProperty.value++
-                                    searchForEntries(threadIDCurrentProperty.value, m1GlobalIndex)
+                                    searchForEntries(threadIDCurrentProperty.value)
                                 }
                             }
                             tooltip("Contains the search text that will be used to find an entry.")
@@ -64,7 +68,7 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                     readonlyColumn("Producer", Song::producer).prefWidth(200.0)
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
-                        m1Controller.showSong(it)
+                        m1Controller.showEntry(it)
                         searchText.text = ""
                         close()
                     }

@@ -2,6 +2,7 @@ package modules.m2.logic
 
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import db.CwODB
+import interfaces.IIndexManager
 import interfaces.IModule
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -18,6 +19,9 @@ import kotlin.system.measureTimeMillis
 class M2Import : IModule, Controller() {
     override val moduleNameLong = "M2Import"
     override val module = "M2"
+    override fun getIndexManager(): IIndexManager {
+        return m2GlobalIndex
+    }
 
     fun importData(
         file: File,
@@ -47,7 +51,6 @@ class M2Import : IModule, Controller() {
                     save(
                         entry = contact,
                         raf = raf,
-                        indexManager = m2GlobalIndex,
                         indexWriteToDisk = false,
                     )
                     updateProgress(Pair(counter, "Importing data..."))

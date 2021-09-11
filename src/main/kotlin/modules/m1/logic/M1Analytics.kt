@@ -1,6 +1,7 @@
 package modules.m1.logic
 
 import db.CwODB
+import interfaces.IIndexManager
 import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
@@ -13,6 +14,9 @@ import kotlin.system.measureTimeMillis
 class M1Analytics : IModule, Controller() {
     override val moduleNameLong = "M1Analytics"
     override val module = "M1"
+    override fun getIndexManager(): IIndexManager {
+        return m1GlobalIndex
+    }
 
     enum class DistType {
         GENRE, TYPE

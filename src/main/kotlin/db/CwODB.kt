@@ -18,6 +18,9 @@ class CwODB {
     companion object CwODB : IModule, Controller() {
         override val moduleNameLong = "CwODB"
         override val module = "DB"
+        override fun getIndexManager(): IIndexManager? {
+            return null
+        }
 
         /**
          * Used to save the ByteArray of an entry (achieved by serialization) and store it in the database.

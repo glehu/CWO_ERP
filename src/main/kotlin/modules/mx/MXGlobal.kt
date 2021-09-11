@@ -28,7 +28,9 @@ val serializersModuleGlobal = SerializersModule {
 }
 
 @ExperimentalSerializationApi
-val protoBufGlobal = ProtoBuf { serializersModule = serializersModuleGlobal }
+val protoBufGlobal = ProtoBuf {
+    serializersModule = serializersModuleGlobal
+}
 
 //*************************************************
 //********************** INDEX MANAGERS ***********

@@ -2,6 +2,7 @@ package modules.m3.gui
 
 import interfaces.IEntry
 import interfaces.IEntryFinder
+import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
@@ -21,13 +22,17 @@ import tornadofx.*
 class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
     override val moduleNameLong = "MG3InvoiceFinder"
     override val module = "M3"
-    private val m3Controller: M3Controller by inject()
+    override fun getIndexManager(): IIndexManager {
+        return m3GlobalIndex
+    }
+
     override var searchText: TextField by singleAssign()
     override var exactSearch: CheckBox by singleAssign()
     override var entriesFound: ObservableList<IEntry> = observableListOf()
     override var ixNr = SimpleStringProperty()
-    override val ixNrList = FXCollections.observableArrayList(m3Controller.getIndexUserSelection())!!
+    override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
     override val threadIDCurrentProperty = SimpleIntegerProperty()
+    private val m3Controller: M3Controller by inject()
     override val root = borderpane {
         center = form {
             prefWidth = 1200.0
@@ -37,7 +42,7 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                         textProperty().addListener { _, _, _ ->
                             runAsync {
                                 threadIDCurrentProperty.value++
-                                searchForEntries(threadIDCurrentProperty.value, m3GlobalIndex)
+                                searchForEntries(threadIDCurrentProperty.value)
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
@@ -60,7 +65,7 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                     readonlyColumn("Buyer", Invoice::buyer).prefWidth(300.0)
                     readonlyColumn("Text", Invoice::text).prefWidth(400.0)
                     onUserSelect(1) {
-                        m3Controller.showInvoice(it)
+                        m3Controller.showEntry(it)
                         searchText.text = ""
                         close()
                     }

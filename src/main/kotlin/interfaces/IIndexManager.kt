@@ -68,7 +68,7 @@ interface IIndexManager : IModule {
     /**
      * @return an ArrayList<String> of all available indices for searches.
      */
-    fun getIndexUserSelection(): ArrayList<String>
+    fun getIndicesList(): ArrayList<String>
 
     /**
      * Used to generate all indices for an entry.

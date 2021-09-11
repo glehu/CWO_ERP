@@ -1,26 +1,27 @@
 package api.logic
 
+import api.gui.GSpotify
+import api.misc.json.SpotifyAuthCallbackJson
 import interfaces.IAPIAUTH
+import interfaces.IIndexManager
 import interfaces.IModule
 import interfaces.ITokenData
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.util.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import api.gui.GSpotify
-import api.misc.json.SpotifyAuthCallbackJson
-import io.ktor.client.call.*
-import io.ktor.util.*
 import modules.mx.getClientSecretFile
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXAPI.Companion.getAPITokenFile
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXTimestamp
+import modules.mx.m1GlobalIndex
 import tornadofx.find
 import java.net.URLEncoder
 
@@ -29,6 +30,9 @@ import java.net.URLEncoder
 class SpotifyAUTH : IModule, IAPIAUTH {
     override val moduleNameLong = "SpotifyAUTH"
     override val module = "M1"
+    override fun getIndexManager(): IIndexManager {
+        return m1GlobalIndex
+    }
 
     override val apiName = "spotify"
     override val auth: IAPIAUTH = this

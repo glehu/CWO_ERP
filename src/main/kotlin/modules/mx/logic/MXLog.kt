@@ -1,5 +1,6 @@
 package modules.mx.logic
 
+import interfaces.IIndexManager
 import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.activeUser
@@ -19,6 +20,9 @@ class MXLog {
     companion object MXLog : IModule {
         override val moduleNameLong = "MXLog"
         override val module = "MX"
+        override fun getIndexManager(): IIndexManager? {
+            return null
+        }
 
         private fun getLogPath(module: String) = "${getModulePath(module)}\\log"
         private fun getLogFile(module: String) = File("${getLogPath(module)}\\${module}_log.txt")

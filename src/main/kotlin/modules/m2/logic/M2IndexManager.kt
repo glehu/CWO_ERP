@@ -12,6 +12,7 @@ import kotlinx.serialization.json.Json
 import modules.m2.Contact
 import modules.mx.logic.MXLog
 import modules.mx.logic.indexFormat
+import modules.mx.m2GlobalIndex
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -19,6 +20,10 @@ import java.util.concurrent.atomic.AtomicInteger
 class M2IndexManager : IModule, IIndexManager, Controller() {
     override val moduleNameLong = "M2IndexManager"
     override val module = "M2"
+    override fun getIndexManager(): IIndexManager {
+        return m2GlobalIndex
+    }
+
     override var lastChangeDateHex: String = ""
     override var lastChangeDateUTC: String = ""
     override var lastChangeDateLocal: String = ""
@@ -42,7 +47,7 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
         MXLog.log(module, MXLog.LogType.INFO, "Index manager ready", moduleNameLong)
     }
 
-    override fun getIndexUserSelection(): ArrayList<String> {
+    override fun getIndicesList(): ArrayList<String> {
         return arrayListOf("1-Name", "2-City")
     }
 

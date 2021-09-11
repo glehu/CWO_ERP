@@ -1,10 +1,12 @@
 package modules.m2.logic
 
 import db.CwODB
+import interfaces.IIndexManager
 import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
 import modules.mx.logic.MXLog
+import modules.mx.m2GlobalIndex
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
@@ -12,6 +14,9 @@ import kotlin.system.measureTimeMillis
 class M2Analytics : IModule, Controller() {
     override val moduleNameLong = "M2Analytics"
     override val module = "M2"
+    override fun getIndexManager(): IIndexManager {
+        return m2GlobalIndex
+    }
 
     fun getChartDataOnCityDistribution(
         indexManager: M2IndexManager,

@@ -2,6 +2,7 @@ package api.logic
 
 import api.misc.json.*
 import interfaces.IAPI
+import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.client.request.*
 import io.ktor.util.*
@@ -10,12 +11,16 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.logic.MXAPI
 import modules.mx.logic.MXLog
+import modules.mx.m1GlobalIndex
 
 @InternalAPI
 @ExperimentalSerializationApi
 class SpotifyAPI : IModule, IAPI {
     override val moduleNameLong = "SpotifyAPI"
     override val module = "M1"
+    override fun getIndexManager(): IIndexManager {
+        return m1GlobalIndex
+    }
 
     val controller = SpotifyController()
     override val auth = SpotifyAUTH()

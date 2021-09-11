@@ -2,6 +2,7 @@ package modules.m2.gui
 
 import interfaces.IEntry
 import interfaces.IEntryFinder
+import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
@@ -22,14 +23,18 @@ import tornadofx.*
 class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
     override val moduleNameLong = "MG2ContactFinder"
     override val module = "M2"
-    private val m2Controller: M2Controller by inject()
-    private val song: SongPropertyMainDataModel by inject()
+    override fun getIndexManager(): IIndexManager {
+        return m2GlobalIndex
+    }
+
     override var searchText: TextField by singleAssign()
     override var exactSearch: CheckBox by singleAssign()
     override var entriesFound: ObservableList<IEntry> = observableListOf()
     override var ixNr = SimpleStringProperty()
-    override val ixNrList = FXCollections.observableArrayList(m2Controller.getIndexUserSelection())!!
+    override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
     override val threadIDCurrentProperty = SimpleIntegerProperty()
+    private val m2Controller: M2Controller by inject()
+    private val song: SongPropertyMainDataModel by inject()
     override val root = borderpane {
         center = form {
             prefWidth = 1200.0
@@ -39,7 +44,7 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                         textProperty().addListener { _, _, _ ->
                             runAsync {
                                 threadIDCurrentProperty.value++
-                                searchForEntries(threadIDCurrentProperty.value, m2GlobalIndex)
+                                searchForEntries(threadIDCurrentProperty.value)
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
@@ -69,7 +74,7 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                             song.commit()
                             close()
                         } else {
-                            m2Controller.showContact(it)
+                            m2Controller.showEntry(it)
                             searchText.text = ""
                             close()
                         }

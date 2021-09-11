@@ -39,7 +39,7 @@ class NewInvoiceMainData : Fragment("Main") {
                     textfield(invoice.seller) {
                         contextmenu {
                             item("Show contact").action {
-                                if (invoice.sellerUID.value != -1) m2controller.showContact(invoice.sellerUID.value)
+                                if (invoice.sellerUID.value != -1) m2controller.showEntry(invoice.sellerUID.value)
                                 invoice.seller.value =
                                     m2controller.getContactName(invoice.sellerUID.value, invoice.seller.value)
                             }
@@ -62,7 +62,7 @@ class NewInvoiceMainData : Fragment("Main") {
                                 invoice.buyer.value = contact.name
                             }
                             item("Show contact").action {
-                                if (invoice.buyerUID.value != -1) m2controller.showContact(invoice.buyerUID.value)
+                                if (invoice.buyerUID.value != -1) m2controller.showEntry(invoice.buyerUID.value)
                                 invoice.buyer.value =
                                     m2controller.getContactName(invoice.buyerUID.value, invoice.buyer.value)
                             }

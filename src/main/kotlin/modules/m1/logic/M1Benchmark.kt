@@ -1,6 +1,7 @@
 package modules.m1.logic
 
 import db.CwODB
+import interfaces.IIndexManager
 import interfaces.IModule
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -18,6 +19,9 @@ import kotlin.system.measureTimeMillis
 class M1Benchmark : IModule, Controller() {
     override val moduleNameLong = "M1Benchmark"
     override val module = "M1"
+    override fun getIndexManager(): IIndexManager {
+        return m1GlobalIndex
+    }
 
     fun insertRandomEntries(amount: Int) {
         MXLog.log(module, MXLog.LogType.INFO, "Benchmark entry insertion start", moduleNameLong)
@@ -33,7 +37,6 @@ class M1Benchmark : IModule, Controller() {
                 save(
                     entry = song,
                     raf = raf,
-                    indexManager = m1GlobalIndex,
                     indexWriteToDisk = false,
                 )
                 if (i % 5000 == 0) {

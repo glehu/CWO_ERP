@@ -1,11 +1,9 @@
 package api.logic
 
 import api.gui.GSpotify
-import api.misc.json.M1EntryJson
-import api.misc.json.M2EntryJson
-import api.misc.json.M3EntryJson
+import api.misc.json.EntryJson
 import api.misc.json.SpotifyAuthCallbackJson
-import db.CwODB
+import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -18,15 +16,10 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.protobuf.ProtoBuf
 import modules.m1.Song
-import modules.m1.logic.M1Controller
 import modules.m2.Contact
-import modules.m2.logic.M2Controller
 import modules.m3.Invoice
-import modules.m3.logic.M3Controller
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.m1GlobalIndex
@@ -39,6 +32,9 @@ import tornadofx.Controller
 class MXServer : IModule, Controller() {
     override val moduleNameLong = "Server"
     override val module = "MX"
+    override fun getIndexManager(): IIndexManager? {
+        return null
+    }
 
     private val userManager: MXUserManager by inject()
     lateinit var text: String
@@ -101,26 +97,21 @@ class MXServer : IModule, Controller() {
                             if (routePar != null && routePar.isNotEmpty()) {
                                 val queryPar = call.request.queryParameters["type"]
                                 if (queryPar == "uid") {
-                                    call.respond(M1Controller().getEntryBytes(routePar.toInt()))
+                                    call.respond(m1GlobalIndex.getBytes(routePar.toInt()))
                                 } else if (queryPar == "name") {
-                                    call.respond(M1Controller().getEntryBytesListJson(routePar, 1))
+                                    call.respond(m1GlobalIndex.getEntryBytesListJson(routePar, 1))
                                 }
                             }
                         }
                         post("/saveentry") {
-                            val entryJson: M1EntryJson = call.receive()
-                            val entry = ProtoBuf.decodeFromByteArray<Song>(entryJson.entry)
-                            val raf = CwODB.openRandomFileAccess("M1", CwODB.CwODB.RafMode.READWRITE)
+                            val entryJson: EntryJson = call.receive()
+                            val entry = decode(entryJson.entry) as Song
                             call.respond(
-                                save(
+                                m1GlobalIndex.save(
                                     entry = entry,
-                                    raf = raf,
-                                    indexManager = m1GlobalIndex,
-                                    indexWriteToDisk = true,
                                     userName = call.principal<UserIdPrincipal>()!!.name
                                 )
                             )
-                            CwODB.closeRandomFileAccess(raf)
                         }
                     }
                     route("/m2") {
@@ -132,26 +123,21 @@ class MXServer : IModule, Controller() {
                             if (routePar != null && routePar.isNotEmpty()) {
                                 val queryPar = call.request.queryParameters["type"]
                                 if (queryPar == "uid") {
-                                    call.respond(M2Controller().getEntryBytes(routePar.toInt()))
+                                    call.respond(m2GlobalIndex.getBytes(routePar.toInt()))
                                 } else if (queryPar == "name") {
-                                    call.respond(M2Controller().getEntryBytesListJson(routePar, 1))
+                                    call.respond(m2GlobalIndex.getEntryBytesListJson(routePar, 1))
                                 }
                             }
                         }
                         post("/saveentry") {
-                            val entryJson: M2EntryJson = call.receive()
-                            val entry = ProtoBuf.decodeFromByteArray<Contact>(entryJson.entry)
-                            val raf = CwODB.openRandomFileAccess("M2", CwODB.CwODB.RafMode.READWRITE)
+                            val entryJson: EntryJson = call.receive()
+                            val entry = decode(entryJson.entry) as Contact
                             call.respond(
-                                save(
+                                m2GlobalIndex.save(
                                     entry = entry,
-                                    raf = raf,
-                                    indexManager = m2GlobalIndex,
-                                    indexWriteToDisk = true,
                                     userName = call.principal<UserIdPrincipal>()!!.name
                                 )
                             )
-                            CwODB.closeRandomFileAccess(raf)
                         }
                     }
                     route("/m3") {
@@ -163,26 +149,21 @@ class MXServer : IModule, Controller() {
                             if (routePar != null && routePar.isNotEmpty()) {
                                 val queryPar = call.request.queryParameters["type"]
                                 if (queryPar == "uid") {
-                                    call.respond(M3Controller().getEntryBytes(routePar.toInt()))
+                                    call.respond(m3GlobalIndex.getBytes(routePar.toInt()))
                                 } else if (queryPar == "name") {
-                                    call.respond(M3Controller().getEntryBytesListJson(routePar, 1))
+                                    call.respond(m3GlobalIndex.getEntryBytesListJson(routePar, 1))
                                 }
                             }
                         }
                         post("/saveentry") {
-                            val entryJson: M3EntryJson = call.receive()
-                            val entry = ProtoBuf.decodeFromByteArray<Invoice>(entryJson.entry)
-                            val raf = CwODB.openRandomFileAccess("M3", CwODB.CwODB.RafMode.READWRITE)
+                            val entryJson: EntryJson = call.receive()
+                            val entry = decode(entryJson.entry) as Invoice
                             call.respond(
-                                save(
+                                m3GlobalIndex.save(
                                     entry = entry,
-                                    raf = raf,
-                                    indexManager = m3GlobalIndex,
-                                    indexWriteToDisk = true,
                                     userName = call.principal<UserIdPrincipal>()!!.name
                                 )
                             )
-                            CwODB.closeRandomFileAccess(raf)
                         }
                     }
                 }

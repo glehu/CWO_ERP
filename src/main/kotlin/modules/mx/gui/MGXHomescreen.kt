@@ -1,5 +1,6 @@
 package modules.mx.gui
 
+import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
 import javafx.scene.control.TabPane
@@ -24,6 +25,9 @@ import tornadofx.*
 class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
     override val moduleNameLong = "CWO ERP"
     override val module = "MX"
+    override fun getIndexManager(): IIndexManager? {
+        return null
+    }
 
     override fun start(stage: Stage) {
         super.start(stage)

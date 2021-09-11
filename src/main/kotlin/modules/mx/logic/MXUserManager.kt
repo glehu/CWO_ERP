@@ -1,6 +1,7 @@
 package modules.mx.logic
 
 import api.logic.getCWOClient
+import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.client.request.*
 import io.ktor.util.*
@@ -30,6 +31,9 @@ import kotlin.collections.set
 class MXUserManager : IModule, Controller() {
     override val moduleNameLong = "MXPasswordManager"
     override val module = "MX"
+    override fun getIndexManager(): IIndexManager? {
+        return null
+    }
 
     fun login(username: String, password: String): Boolean {
         return if (!isClientGlobal) {

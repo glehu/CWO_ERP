@@ -4,6 +4,7 @@ import api.logic.SpotifyAPI
 import api.misc.json.*
 import db.CwODB
 import db.IndexContent
+import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
 import kotlinx.coroutines.launch
@@ -25,6 +26,9 @@ import kotlin.system.measureTimeMillis
 class M1Import : IModule, Controller() {
     override val moduleNameLong = "M1Import"
     override val module = "M1"
+    override fun getIndexManager(): IIndexManager {
+        return m1GlobalIndex
+    }
 
     @ExperimentalSerializationApi
     fun importSpotifyAlbumList(
@@ -87,7 +91,7 @@ class M1Import : IModule, Controller() {
             } else {
                 val indexContent = filteredMap.values.first()
                 uID = indexContent.uID
-                song = get(uID, m1GlobalIndex.indexList[5]!!) as Song
+                song = get(uID) as Song
             }
 
             //Spotify META Data
@@ -107,7 +111,6 @@ class M1Import : IModule, Controller() {
             save(
                 entry = song,
                 raf = raf,
-                indexManager = m1GlobalIndex,
                 indexWriteToDisk = false,
             )
             MXLog.log(module, MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong)
@@ -130,7 +133,7 @@ class M1Import : IModule, Controller() {
         } else {
             val indexContent = filteredMap.values.first()
             uID = indexContent.uID
-            song = get(uID, m1GlobalIndex.indexList[5]!!) as Song
+            song = get(uID) as Song
         }
 
         //Spotify META Data
@@ -160,7 +163,6 @@ class M1Import : IModule, Controller() {
         save(
             entry = song,
             raf = raf,
-            indexManager = m1GlobalIndex,
             indexWriteToDisk = false,
         )
         MXLog.log(module, MXLog.LogType.INFO, "Data Insertion uID ${song.uID}", moduleNameLong)
@@ -183,12 +185,11 @@ class M1Import : IModule, Controller() {
                 artistUID = save(
                     entry = contact,
                     raf = m2raf,
-                    indexManager = m2GlobalIndex,
                     indexWriteToDisk = false,
                 )
             } else {
                 val indexContent = filteredMap.values.first()
-                contact = get(indexContent.uID, m2GlobalIndex.indexList[3]!!, m2GlobalIndex.module) as Contact
+                contact = get(indexContent.uID) as Contact
                 artistUID = contact.uID
             }
             when (artistCounter) {
