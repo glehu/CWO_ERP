@@ -14,6 +14,7 @@ repositories {
 }
 
 application {
+    mainClassName = "modules.mx.logic.MXStartKt"
 }
 
 dependencies {
