@@ -31,6 +31,7 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
 
     init {
         initialize()
+        getIndices(0, 1, 2, 3, 4, 5) //TODO
     }
 
     override fun indexEntry(

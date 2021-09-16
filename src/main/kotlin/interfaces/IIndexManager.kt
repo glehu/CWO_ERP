@@ -142,6 +142,12 @@ interface IIndexManager : IModule {
         }
     }
 
+    fun getIndices(vararg ixNumbers: Int) {
+        for (ixNr in ixNumbers) {
+            addIndex(ixNr)
+        }
+    }
+
     /**
      * @return an instance of Index to be used in IndexManagers
      */

@@ -32,6 +32,7 @@ class M3IndexManager : IModule, IIndexManager, Controller() {
 
     init {
         initialize()
+        getIndices(0, 1, 2, 3) //TODO
     }
 
     override fun getIndicesList(): ArrayList<String> {
