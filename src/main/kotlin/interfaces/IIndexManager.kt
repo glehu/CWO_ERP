@@ -1,6 +1,9 @@
 package interfaces
 
 import db.Index
+import db.IndexContent
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -13,17 +16,26 @@ import modules.mx.logic.MXTimestamp.MXTimestamp.convUnixHexToUnixTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
+import modules.mx.logic.indexFormat
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
 interface IIndexManager : IModule {
-    val indexList: Map<Int, Index>
+    val indexList: MutableMap<Int, Index>
     var lastUID: AtomicInteger
     var lastChangeDateHex: String
     var lastChangeDateUTC: String
     var lastChangeDateLocal: String
     var lastChangeUser: String
+
+    /**
+     * This function needs to be called in the init{} block of the index manager.
+     */
+    fun initialize() {
+        lastUID = updateLastUID()
+        getLastChangeDates()
+    }
 
     /**
      * @return a new unique identifier as an AtomicInteger.
@@ -61,8 +73,8 @@ interface IIndexManager : IModule {
         }
     }
 
-    fun updateLastUID() = getLastUniqueID()
-    fun updateLastChangeData() = getLastChange(module)
+    private fun updateLastUID() = getLastUniqueID()
+    private fun updateLastChangeData() = getLastChange(module)
 
     /**
      * @return an ArrayList<String> of all available indices for searches.
@@ -70,22 +82,59 @@ interface IIndexManager : IModule {
     fun getIndicesList(): ArrayList<String>
 
     /**
-     * Used to generate all indices for an entry.
+     * This function must call buildIndices, which will build all indices for an entry.
      */
     fun indexEntry(
-        entry: Any,
+        entry: IEntry,
         posDB: Long,
         byteSize: Int,
-        writeToDisk: Boolean = true,
+        writeToDisk: Boolean,
         userName: String
     )
 
-    fun buildIndex0(entry: Any, posDB: Long, byteSize: Int)
+    /**
+     * Used to build indices for an entry.
+     */
+    fun buildIndices(
+        uID: Int,
+        posDB: Long,
+        byteSize: Int,
+        writeToDisk: Boolean,
+        userName: String,
+        vararg indices: Pair<Int, String>
+    ) {
+        for ((ixNr, ixContent) in indices) {
+            if (indexList[ixNr] == null) addIndex(ixNr)
+            indexList[ixNr]!!.indexMap[uID] = IndexContent(
+                uID,
+                indexFormat(ixContent).uppercase(),
+                posDB,
+                byteSize
+            )
+        }
+        if (writeToDisk) runBlocking {
+            launch { writeIndexData() }
+        }
+        setLastChangeData(uID, userName)
+    }
+
+    /**
+     * Used to add an index to the list of indices available.
+     */
+    private fun addIndex(ixNr: Int) {
+        indexList[ixNr] = getIndex(ixNr)
+    }
 
     /**
      * Writes the index values stored in the RAM into the database.
      */
-    suspend fun writeIndexData()
+    suspend fun writeIndexData() {
+        for (index in indexList.entries) {
+            getIndexFile(index.key).writeText(
+                Json.encodeToString(indexList[index.key])
+            )
+        }
+    }
 
     /**
      * @return an instance of Index to be used in IndexManagers
