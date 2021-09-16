@@ -1,6 +1,5 @@
 package interfaces
 
-import db.CwODB
 import db.Index
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString

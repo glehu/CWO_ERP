@@ -18,7 +18,7 @@ application {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.21")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.2.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2-native-mt")
