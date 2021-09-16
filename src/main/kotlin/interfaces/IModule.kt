@@ -55,9 +55,8 @@ interface IModule {
                 }
             }
             entry.initialize()
-            val entrySerialized = encode(entry)
             val (posDBX, byteSizeX) = CwODB.saveEntry(
-                entryBytes = entrySerialized,
+                entryBytes = encode(entry),
                 uID = entry.uID,
                 posDB = posDB,
                 byteSize = byteSize,

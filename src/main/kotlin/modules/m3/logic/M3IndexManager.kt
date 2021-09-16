@@ -52,7 +52,6 @@ class M3IndexManager : IModule, IIndexManager, Controller() {
             byteSize,
             writeToDisk,
             userName,
-            Pair(0, "${entry.uID}"),
             Pair(1, entry.seller),
             Pair(2, entry.buyer),
             Pair(3, entry.text),

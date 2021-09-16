@@ -103,19 +103,25 @@ interface IIndexManager : IModule {
         userName: String,
         vararg indices: Pair<Int, String>
     ) {
+        buildDefaultIndex(uID, posDB, byteSize)
         for ((ixNr, ixContent) in indices) {
             if (indexList[ixNr] == null) addIndex(ixNr)
             indexList[ixNr]!!.indexMap[uID] = IndexContent(
-                uID,
-                indexFormat(ixContent).uppercase(),
-                posDB,
-                byteSize
+                content = indexFormat(ixContent).uppercase()
             )
         }
         if (writeToDisk) runBlocking {
             launch { writeIndexData() }
         }
         setLastChangeData(uID, userName)
+    }
+
+    /**
+     * Builds the default index 0 (uID)
+     */
+    private fun buildDefaultIndex(uID: Int, posDB: Long, byteSize: Int) {
+        if (indexList[0] == null) addIndex(0)
+        indexList[0]!!.indexMap[uID] = IndexContent(pos = posDB, byteSize = byteSize)
     }
 
     /**

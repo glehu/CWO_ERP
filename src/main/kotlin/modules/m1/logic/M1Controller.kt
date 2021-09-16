@@ -127,7 +127,6 @@ class M1Controller : IController, Controller() {
     }
 
     fun openAnalytics() {
-        //TODO: Add multiple analytics modes
         find<MG1Analytics>().openModal()
     }
 

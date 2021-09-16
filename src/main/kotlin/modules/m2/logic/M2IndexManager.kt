@@ -52,7 +52,6 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
             byteSize,
             writeToDisk,
             userName,
-            Pair(0, "${entry.uID}"),
             Pair(1, entry.name),
             Pair(2, entry.city),
             Pair(3, entry.spotifyID)

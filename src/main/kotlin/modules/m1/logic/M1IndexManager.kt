@@ -47,7 +47,6 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
             byteSize,
             writeToDisk,
             userName,
-            Pair(0, "${entry.uID}"),
             Pair(1, entry.name),
             Pair(2, entry.vocalist),
             Pair(3, entry.producer),

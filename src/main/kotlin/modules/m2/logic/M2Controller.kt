@@ -40,7 +40,7 @@ class M2Controller : IController, Controller() {
     override fun saveEntry() {
         if (wizard.contact.isValid) {
             wizard.contact.commit()
-            wizard.contact.uID.value = save(entry = getContactFromProperty(wizard.contact.item))
+            wizard.contact.uID.value = save(getContactFromProperty(wizard.contact.item))
             wizard.isComplete = false
         }
     }

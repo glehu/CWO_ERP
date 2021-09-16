@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class IndexContent(
-    @SerialName("u") val uID: Int,
-    @SerialName("c") val content: String,
-    @SerialName("p") var pos: Long,
-    @SerialName("b") var byteSize: Int
+    @SerialName("u") val uID: Int = -1,
+    @SerialName("c") val content: String = "?",
+    @SerialName("p") var pos: Long = -1L,
+    @SerialName("b") var byteSize: Int = -1
 )

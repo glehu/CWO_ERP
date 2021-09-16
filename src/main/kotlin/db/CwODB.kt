@@ -108,6 +108,7 @@ class CwODB {
                     //Search text -> Search for specific entries
                     if (exactSearch) {
                         //Literal search
+                        //TODO("Change exact search (e.g. searches through one index while non exact search searches through all indices)")
                         indexManager.indexList[ixNr]!!.indexMap.filterValues {
                             it.content.contains(searchText)
                         }
@@ -121,11 +122,12 @@ class CwODB {
                     //No search text -> Show all entries
                     indexManager.indexList[ixNr]!!.indexMap
                 }
-                for ((key, indexContent) in filteredMap) {
-                    entryBytes = readDBEntry(indexContent.pos, indexContent.byteSize, raf)
+                for (uID in filteredMap.keys) {
+                    val baseIndex = indexManager.indexList[0]!!.indexMap[uID]!!
+                    entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
                     counter++
                     //Callback
-                    updateProgress(key, entryBytes)
+                    updateProgress(uID, entryBytes)
                     if (maxSearchResults > -1 && counter >= maxSearchResults) break
                 }
             }
