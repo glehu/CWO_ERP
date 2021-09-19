@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EntryListJson(
-    var resultsAmount: Int,
+    var total: Int,
     val resultsList: ArrayList<ByteArray>
 )
 

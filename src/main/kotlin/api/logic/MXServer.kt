@@ -57,6 +57,9 @@ class MXServer : IModule, Controller() {
                 }
             }
         }
+        install(DefaultHeaders) {
+            header("Access-Control-Allow-Origin", "*")
+        }
         routing {
             get("/authcallback/spotify") {
                 log(MXLog.LogType.COM, "Spotify Auth Callback received")
@@ -67,6 +70,9 @@ class MXServer : IModule, Controller() {
                     SpotifyAUTH().getAccessTokenFromAuthCode(code!!) as SpotifyAuthCallbackJson
                 )
             }
+            getEntry(
+                m1GlobalIndex
+            )
             //----------------------------------v
             //------------ CWO  API ------------|
             //----------------------------------^

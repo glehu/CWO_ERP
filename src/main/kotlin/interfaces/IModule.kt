@@ -161,7 +161,7 @@ interface IModule {
             resultCounter++
             resultsListJson.resultsList.add(bytes)
         }
-        resultsListJson.resultsAmount = resultCounter
+        resultsListJson.total = resultCounter
         return resultsListJson
     }
 
