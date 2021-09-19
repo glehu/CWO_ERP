@@ -74,9 +74,8 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                                     MultiValue(arrayOf(Color.RED))
                                 } else MultiValue(arrayOf(Color.GREEN))
                             }
-
                         }
-                    }
+                    }.prefWidth(50.0)
                     readonlyColumn("ID", Song::uID).prefWidth(65.0)
                     readonlyColumn("Name", Song::name).prefWidth(310.0)
                     readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0)
