@@ -70,9 +70,6 @@ class MXServer : IModule, Controller() {
                     SpotifyAUTH().getAccessTokenFromAuthCode(code!!) as SpotifyAuthCallbackJson
                 )
             }
-            getEntry(
-                m1GlobalIndex
-            )
             //----------------------------------v
             //------------ CWO  API ------------|
             //----------------------------------^
