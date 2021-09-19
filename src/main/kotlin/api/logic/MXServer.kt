@@ -17,12 +17,14 @@ import io.ktor.server.netty.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import modules.mx.dataPath
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.m1GlobalIndex
 import modules.mx.m2GlobalIndex
 import modules.mx.m3GlobalIndex
 import tornadofx.Controller
+import java.io.File
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -56,12 +58,6 @@ class MXServer : IModule, Controller() {
             }
         }
         routing {
-            authenticate("auth-basic") {
-                get("/login") {
-                    log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} login")
-                    call.respond(true)
-                }
-            }
             get("/authcallback/spotify") {
                 log(MXLog.LogType.COM, "Spotify Auth Callback received")
                 call.respondText("CWO ERP Spotify Authorization Callback Site")
@@ -75,9 +71,14 @@ class MXServer : IModule, Controller() {
             //------------ CWO  API ------------|
             //----------------------------------^
             authenticate("auth-basic") {
-                get("/") {
-                    log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} Connected")
-                    call.respondText("Hello, ${call.principal<UserIdPrincipal>()?.name}!")
+                get("/login") {
+                    log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} login")
+                    call.respond(true)
+                }
+                route("/") {
+                    get() {
+                        call.respondFile(File("$dataPath\\data\\web\\home.html"))
+                    }
                 }
                 route("/api")
                 {
@@ -153,10 +154,12 @@ class MXServer : IModule, Controller() {
     private fun Route.setEntryLock(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
             get("${ix.module.lowercase()}/setentrylock/{searchString}") {
-                call.respond(MXServerController.setEntryLock(
-                    call,
-                    ix
-                ))
+                call.respond(
+                    MXServerController.setEntryLock(
+                        call,
+                        ix
+                    )
+                )
             }
         }
     }
