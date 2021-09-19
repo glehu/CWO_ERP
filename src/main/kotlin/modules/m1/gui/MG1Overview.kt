@@ -5,6 +5,7 @@ import io.ktor.util.*
 import javafx.scene.layout.Priority
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Controller
+import modules.mx.isClientGlobal
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet
 import tornadofx.*
@@ -31,6 +32,7 @@ class MG1Overview : IOverview, View("M1 Discography") {
                 prefWidth = rightButtonsWidth
             }
             button("Analytics") {
+                isDisable = isClientGlobal
                 action { m1Controller.openAnalytics() }
                 tooltip("Display a chart to show the distribution of genres.")
                 prefWidth = rightButtonsWidth

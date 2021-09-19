@@ -5,6 +5,8 @@ import interfaces.IEntry
 import interfaces.IIndexManager
 import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import modules.m1.Song
 import modules.mx.m1GlobalIndex
 import tornadofx.Controller
@@ -63,5 +65,9 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
 
     override fun getIndicesList(): ArrayList<String> {
         return arrayListOf("1-Name", "2-Vocalist", "3-Producer", "4-Genre")
+    }
+
+    override fun encodeToJsonString(entry: IEntry): String {
+        return Json.encodeToString(entry as Song)
     }
 }

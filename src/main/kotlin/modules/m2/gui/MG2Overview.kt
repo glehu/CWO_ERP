@@ -5,6 +5,7 @@ import io.ktor.util.*
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Controller
+import modules.mx.isClientGlobal
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet
 import tornadofx.*
@@ -31,6 +32,7 @@ class MG2Overview : IOverview, View("M2 Contacts") {
                 prefWidth = rightButtonsWidth
             }
             button("Analytics") {
+                isDisable = isClientGlobal
                 action { m2Controller.openAnalytics() }
                 tooltip("Display a chart to show the distribution of genres.")
                 prefWidth = rightButtonsWidth
@@ -42,6 +44,7 @@ class MG2Overview : IOverview, View("M2 Contacts") {
                 prefWidth = rightButtonsWidth
             }
             button("Data Import") {
+                isDisable = isClientGlobal
                 action { m2Controller.openDataImport() }
                 tooltip("Import contact data from a .csv file.")
                 prefWidth = rightButtonsWidth

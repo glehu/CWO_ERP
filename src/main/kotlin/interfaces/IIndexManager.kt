@@ -1,9 +1,7 @@
 package interfaces
 
-import api.logic.getCWOClient
 import db.Index
 import db.IndexContent
-import io.ktor.client.request.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -13,7 +11,6 @@ import kotlinx.serialization.json.Json
 import modules.mx.MXLastChange
 import modules.mx.activeUser
 import modules.mx.getModulePath
-import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXTimestamp.MXTimestamp.convUnixHexToUnixTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
@@ -269,4 +266,6 @@ interface IIndexManager : IModule {
     fun getBaseIndex(uID: Int): IndexContent {
         return indexList[0]!!.indexMap[uID]!!
     }
+
+    fun encodeToJsonString(entry: IEntry): String
 }

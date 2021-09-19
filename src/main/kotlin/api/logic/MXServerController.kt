@@ -20,8 +20,16 @@ class MXServerController {
             if (routePar != null && routePar.isNotEmpty()) {
                 when (appCall.request.queryParameters["type"]) {
                     "uid" -> {
-                        indexManager.setEntryLock(routePar.toInt(), true)
-                        return indexManager.getBytes(uID = routePar.toInt())
+                        return if (appCall.request.queryParameters["complex"] == "simple") {
+                            indexManager.encodeToJsonString(
+                                indexManager.decode(
+                                    indexManager.getBytes(uID = routePar.toInt())
+                                )
+                            )
+                        } else {
+                            indexManager.setEntryLock(routePar.toInt(), true)
+                            indexManager.getBytes(uID = routePar.toInt())
+                        }
                     }
                     "name" -> {
                         return indexManager.getEntryBytesListJson(searchText = routePar, ixNr = 1)

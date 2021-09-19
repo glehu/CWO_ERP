@@ -5,6 +5,8 @@ import interfaces.IEntry
 import interfaces.IIndexManager
 import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import modules.m2.Contact
 import modules.mx.m2GlobalIndex
 import tornadofx.Controller
@@ -60,5 +62,9 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
             Pair(2, entry.city),
             Pair(3, entry.spotifyID)
         )
+    }
+
+    override fun encodeToJsonString(entry: IEntry): String {
+        return Json.encodeToString(entry as Contact)
     }
 }
