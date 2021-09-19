@@ -1,6 +1,7 @@
 package api.logic
 
 import api.gui.GSpotify
+import api.misc.json.EntryJson
 import api.misc.json.SpotifyAuthCallbackJson
 import interfaces.IIndexManager
 import interfaces.IModule
@@ -118,11 +119,12 @@ class MXServer : IModule, Controller() {
 
     private fun Route.saveEntry(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
-            get("${ix.module.lowercase()}/entry/{searchString}") {
+            post("${ix.module.lowercase()}/saveentry") {
+                val entryJson: EntryJson = call.receive()
                 call.respond(
                     MXServerController.saveEntry(
-                        call.receive(),
-                        m1GlobalIndex,
+                        entryJson.entry,
+                        ix,
                         call.principal<UserIdPrincipal>()?.name!!
                     )
                 )
