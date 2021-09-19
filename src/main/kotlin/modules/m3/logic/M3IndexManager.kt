@@ -31,8 +31,11 @@ class M3IndexManager : IModule, IIndexManager, Controller() {
     override var lastUID = AtomicInteger(-1)
 
     init {
-        initialize()
-        getIndices(0, 1, 2, 3) //TODO
+        initialize(
+            1, //Seller
+            2, //Buyer
+            3 //Text
+        )
     }
 
     override fun getIndicesList(): ArrayList<String> {

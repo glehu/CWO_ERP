@@ -32,9 +32,11 @@ interface IIndexManager : IModule {
     /**
      * This function needs to be called in the init{} block of the index manager.
      */
-    fun initialize() {
+    fun initialize(vararg ixNumbers: Int) {
         lastUID = updateLastUID()
         getLastChangeDates()
+        addIndex(0)
+        getIndicesFromArray(ixNumbers)
     }
 
     /**
@@ -143,6 +145,12 @@ interface IIndexManager : IModule {
     }
 
     fun getIndices(vararg ixNumbers: Int) {
+        for (ixNr in ixNumbers) {
+            addIndex(ixNr)
+        }
+    }
+
+    fun getIndicesFromArray(ixNumbers: IntArray) {
         for (ixNr in ixNumbers) {
             addIndex(ixNr)
         }

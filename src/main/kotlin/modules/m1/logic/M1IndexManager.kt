@@ -30,8 +30,13 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
     override var lastUID = AtomicInteger(-1)
 
     init {
-        initialize()
-        getIndices(0, 1, 2, 3, 4, 5) //TODO
+        initialize(
+            1, //Name
+            2, //Vocalist
+            3, //Producer
+            4, //Genre
+            5 //SpotifyID
+        )
     }
 
     override fun indexEntry(

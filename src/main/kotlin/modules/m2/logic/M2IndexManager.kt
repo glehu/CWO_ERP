@@ -31,8 +31,11 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
     override var lastUID = AtomicInteger(-1)
 
     init {
-        initialize()
-        getIndices(0, 1, 2, 3) //TODO
+        initialize(
+            1, //Name
+            2, //City
+            3 //SpotifyID
+        )
     }
 
     override fun getIndicesList(): ArrayList<String> {
