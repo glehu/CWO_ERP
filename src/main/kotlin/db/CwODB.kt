@@ -100,27 +100,25 @@ class CwODB {
         ) {
             var counter = 0
             var entryBytes: ByteArray
-
             if (getDatabaseFile(module).isFile) {
                 val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
-                //Determines the type of search that will be done depending on the search string
                 val filteredMap: Map<Int, IndexContent> = if (!isGetAll(searchText)) {
-                    //Search text -> Search for specific entries
                     if (exactSearch) {
-                        //Literal search
-                        //TODO("Change exact search (e.g. searches through one index while non exact search searches through all indices)")
+                        /**
+                         * Searches in the provided index
+                         */
                         indexManager.indexList[ixNr]!!.indexMap.filterValues {
                             it.content.contains(searchText)
                         }
                     } else {
-                        //Regex search
-                        indexManager.indexList[ixNr]!!.indexMap.filterValues {
-                            it.content.contains(searchText.toRegex())
-                        }
+                        /**
+                         * Searches in all available indices
+                         */
+                        returnFromAllIndices(indexManager, searchText)
                     }
                 } else {
                     //No search text -> Show all entries
-                    indexManager.indexList[ixNr]!!.indexMap
+                    indexManager.indexList[0]!!.indexMap
                 }
                 for (uID in filteredMap.keys) {
                     val baseIndex = indexManager.indexList[0]!!.indexMap[uID]!!
@@ -131,6 +129,15 @@ class CwODB {
                     if (maxSearchResults > -1 && counter >= maxSearchResults) break
                 }
             }
+        }
+
+        private fun returnFromAllIndices(indexManager: IIndexManager, searchText: String): Map<Int, IndexContent> {
+            val results = mutableMapOf<Int, IndexContent>()
+            for (ixNr in 1 until indexManager.indexList.size)
+                results.putAll(indexManager.indexList[ixNr]!!.indexMap.filterValues {
+                    it.content.contains(searchText.toRegex())
+                })
+            return results.toSortedMap(compareBy<Int> { it })
         }
 
         private fun isGetAll(searchText: String): Boolean {

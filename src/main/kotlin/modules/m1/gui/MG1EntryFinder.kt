@@ -1,12 +1,4 @@
-@file:Suppress("DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
-    "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
-    "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
-    "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
-    "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
-    "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
-    "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
-    "DuplicatedCode", "DuplicatedCode"
-)
+@file:Suppress("DuplicatedCode")
 
 package modules.m1.gui
 
@@ -35,6 +27,7 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
     override fun getIndexManager(): IIndexManager {
         return m1GlobalIndex
     }
+
     override var searchText: TextField by singleAssign()
     override var exactSearch: CheckBox by singleAssign()
     override var entriesFound: ObservableList<IEntry> = observableListOf()
