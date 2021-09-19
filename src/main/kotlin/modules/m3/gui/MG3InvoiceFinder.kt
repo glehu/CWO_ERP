@@ -14,6 +14,7 @@ import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
+import modules.mx.gui.MGXLocked
 import modules.mx.m3GlobalIndex
 import tornadofx.*
 
@@ -65,9 +66,13 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                     readonlyColumn("Buyer", Invoice::buyer).prefWidth(300.0)
                     readonlyColumn("Text", Invoice::text).prefWidth(400.0)
                     onUserSelect(1) {
-                        m3Controller.showEntry(it.uID)
-                        searchText.text = ""
-                        close()
+                        if (!getEntryLock(it.uID)) {
+                            m3Controller.showEntry(it.uID)
+                            searchText.text = ""
+                            close()
+                        } else {
+                            find<MGXLocked>().openModal()
+                        }
                     }
                     isFocusTraversable = false
                 }

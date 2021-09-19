@@ -21,10 +21,10 @@ class MXServerController {
                 when (appCall.request.queryParameters["type"]) {
                     "uid" -> {
                         indexManager.setEntryLock(routePar.toInt(), true)
-                        return indexManager.getBytes(routePar.toInt())
+                        return indexManager.getBytes(uID = routePar.toInt())
                     }
                     "name" -> {
-                        return indexManager.getEntryBytesListJson(routePar, 1)
+                        return indexManager.getEntryBytesListJson(searchText = routePar, ixNr = 1)
                     }
                     else -> return ""
                 }
@@ -35,7 +35,10 @@ class MXServerController {
         fun getEntryLock(appCall: ApplicationCall, indexManager: IIndexManager): Boolean {
             val routePar = appCall.parameters["searchString"]
             if (routePar != null && routePar.isNotEmpty()) {
-                return indexManager.getEntryLock(routePar.toInt())
+                return indexManager.getEntryLock(
+                    uID = routePar.toInt(),
+                    userName = appCall.principal<UserIdPrincipal>()?.name!!
+                )
             }
             return false
         }

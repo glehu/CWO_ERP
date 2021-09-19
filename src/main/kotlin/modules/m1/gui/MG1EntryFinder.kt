@@ -16,6 +16,7 @@ import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.logic.M1Controller
+import modules.mx.gui.MGXLocked
 import modules.mx.m1GlobalIndex
 import tornadofx.*
 
@@ -71,9 +72,13 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                     readonlyColumn("Producer", Song::producer).prefWidth(200.0)
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
-                        m1Controller.showEntry(it.uID)
-                        searchText.text = ""
-                        close()
+                        if (!getEntryLock(it.uID)) {
+                            m1Controller.showEntry(it.uID)
+                            searchText.text = ""
+                            close()
+                        } else {
+                            find<MGXLocked>().openModal()
+                        }
                     }
                     isFocusTraversable = false
                 }

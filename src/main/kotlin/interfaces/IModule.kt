@@ -192,10 +192,11 @@ interface IModule {
         )
     }
 
-    fun getEntryLock(uID: Int): Boolean {
+    fun getEntryLock(uID: Int, userName: String = activeUser.username): Boolean {
         var locked = false
         if (!isClientGlobal) {
-            locked = getIndexManager()!!.getBaseIndex(uID).content != "?"
+            val content = getIndexManager()!!.getBaseIndex(uID).content
+            locked = (content != "?" && content != userName)
         } else {
             runBlocking {
                 launch {

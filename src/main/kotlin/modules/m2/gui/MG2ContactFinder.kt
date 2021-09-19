@@ -15,6 +15,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
 import modules.m2.logic.M2Controller
+import modules.mx.gui.MGXLocked
 import modules.mx.m2GlobalIndex
 import tornadofx.*
 
@@ -74,9 +75,13 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                             song.commit()
                             close()
                         } else {
-                            m2Controller.showEntry(it.uID)
-                            searchText.text = ""
-                            close()
+                            if (!getEntryLock(it.uID)) {
+                                m2Controller.showEntry(it.uID)
+                                searchText.text = ""
+                                close()
+                            } else {
+                                find<MGXLocked>().openModal()
+                            }
                         }
                     }
                     isFocusTraversable = false
