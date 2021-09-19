@@ -2,7 +2,6 @@ package modules.m3.logic
 
 import api.logic.getCWOClient
 import interfaces.IController
-import interfaces.IEntry
 import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -46,8 +45,8 @@ class M3Controller : IController, Controller() {
         }
     }
 
-    override fun showEntry(entry: IEntry) {
-        entry as Invoice
+    override fun showEntry(uID: Int) {
+        val entry = get(uID) as Invoice
         wizard.invoice.item = getInvoicePropertyFromInvoice(entry)
     }
 

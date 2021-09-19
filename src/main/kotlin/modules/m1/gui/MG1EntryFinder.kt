@@ -13,6 +13,7 @@ import javafx.collections.FXCollections.observableArrayList
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.logic.M1Controller
@@ -65,13 +66,24 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                 }
                 @Suppress("UNCHECKED_CAST")
                 tableview(entriesFound as ObservableList<Song>) {
+                    readonlyColumn("LOCK", Song::uID) {
+                        cellFormat {
+                            style {
+                                text = ""
+                                backgroundColor = if (getEntryLock(it)) {
+                                    MultiValue(arrayOf(Color.RED))
+                                } else MultiValue(arrayOf(Color.GREEN))
+                            }
+
+                        }
+                    }
                     readonlyColumn("ID", Song::uID).prefWidth(65.0)
                     readonlyColumn("Name", Song::name).prefWidth(310.0)
                     readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0)
                     readonlyColumn("Producer", Song::producer).prefWidth(200.0)
                     readonlyColumn("Genre", Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
-                        m1Controller.showEntry(it)
+                        m1Controller.showEntry(it.uID)
                         searchText.text = ""
                         close()
                     }

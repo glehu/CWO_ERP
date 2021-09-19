@@ -2,6 +2,7 @@ package api.logic
 
 import interfaces.IIndexManager
 import io.ktor.application.*
+import io.ktor.auth.*
 import kotlinx.serialization.ExperimentalSerializationApi
 
 class MXServerController {
@@ -17,17 +18,39 @@ class MXServerController {
         fun getEntry(appCall: ApplicationCall, indexManager: IIndexManager): Any {
             val routePar = appCall.parameters["searchString"]
             if (routePar != null && routePar.isNotEmpty()) {
-                return when (appCall.request.queryParameters["type"]) {
+                when (appCall.request.queryParameters["type"]) {
                     "uid" -> {
-                        indexManager.getBytes(routePar.toInt())
+                        indexManager.setEntryLock(routePar.toInt(), true)
+                        return indexManager.getBytes(routePar.toInt())
                     }
                     "name" -> {
-                        indexManager.getEntryBytesListJson(routePar, 1)
+                        return indexManager.getEntryBytesListJson(routePar, 1)
                     }
-                    else -> ""
+                    else -> return ""
                 }
             }
             return ""
+        }
+
+        fun getEntryLock(appCall: ApplicationCall, indexManager: IIndexManager): Boolean {
+            val routePar = appCall.parameters["searchString"]
+            if (routePar != null && routePar.isNotEmpty()) {
+                return indexManager.getEntryLock(routePar.toInt())
+            }
+            return false
+        }
+
+        fun setEntryLock(appCall: ApplicationCall, indexManager: IIndexManager): Boolean {
+            val routePar = appCall.parameters["searchString"]
+            val queryPar = appCall.request.queryParameters["type"]
+            if (routePar != null && routePar.isNotEmpty()) {
+                return indexManager.setEntryLock(
+                    uID = routePar.toInt(),
+                    locked = queryPar.toBoolean(),
+                    userName = appCall.principal<UserIdPrincipal>()?.name!!
+                )
+            }
+            return false
         }
     }
 }

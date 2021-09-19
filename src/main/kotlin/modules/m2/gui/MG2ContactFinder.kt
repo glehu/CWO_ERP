@@ -74,7 +74,7 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                             song.commit()
                             close()
                         } else {
-                            m2Controller.showEntry(it)
+                            m2Controller.showEntry(it.uID)
                             searchText.text = ""
                             close()
                         }

@@ -65,7 +65,7 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                     readonlyColumn("Buyer", Invoice::buyer).prefWidth(300.0)
                     readonlyColumn("Text", Invoice::text).prefWidth(400.0)
                     onUserSelect(1) {
-                        m3Controller.showEntry(it)
+                        m3Controller.showEntry(it.uID)
                         searchText.text = ""
                         close()
                     }

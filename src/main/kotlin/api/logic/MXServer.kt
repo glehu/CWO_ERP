@@ -96,6 +96,16 @@ class MXServer : IModule, Controller() {
                         m2GlobalIndex,
                         m3GlobalIndex
                     )
+                    getEntryLock(
+                        m1GlobalIndex,
+                        m2GlobalIndex,
+                        m3GlobalIndex
+                    )
+                    setEntryLock(
+                        m1GlobalIndex,
+                        m2GlobalIndex,
+                        m3GlobalIndex
+                    )
                 }
             }
         }
@@ -128,6 +138,25 @@ class MXServer : IModule, Controller() {
                         call.principal<UserIdPrincipal>()?.name!!
                     )
                 )
+            }
+        }
+    }
+
+    private fun Route.getEntryLock(vararg indexManager: IIndexManager) {
+        for (ix in indexManager) {
+            get("${ix.module.lowercase()}/getentrylock/{searchString}") {
+                call.respond(MXServerController.getEntryLock(call, ix))
+            }
+        }
+    }
+
+    private fun Route.setEntryLock(vararg indexManager: IIndexManager) {
+        for (ix in indexManager) {
+            get("${ix.module.lowercase()}/setentrylock/{searchString}") {
+                call.respond(MXServerController.setEntryLock(
+                    call,
+                    ix
+                ))
             }
         }
     }

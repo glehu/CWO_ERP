@@ -1,7 +1,9 @@
 package interfaces
 
+import api.logic.getCWOClient
 import db.Index
 import db.IndexContent
+import io.ktor.client.request.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -11,6 +13,7 @@ import kotlinx.serialization.json.Json
 import modules.mx.MXLastChange
 import modules.mx.activeUser
 import modules.mx.getModulePath
+import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXTimestamp.MXTimestamp.convUnixHexToUnixTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
@@ -19,6 +22,7 @@ import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
 import modules.mx.logic.indexFormat
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.collections.set
 
 @ExperimentalSerializationApi
 interface IIndexManager : IModule {
@@ -257,5 +261,12 @@ interface IIndexManager : IModule {
             if (nuFile.isFile) ok = true
         }
         return ok
+    }
+
+    /**
+     * @return the main index (ix0) for an entry's provided uID.
+     */
+    fun getBaseIndex(uID: Int): IndexContent {
+        return indexList[0]!!.indexMap[uID]!!
     }
 }

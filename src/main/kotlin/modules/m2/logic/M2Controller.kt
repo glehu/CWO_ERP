@@ -2,7 +2,6 @@ package modules.m2.logic
 
 import api.logic.getCWOClient
 import interfaces.IController
-import interfaces.IEntry
 import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -51,8 +50,8 @@ class M2Controller : IController, Controller() {
         wizard.isComplete = false
     }
 
-    override fun showEntry(entry: IEntry) {
-        entry as Contact
+    override fun showEntry(uID: Int) {
+        val entry = get(uID) as Contact
         wizard.contact.item = getContactPropertyFromContact(entry)
     }
 
@@ -73,18 +72,14 @@ class M2Controller : IController, Controller() {
         setInScope(dataTransfer, newScope)
         find<MG2ContactFinder>(newScope).openModal(block = true)
         contact = if (dataTransfer.name.value != null) {
-            get(dataTransfer.uID.value) as Contact
+            load(dataTransfer.uID.value) as Contact
         } else Contact(-1, "")
         return contact
     }
 
     fun getContactName(uID: Int, default: String): String {
         return if (uID != -1) {
-            (get(uID) as Contact).name
+            (load(uID) as Contact).name
         } else default
-    }
-
-    fun showEntry(uID: Int) {
-        showEntry(get(uID) as Contact)
     }
 }

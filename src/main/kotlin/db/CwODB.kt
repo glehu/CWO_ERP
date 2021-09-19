@@ -121,7 +121,7 @@ class CwODB {
                     indexManager.indexList[0]!!.indexMap
                 }
                 for (uID in filteredMap.keys) {
-                    val baseIndex = indexManager.indexList[0]!!.indexMap[uID]!!
+                    val baseIndex = indexManager.getBaseIndex(uID)
                     entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
                     counter++
                     //Callback

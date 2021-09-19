@@ -2,7 +2,6 @@ package modules.m1.logic
 
 import api.logic.getCWOClient
 import interfaces.IController
-import interfaces.IEntry
 import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -70,8 +69,8 @@ class M1Controller : IController, Controller() {
         wizard.isComplete = false
     }
 
-    override fun showEntry(entry: IEntry) {
-        entry as Song
+    override fun showEntry(uID: Int) {
+        val entry = get(uID) as Song
         wizard.songMainData.item = getSongPropertyMainData(entry)
         wizard.songCompletionState.item = getSongPropertyCompletionState(entry)
         wizard.songPromotionData.item = getSongPropertyPromotionData(entry)
@@ -86,7 +85,7 @@ class M1Controller : IController, Controller() {
 
         //Sync album data
         if (wizard.songAlbumEPData.item.albumUID != -1) {
-            val album = get(wizard.songAlbumEPData.item.albumUID) as Song
+            val album = load(wizard.songAlbumEPData.item.albumUID) as Song
             wizard.songAlbumEPData.item.nameAlbum = album.name
             wizard.songAlbumEPData.item.typeAlbum = album.type
         }
@@ -138,7 +137,7 @@ class M1Controller : IController, Controller() {
         setInScope(dataTransfer, newScope)
         tornadofx.find<MG1EntryFinder>(newScope).openModal(block = true)
         entry = if (dataTransfer.name.value != null) {
-            get(dataTransfer.uID.value) as Song
+            load(dataTransfer.uID.value) as Song
         } else Song(-1, "")
         return entry
     }

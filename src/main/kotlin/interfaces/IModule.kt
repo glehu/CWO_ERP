@@ -66,6 +66,10 @@ interface IModule {
             indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, userName)
             if (raf == null) CwODB.closeRandomFileAccess(rafLocal)
             uID = entry.uID
+            /**
+             * Unlock the entry
+             */
+            getIndexManager()!!.setEntryLock(uID, false)
         } else {
             runBlocking {
                 launch {
@@ -81,11 +85,26 @@ interface IModule {
 
     /**
      * Used to retrieve an entry from the database using the provided uID.
+     *
+     * This function also locks the entry, making it uneditable for others. If this is not wanted,
+     * use the load() function instead.
      * If an entry of another module needs to be retrieved, call this function with the controller of that module.
      * @return an entry with the provided unique identifier.
      */
     @ExperimentalSerializationApi
     fun get(uID: Int): IEntry {
+        return decode(getBytes(uID))
+    }
+
+    /**
+     * Used to retrieve an entry from the database using the provided uID.
+     *
+     * This function doesn't lock the entry, which means it cannot be saved.
+     * If an entry of another module needs to be retrieved, call this function with the controller of that module.
+     * @return an entry with the provided unique identifier.
+     */
+    @ExperimentalSerializationApi
+    fun load(uID: Int): IEntry {
         return decode(getBytes(uID))
     }
 
@@ -104,6 +123,7 @@ interface IModule {
                     module = indexManager.module,
                     index = indexManager.indexList[0]!!
                 )
+                setEntryLock(uID, true)
             } else {
                 runBlocking {
                     launch {
@@ -170,5 +190,47 @@ interface IModule {
             text = text,
             caller = moduleNameLong
         )
+    }
+
+    fun getEntryLock(uID: Int): Boolean {
+        var locked = false
+        if (!isClientGlobal) {
+            locked = getIndexManager()!!.getBaseIndex(uID).content != "?"
+        } else {
+            runBlocking {
+                launch {
+                    locked = getCWOClient().get("${getApiUrl()}/getentrylock/$uID")
+                }
+            }
+        }
+        return locked
+    }
+
+    fun setEntryLock(uID: Int, locked: Boolean, userName: String = activeUser.username): Boolean {
+        var success = false
+        if (!isClientGlobal) {
+            val indexManager = getIndexManager()!!
+            val entryLocked = indexManager.getEntryLock(uID)
+            if (locked) {
+                if (!entryLocked) {
+                    indexManager.getBaseIndex(uID).content = userName
+                    success = true
+                }
+            } else {
+                if (entryLocked) {
+                    if (indexManager.getBaseIndex(uID).content == userName) {
+                        indexManager.getBaseIndex(uID).content = "?"
+                        success = true
+                    }
+                }
+            }
+        } else {
+            runBlocking {
+                launch {
+                    success = getCWOClient().get("${getApiUrl()}setentrylock/$uID?type=$locked")
+                }
+            }
+        }
+        return success
     }
 }

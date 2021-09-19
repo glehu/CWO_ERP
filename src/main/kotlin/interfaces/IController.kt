@@ -7,5 +7,5 @@ interface IController: IModule {
     fun searchEntry()
     fun saveEntry()
     fun newEntry()
-    fun showEntry(entry: IEntry)
+    fun showEntry(uID: Int)
 }
