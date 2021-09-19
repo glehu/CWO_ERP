@@ -42,7 +42,7 @@ interface IEntryFinder : IModule {
                         entriesFound++
                     }
                 }
-            } else if (isClientGlobal) {
+            } else {
                 if (searchText.text.isNotEmpty()) {
                     runBlocking {
                         launch {

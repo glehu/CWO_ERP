@@ -11,7 +11,6 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
-import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.Invoice
 import modules.m3.logic.M3Controller
@@ -61,16 +60,6 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                 }
                 @Suppress("UNCHECKED_CAST")
                 tableview(entriesFound as ObservableList<Invoice>) {
-                    readonlyColumn("LOCK", Invoice::uID) {
-                        cellFormat {
-                            style {
-                                text = ""
-                                backgroundColor = if (getEntryLock(it)) {
-                                    MultiValue(arrayOf(Color.RED))
-                                } else MultiValue(arrayOf(Color.GREEN))
-                            }
-                        }
-                    }.prefWidth(50.0)
                     readonlyColumn("ID", Invoice::uID).prefWidth(65.0)
                     readonlyColumn("Seller", Invoice::seller).prefWidth(300.0)
                     readonlyColumn("Buyer", Invoice::buyer).prefWidth(300.0)

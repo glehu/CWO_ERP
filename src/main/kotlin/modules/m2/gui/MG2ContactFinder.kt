@@ -11,7 +11,6 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
-import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
@@ -63,16 +62,6 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                 }
                 @Suppress("UNCHECKED_CAST")
                 tableview(entriesFound as ObservableList<Contact>) {
-                    readonlyColumn("LOCK", Contact::uID) {
-                        cellFormat {
-                            style {
-                                text = ""
-                                backgroundColor = if (getEntryLock(it)) {
-                                    MultiValue(arrayOf(Color.RED))
-                                } else MultiValue(arrayOf(Color.GREEN))
-                            }
-                        }
-                    }.prefWidth(50.0)
                     readonlyColumn("ID", Contact::uID).prefWidth(65.0)
                     readonlyColumn("Name", Contact::name).prefWidth(350.0)
                     readonlyColumn("F.Name", Contact::firstName).prefWidth(250.0)
