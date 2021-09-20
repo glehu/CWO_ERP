@@ -8,6 +8,7 @@ import interfaces.IModule
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -57,8 +58,10 @@ class MXServer : IModule, Controller() {
                 }
             }
         }
-        install(DefaultHeaders) {
-            header("Access-Control-Allow-Origin", "*")
+        install(CORS) {
+            anyHost()
+            header(HttpHeaders.ContentType)
+            header(HttpHeaders.Authorization)
         }
         routing {
             get("/authcallback/spotify") {
