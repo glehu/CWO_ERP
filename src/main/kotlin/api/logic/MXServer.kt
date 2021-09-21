@@ -89,29 +89,19 @@ class MXServer : IModule, Controller() {
                 route("/api")
                 {
                     getIndexSelection(
-                        m1GlobalIndex,
-                        m2GlobalIndex,
-                        m3GlobalIndex
+                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
                     )
                     getEntry(
-                        m1GlobalIndex,
-                        m2GlobalIndex,
-                        m3GlobalIndex
+                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
                     )
                     saveEntry(
-                        m1GlobalIndex,
-                        m2GlobalIndex,
-                        m3GlobalIndex
+                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
                     )
                     getEntryLock(
-                        m1GlobalIndex,
-                        m2GlobalIndex,
-                        m3GlobalIndex
+                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
                     )
                     setEntryLock(
-                        m1GlobalIndex,
-                        m2GlobalIndex,
-                        m3GlobalIndex
+                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
                     )
                 }
             }

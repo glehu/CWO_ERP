@@ -56,7 +56,7 @@ var titleGlobal: String = "CWO ERP"
 var activeUser: MXUser = MXUser("", "")
 
 //Token for encryption/decryption
-var token: String = ""
+var tokenGlobal: String = ""
 
 //File locations
 val programPath: String = System.getProperty("user.dir")

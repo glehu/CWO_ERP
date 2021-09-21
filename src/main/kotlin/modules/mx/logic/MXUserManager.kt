@@ -19,9 +19,6 @@ import modules.mx.gui.MGXUser
 import tornadofx.Controller
 import tornadofx.MultiValue
 import java.io.File
-import java.util.*
-import javax.crypto.Cipher
-import javax.crypto.spec.SecretKeySpec
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -74,7 +71,7 @@ class MXUserManager : IModule, Controller() {
     private fun compareCredentials(username: String, password: String, credentials: MXCredentials): Boolean {
         var successful = false
         val user = credentials.credentials[username]
-        if (user != null && user.password == encrypt(password, token)) {
+        if (user != null && user.password == encryptAES(password)) {
             successful = true
             if (activeUser.username.isEmpty()) activeUser = user
             if (!isClientGlobal) {
@@ -99,7 +96,7 @@ class MXUserManager : IModule, Controller() {
     }
 
     private fun initializeCredentials(credentialsFile: File) {
-        val user = MXUser("admin", encrypt("admin", token))
+        val user = MXUser("admin", encryptAES("admin"))
         //startupRoutines()
         credentialsFile.createNewFile()
         user.canAccessMX = true
@@ -110,22 +107,6 @@ class MXUserManager : IModule, Controller() {
 
     enum class CredentialsType {
         MAIN
-    }
-
-    fun encrypt(input: String, token: String): String {
-        val cipher = Cipher.getInstance("AES")
-        val keySpec = SecretKeySpec(token.toByteArray(), "AES")
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec)
-        val encrypt = cipher.doFinal(input.toByteArray())
-        return Base64.getEncoder().encodeToString(encrypt)
-    }
-
-    fun decrypt(input: String, token: String): String {
-        val cipher = Cipher.getInstance("AES")
-        val keySpec = SecretKeySpec(token.toByteArray(), "AES")
-        cipher.init(Cipher.DECRYPT_MODE, keySpec)
-        val decrypt = cipher.doFinal(Base64.getDecoder().decode(input))
-        return String(decrypt)
     }
 
     fun getRightsCellColor(hasRight: Boolean): MultiValue<Paint> =

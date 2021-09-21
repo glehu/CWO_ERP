@@ -43,7 +43,7 @@ fun checkInstallation() {
 @ExperimentalSerializationApi
 fun readAndSetIniValues() {
     val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
-    token = iniVal.token
+    tokenGlobal = iniVal.token
     dataPath = iniVal.dataPath
     maxSearchResultsGlobal = iniVal.maxSearchResults
     differenceFromUTC = iniVal.differenceFromUTC

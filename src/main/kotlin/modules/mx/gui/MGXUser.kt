@@ -6,11 +6,12 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.MXCredentials
 import modules.mx.MXUser
 import modules.mx.logic.MXUserManager
+import modules.mx.logic.decryptAES
+import modules.mx.logic.encryptAES
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserFromUserProperty
 import modules.mx.misc.getUserPropertyFromUser
 import modules.mx.rightButtonsWidth
-import modules.mx.token
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -20,7 +21,7 @@ class MGXUser(user: MXUser, credentials: MXCredentials) : Fragment("User") {
     private val userModel = MXUserModel(getUserPropertyFromUser(user))
     private val originalUser = user.copy()
     override val root = form {
-        userModel.password.value = userManager.decrypt(userModel.password.value, token)
+        userModel.password.value = decryptAES(userModel.password.value)
         fieldset("Credentials") {
             field("Username") { textfield(userModel.username).required() }
             field("Password") { textfield(userModel.password).required() }
@@ -36,7 +37,7 @@ class MGXUser(user: MXUser, credentials: MXCredentials) : Fragment("User") {
         button("Save") {
             shortcut("Enter")
             action {
-                userModel.password.value = userManager.encrypt(userModel.password.value, token)
+                userModel.password.value = encryptAES(userModel.password.value)
                 userModel.commit()
                 userManager.updateUser(getUserFromUserProperty(userModel.item), originalUser, credentials)
                 close()
