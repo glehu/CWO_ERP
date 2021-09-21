@@ -116,9 +116,19 @@ class MXGUserInterface : View(titleGlobal) {
             }
             menu("Dev-Tools") {
                 menu("Benchmark (M1)") {
-                    item("Insert random songs").action {
+                    item("Insert 10k random songs").action {
                         M1Benchmark().insertRandomEntries(
-                            10_000_000
+                            10_000
+                        )
+                    }
+                    item("Insert 100k random songs").action {
+                        M1Benchmark().insertRandomEntries(
+                            100_000
+                        )
+                    }
+                    item("Insert 1m random songs").action {
+                        M1Benchmark().insertRandomEntries(
+                            1_000_000
                         )
                     }
                 }

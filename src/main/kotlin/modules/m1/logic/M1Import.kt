@@ -177,14 +177,14 @@ class M1Import : IModule, Controller() {
                 contact = Contact(-1, artist.name)
                 contact.spotifyID = artist.id
                 contact.birthdate = getDefaultDate()
-                artistUID = save(
+                artistUID = m2GlobalIndex.save(
                     entry = contact,
                     raf = m2raf,
                     indexWriteToDisk = false,
                 )
             } else {
                 val indexContent = filteredMap.values.first()
-                contact = get(indexContent.uID) as Contact
+                contact = m2GlobalIndex.get(indexContent.uID) as Contact
                 artistUID = contact.uID
             }
             when (artistCounter) {
