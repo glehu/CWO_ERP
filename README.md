@@ -6,19 +6,32 @@ If you run the file `CWO_ERP.jar`, that is included in every release, for the fi
 it will open the preferences' module for you to configure the software's settings.
 
 ```
-"encryption key": "<Key for encryption and decryption. It has to consist out of 16 numbers>",
-"data path": "<The folder in which the database will be saved>",
-"max search results": <The maximum amount of search result entries to be shown>,
-"difference from utc in hours" <The difference from utc in hours>
+{
+    "encryption key": "<encryption key [default: random generated token]>",
+    "data path": "<path where the data ordner sits [default: path of jar file]>",
+    "max search results": <amount [default: 2000]>,
+    "difference from utc in hours": <difference in hours [default: 0]>,
+    "client": <true/false [default: false]>,
+    "server ip address": "<IPv4 address>"
+}
 ```
+
+If the software should run in server mode, the "client" field should be set to **false**.
+The server's IPv4 address can be found by opening the OS's command prompt and entering **ip config**.
+The port the server is using is **8000**, so the IPv4 is your computer's IPv4 address + **8000**.
+
+If the software should run in client mode, the "client" field should be set to **true**.
+Following the instruction above, fill the server's IPv4 address into the "server ip address" field.
 
 If you are ok with the configuration file you can proceed to log into the software. 
 If it's the first time the software got executed, there will be a default user with following credentials:
 
-Username: "**admin**" password: "**admin**"
+Username: "**admin**" Password: "**admin**"
 
 It is highly recommended changing the default user's password as it possesses all rights in the software, 
 e.g. creating, editing and deleting users and full access to all modules.
+
+If the software is running in client mode, enter the credentials provided by the system administrator.
 
 ## Modules
 This section names and describes the modules that are currently implemented
@@ -27,25 +40,42 @@ This section names and describes the modules that are currently implemented
 This module is designed to store songs with all their metadata,
 e.g. name, people that worked on it, streams/plays/views etc.
 
-Contacts can be loaded by clicking on the `[<]` button next to contact fields,
-to avoid typos and to load more data with less user actions.
+Contacts can be loaded via the context menu, to avoid typos and to load more data with less user actions.
+Contacts loaded this way are being kept in sync with their main module's data.
 
 Next to inserting and looking up entries, there is also an analytics module, 
 that allows the user to generate a pie chart, showing the distribution of genres across all stored songs.
 
 #### M2 Contacts
-This module is designed to store contacts.
-Contacts can be loaded into songs and invoices.
+This module is designed to store contacts. Contacts can be loaded into songs and invoices.
 
 Next to inserting and looking up entries, there is also an analytics module, 
 that allows the user to generate a pie chart, showing the distribution of cities across all stored contacts.
 
 #### M3 Invoices
-This (as of Version `v0.2.0-alpha` very minimalistic) module is designed to store invoice data, e.g. income and expenses.
-Contacts can be loaded by clicking on the `[<]` button next to contact fields,
-to avoid typos and to load more data with less user actions.
+This module is designed to store invoice data, e.g. income and expenses. 
+Positions (items, services) can be added to the basket via the "Add Position" button, while specifying name, amount and price.
+Amount and price of positions can be edited inside the table by double clicking the cells containing the values and confirming by hitting enter.
+
+Contacts can be loaded via the context menu, to avoid typos and to load more data with less user actions.
+Contacts loaded this way are being kept in sync with their main module's data.
+
+#### MX Management
+In this module the administrative tools lie. In summary:
+
+* Users can be added, edited and removed in the user manager.
+* User rights can be managed, controlling access to the modules.
+* View the database's size and date + user logging of its last change.
+* Reset a whole database with just one click (caution!)
+* Update the database's indices via the "Update" button in case of a new data source.
+* Spotify API token data + login link to be put in the browser.
+
+#### API
+
+Download your and other's spotify discography and have them be in the database.
 
 ## Things for the future:
-+ APIs to streaming platforms like Spotify will be added to update the song's data (e.g. number of streams).
++ A website and app solution for easy access from everywhere
++ A webshop integrated into the website solution to enable the user to sell services and products online and to promote work
 + Using ANNs (Artificial Neural Networks) possible user inputs or other actions will be predicted 
 and complex analytics and forecasts will be made possible.
