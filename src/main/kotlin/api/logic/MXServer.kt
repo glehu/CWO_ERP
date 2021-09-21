@@ -79,7 +79,13 @@ class MXServer : IModule, Controller() {
             authenticate("auth-basic") {
                 get("/login") {
                     log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} login")
-                    call.respond(true)
+                    call.respond(
+                        MXServerController.generateLoginResponse(
+                            MXUserManager()
+                                .getCredentials()
+                                .credentials[call.principal<UserIdPrincipal>()?.name]!!
+                        )
+                    )
                 }
                 route("/") {
                     get() {

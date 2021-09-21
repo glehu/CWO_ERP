@@ -31,3 +31,17 @@ data class EntryJson(
         return entry.contentHashCode()
     }
 }
+
+@Serializable
+data class LoginResponseJson(
+    val httpCode: Int,
+    val accessM1: Boolean,
+    val accessM2: Boolean,
+    val accessM3: Boolean
+)
+
+@Serializable
+data class ValidationContainerJson(
+    val contentJson: String,
+    val hash: String
+)

@@ -1,9 +1,16 @@
 package api.logic
 
+import api.misc.json.LoginResponseJson
+import api.misc.json.ValidationContainerJson
 import interfaces.IIndexManager
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import modules.mx.MXUser
+import modules.mx.logic.encryptKeccak
 
 class MXServerController {
     @ExperimentalSerializationApi
@@ -38,7 +45,10 @@ class MXServerController {
                                 ixNr = 1,
                             )
                         } else {
-                            indexManager.getEntryBytesListJson(searchText = routePar, ixNr = 1)
+                            indexManager.getEntryBytesListJson(
+                                searchText = routePar,
+                                ixNr = 1
+                            )
                         }
                     }
                     else -> return ""
@@ -69,6 +79,22 @@ class MXServerController {
                 )
             }
             return false
+        }
+
+        @InternalAPI
+        fun generateLoginResponse(user: MXUser): ValidationContainerJson {
+            val loginResponse = Json.encodeToString(
+                LoginResponseJson(
+                    httpCode = 200,
+                    accessM1 = user.canAccessM1,
+                    accessM2 = user.canAccessM2,
+                    accessM3 = user.canAccessM3
+                )
+            )
+            return ValidationContainerJson(
+                contentJson = loginResponse,
+                hash = encryptKeccak(loginResponse)
+            )
         }
     }
 }

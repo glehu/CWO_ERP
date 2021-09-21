@@ -1,5 +1,6 @@
 package modules.mx.logic
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.tokenGlobal
 import org.komputing.khash.keccak.KeccakParameter
 import org.komputing.khash.keccak.extensions.digestKeccak
@@ -33,19 +34,27 @@ fun decryptAES(input: String, token: String = tokenGlobal): String {
     return String(decrypt)
 }
 
-enum class OutputFormat {
-    String, ByteArray
+/**
+ * Used to encrypt an input string using the Keccak SHA3_256 algorithm.
+ * @return the Base64 encoded Keccak SHA3_256 hashed input string.
+ */
+@ExperimentalSerializationApi
+fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String {
+    val hashString = Base64.getEncoder()
+        .encodeToString(
+            "$pepper$input$salt"
+                .digestKeccak(parameter = KeccakParameter.SHA3_512)
+        )
+    MXLog.log("MX", MXLog.LogType.INFO, hashString, "MXCrypto")
+    return hashString
 }
 
 /**
- * Used to encrypt an input string using the Keccak SHA3_256 algorithm.
- * An output format has to be specified, resulting in the encrypted input string being returned either as
- * a String or a ByteArray.
- * @return the Keccak SHA3_256 encrypted/hashed input string.
+ * Validates an input string (e.g. a JSON string) by comparing it
+ * to the provided Base64 encoded Keccak SHA3_256 hashed string.
+ * @return true if the input matched the hash.
  */
-fun encryptKeccak(input: String, outputFormat: OutputFormat): Any {
-    return when (outputFormat) {
-        OutputFormat.ByteArray -> input.digestKeccak(KeccakParameter.SHA3_256)
-        OutputFormat.String -> input.digestKeccak(KeccakParameter.SHA3_256).toString()
-    }
+@ExperimentalSerializationApi
+fun validateKeccak(input: String, base64KeccakString: String): Boolean {
+    return (encryptKeccak(input) == base64KeccakString)
 }

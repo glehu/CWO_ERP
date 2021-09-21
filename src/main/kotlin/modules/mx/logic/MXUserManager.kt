@@ -1,6 +1,8 @@
 package modules.mx.logic
 
 import api.logic.getCWOClient
+import api.misc.json.LoginResponseJson
+import api.misc.json.ValidationContainerJson
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.client.request.*
@@ -83,15 +85,28 @@ class MXUserManager : IModule, Controller() {
         return successful
     }
 
+    /**
+     * Compares the credentials the user is trying to log in with the internal credentials' database.
+     * @return true if the credentials match with the databases credentials.
+     */
     private fun compareCredentialsServer(username: String, password: String): Boolean {
         var successful = false
         val client = getCWOClient(username, password)
         runBlocking {
             launch {
-                successful = client.get("${getServerUrl()}login")
+                val response: ValidationContainerJson = client.get("${getServerUrl()}login")
+                val loginResponse = Json.decodeFromString<LoginResponseJson>(response.contentJson)
+                if (loginResponse.httpCode == 200) {
+                    if (validateKeccak(response.contentJson, response.hash)) {
+                        successful = true
+                        activeUser = MXUser(username, password)
+                        activeUser.canAccessM1 = loginResponse.accessM1
+                        activeUser.canAccessM2 = loginResponse.accessM2
+                        activeUser.canAccessM3 = loginResponse.accessM3
+                    }
+                }
             }
         }
-        if (successful) activeUser = MXUser(username, password)
         return successful
     }
 
