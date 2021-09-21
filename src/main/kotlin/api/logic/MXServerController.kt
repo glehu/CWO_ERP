@@ -28,7 +28,6 @@ class MXServerController {
                                 prettyPrint = true
                             )
                         } else {
-                            indexManager.setEntryLock(routePar.toInt(), true)
                             indexManager.getBytes(uID = routePar.toInt())
                         }
                     }
