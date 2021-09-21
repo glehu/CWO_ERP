@@ -55,6 +55,11 @@ fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String
  * @return true if the input matched the hash.
  */
 @ExperimentalSerializationApi
-fun validateKeccak(input: String, base64KeccakString: String): Boolean {
-    return (encryptKeccak(input) == base64KeccakString)
+fun validateKeccak(
+    input: String,
+    base64KeccakString: String,
+    salt: String = "",
+    pepper: String = ""
+): Boolean {
+    return (encryptKeccak("$pepper$input$salt") == base64KeccakString)
 }

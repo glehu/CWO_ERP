@@ -93,7 +93,11 @@ class MXServerController {
             )
             return ValidationContainerJson(
                 contentJson = loginResponse,
-                hash = encryptKeccak(loginResponse)
+                hash = encryptKeccak(
+                    input = loginResponse,
+                    salt = encryptKeccak(user.username),
+                    pepper = "CWO_ERP LoginValidation"
+                )
             )
         }
     }

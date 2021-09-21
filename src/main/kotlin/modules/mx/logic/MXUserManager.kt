@@ -97,7 +97,12 @@ class MXUserManager : IModule, Controller() {
                 val response: ValidationContainerJson = client.get("${getServerUrl()}login")
                 val loginResponse = Json.decodeFromString<LoginResponseJson>(response.contentJson)
                 if (loginResponse.httpCode == 200) {
-                    if (validateKeccak(response.contentJson, response.hash)) {
+                    if (validateKeccak(
+                            input = response.contentJson,
+                            base64KeccakString = response.hash,
+                            salt = encryptKeccak(username),
+                            pepper = "CWO_ERP LoginValidation"
+                        )) {
                         successful = true
                         activeUser = MXUser(username, password)
                         activeUser.canAccessM1 = loginResponse.accessM1
