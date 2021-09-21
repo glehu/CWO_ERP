@@ -1,7 +1,7 @@
 package interfaces
 
 import api.logic.getCWOClient
-import api.misc.json.EntryListJson
+import api.misc.json.EntryBytesListJson
 import db.CwODB
 import io.ktor.client.request.*
 import javafx.beans.property.SimpleIntegerProperty
@@ -46,7 +46,7 @@ interface IEntryFinder : IModule {
                 if (searchText.text.isNotEmpty()) {
                     runBlocking {
                         launch {
-                            val entryListJson: EntryListJson = getCWOClient()
+                            val entryBytesListJson: EntryBytesListJson = getCWOClient()
                                 .get(
                                     getApiUrl() +
                                             "entry/${indexFormat(searchText.text)}" +
@@ -54,7 +54,7 @@ interface IEntryFinder : IModule {
                                 )
                             if (threadID == threadIDCurrentProperty.value) {
                                 this@IEntryFinder.entriesFound.clear()
-                                for (entryBytes: ByteArray in entryListJson.resultsList) {
+                                for (entryBytes: ByteArray in entryBytesListJson.resultsList) {
                                     entriesFound++
                                     this@IEntryFinder.entriesFound.add(decode(entryBytes))
                                 }

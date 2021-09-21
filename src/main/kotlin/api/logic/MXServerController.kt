@@ -20,11 +20,12 @@ class MXServerController {
             if (routePar != null && routePar.isNotEmpty()) {
                 when (appCall.request.queryParameters["type"]) {
                     "uid" -> {
-                        return if (appCall.request.queryParameters["complex"] == "simple") {
+                        return if (appCall.request.queryParameters["format"] == "json") {
                             indexManager.encodeToJsonString(
-                                indexManager.decode(
+                                entry = indexManager.decode(
                                     indexManager.getBytes(uID = routePar.toInt())
-                                )
+                                ),
+                                prettyPrint = true
                             )
                         } else {
                             indexManager.setEntryLock(routePar.toInt(), true)
@@ -32,7 +33,14 @@ class MXServerController {
                         }
                     }
                     "name" -> {
-                        return indexManager.getEntryBytesListJson(searchText = routePar, ixNr = 1)
+                        return if (appCall.request.queryParameters["format"] == "json") {
+                            indexManager.getEntryListJson(
+                                searchText = routePar,
+                                ixNr = 1,
+                            )
+                        } else {
+                            indexManager.getEntryBytesListJson(searchText = routePar, ixNr = 1)
+                        }
                     }
                     else -> return ""
                 }

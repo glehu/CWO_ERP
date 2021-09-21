@@ -64,7 +64,10 @@ class M3IndexManager : IModule, IIndexManager, Controller() {
         )
     }
 
-    override fun encodeToJsonString(entry: IEntry): String {
-        return Json.encodeToString(entry as Invoice)
+    override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+        val jsonSerializer = Json {
+            this.prettyPrint = prettyPrint
+        }
+        return jsonSerializer.encodeToString(entry as Invoice)
     }
 }

@@ -3,9 +3,15 @@ package api.misc.json
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class EntryListJson(
+data class EntryBytesListJson(
     var total: Int,
     val resultsList: ArrayList<ByteArray>
+)
+
+@Serializable
+data class EntryListJson(
+    var total: Int,
+    val resultsList: ArrayList<String>
 )
 
 @Serializable

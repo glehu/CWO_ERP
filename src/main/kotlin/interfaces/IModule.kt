@@ -1,6 +1,7 @@
 package interfaces
 
 import api.logic.getCWOClient
+import api.misc.json.EntryBytesListJson
 import api.misc.json.EntryJson
 import api.misc.json.EntryListJson
 import db.CwODB
@@ -149,8 +150,8 @@ interface IModule {
         return protoBufGlobal.decodeFromByteArray(entryBytes)
     }
 
-    fun getEntryBytesListJson(searchText: String, ixNr: Int): EntryListJson {
-        val resultsListJson = EntryListJson(0, arrayListOf())
+    fun getEntryBytesListJson(searchText: String, ixNr: Int): EntryBytesListJson {
+        val resultsListJson = EntryBytesListJson(0, arrayListOf())
         var resultCounter = 0
         CwODB.getEntriesFromSearchString(
             searchText = searchText.uppercase(),
@@ -160,6 +161,26 @@ interface IModule {
         ) { _, bytes ->
             resultCounter++
             resultsListJson.resultsList.add(bytes)
+        }
+        resultsListJson.total = resultCounter
+        return resultsListJson
+    }
+
+    fun getEntryListJson(searchText: String, ixNr: Int, prettyPrint: Boolean = false): EntryListJson {
+        val resultsListJson = EntryListJson(0, arrayListOf())
+        var resultCounter = 0
+        CwODB.getEntriesFromSearchString(
+            searchText = searchText.uppercase(),
+            ixNr = ixNr,
+            exactSearch = false,
+            indexManager = getIndexManager()!!
+        ) { _, bytes ->
+            resultCounter++
+            resultsListJson.resultsList.add(
+                getIndexManager()!!.encodeToJsonString(
+                    entry = decode(bytes), prettyPrint = prettyPrint
+                )
+            )
         }
         resultsListJson.total = resultCounter
         return resultsListJson

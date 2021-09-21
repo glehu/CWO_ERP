@@ -7,6 +7,7 @@ import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.m1.Song
 import modules.m2.Contact
 import modules.mx.m2GlobalIndex
 import tornadofx.Controller
@@ -64,7 +65,10 @@ class M2IndexManager : IModule, IIndexManager, Controller() {
         )
     }
 
-    override fun encodeToJsonString(entry: IEntry): String {
-        return Json.encodeToString(entry as Contact)
+    override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+        val jsonSerializer = Json {
+            this.prettyPrint = prettyPrint
+        }
+        return jsonSerializer.encodeToString(entry as Contact)
     }
 }

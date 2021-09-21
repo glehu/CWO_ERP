@@ -67,7 +67,10 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
         return arrayListOf("1-Name", "2-Vocalist", "3-Producer", "4-Genre")
     }
 
-    override fun encodeToJsonString(entry: IEntry): String {
-        return Json.encodeToString(entry as Song)
+    override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+        val jsonSerializer = Json {
+            this.prettyPrint = prettyPrint
+        }
+        return jsonSerializer.encodeToString(entry as Song)
     }
 }

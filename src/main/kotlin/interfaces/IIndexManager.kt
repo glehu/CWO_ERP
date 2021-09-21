@@ -267,5 +267,5 @@ interface IIndexManager : IModule {
         return indexList[0]!!.indexMap[uID]!!
     }
 
-    fun encodeToJsonString(entry: IEntry): String
+    fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean = false): String
 }
