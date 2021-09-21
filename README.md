@@ -74,8 +74,65 @@ In this module the administrative tools lie. In summary:
 
 Download your and other's spotify discography and have them be in the database.
 
+#
+# Database access via its own API
+
+The software's data can be requested via API. All requests need to have valid credentials in the Authorization header. 
+Athentication is being done via basic auth.
+
+Currently, following API endpoints are available:
+
+### server IPv4:8000/api/m1/
+* entry/ {searchText} &type= {uid or name} &format=json
+
+If used with type=uid the entry related to the uID provided in the search text will be sent back in json format.
+If used with type=name all entries that match the search text will be sent back inside a json response with following format:
+
+```
+{
+    total: Int,
+    resultsList: ArrayList<String>
+}
+```
+
+* indexselection
+* getentrylock/ {uID}
+
+### server IPv4:8000/api/m2/
+* entry/ {searchText} &type= {uid or name} &format=json
+
+If used with type=uid the entry related to the uID provided in the search text will be sent back in json format.
+If used with type=name all entries that match the search text will be sent back inside a json response with following format:
+
+```
+{
+    total: Int,
+    resultsList: ArrayList<String>
+}
+```
+
+* indexselection
+* getentrylock/ {uID}
+
+### server IPv4:8000/api/m3/
+* entry/ {searchText} &type= {uid or name} &format=json
+
+If used with type=uid the entry related to the uID provided in the search text will be sent back in json format.
+If used with type=name all entries that match the search text will be sent back inside a json response with following format:
+
+```
+{
+    total: Int,
+    resultsList: ArrayList<String>
+}
+```
+
+* indexselection
+* getentrylock/ {uID}
+
 ## Things for the future:
 + A website and app solution for easy access from everywhere
 + A webshop integrated into the website solution to enable the user to sell services and products online and to promote work
++ Blockchain to reassure financial data integrity, e.g. verifying the process of selling a product and receiving a transaction.
 + Using ANNs (Artificial Neural Networks) possible user inputs or other actions will be predicted 
 and complex analytics and forecasts will be made possible.
