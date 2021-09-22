@@ -122,7 +122,10 @@ class MXServer : IModule, Controller() {
     private fun Route.getEntry(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
             get("${ix.module.lowercase()}/entry/{searchString}") {
-                call.respond(MXServerController.getEntry(call, ix))
+                call.respond(MXServerController.getEntry(
+                    appCall = call,
+                    indexManager = ix
+                ))
             }
         }
     }
@@ -133,9 +136,9 @@ class MXServer : IModule, Controller() {
                 val entryJson: EntryJson = call.receive()
                 call.respond(
                     MXServerController.saveEntry(
-                        entryJson.entry,
-                        ix,
-                        call.principal<UserIdPrincipal>()?.name!!
+                        entry = entryJson.entry,
+                        indexManager = ix,
+                        username = call.principal<UserIdPrincipal>()?.name!!
                     )
                 )
             }
@@ -145,7 +148,10 @@ class MXServer : IModule, Controller() {
     private fun Route.getEntryLock(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
             get("${ix.module.lowercase()}/getentrylock/{searchString}") {
-                call.respond(MXServerController.getEntryLock(call, ix))
+                call.respond(MXServerController.getEntryLock(
+                    appCall = call,
+                    indexManager = ix
+                ))
             }
         }
     }
@@ -155,8 +161,8 @@ class MXServer : IModule, Controller() {
             get("${ix.module.lowercase()}/setentrylock/{searchString}") {
                 call.respond(
                     MXServerController.setEntryLock(
-                        call,
-                        ix
+                        appCall = call,
+                        indexManager = ix
                     )
                 )
             }
