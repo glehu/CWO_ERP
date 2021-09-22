@@ -5,7 +5,6 @@ import interfaces.IEntry
 import interfaces.IIndexManager
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import modules.m2.M2Contact
 import modules.mx.m2GlobalIndex
 import tornadofx.Controller
@@ -64,9 +63,6 @@ class M2IndexManager : IIndexManager, Controller() {
     }
 
     override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
-        val jsonSerializer = Json {
-            this.prettyPrint = prettyPrint
-        }
-        return jsonSerializer.encodeToString(entry as M2Contact)
+        return json(prettyPrint).encodeToString(entry as M2Contact)
     }
 }

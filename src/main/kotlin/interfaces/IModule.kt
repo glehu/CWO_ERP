@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.json.Json
 import modules.mx.activeUser
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
@@ -254,5 +255,13 @@ interface IModule {
             }
         }
         return success
+    }
+
+    /**
+     * Gets a json serializer with the option of pretty printing.
+     * @return a json serializer.
+     */
+    fun json(prettyPrint: Boolean): Json {
+        return Json { this.prettyPrint = prettyPrint }
     }
 }

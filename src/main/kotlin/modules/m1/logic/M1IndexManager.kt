@@ -6,7 +6,6 @@ import interfaces.IIndexManager
 import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import modules.m1.M1Song
 import modules.mx.m1GlobalIndex
 import tornadofx.Controller
@@ -68,9 +67,6 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
     }
 
     override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
-        val jsonSerializer = Json {
-            this.prettyPrint = prettyPrint
-        }
-        return jsonSerializer.encodeToString(entry as M1Song)
+        return json(prettyPrint).encodeToString(entry as M1Song)
     }
 }

@@ -5,7 +5,6 @@ import interfaces.IEntry
 import interfaces.IIndexManager
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import modules.m3.M3Invoice
 import modules.mx.m3GlobalIndex
 import tornadofx.Controller
@@ -64,9 +63,6 @@ class M3IndexManager : IIndexManager, Controller() {
     }
 
     override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
-        val jsonSerializer = Json {
-            this.prettyPrint = prettyPrint
-        }
-        return jsonSerializer.encodeToString(entry as M3Invoice)
+        return json(prettyPrint).encodeToString(entry as M3Invoice)
     }
 }
