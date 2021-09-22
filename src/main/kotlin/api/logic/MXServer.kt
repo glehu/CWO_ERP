@@ -18,12 +18,9 @@ import io.ktor.server.netty.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import modules.mx.dataPath
+import modules.mx.*
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
-import modules.mx.m1GlobalIndex
-import modules.mx.m2GlobalIndex
-import modules.mx.m3GlobalIndex
 import tornadofx.Controller
 import java.io.File
 
@@ -95,19 +92,19 @@ class MXServer : IModule, Controller() {
                 route("/api")
                 {
                     getIndexSelection(
-                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
+                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
                     )
                     getEntry(
-                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
+                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
                     )
                     saveEntry(
-                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
+                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
                     )
                     getEntryLock(
-                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
+                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
                     )
                     setEntryLock(
-                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
+                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
                     )
                 }
             }
