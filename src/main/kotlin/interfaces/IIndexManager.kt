@@ -145,12 +145,6 @@ interface IIndexManager : IModule {
         }
     }
 
-    fun getIndices(vararg ixNumbers: Int) {
-        for (ixNr in ixNumbers) {
-            addIndex(ixNr)
-        }
-    }
-
     fun getIndicesFromArray(ixNumbers: IntArray) {
         for (ixNr in ixNumbers) {
             addIndex(ixNr)

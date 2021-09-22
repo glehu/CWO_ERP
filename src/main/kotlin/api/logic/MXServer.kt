@@ -88,7 +88,7 @@ class MXServer : IModule, Controller() {
                     )
                 }
                 route("/") {
-                    get() {
+                    get {
                         call.respondFile(File("$dataPath\\data\\web\\home.html"))
                     }
                 }

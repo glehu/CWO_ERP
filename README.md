@@ -55,7 +55,7 @@ that allows the user to generate a pie chart, showing the distribution of cities
 #### M3 Invoices
 This module is designed to store invoice data, e.g. income and expenses. 
 Positions (items, services) can be added to the basket via the "Add Position" button, while specifying name, amount and price.
-Amount and price of positions can be edited inside the table by double clicking the cells containing the values and confirming by hitting enter.
+Amount and price of positions can be edited inside the table by double-clicking the cells containing the values and confirming by hitting enter.
 
 Contacts can be loaded via the context menu, to avoid typos and to load more data with less user actions.
 Contacts loaded this way are being kept in sync with their main module's data.
@@ -78,7 +78,7 @@ Download your and other's spotify discography and have them be in the database.
 # Database access via its own API
 
 The software's data can be requested via API. All requests need to have valid credentials in the Authorization header. 
-Athentication is being done via basic auth.
+Authentication is being achieved via basic auth.
 
 Currently, following API endpoints are available:
 

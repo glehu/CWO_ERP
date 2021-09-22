@@ -1,3 +1,8 @@
+@file:Suppress("DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
+    "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
+    "DuplicatedCode", "DuplicatedCode"
+)
+
 package modules.m1.misc
 
 import javafx.beans.property.*
