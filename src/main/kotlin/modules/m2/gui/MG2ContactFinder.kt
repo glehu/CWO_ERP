@@ -15,7 +15,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.M2Contact
 import modules.m2.logic.M2Controller
-import modules.mx.gui.MGXLocked
+import modules.mx.gui.userAlerts.MGXLocked
 import modules.mx.m2GlobalIndex
 import tornadofx.*
 

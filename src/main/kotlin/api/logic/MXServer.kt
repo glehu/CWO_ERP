@@ -122,10 +122,12 @@ class MXServer : IModule, Controller() {
     private fun Route.getEntry(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
             get("${ix.module.lowercase()}/entry/{searchString}") {
-                call.respond(MXServerController.getEntry(
-                    appCall = call,
-                    indexManager = ix
-                ))
+                call.respond(
+                    MXServerController.getEntry(
+                        appCall = call,
+                        indexManager = ix
+                    )
+                )
             }
         }
     }
@@ -148,10 +150,12 @@ class MXServer : IModule, Controller() {
     private fun Route.getEntryLock(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
             get("${ix.module.lowercase()}/getentrylock/{searchString}") {
-                call.respond(MXServerController.getEntryLock(
-                    appCall = call,
-                    indexManager = ix
-                ))
+                call.respond(
+                    MXServerController.getEntryLock(
+                        appCall = call,
+                        indexManager = ix
+                    )
+                )
             }
         }
     }

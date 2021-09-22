@@ -14,7 +14,7 @@ import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.M3Invoice
 import modules.m3.logic.M3Controller
-import modules.mx.gui.MGXLocked
+import modules.mx.gui.userAlerts.MGXLocked
 import modules.mx.m3GlobalIndex
 import tornadofx.*
 

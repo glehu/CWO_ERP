@@ -11,6 +11,7 @@ import modules.m1.logic.M1Benchmark
 import modules.m2.gui.MG2Overview
 import modules.m3.gui.MG3Overview
 import modules.m4.gui.MG4Overview
+import modules.m4.gui.MG4PriceManager
 import modules.mx.*
 import modules.mx.gui.userAlerts.MGXUserAlert
 import modules.mx.logic.MXLog
@@ -152,7 +153,10 @@ class MXGUserInterface : View(titleGlobal) {
             if (activeUser.canAccessM1) tab<MG1Overview>()
             if (activeUser.canAccessM2) tab<MG2Overview>()
             if (activeUser.canAccessM3) tab<MG3Overview>()
-            if (activeUser.canAccessM4) tab<MG4Overview>()
+            if (activeUser.canAccessM4) {
+                tab<MG4Overview>()
+                tab<MG4PriceManager>()
+            }
             if (activeUser.canAccessMX) tab<MGXManagement>()
         }
     }
