@@ -5,6 +5,8 @@ import javafx.collections.ObservableList
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.M4PriceCategory
 import modules.m4.logic.M4PriceManager
+import modules.mx.gui.userAlerts.MGXUserAlert
+import modules.mx.logic.MXLog
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
@@ -22,8 +24,17 @@ class MG4PriceManager : View("M4 Price Categories") {
             readonlyColumn("Number", M4PriceCategory::number).prefWidth(100.0)
             readonlyColumn("Description", M4PriceCategory::description).prefWidth(400.0)
             onUserSelect(1) {
-                categoryManager.showCategory(it, categories, priceCategories)
+                if (it.number != 0) {
+                    categoryManager.showCategory(it, categories, priceCategories)
+                } else {
+                    MGXUserAlert(
+                        MXLog.LogType.INFO,
+                        "The default price category cannot be edited.\n\n" +
+                                "Please add a new category or edit others, if available."
+                    ).openModal()
+                }
             }
+            isFocusTraversable = false
         }
         right = vbox {
             button("Add category") {

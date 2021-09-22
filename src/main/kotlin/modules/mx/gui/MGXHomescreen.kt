@@ -89,7 +89,7 @@ class MXGLogin : Fragment("CWO ERP") {
                                     //The server's login response could not be validated => security warning
                                     MGXUserAlert(
                                         type = MXLog.LogType.WARNING,
-                                        message = "The server's login response could not be validated.\n" +
+                                        message = "The server's login response could not be validated.\n\n" +
                                                 "Please notify the administrator as this poses a security thread."
                                     ).openModal()
                                 }

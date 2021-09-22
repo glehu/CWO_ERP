@@ -22,18 +22,21 @@ class MG4PriceCategory(
     private val priceCategoryModel = M4PriceCategoryModel(getPriceCategoryPropertyFromCategory(priceCategory))
     private val originalPriceCategory = priceCategory.copy()
     override val root = form {
-        fieldset("Main Data") {
+        fieldset {
             field("Number") { label(priceCategoryModel.number) }
             field("Description") { textfield(priceCategoryModel.description).required() }
         }
         button("Save") {
             shortcut("Enter")
             action {
-                priceCategoryModel.commit()
-                priceManager.updateCategory(
-                    getPriceCategoryFromCategoryProperty(priceCategoryModel.item), originalPriceCategory, categories
-                )
-                close()
+                priceCategoryModel.validate()
+                if (priceCategoryModel.isValid) {
+                    priceCategoryModel.commit()
+                    priceManager.updateCategory(
+                        getPriceCategoryFromCategoryProperty(priceCategoryModel.item), originalPriceCategory, categories
+                    )
+                    close()
+                }
             }
             prefWidth = rightButtonsWidth
         }
