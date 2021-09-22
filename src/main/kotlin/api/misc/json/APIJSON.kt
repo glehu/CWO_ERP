@@ -40,6 +40,10 @@ data class LoginResponseJson(
     val accessM3: Boolean
 )
 
+/**
+ * This validation container can be used to send or store data with its hash value.
+ * A blockchain can be implemented using this container as the block.
+ */
 @Serializable
 data class ValidationContainerJson(
     val contentJson: String,
