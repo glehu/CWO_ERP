@@ -6,7 +6,7 @@ import interfaces.IModule
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.Song
+import modules.m1.M1Song
 import modules.m1.misc.getGenreList
 import modules.mx.logic.MXLog
 import modules.mx.logic.getRandomString
@@ -28,7 +28,7 @@ class M1Benchmark : IModule, Controller() {
         val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
         val timeInMillis = measureTimeMillis {
             for (i in 1..amount) {
-                val song = Song(-1, getRandomString(10L))
+                val song = M1Song(-1, getRandomString(10L))
                 //Fill it with data
                 song.vocalist = getRandomString(10L)
                 song.producer = getRandomString(10L)

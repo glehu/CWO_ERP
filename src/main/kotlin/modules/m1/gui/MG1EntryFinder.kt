@@ -14,7 +14,7 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.Song
+import modules.m1.M1Song
 import modules.m1.logic.M1Controller
 import modules.mx.gui.MGXLocked
 import modules.mx.m1GlobalIndex
@@ -65,12 +65,12 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                     }
                 }
                 @Suppress("UNCHECKED_CAST")
-                tableview(entriesFound as ObservableList<Song>) {
-                    readonlyColumn("ID", Song::uID).prefWidth(65.0)
-                    readonlyColumn("Name", Song::name).prefWidth(310.0)
-                    readonlyColumn("Vocalist", Song::vocalist).prefWidth(200.0)
-                    readonlyColumn("Producer", Song::producer).prefWidth(200.0)
-                    readonlyColumn("Genre", Song::genre).prefWidth(200.0)
+                tableview(entriesFound as ObservableList<M1Song>) {
+                    readonlyColumn("ID", M1Song::uID).prefWidth(65.0)
+                    readonlyColumn("Name", M1Song::name).prefWidth(310.0)
+                    readonlyColumn("Vocalist", M1Song::vocalist).prefWidth(200.0)
+                    readonlyColumn("Producer", M1Song::producer).prefWidth(200.0)
+                    readonlyColumn("Genre", M1Song::genre).prefWidth(200.0)
                     onUserSelect(1) {
                         if (!getEntryLock(it.uID)) {
                             m1Controller.showEntry(it.uID)

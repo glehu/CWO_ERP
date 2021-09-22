@@ -4,7 +4,7 @@ import db.CwODB
 import interfaces.IIndexManager
 import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m2.Contact
+import modules.m2.M2Contact
 import modules.mx.logic.MXLog
 import modules.mx.m2GlobalIndex
 import tornadofx.Controller
@@ -39,7 +39,7 @@ class M2Analytics : IModule, Controller() {
             )                       // shout out blkghst
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping city data..."))
-                val contact: Contact = decode(entryBytes) as Contact
+                val contact: M2Contact = decode(entryBytes) as M2Contact
                 if (contact.uID != -1) {
                     city = contact.city.uppercase()
                     contactCount += 1.0

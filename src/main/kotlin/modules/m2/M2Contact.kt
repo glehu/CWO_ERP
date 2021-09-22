@@ -7,7 +7,7 @@ import modules.mx.m2GlobalIndex
 
 @ExperimentalSerializationApi
 @Serializable
-data class Contact(override var uID: Int, var name: String) : IEntry {
+data class M2Contact(override var uID: Int, var name: String) : IEntry {
     //*************************************************
     //********************** User Input Data **********
     //*************************************************

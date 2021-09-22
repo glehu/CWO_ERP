@@ -2,7 +2,7 @@ package modules.m1.misc
 
 import javafx.beans.property.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.Song
+import modules.m1.M1Song
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue
@@ -298,7 +298,7 @@ class SongPropertyMiscDataModel : ItemViewModel<SongPropertyMiscData>() {
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyMainData(song: Song): SongPropertyMainData {
+fun getSongPropertyMainData(song: M1Song): SongPropertyMainData {
     val songPropertyMainData = SongPropertyMainData()
     //---------------------------------v
     //----------- Main Data -----------|
@@ -322,7 +322,7 @@ fun getSongPropertyMainData(song: Song): SongPropertyMainData {
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyCompletionState(song: Song): SongPropertyCompletionState {
+fun getSongPropertyCompletionState(song: M1Song): SongPropertyCompletionState {
     val songPropertyCompletionState = SongPropertyCompletionState()
     //----------------------------------v
     //------- State of Completion ------|
@@ -337,7 +337,7 @@ fun getSongPropertyCompletionState(song: Song): SongPropertyCompletionState {
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyPromotionData(song: Song): SongPropertyPromotionData {
+fun getSongPropertyPromotionData(song: M1Song): SongPropertyPromotionData {
     val songPropertyPromotionData = SongPropertyPromotionData()
     //---------------------------------v
     //--------- Promotion Data --------|
@@ -350,7 +350,7 @@ fun getSongPropertyPromotionData(song: Song): SongPropertyPromotionData {
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyFinancialData(song: Song): SongPropertyFinancialData {
+fun getSongPropertyFinancialData(song: M1Song): SongPropertyFinancialData {
     val songPropertyFinancialData = SongPropertyFinancialData()
     //---------------------------------v
     //--------- Financial Data --------|
@@ -362,7 +362,7 @@ fun getSongPropertyFinancialData(song: Song): SongPropertyFinancialData {
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyAvailabilityData(song: Song): SongPropertyAvailabilityData {
+fun getSongPropertyAvailabilityData(song: M1Song): SongPropertyAvailabilityData {
     val songPropertyAvailabilityData = SongPropertyAvailabilityData()
     //For songModel to be serialized, it has to be inserted into song
     //---------------------------------v
@@ -378,7 +378,7 @@ fun getSongPropertyAvailabilityData(song: Song): SongPropertyAvailabilityData {
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyVisualizationData(song: Song): SongPropertyVisualizationData {
+fun getSongPropertyVisualizationData(song: M1Song): SongPropertyVisualizationData {
     val songPropertyVisualizationData = SongPropertyVisualizationData()
     //---------------------------------v
     //------- Visualization Data ------|
@@ -390,7 +390,7 @@ fun getSongPropertyVisualizationData(song: Song): SongPropertyVisualizationData 
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyAlbumEPData(song: Song): SongPropertyAlbumEPData {
+fun getSongPropertyAlbumEPData(song: M1Song): SongPropertyAlbumEPData {
     val songPropertyAlbumEPData = SongPropertyAlbumEPData()
     //---------------------------------v
     //---------- Album/EP Data --------|
@@ -403,7 +403,7 @@ fun getSongPropertyAlbumEPData(song: Song): SongPropertyAlbumEPData {
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyStatisticsData(song: Song): SongPropertyStatisticsData {
+fun getSongPropertyStatisticsData(song: M1Song): SongPropertyStatisticsData {
     val songPropertyP2 = SongPropertyStatisticsData()
     //---------------------------------v
     //-------- Statistics Data --------|
@@ -415,7 +415,7 @@ fun getSongPropertyStatisticsData(song: Song): SongPropertyStatisticsData {
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyCollaborationData(song: Song): SongPropertyCollaborationData {
+fun getSongPropertyCollaborationData(song: M1Song): SongPropertyCollaborationData {
     val songPropertyCollaborationData = SongPropertyCollaborationData()
     //---------------------------------v
     //---------- Feature Data ---------|
@@ -435,7 +435,7 @@ fun getSongPropertyCollaborationData(song: Song): SongPropertyCollaborationData 
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyCopyrightData(song: Song): SongPropertyCopyrightData {
+fun getSongPropertyCopyrightData(song: M1Song): SongPropertyCopyrightData {
     val songPropertyCopyrightData = SongPropertyCopyrightData()
     //---------------------------------v
     //--------- Copyright Data --------|
@@ -447,7 +447,7 @@ fun getSongPropertyCopyrightData(song: Song): SongPropertyCopyrightData {
 }
 
 @ExperimentalSerializationApi
-fun getSongPropertyMiscData(song: Song): SongPropertyMiscData {
+fun getSongPropertyMiscData(song: M1Song): SongPropertyMiscData {
     val songPropertyMiscData = SongPropertyMiscData()
     //---------------------------------v
     //----------- Misc Data -----------|
@@ -466,7 +466,7 @@ fun getSongPropertyMiscData(song: Song): SongPropertyMiscData {
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyMainData: SongPropertyMainData): Song {
+fun getSongFromProperty(song: M1Song, songPropertyMainData: SongPropertyMainData): M1Song {
     //val song = Song(-1, songPropertyP1.name)
     //---------------------------------v
     //----------- Main Data -----------|
@@ -490,7 +490,7 @@ fun getSongFromProperty(song: Song, songPropertyMainData: SongPropertyMainData):
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyCompletionState: SongPropertyCompletionState): Song {
+fun getSongFromProperty(song: M1Song, songPropertyCompletionState: SongPropertyCompletionState): M1Song {
     //val song = Song(-1, songPropertyP1.name)
     //----------------------------------v
     //------- State of Completion ------|
@@ -505,7 +505,7 @@ fun getSongFromProperty(song: Song, songPropertyCompletionState: SongPropertyCom
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyPromotionData: SongPropertyPromotionData): Song {
+fun getSongFromProperty(song: M1Song, songPropertyPromotionData: SongPropertyPromotionData): M1Song {
     //val song = Song(-1, songPropertyP1.name)
     //---------------------------------v
     //--------- Promotion Data --------|
@@ -518,7 +518,7 @@ fun getSongFromProperty(song: Song, songPropertyPromotionData: SongPropertyPromo
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyFinancialData: SongPropertyFinancialData): Song {
+fun getSongFromProperty(song: M1Song, songPropertyFinancialData: SongPropertyFinancialData): M1Song {
     //val song = Song(-1, songPropertyP1.name)
     //---------------------------------v
     //--------- Financial Data --------|
@@ -530,7 +530,7 @@ fun getSongFromProperty(song: Song, songPropertyFinancialData: SongPropertyFinan
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyAvailabilityData: SongPropertyAvailabilityData): Song {
+fun getSongFromProperty(song: M1Song, songPropertyAvailabilityData: SongPropertyAvailabilityData): M1Song {
     //---------------------------------v
     //------- Availability Data -------|
     //---------------------------------^
@@ -543,7 +543,7 @@ fun getSongFromProperty(song: Song, songPropertyAvailabilityData: SongPropertyAv
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyVisualizationData: SongPropertyVisualizationData): Song {
+fun getSongFromProperty(song: M1Song, songPropertyVisualizationData: SongPropertyVisualizationData): M1Song {
     //---------------------------------v
     //------- Visualization Data ------|
     //---------------------------------^
@@ -554,7 +554,7 @@ fun getSongFromProperty(song: Song, songPropertyVisualizationData: SongPropertyV
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyAlbumEPData: SongPropertyAlbumEPData): Song {
+fun getSongFromProperty(song: M1Song, songPropertyAlbumEPData: SongPropertyAlbumEPData): M1Song {
     //---------------------------------v
     //---------- Album/EP Data --------|
     //---------------------------------^
@@ -566,7 +566,7 @@ fun getSongFromProperty(song: Song, songPropertyAlbumEPData: SongPropertyAlbumEP
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyStatisticsData: SongPropertyStatisticsData): Song {
+fun getSongFromProperty(song: M1Song, songPropertyStatisticsData: SongPropertyStatisticsData): M1Song {
     //---------------------------------v
     //-------- Statistics Data --------|
     //---------------------------------^
@@ -577,7 +577,7 @@ fun getSongFromProperty(song: Song, songPropertyStatisticsData: SongPropertyStat
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyCollaborationData: SongPropertyCollaborationData): Song {
+fun getSongFromProperty(song: M1Song, songPropertyCollaborationData: SongPropertyCollaborationData): M1Song {
     //---------------------------------v
     //---------- Feature Data ---------|
     //---------------------------------^
@@ -596,7 +596,7 @@ fun getSongFromProperty(song: Song, songPropertyCollaborationData: SongPropertyC
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyCopyrightData: SongPropertyCopyrightData): Song {
+fun getSongFromProperty(song: M1Song, songPropertyCopyrightData: SongPropertyCopyrightData): M1Song {
     //---------------------------------v
     //--------- Copyright Data --------|
     //---------------------------------^
@@ -607,7 +607,7 @@ fun getSongFromProperty(song: Song, songPropertyCopyrightData: SongPropertyCopyr
 }
 
 @ExperimentalSerializationApi
-fun getSongFromProperty(song: Song, songPropertyMiscData: SongPropertyMiscData): Song {
+fun getSongFromProperty(song: M1Song, songPropertyMiscData: SongPropertyMiscData): M1Song {
     //---------------------------------v
     //----------- Misc Data -----------|
     //---------------------------------^

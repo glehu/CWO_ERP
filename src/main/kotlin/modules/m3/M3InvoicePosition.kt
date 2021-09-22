@@ -4,16 +4,16 @@ import interfaces.IEntry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import modules.mx.activeUser
+import modules.mx.m2GlobalIndex
 
 @ExperimentalSerializationApi
 @Serializable
-data class M3Item(
+data class M3InvoicePosition(
     @SerialName("i")
     override var uID: Int,
     @SerialName("d")
     var description: String
-) : IEntry {
+): IEntry {
     @SerialName("p")
     var price: Double = 0.0
 
@@ -24,7 +24,6 @@ data class M3Item(
     var userName: String = ""
 
     override fun initialize() {
-        //if (uID == -1) uID = m3GlobalIndex.getUID().toInt()
-        if (userName.isEmpty()) userName = activeUser.username
+        if (uID == -1) uID = m2GlobalIndex.getUID().toInt()
     }
 }

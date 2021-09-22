@@ -12,7 +12,7 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m3.Invoice
+import modules.m3.M3Invoice
 import modules.m3.logic.M3Controller
 import modules.mx.gui.MGXLocked
 import modules.mx.m3GlobalIndex
@@ -60,11 +60,11 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                     }
                 }
                 @Suppress("UNCHECKED_CAST")
-                tableview(entriesFound as ObservableList<Invoice>) {
-                    readonlyColumn("ID", Invoice::uID).prefWidth(65.0)
-                    readonlyColumn("Seller", Invoice::seller).prefWidth(300.0)
-                    readonlyColumn("Buyer", Invoice::buyer).prefWidth(300.0)
-                    readonlyColumn("Text", Invoice::text).prefWidth(400.0)
+                tableview(entriesFound as ObservableList<M3Invoice>) {
+                    readonlyColumn("ID", M3Invoice::uID).prefWidth(65.0)
+                    readonlyColumn("Seller", M3Invoice::seller).prefWidth(300.0)
+                    readonlyColumn("Buyer", M3Invoice::buyer).prefWidth(300.0)
+                    readonlyColumn("Text", M3Invoice::text).prefWidth(400.0)
                     onUserSelect(1) {
                         if (!getEntryLock(it.uID)) {
                             m3Controller.showEntry(it.uID)

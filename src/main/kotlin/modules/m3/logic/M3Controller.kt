@@ -5,8 +5,8 @@ import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m3.Invoice
-import modules.m3.M3Item
+import modules.m3.M3Invoice
+import modules.m3.M3InvoicePosition
 import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.ItemConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
@@ -46,12 +46,12 @@ class M3Controller : IController, Controller() {
     }
 
     override fun showEntry(uID: Int) {
-        val entry = get(uID) as Invoice
+        val entry = get(uID) as M3Invoice
         wizard.invoice.item = getInvoicePropertyFromInvoice(entry)
     }
 
-    fun createAndReturnItem(): M3Item {
-        val item = M3Item(-1, "")
+    fun createAndReturnItem(): M3InvoicePosition {
+        val item = M3InvoicePosition(-1, "")
         val wizard = ItemConfiguratorWizard()
         wizard.showHeader = false
         wizard.showSteps = false

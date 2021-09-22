@@ -5,7 +5,7 @@ import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.Song
+import modules.m1.M1Song
 import modules.m1.gui.MG1Analytics
 import modules.m1.gui.MG1EntryFinder
 import modules.m1.gui.SongConfiguratorWizard
@@ -70,7 +70,7 @@ class M1Controller : IController, Controller() {
     }
 
     override fun showEntry(uID: Int) {
-        val entry = get(uID) as Song
+        val entry = get(uID) as M1Song
         wizard.songMainData.item = getSongPropertyMainData(entry)
         wizard.songCompletionState.item = getSongPropertyCompletionState(entry)
         wizard.songPromotionData.item = getSongPropertyPromotionData(entry)
@@ -85,7 +85,7 @@ class M1Controller : IController, Controller() {
 
         //Sync album data
         if (wizard.songAlbumEPData.item.albumUID != -1) {
-            val album = load(wizard.songAlbumEPData.item.albumUID) as Song
+            val album = load(wizard.songAlbumEPData.item.albumUID) as M1Song
             wizard.songAlbumEPData.item.nameAlbum = album.name
             wizard.songAlbumEPData.item.typeAlbum = album.type
         }
@@ -129,21 +129,21 @@ class M1Controller : IController, Controller() {
         find<MG1Analytics>().openModal()
     }
 
-    fun selectAndReturnEntry(): Song {
-        val entry: Song
+    fun selectAndReturnEntry(): M1Song {
+        val entry: M1Song
         val newScope = Scope()
         val dataTransfer = SongPropertyMainDataModel()
         dataTransfer.uID.value = -2
         setInScope(dataTransfer, newScope)
         tornadofx.find<MG1EntryFinder>(newScope).openModal(block = true)
         entry = if (dataTransfer.name.value != null) {
-            load(dataTransfer.uID.value) as Song
-        } else Song(-1, "")
+            load(dataTransfer.uID.value) as M1Song
+        } else M1Song(-1, "")
         return entry
     }
 
-    private fun getSongFromProperties(wizard: SongConfiguratorWizard): Song {
-        var song = Song(-1, "")
+    private fun getSongFromProperties(wizard: SongConfiguratorWizard): M1Song {
+        var song = M1Song(-1, "")
         song = getSongFromProperty(song, wizard.songMainData.item)
         song = getSongFromProperty(song, wizard.songCompletionState.item)
         song = getSongFromProperty(song, wizard.songPromotionData.item)

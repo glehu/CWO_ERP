@@ -10,8 +10,8 @@ import io.ktor.util.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.Song
-import modules.m2.Contact
+import modules.m1.M1Song
+import modules.m2.M2Contact
 import modules.mx.logic.MXLog
 import modules.mx.logic.getDefaultDate
 import modules.mx.m1GlobalIndex
@@ -38,7 +38,7 @@ class M1Import : IModule, Controller() {
     ) {
         log(MXLog.LogType.INFO, "Spotify album list import start")
 
-        var albumEntry: Song
+        var albumEntry: M1Song
         val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
         val m2raf = CwODB.openRandomFileAccess("M2", CwODB.CwODB.RafMode.READWRITE)
         var counter = entriesAdded
@@ -65,13 +65,13 @@ class M1Import : IModule, Controller() {
     @ExperimentalSerializationApi
     private fun createOrSaveTracksOfAlbum(
         trackList: SpotifyTracklistJson,
-        album: Song,
+        album: M1Song,
         raf: RandomAccessFile,
         m2raf: RandomAccessFile,
         entriesAdded: Int = 0,
         updateProgress: (Pair<Int, String>) -> Unit
     ) {
-        var song: Song
+        var song: M1Song
         var uID: Int
         var counter = entriesAdded
 
@@ -82,11 +82,11 @@ class M1Import : IModule, Controller() {
                 it.content.contains(track.id)
             }
             if (filteredMap.isEmpty()) {
-                song = Song(-1, "")
+                song = M1Song(-1, "")
             } else {
                 val indexContent = filteredMap.values.first()
                 uID = indexContent.uID
-                song = get(uID) as Song
+                song = get(uID) as M1Song
             }
 
             //Spotify META Data
@@ -114,8 +114,8 @@ class M1Import : IModule, Controller() {
     }
 
     @ExperimentalSerializationApi
-    private fun createOrSaveAlbum(album: SpotifyAlbumJson, raf: RandomAccessFile, m2raf: RandomAccessFile): Song {
-        val song: Song
+    private fun createOrSaveAlbum(album: SpotifyAlbumJson, raf: RandomAccessFile, m2raf: RandomAccessFile): M1Song {
+        val song: M1Song
         val uID: Int
         var releaseDate: String = getDefaultDate()
 
@@ -124,11 +124,11 @@ class M1Import : IModule, Controller() {
             it.content.contains(album.id)
         }
         if (filteredMap.isEmpty()) {
-            song = Song(-1, "")
+            song = M1Song(-1, "")
         } else {
             val indexContent = filteredMap.values.first()
             uID = indexContent.uID
-            song = get(uID) as Song
+            song = get(uID) as M1Song
         }
 
         //Spotify META Data
@@ -165,8 +165,8 @@ class M1Import : IModule, Controller() {
     }
 
     @ExperimentalSerializationApi
-    private fun createOrSaveArtistsOfAlbum(artists: List<SpotifyArtistJson>, song: Song, m2raf: RandomAccessFile) {
-        var contact: Contact
+    private fun createOrSaveArtistsOfAlbum(artists: List<SpotifyArtistJson>, song: M1Song, m2raf: RandomAccessFile) {
+        var contact: M2Contact
         var artistUID: Int
         var filteredMap: Map<Int, IndexContent>
         for ((artistCounter, artist: SpotifyArtistJson) in artists.withIndex()) {
@@ -174,7 +174,7 @@ class M1Import : IModule, Controller() {
                 it.content.contains(artist.id)
             }
             if (filteredMap.isEmpty()) {
-                contact = Contact(-1, artist.name)
+                contact = M2Contact(-1, artist.name)
                 contact.spotifyID = artist.id
                 contact.birthdate = getDefaultDate()
                 artistUID = m2GlobalIndex.save(
@@ -184,7 +184,7 @@ class M1Import : IModule, Controller() {
                 )
             } else {
                 val indexContent = filteredMap.values.first()
-                contact = m2GlobalIndex.get(indexContent.uID) as Contact
+                contact = m2GlobalIndex.get(indexContent.uID) as M2Contact
                 artistUID = contact.uID
             }
             when (artistCounter) {

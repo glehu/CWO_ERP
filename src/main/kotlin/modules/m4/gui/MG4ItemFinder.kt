@@ -1,9 +1,8 @@
-package modules.m2.gui
+package modules.m4.gui
 
 import interfaces.IEntry
 import interfaces.IEntryFinder
 import interfaces.IIndexManager
-import interfaces.IModule
 import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
@@ -12,20 +11,19 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.misc.SongPropertyMainDataModel
-import modules.m2.M2Contact
-import modules.m2.logic.M2Controller
+import modules.m3.logic.M4Controller
+import modules.m4.M4Item
 import modules.mx.gui.MGXLocked
-import modules.mx.m2GlobalIndex
+import modules.mx.m4GlobalIndex
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
-    override val moduleNameLong = "MG2ContactFinder"
-    override val module = "M2"
+class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
+    override val moduleNameLong = "MG4ItemFinder"
+    override val module = "M4"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex
+        return m4GlobalIndex
     }
 
     override var searchText: TextField by singleAssign()
@@ -34,8 +32,7 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
     override var ixNr = SimpleStringProperty()
     override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
     override val threadIDCurrentProperty = SimpleIntegerProperty()
-    private val m2Controller: M2Controller by inject()
-    private val song: SongPropertyMainDataModel by inject()
+    private val m4Controller: M4Controller by inject()
     override val root = borderpane {
         center = form {
             prefWidth = 1200.0
@@ -62,26 +59,16 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                     }
                 }
                 @Suppress("UNCHECKED_CAST")
-                tableview(entriesFound as ObservableList<M2Contact>) {
-                    readonlyColumn("ID", M2Contact::uID).prefWidth(65.0)
-                    readonlyColumn("Name", M2Contact::name).prefWidth(350.0)
-                    readonlyColumn("F.Name", M2Contact::firstName).prefWidth(250.0)
-                    readonlyColumn("City", M2Contact::city).prefWidth(200.0)
+                tableview(entriesFound as ObservableList<M4Item>) {
+                    readonlyColumn("ID", M4Item::uID).prefWidth(65.0)
+                    readonlyColumn("Description", M4Item::description).prefWidth(500.0)
                     onUserSelect(1) {
-                        if (song.uID.value == -2) {
-                            //Data transfer
-                            song.uID.value = it.uID
-                            song.name.value = it.name
-                            song.commit()
+                        if (!getEntryLock(it.uID)) {
+                            m4Controller.showEntry(it.uID)
+                            searchText.text = ""
                             close()
                         } else {
-                            if (!getEntryLock(it.uID)) {
-                                m2Controller.showEntry(it.uID)
-                                searchText.text = ""
-                                close()
-                            } else {
-                                find<MGXLocked>().openModal()
-                            }
+                            find<MGXLocked>().openModal()
                         }
                     }
                     isFocusTraversable = false

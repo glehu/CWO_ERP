@@ -1,4 +1,4 @@
-package modules.m2.logic
+package modules.m4.logic
 
 import db.Index
 import interfaces.IEntry
@@ -6,17 +6,17 @@ import interfaces.IIndexManager
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.m2.M2Contact
-import modules.mx.m2GlobalIndex
+import modules.m4.M4Item
+import modules.mx.m4GlobalIndex
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
-class M2IndexManager : IIndexManager, Controller() {
-    override val moduleNameLong = "M2IndexManager"
-    override val module = "M2"
+class M4IndexManager : IIndexManager, Controller() {
+    override val moduleNameLong = "M4IndexManager"
+    override val module = "M4"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex
+        return m4GlobalIndex
     }
 
     override var lastChangeDateHex: String = ""
@@ -33,14 +33,12 @@ class M2IndexManager : IIndexManager, Controller() {
 
     init {
         initialize(
-            1, //Name
-            2, //City
-            3 //SpotifyID
+            1, //Description
         )
     }
 
     override fun getIndicesList(): ArrayList<String> {
-        return arrayListOf("1-Name", "2-City")
+        return arrayListOf("1-Description")
     }
 
     override fun indexEntry(
@@ -50,16 +48,14 @@ class M2IndexManager : IIndexManager, Controller() {
         writeToDisk: Boolean,
         userName: String
     ) {
-        entry as M2Contact
+        entry as M4Item
         buildIndices(
             entry.uID,
             posDB,
             byteSize,
             writeToDisk,
             userName,
-            Pair(1, entry.name),
-            Pair(2, entry.city),
-            Pair(3, entry.spotifyID)
+            Pair(1, entry.description),
         )
     }
 
@@ -67,6 +63,6 @@ class M2IndexManager : IIndexManager, Controller() {
         val jsonSerializer = Json {
             this.prettyPrint = prettyPrint
         }
-        return jsonSerializer.encodeToString(entry as M2Contact)
+        return jsonSerializer.encodeToString(entry as M4Item)
     }
 }

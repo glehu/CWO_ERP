@@ -8,8 +8,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.m3.Invoice
-import modules.m3.M3Item
+import modules.m3.M3Invoice
+import modules.m3.M3InvoicePosition
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.observableListOf
@@ -18,7 +18,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.iterator
 import kotlin.collections.set
 
 @ExperimentalSerializationApi
@@ -41,7 +40,7 @@ class InvoiceProperty {
     var price: Double by priceProperty
     val paidProperty = SimpleDoubleProperty()
     var paid: Double by paidProperty
-    val itemsProperty = observableListOf<M3Item>()
+    val itemsProperty = observableListOf<M3InvoicePosition>()
 }
 
 @ExperimentalSerializationApi
@@ -59,7 +58,7 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
 }
 
 @ExperimentalSerializationApi
-fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty {
+fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
     val invoiceProperty = InvoiceProperty()
     invoiceProperty.uID = invoice.uID
     invoiceProperty.seller = invoice.seller
@@ -77,8 +76,8 @@ fun getInvoicePropertyFromInvoice(invoice: Invoice): InvoiceProperty {
 }
 
 @ExperimentalSerializationApi
-fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): Invoice {
-    val invoice = Invoice(-1)
+fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): M3Invoice {
+    val invoice = M3Invoice(-1)
     invoice.uID = invoiceProperty.uID
     invoice.seller = invoiceProperty.seller
     invoice.sellerUID = invoiceProperty.sellerUID

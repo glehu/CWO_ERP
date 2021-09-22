@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
+import modules.m4.logic.M4IndexManager
 import modules.mx.*
 import modules.mx.gui.CWOMainGUI
 import modules.mx.gui.showPreferences
@@ -32,11 +33,13 @@ fun checkInstallation() {
         if (!File(getModulePath("M1")).isDirectory) File(getModulePath("M1")).mkdirs()
         if (!File(getModulePath("M2")).isDirectory) File(getModulePath("M2")).mkdirs()
         if (!File(getModulePath("M3")).isDirectory) File(getModulePath("M3")).mkdirs()
+        if (!File(getModulePath("M4")).isDirectory) File(getModulePath("M4")).mkdirs()
         //Check if all log paths and files exist
         MXLog.checkLogFile("MX", true)
         MXLog.checkLogFile("M1", true)
         MXLog.checkLogFile("M2", true)
         MXLog.checkLogFile("M3", true)
+        MXLog.checkLogFile("M4", true)
     }
 }
 
@@ -64,6 +67,7 @@ fun startupRoutines() {
         m1GlobalIndex = M1IndexManager()
         m2GlobalIndex = M2IndexManager()
         m3GlobalIndex = M3IndexManager()
+        m4GlobalIndex = M4IndexManager()
         //Start embedded server
         server = MXServer()
     }

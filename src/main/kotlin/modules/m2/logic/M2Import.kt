@@ -7,7 +7,7 @@ import interfaces.IModule
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m2.Contact
+import modules.m2.M2Contact
 import modules.m2.misc.ContactModel
 import modules.mx.logic.MXLog
 import modules.mx.m2GlobalIndex
@@ -39,7 +39,7 @@ class M2Import : IModule, Controller() {
             }.open(file) {
                 readAllWithHeaderAsSequence().forEach { row: Map<String, String> ->
                     counter++
-                    val contact = Contact(-1, import(row[contactSchema.name.value].toString(), "NoName"))
+                    val contact = M2Contact(-1, import(row[contactSchema.name.value].toString(), "NoName"))
                     contact.firstName = import(row[contactSchema.firstName.value].toString())
                     contact.lastName = import(row[contactSchema.lastName.value].toString())
                     contact.street = import(row[contactSchema.street.value].toString())

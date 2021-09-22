@@ -4,7 +4,7 @@ import db.CwODB
 import interfaces.IIndexManager
 import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.Song
+import modules.m1.M1Song
 import modules.mx.logic.MXLog
 import modules.mx.m1GlobalIndex
 import tornadofx.Controller
@@ -41,7 +41,7 @@ class M1Analytics : IModule, Controller() {
             )
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping data..."))
-                val song = decode(entryBytes) as Song
+                val song = decode(entryBytes) as M1Song
                 if (song.uID != -1) {
                     songCount += 1.0
                     distTypeData = when (distType) {

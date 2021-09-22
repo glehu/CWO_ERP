@@ -7,7 +7,7 @@ import modules.mx.m1GlobalIndex
 
 @ExperimentalSerializationApi
 @Serializable
-data class Song(override var uID: Int, var name: String) : IEntry {
+data class M1Song(override var uID: Int, var name: String) : IEntry {
     //*************************************************
     //********************** User Input Data **********
     //*************************************************

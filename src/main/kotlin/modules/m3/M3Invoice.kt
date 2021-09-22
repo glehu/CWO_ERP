@@ -8,7 +8,7 @@ import modules.mx.m3GlobalIndex
 
 @ExperimentalSerializationApi
 @Serializable
-data class Invoice(override var uID: Int) : IEntry, IInvoice {
+data class M3Invoice(override var uID: Int) : IEntry, IInvoice {
     //*************************************************
     //********************** User Input Data **********
     //*************************************************

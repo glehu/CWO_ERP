@@ -8,22 +8,25 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.protobuf.ProtoBuf
 import kotlinx.serialization.serializer
-import modules.m1.Song
+import modules.m1.M1Song
 import modules.m1.logic.M1IndexManager
-import modules.m2.Contact
+import modules.m2.M2Contact
 import modules.m2.logic.M2IndexManager
-import modules.m3.Invoice
-import modules.m3.M3Item
+import modules.m3.M3Invoice
+import modules.m3.M3InvoicePosition
 import modules.m3.logic.M3IndexManager
+import modules.m4.M4Item
+import modules.m4.logic.M4IndexManager
 import java.io.File
 
 @ExperimentalSerializationApi
 val serializersModuleGlobal = SerializersModule {
     polymorphic(IEntry::class) {
-        subclass(Song::class, serializer())
-        subclass(Contact::class, serializer())
-        subclass(Invoice::class, serializer())
-        subclass(M3Item::class, serializer())
+        subclass(M1Song::class, serializer())
+        subclass(M2Contact::class, serializer())
+        subclass(M3Invoice::class, serializer())
+        subclass(M3InvoicePosition::class, serializer())
+        subclass(M4Item::class, serializer())
     }
 }
 
@@ -36,14 +39,29 @@ val protoBufGlobal = ProtoBuf {
 //********************** INDEX MANAGERS ***********
 //*************************************************
 
+/**
+ * The global index for songs
+ */
 @ExperimentalSerializationApi
 lateinit var m1GlobalIndex: M1IndexManager
 
+/**
+ * The global index for contacts
+ */
 @ExperimentalSerializationApi
 lateinit var m2GlobalIndex: M2IndexManager
 
+/**
+ * The global index for invoices
+ */
 @ExperimentalSerializationApi
 lateinit var m3GlobalIndex: M3IndexManager
+
+/**
+ * The global index for items
+ */
+@ExperimentalSerializationApi
+lateinit var m4GlobalIndex: M4IndexManager
 
 //*************************************************
 //********************** MISCELLANEOUS ************

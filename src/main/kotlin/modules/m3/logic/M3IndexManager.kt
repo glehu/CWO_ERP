@@ -3,17 +3,16 @@ package modules.m3.logic
 import db.Index
 import interfaces.IEntry
 import interfaces.IIndexManager
-import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.m3.Invoice
+import modules.m3.M3Invoice
 import modules.mx.m3GlobalIndex
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
-class M3IndexManager : IModule, IIndexManager, Controller() {
+class M3IndexManager : IIndexManager, Controller() {
     override val moduleNameLong = "M3IndexManager"
     override val module = "M3"
     override fun getIndexManager(): IIndexManager {
@@ -51,7 +50,7 @@ class M3IndexManager : IModule, IIndexManager, Controller() {
         writeToDisk: Boolean,
         userName: String
     ) {
-        entry as Invoice
+        entry as M3Invoice
         buildIndices(
             entry.uID,
             posDB,
@@ -68,6 +67,6 @@ class M3IndexManager : IModule, IIndexManager, Controller() {
         val jsonSerializer = Json {
             this.prettyPrint = prettyPrint
         }
-        return jsonSerializer.encodeToString(entry as Invoice)
+        return jsonSerializer.encodeToString(entry as M3Invoice)
     }
 }
