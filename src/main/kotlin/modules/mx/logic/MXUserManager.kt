@@ -90,7 +90,7 @@ class MXUserManager : IModule, Controller() {
      * @return true if the credentials match with the databases credentials.
      */
     private fun compareCredentialsServer(username: String, password: String): Boolean {
-        var successful = false
+        var validResponse = true
         val client = getCWOClient(username, password)
         runBlocking {
             launch {
@@ -101,18 +101,17 @@ class MXUserManager : IModule, Controller() {
                             input = response.contentJson,
                             base64KeccakString = response.hash,
                             salt = encryptKeccak(username),
-                            pepper = "CWO_ERP LoginValidation"
+                            pepper = encryptKeccak("CWO_ERP LoginValidation")
                         )) {
-                        successful = true
                         activeUser = MXUser(username, password)
                         activeUser.canAccessM1 = loginResponse.accessM1
                         activeUser.canAccessM2 = loginResponse.accessM2
                         activeUser.canAccessM3 = loginResponse.accessM3
-                    }
+                    } else validResponse = false
                 }
             }
         }
-        return successful
+        return validResponse
     }
 
     private fun initializeCredentials(credentialsFile: File) {

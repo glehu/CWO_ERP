@@ -97,7 +97,7 @@ class MXServerController {
                 hash = encryptKeccak(
                     input = loginResponse,
                     salt = encryptKeccak(user.username),
-                    pepper = "CWO_ERP LoginValidation"
+                    pepper = encryptKeccak("CWO_ERP LoginValidation")
                 )
             )
         }

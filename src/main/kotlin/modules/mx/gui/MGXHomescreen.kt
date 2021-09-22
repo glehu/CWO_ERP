@@ -12,6 +12,7 @@ import modules.m2.gui.MG2Overview
 import modules.m3.gui.MG3Overview
 import modules.m4.gui.MG4Overview
 import modules.mx.*
+import modules.mx.gui.userAlerts.MGXUserAlert
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.logic.checkInstallation
@@ -72,16 +73,26 @@ class MXGLogin : Fragment("CWO ERP") {
                     enableWhen(loginUser.dirty)
                     shortcut("Enter")
                     action {
-                        var loginSuccess = false
+                        var validResponse = false
                         runAsyncWithProgress {
                             if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty()) {
-                                loginSuccess = userManager.login(loginUser.username.value, loginUser.password.value)
+                                validResponse = userManager.login(loginUser.username.value, loginUser.password.value)
                             }
                         } ui {
-                            if (loginSuccess) {
+                            if (validResponse) {
                                 startupRoutines()
                                 replaceWith<MXGUserInterface>()
-                            } else loginUser.password.value = ""
+                            } else {
+                                loginUser.password.value = ""
+                                if (isClientGlobal) {
+                                    //The server's login response could not be validated => security warning
+                                    MGXUserAlert(
+                                        type = MXLog.LogType.WARNING,
+                                        message = "The server's login response could not be validated.\n" +
+                                                "Please notify the administrator as this poses a security thread."
+                                    ).openModal()
+                                }
+                            }
                         }
                     }
                 }

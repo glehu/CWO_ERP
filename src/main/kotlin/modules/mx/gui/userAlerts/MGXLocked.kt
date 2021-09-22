@@ -1,4 +1,4 @@
-package modules.mx.gui
+package modules.mx.gui.userAlerts
 
 import tornadofx.Fragment
 import tornadofx.form
