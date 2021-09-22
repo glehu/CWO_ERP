@@ -141,7 +141,7 @@ class MXGUserInterface : View(titleGlobal) {
             if (activeUser.canAccessM1) tab<MG1Overview>()
             if (activeUser.canAccessM2) tab<MG2Overview>()
             if (activeUser.canAccessM3) tab<MG3Overview>()
-            if (activeUser.canAccessM3) tab<MG4Overview>()
+            if (activeUser.canAccessM4) tab<MG4Overview>()
             if (activeUser.canAccessMX) tab<MGXManagement>()
         }
     }

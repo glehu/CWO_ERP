@@ -37,7 +37,8 @@ data class LoginResponseJson(
     val httpCode: Int,
     val accessM1: Boolean,
     val accessM2: Boolean,
-    val accessM3: Boolean
+    val accessM3: Boolean,
+    val accessM4: Boolean
 )
 
 /**

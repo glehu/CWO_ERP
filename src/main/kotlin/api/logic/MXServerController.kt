@@ -88,7 +88,8 @@ class MXServerController {
                     httpCode = 200,
                     accessM1 = user.canAccessM1,
                     accessM2 = user.canAccessM2,
-                    accessM3 = user.canAccessM3
+                    accessM3 = user.canAccessM3,
+                    accessM4 = user.canAccessM4
                 )
             )
             return ValidationContainerJson(
