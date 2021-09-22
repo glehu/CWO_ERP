@@ -4,7 +4,7 @@ import interfaces.IOverview
 import io.ktor.util.*
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m3.logic.M4Controller
+import modules.m4.logic.M4Controller
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet
 import tornadofx.*

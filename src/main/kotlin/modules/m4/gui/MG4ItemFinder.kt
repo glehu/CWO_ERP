@@ -11,7 +11,7 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m3.logic.M4Controller
+import modules.m4.logic.M4Controller
 import modules.m4.M4Item
 import modules.mx.gui.MGXLocked
 import modules.mx.m4GlobalIndex
