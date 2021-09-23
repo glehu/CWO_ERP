@@ -3,6 +3,7 @@ package modules.m1.gui
 import interfaces.IOverview
 import io.ktor.util.*
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Controller
 import modules.mx.isClientGlobal
@@ -56,6 +57,7 @@ class MG1Overview : IOverview, View("M1 Discography") {
             vbox {
                 hbox(10) {
                     style {
+                        unsafe("-fx-background-color", Color.web("#373e43", 1.0))
                         paddingAll = 10
                     }
                     addClass(Stylesheet.fieldsetBorder)

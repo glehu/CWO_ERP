@@ -58,6 +58,7 @@ class MG2Overview : IOverview, View("M2 Contacts") {
                         unsafe("-fx-background-color", Color.web("#373e43", 1.0))
                         paddingAll = 10
                     }
+                    addClass(Stylesheet.fieldsetBorder)
                     fieldset("Main Data") {
                         add(NewContactMainData::class)
                         addClass(Stylesheet.fieldsetBorder)

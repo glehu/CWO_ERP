@@ -58,6 +58,7 @@ class MG3Overview : IOverview, View("M3 Invoices") {
                         unsafe("-fx-background-color", Color.web("#373e43", 1.0))
                         paddingAll = 10
                     }
+                    addClass(Stylesheet.fieldsetBorder)
                     fieldset("Main Data") {
                         add(NewInvoiceMainData::class)
                         addClass(Stylesheet.fieldsetBorder)

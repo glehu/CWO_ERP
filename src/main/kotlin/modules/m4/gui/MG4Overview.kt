@@ -59,8 +59,13 @@ class MG4Overview : IOverview, View("M4 Item") {
                         unsafe("-fx-background-color", Color.web("#373e43", 1.0))
                         paddingAll = 10
                     }
+                    addClass(Stylesheet.fieldsetBorder)
                     fieldset("Main Data") {
                         add(NewM4ItemMainData::class)
+                        addClass(Stylesheet.fieldsetBorder)
+                    }
+                    fieldset("Prices") {
+                        add(NewM4ItemPricesData::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
                 }

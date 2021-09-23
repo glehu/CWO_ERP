@@ -32,6 +32,7 @@ class M4Controller : IController, Controller() {
     }
 
     override fun newEntry() {
+        wizard.item.priceCategories.value.clear()
         wizard.item.item = M4ItemProperty()
         wizard.item.validate()
         wizard.isComplete = false

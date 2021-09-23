@@ -30,53 +30,48 @@ class NewInvoiceMainData : Fragment("Main") {
     //----------- Main Data ------------|
     //----------------------------------^
     override val root = form {
+        prefWidth = 400.0
         fieldset {
             field("UID") {
                 label(invoice.uID)
             }
             field("Seller") {
-                hbox {
-                    textfield(invoice.seller) {
-                        contextmenu {
-                            item("Show contact").action {
-                                if (invoice.sellerUID.value != -1) m2controller.showEntry(invoice.sellerUID.value)
-                                invoice.seller.value =
-                                    m2controller.getContactName(invoice.sellerUID.value, invoice.seller.value)
-                            }
-                            item("Load contact").action {
-                                val contact = m2controller.selectAndReturnContact()
-                                invoice.sellerUID.value = contact.uID
-                                invoice.seller.value = contact.name
-                            }
+                textfield(invoice.seller) {
+                    contextmenu {
+                        item("Show contact").action {
+                            if (invoice.sellerUID.value != -1) m2controller.showEntry(invoice.sellerUID.value)
+                            invoice.seller.value =
+                                m2controller.getContactName(invoice.sellerUID.value, invoice.seller.value)
                         }
-                    }.required()
-                }
+                        item("Load contact").action {
+                            val contact = m2controller.selectAndReturnContact()
+                            invoice.sellerUID.value = contact.uID
+                            invoice.seller.value = contact.name
+                        }
+                    }
+                }.required()
             }
             field("Buyer") {
-                hbox {
-                    textfield(invoice.buyer) {
-                        contextmenu {
-                            item("Load contact").action {
-                                val contact = m2controller.selectAndReturnContact()
-                                invoice.buyerUID.value = contact.uID
-                                invoice.buyer.value = contact.name
-                            }
-                            item("Show contact").action {
-                                if (invoice.buyerUID.value != -1) m2controller.showEntry(invoice.buyerUID.value)
-                                invoice.buyer.value =
-                                    m2controller.getContactName(invoice.buyerUID.value, invoice.buyer.value)
-                            }
+                textfield(invoice.buyer) {
+                    contextmenu {
+                        item("Load contact").action {
+                            val contact = m2controller.selectAndReturnContact()
+                            invoice.buyerUID.value = contact.uID
+                            invoice.buyer.value = contact.name
                         }
-                    }.required()
-                }
+                        item("Show contact").action {
+                            if (invoice.buyerUID.value != -1) m2controller.showEntry(invoice.buyerUID.value)
+                            invoice.buyer.value =
+                                m2controller.getContactName(invoice.buyerUID.value, invoice.buyer.value)
+                        }
+                    }
+                }.required()
             }
             field("Date") { datepicker(invoice.date).required() }
             field("Text") { textfield(invoice.text).required() }
             field("Paid") {
                 hbox {
-                    textfield(invoice.paid) {
-                        prefWidth = 100.0
-                    }
+                    textfield(invoice.paid)
                     label("EUR") { paddingHorizontal = 20 }
                 }
             }
@@ -123,8 +118,7 @@ class NewInvoiceItemData : Fragment("Items") {
                     prefWidth = 100.0
                 }
                 readonlyColumn("User", M3InvoicePosition::userName).prefWidth = 250.0
-                isFocusTraversable = false
-                regainFocusAfterEdit()
+
                 onEditCommit {
                     m3Controller.calculate(invoice.item)
                 }

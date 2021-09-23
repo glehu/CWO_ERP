@@ -25,7 +25,7 @@ data class M4Item(
      *
      * The key is the price category number. The value is the price.
      */
-    var prices: MutableMap<Int, Double> = mutableMapOf()
+    var prices: MutableMap<Int, String> = mutableMapOf()
 
     override fun initialize() {
         if (uID == -1) uID = m4GlobalIndex.getUID().toInt()
