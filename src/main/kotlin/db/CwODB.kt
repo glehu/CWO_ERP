@@ -1,7 +1,6 @@
 package db
 
 import interfaces.IIndexManager
-import interfaces.IModule
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -14,13 +13,7 @@ import java.io.RandomAccessFile
 
 @ExperimentalSerializationApi
 class CwODB {
-    companion object CwODB : IModule, Controller() {
-        override val moduleNameLong = "CwODB"
-        override val module = "DB"
-        override fun getIndexManager(): IIndexManager? {
-            return null
-        }
-
+    companion object CwODB : Controller() {
         /**
          * Used to save the ByteArray of an entry (achieved by serialization) and store it in the database.
          * @return the position in the database and the byte size of the stored entry
@@ -35,16 +28,13 @@ class CwODB {
         ): Pair<Long, Int> {
             val byteSizeNew = entryBytes.size
             var canOverride = false
-            if (byteSizeNew <= byteSize) {
-                canOverride = true
-            }
+            if (byteSizeNew <= byteSize) canOverride = true
             checkLastEntryFile(module)
             val lastEntryFile = getLastEntryFile(module)
             val indexText: String
             var posDBNew: Long
             val previousByteSize: Long
             val indexError = false
-
             //If the byteSize of the new entry is greater than the old one we have to attach the new entry at the end
             if (!canOverride) {
                 indexText = lastEntryFile.readText()
@@ -62,7 +52,6 @@ class CwODB {
                 //Old entry can be overridden since the byteSize is less or equal to the old one
                 posDBNew = posDB
             }
-
             if (!indexError) {
                 //Save the serialized entry to the determined destination file
                 writeDBEntry(entryBytes, posDBNew, raf)
@@ -188,14 +177,20 @@ class CwODB {
             randAccessFile.close()
         }
 
+        /**
+         * Reads the serialized entry bytes directly from the disk.
+         * @return ByteArray of Google ProtoBuf serialized entry.
+         */
         private fun readDBEntry(posInDatabase: Long, byteSize: Int, randAccessFile: RandomAccessFile): ByteArray {
-            //We now read from the file
             val entry = ByteArray(byteSize)
             if (posInDatabase > 0) randAccessFile.seek(posInDatabase)
             randAccessFile.readFully(entry)
             return entry
         }
 
+        /**
+         * Writes the serialized entry bytes directly to the disk.
+         */
         private fun writeDBEntry(entry: ByteArray, posInDatabase: Long, raf: RandomAccessFile) {
             if (posInDatabase > 0) raf.seek(posInDatabase)
             raf.write(entry)
