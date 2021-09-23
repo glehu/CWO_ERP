@@ -14,11 +14,40 @@ import tornadofx.*
 
 @ExperimentalSerializationApi
 class MGXDatabaseManager : View("Databases") {
+    /**
+     * This list needs to be updated in case a new index manager was added.
+     */
     private var indexManagers: ObservableList<IIndexManager> = observableListOf(
         m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
     )
+
+    /**
+     * This function needs to be updated in case a new index manager was added.
+     */
+    private fun updateDatabases() {
+        indexManagers.clear()
+        m1GlobalIndex = M1IndexManager()
+        m2GlobalIndex = M2IndexManager()
+        m3GlobalIndex = M3IndexManager()
+        m4GlobalIndex = M4IndexManager()
+        indexManagers.addAll(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex)
+    }
+
+    private val table = tableview(indexManagers) {
+        readonlyColumn("Database", IIndexManager::module).prefWidth(80.0)
+        readonlyColumn("Description", IIndexManager::moduleNameLong).prefWidth(150.0)
+        readonlyColumn("# Entries", IIndexManager::lastUID).prefWidth(125.0)
+        readonlyColumn("Last Change", IIndexManager::lastChangeDateLocal).prefWidth(175.0)
+        readonlyColumn("by User", IIndexManager::lastChangeUser).prefWidth(200.0)
+    }
+
     override val root = borderpane {
         right = vbox {
+            button("Refresh Stats") {
+                action {
+                    refreshStats()
+                }
+            }
             button("Update Databases") {
                 action {
                     updateDatabases()
@@ -38,22 +67,11 @@ class MGXDatabaseManager : View("Databases") {
             }
         }
         center {
-            tableview(indexManagers) {
-                readonlyColumn("Database", IIndexManager::module).prefWidth(80.0)
-                readonlyColumn("Description", IIndexManager::moduleNameLong).prefWidth(150.0)
-                readonlyColumn("# Entries", IIndexManager::lastUID).prefWidth(125.0)
-                readonlyColumn("Last Change", IIndexManager::lastChangeDateLocal).prefWidth(175.0)
-                readonlyColumn("by User", IIndexManager::lastChangeUser).prefWidth(200.0)
-            }
+            add(table)
         }
     }
 
-    private fun updateDatabases() {
-        indexManagers.clear()
-        m1GlobalIndex = M1IndexManager()
-        m2GlobalIndex = M2IndexManager()
-        m3GlobalIndex = M3IndexManager()
-        m4GlobalIndex = M4IndexManager()
-        indexManagers.addAll(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex)
+    private fun refreshStats() {
+        table.refresh()
     }
 }

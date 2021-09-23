@@ -205,10 +205,11 @@ class CwODB {
          * Used to reset a module's database including index files. Logfiles remain untouched by this operation.
          */
         fun resetModuleDatabase(module: String) {
-            if (File(getModulePath(module)).isDirectory) {
-                File("${getModulePath(module)}\\$module.db").delete()
-                File("${getModulePath(module)}\\$module.nu").delete()
-                for (i in 0..99) File("${getModulePath(module)}\\$module.ix$i").delete()
+            val modulePath = getModulePath(module)
+            if (File(modulePath).isDirectory) {
+                File("$modulePath\\$module.db").delete()
+                File("$modulePath\\$module.nu").delete()
+                for (i in 0..99) File("$modulePath\\$module.ix$i").delete()
             }
         }
 
