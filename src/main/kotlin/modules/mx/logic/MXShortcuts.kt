@@ -1,6 +1,8 @@
 package modules.mx.logic
 
 import java.util.*
+import kotlin.math.pow
+import kotlin.math.roundToInt
 import kotlin.streams.asSequence
 
 //-------------------------------------v
@@ -41,4 +43,9 @@ fun getRandomString(size: Long, numbers: Boolean = false): String {
         .asSequence()
         .map(dictionary::get)
         .joinToString("")
+}
+
+fun Double.roundTo(numFractionDigits: Int): Double {
+    val factor = 10.0.pow(numFractionDigits.toDouble())
+    return (this * factor).roundToInt() / factor
 }

@@ -225,6 +225,12 @@ class CwODB {
             return File("${getModulePath(module)}\\lastentry.db")
         }
 
-        private fun getDatabaseFile(module: String) = File("${getModulePath(module)}\\$module.db")
+        /**
+         * Retrieves a specified module's database file.
+         * @return the database file.
+         */
+        fun getDatabaseFile(module: String): File {
+            return File("${getModulePath(module)}\\$module.db")
+        }
     }
 }

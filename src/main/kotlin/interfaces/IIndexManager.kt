@@ -1,5 +1,6 @@
 package interfaces
 
+import db.CwODB
 import db.Index
 import db.IndexContent
 import kotlinx.coroutines.launch
@@ -17,6 +18,7 @@ import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
 import modules.mx.logic.indexFormat
+import modules.mx.logic.roundTo
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
@@ -29,6 +31,8 @@ interface IIndexManager : IModule {
     var lastChangeDateUTC: String
     var lastChangeDateLocal: String
     var lastChangeUser: String
+    var dbSizeKiByte: Double
+    var ixSizeKiByte: Double
 
     /**
      * This function needs to be called in the init{} block of the index manager.
@@ -38,6 +42,17 @@ interface IIndexManager : IModule {
         getLastChangeDates()
         addIndex(0)
         getIndicesFromArray(ixNumbers)
+        getFileSizes()
+    }
+
+    fun getFileSizes() {
+        dbSizeKiByte = (CwODB.getDatabaseFile(module).length()).toDouble() / 1024.0
+        ixSizeKiByte = 0.0
+        for (index in indexList.entries) {
+            ixSizeKiByte += (getIndexFile(index.key).length()).toDouble() / 1024.0
+        }
+        dbSizeKiByte = dbSizeKiByte.roundTo(2)
+        ixSizeKiByte = ixSizeKiByte.roundTo(2)
     }
 
     /**
@@ -143,6 +158,7 @@ interface IIndexManager : IModule {
                 Json.encodeToString(indexList[index.key])
             )
         }
+        getFileSizes()
     }
 
     fun getIndicesFromArray(ixNumbers: IntArray) {
