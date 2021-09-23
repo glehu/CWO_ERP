@@ -1,9 +1,13 @@
 package modules.m4.logic
 
+import api.logic.getCWOClient
 import interfaces.IIndexManager
 import interfaces.IModule
+import io.ktor.client.request.*
 import io.ktor.util.*
 import javafx.collections.ObservableList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -12,6 +16,7 @@ import modules.m4.M4PriceCategories
 import modules.m4.M4PriceCategory
 import modules.m4.gui.MG4PriceCategory
 import modules.mx.getModulePath
+import modules.mx.isClientGlobal
 import tornadofx.Controller
 import java.io.File
 import kotlin.collections.component1
@@ -42,9 +47,19 @@ class M4PriceManager : IModule, Controller() {
     }
 
     fun getCategories(): M4PriceCategories {
-        val categoryFile = getCategoriesFile()
-        if (!categoryFile.isFile) initializeCategories(categoryFile)
-        return Json.decodeFromString(categoryFile.readText())
+        lateinit var priceCategories: M4PriceCategories
+        if (!isClientGlobal) {
+            val categoryFile = getCategoriesFile()
+            if (!categoryFile.isFile) initializeCategories(categoryFile)
+            priceCategories = Json.decodeFromString(categoryFile.readText())
+        } else {
+            runBlocking {
+                launch {
+                    priceCategories = getCWOClient().get("${getApiUrl()}pricecategories")
+                }
+            }
+        }
+        return priceCategories
     }
 
     private fun writeCategories(categories: M4PriceCategories) {

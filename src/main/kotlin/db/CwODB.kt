@@ -7,7 +7,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.getModulePath
-import modules.mx.logic.MXLog
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
 import java.io.File
@@ -81,7 +80,7 @@ class CwODB {
                         Json.encodeToString(IndexContent(uID, "", posDBNew, byteSizeNew))
                     )
                 }
-            } else log(MXLog.LogType.ERROR, "Serialization failed!")
+            }
             return Pair(posDBNew, byteSizeNew)
         }
 
@@ -210,7 +209,6 @@ class CwODB {
                 File("${getModulePath(module)}\\$module.db").delete()
                 File("${getModulePath(module)}\\$module.nu").delete()
                 for (i in 0..99) File("${getModulePath(module)}\\$module.ix$i").delete()
-                log(MXLog.LogType.INFO, "Reset database for $module successful")
             }
         }
 

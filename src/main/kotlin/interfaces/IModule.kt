@@ -35,7 +35,8 @@ interface IModule {
     }
 
     /**
-     * Used to save the entry to the database.
+     * Saves the entry to the database.
+     * @return the uID of the entry.
      */
     fun save(
         entry: IEntry,

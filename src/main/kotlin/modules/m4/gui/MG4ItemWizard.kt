@@ -49,7 +49,7 @@ class NewM4ItemMainData : Fragment("Main") {
 @ExperimentalSerializationApi
 class NewM4ItemPricesData : Fragment("Prices") {
     private val item: M4ItemModel by inject()
-    var table = tableview(item.priceCategories) {
+    private var table = tableview(item.priceCategories) {
         isEditable = true
         readonlyColumn("Number", M4PriceCategory::number).prefWidth = 100.0
         readonlyColumn("User", M4PriceCategory::description).prefWidth = 250.0

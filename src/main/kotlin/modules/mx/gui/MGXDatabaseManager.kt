@@ -8,13 +8,14 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1IndexManager
 import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
+import modules.m4.logic.M4IndexManager
 import modules.mx.*
 import tornadofx.*
 
 @ExperimentalSerializationApi
 class MGXDatabaseManager : View("Databases") {
     private var indexManagers: ObservableList<IIndexManager> = observableListOf(
-        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex
+        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
     )
     override val root = borderpane {
         right = vbox {
@@ -24,35 +25,16 @@ class MGXDatabaseManager : View("Databases") {
                 }
                 prefWidth = rightButtonsWidth
             }
-            button("Reset M1") {
-                action {
-                    CwODB.resetModuleDatabase("M1")
-                    m1GlobalIndex = M1IndexManager()
-                    m1GlobalIndex.setLastChangeData(-1, activeUser.username)
-                    updateDatabases()
+            for ((counter, indexManager) in indexManagers.withIndex()) {
+                button("Reset M${counter + 1}") {
+                    action {
+                        CwODB.resetModuleDatabase("M${counter + 1}")
+                        indexManager.setLastChangeData(-1, activeUser.username)
+                        updateDatabases()
+                    }
+                    prefWidth = rightButtonsWidth
+                    style { unsafe("-fx-base", Color.DARKRED) }
                 }
-                prefWidth = rightButtonsWidth
-                style { unsafe("-fx-base", Color.DARKRED) }
-            }
-            button("Reset M2") {
-                action {
-                    CwODB.resetModuleDatabase("M2")
-                    m2GlobalIndex = M2IndexManager()
-                    m2GlobalIndex.setLastChangeData(-1, activeUser.username)
-                    updateDatabases()
-                }
-                prefWidth = rightButtonsWidth
-                style { unsafe("-fx-base", Color.DARKRED) }
-            }
-            button("Reset M3") {
-                action {
-                    CwODB.resetModuleDatabase("M3")
-                    m3GlobalIndex = M3IndexManager()
-                    m3GlobalIndex.setLastChangeData(-1, activeUser.username)
-                    updateDatabases()
-                }
-                prefWidth = rightButtonsWidth
-                style { unsafe("-fx-base", Color.DARKRED) }
             }
         }
         center {
@@ -71,6 +53,7 @@ class MGXDatabaseManager : View("Databases") {
         m1GlobalIndex = M1IndexManager()
         m2GlobalIndex = M2IndexManager()
         m3GlobalIndex = M3IndexManager()
-        indexManagers.addAll(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex)
+        m4GlobalIndex = M4IndexManager()
+        indexManagers.addAll(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex)
     }
 }
