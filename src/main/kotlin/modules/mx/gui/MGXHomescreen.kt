@@ -14,10 +14,7 @@ import modules.m4.gui.MG4Overview
 import modules.m4.gui.MG4PriceManager
 import modules.mx.*
 import modules.mx.gui.userAlerts.MGXUserAlert
-import modules.mx.logic.MXLog
-import modules.mx.logic.MXUserManager
-import modules.mx.logic.checkInstallation
-import modules.mx.logic.startupRoutines
+import modules.mx.logic.*
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
 import styling.Stylesheet
@@ -42,6 +39,8 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
             if (!isClientGlobal) {
                 log(MXLog.LogType.INFO, "Shutting down server...")
                 server.serverEngine.stop(100L, 100L)
+            } else {
+                if (taskGlobal.isRunning) taskGlobal.cancel()
             }
         } finally {
             super.stop()
@@ -128,6 +127,15 @@ class MXGUserInterface : View(titleGlobal) {
                 }
             }
             menu("Dev-Tools") {
+                menu("Task Ticker") {
+                    item("Start Ticker") {
+                        action {
+                            taskGlobal.cancel()
+                            taskGlobal = runAsync { MXTicker.startTicker() }
+                        }
+                    }
+                    item("Stop Ticker") { action { taskGlobal.cancel() } }
+                }
                 menu("Benchmark (M1)") {
                     item("Insert 10k random songs").action {
                         M1Benchmark().insertRandomEntries(
@@ -153,7 +161,7 @@ class MXGUserInterface : View(titleGlobal) {
             if (activeUser.canAccessM1) tab<MG1Overview>()
             if (activeUser.canAccessM2) tab<MG2Overview>()
             if (activeUser.canAccessM3) tab<MG3Overview>()
-            if (activeUser.canAccessM4 && !isClientGlobal) {
+            if (activeUser.canAccessM4) {
                 tab<MG4Overview>()
                 tab<MG4PriceManager>()
             }

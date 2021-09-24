@@ -3,6 +3,7 @@ package modules.mx
 import api.logic.MXServer
 import interfaces.IEntry
 import io.ktor.util.*
+import javafx.concurrent.Task
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -18,6 +19,10 @@ import modules.m3.logic.M3IndexManager
 import modules.m4.M4Item
 import modules.m4.logic.M4IndexManager
 import java.io.File
+
+//*************************************************
+//********************** SERIALIZERS **+***********
+//*************************************************
 
 @ExperimentalSerializationApi
 val serializersModuleGlobal = SerializersModule {
@@ -75,6 +80,9 @@ var activeUser: MXUser = MXUser("", "")
 
 //Token for encryption/decryption
 var tokenGlobal: String = ""
+
+//Task
+lateinit var taskGlobal: Task<Any>
 
 //File locations
 val programPath: String = System.getProperty("user.dir")

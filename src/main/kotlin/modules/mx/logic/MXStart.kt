@@ -13,6 +13,7 @@ import modules.mx.*
 import modules.mx.gui.CWOMainGUI
 import modules.mx.gui.showPreferences
 import tornadofx.launch
+import tornadofx.runAsync
 import java.io.File
 
 @InternalAPI
@@ -59,16 +60,30 @@ fun readAndSetIniValues() {
     }
 }
 
+/**
+ * Starts the software with all necessary precautions
+ */
 @InternalAPI
 @ExperimentalSerializationApi
 fun startupRoutines() {
     if (!isClientGlobal) {
-        //Load IndexManagers
+        /**
+         * Load index managers
+         */
         m1GlobalIndex = M1IndexManager()
         m2GlobalIndex = M2IndexManager()
         m3GlobalIndex = M3IndexManager()
         m4GlobalIndex = M4IndexManager()
-        //Start embedded server
+        /**
+         * Start the embedded server
+         */
         server = MXServer()
+    } else {
+        /**
+         * Start a long-running coroutine task to do various stuff
+         */
+        taskGlobal = runAsync {
+            MXTicker.startTicker()
+        }
     }
 }

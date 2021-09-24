@@ -18,6 +18,7 @@ import io.ktor.server.netty.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import modules.m4.logic.M4PriceManager
 import modules.mx.*
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
@@ -106,6 +107,7 @@ class MXServer : IModule, Controller() {
                     setEntryLock(
                         m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
                     )
+                    getPriceCategories()
                 }
             }
         }
@@ -170,6 +172,14 @@ class MXServer : IModule, Controller() {
                     )
                 )
             }
+        }
+    }
+
+    private fun Route.getPriceCategories() {
+        get("m4/pricecategories") {
+            call.respond(
+                M4PriceManager().getCategories()
+            )
         }
     }
 
