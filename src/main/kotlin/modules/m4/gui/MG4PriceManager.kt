@@ -45,4 +45,8 @@ class MG4PriceManager : View("M4 Price Categories") {
             }
         }
     }
+
+    fun refreshCategories() {
+        priceCategories = categoryManager.getCategories(priceCategories, categoryManager.getCategories())
+    }
 }
