@@ -16,7 +16,7 @@ import tornadofx.*
 class MGXPreferences : View("Preferences") {
     private val encryptionKeyProperty = SimpleStringProperty(getRandomString(16, true))
     private val dataPathProperty = SimpleStringProperty(System.getProperty("user.dir"))
-    private val maxSearchResultsProperty = SimpleIntegerProperty(10_000)
+    private val maxSearchResultsProperty = SimpleIntegerProperty(2_000)
     private val differenceFromUTCProperty = SimpleIntegerProperty(0)
     private val isClientProperty = SimpleStringProperty("false")
     private val serverIPAddressProperty = SimpleStringProperty("?")
