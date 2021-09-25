@@ -53,6 +53,12 @@ class MG3Overview : IOverview, View("M3 Invoices") {
             separator(Orientation.HORIZONTAL) {
                 paddingVertical = 10
             }
+            button("Paid") {
+                action { m3Controller.setPaidInvoice() }
+                tooltip("Processes the invoice.")
+                prefWidth = rightButtonsWidth
+                style { unsafe("-fx-base", Color.GRAY) }
+            }
             button("Process") {
                 action { m3Controller.processInvoice() }
                 tooltip("Processes the invoice.")

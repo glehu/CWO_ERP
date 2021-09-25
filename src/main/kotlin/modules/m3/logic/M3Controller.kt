@@ -7,11 +7,11 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.M2Contact
 import modules.m3.M3Invoice
-import modules.m3.M3InvoicePosition
 import modules.m3.gui.InvoiceConfiguratorWizard
-import modules.m3.gui.ItemConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
-import modules.m3.misc.*
+import modules.m3.misc.InvoiceProperty
+import modules.m3.misc.getInvoiceFromInvoiceProperty
+import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.mx.activeUser
 import modules.mx.gui.userAlerts.MGXUserAlert
 import modules.mx.logic.MXLog
@@ -54,16 +54,6 @@ class M3Controller : IController, Controller() {
         wizard.invoice.item = getInvoicePropertyFromInvoice(entry)
     }
 
-    fun createAndReturnItem(): M3InvoicePosition {
-        val item = M3InvoicePosition(-1, "")
-        val wizard = ItemConfiguratorWizard()
-        wizard.showHeader = false
-        wizard.showSteps = false
-        wizard.item.item = getItemPropertyFromItem(item)
-        wizard.openModal(block = true)
-        return getItemFromItemProperty(wizard.item.item)
-    }
-
     fun calculate(invoice: InvoiceProperty) {
         invoice.price = 0.0
         for (item in invoice.itemsProperty) {
@@ -72,7 +62,7 @@ class M3Controller : IController, Controller() {
     }
 
     fun processInvoice() {
-        if (checkInvoice()) {
+        if (checkInvoice() && checkForProcess()) {
             var contact: M2Contact
             if (wizard.invoice.item.buyerUID != -1) {
                 contact = m2GlobalIndex.get(wizard.invoice.item.buyerUID) as M2Contact
@@ -84,13 +74,38 @@ class M3Controller : IController, Controller() {
                 contact.moneyReceived += wizard.invoice.item.paid
                 m2GlobalIndex.save(contact)
             }
-            finishInvoice()
+            wizard.invoice.item.finished = true
+            saveEntry()
         }
     }
 
-    private fun finishInvoice() {
-        wizard.invoice.item.finished = true
-        saveEntry()
+    fun setPaidInvoice() {
+        if (checkInvoice() && checkForSetPaid()) {
+            wizard.invoice.item.paid = wizard.invoice.item.price
+            saveEntry()
+        }
+    }
+
+    private fun checkForSetPaid(): Boolean {
+        var valid = false
+        if (wizard.invoice.item.paid < wizard.invoice.item.price) {
+            valid = true
+        } else {
+            MGXUserAlert(MXLog.LogType.ERROR, "Invoice is already paid.").openModal()
+        }
+        return valid
+    }
+
+    private fun checkForProcess(): Boolean {
+        var valid = false
+        if (wizard.invoice.item.paid == wizard.invoice.item.price) {
+            valid = true
+        } else if (wizard.invoice.item.paid < wizard.invoice.item.price) {
+            MGXUserAlert(MXLog.LogType.ERROR, "Paid amount is less than invoice total.").openModal()
+        } else if (wizard.invoice.item.paid > wizard.invoice.item.price) {
+            MGXUserAlert(MXLog.LogType.ERROR, "Paid amount is more than invoice total.").openModal()
+        }
+        return valid
     }
 
     private fun checkInvoice(): Boolean {
@@ -99,13 +114,7 @@ class M3Controller : IController, Controller() {
         if (wizard.invoice.isValid) {
             wizard.invoice.commit()
             if (!wizard.invoice.item.finished) {
-                if (wizard.invoice.item.paid == wizard.invoice.item.price) {
-                    valid = true
-                } else if (wizard.invoice.item.paid < wizard.invoice.item.price) {
-                    MGXUserAlert(MXLog.LogType.ERROR, "Paid amount is less than invoice total.").openModal()
-                } else if (wizard.invoice.item.paid > wizard.invoice.item.price) {
-                    MGXUserAlert(MXLog.LogType.ERROR, "Paid amount is more than invoice total.").openModal()
-                }
+                valid = true
             } else {
                 MGXUserAlert(MXLog.LogType.ERROR, "The invoice is already finished.").openModal()
             }
