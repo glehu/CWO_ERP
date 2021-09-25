@@ -53,8 +53,8 @@ class NewContactFinancialData : Fragment("Financial Data") {
     override val root = form {
         fieldset {
             field("Price Category") { textfield(contact.priceCategory) }
-            field("Expenses") { textfield(contact.moneySent).isEditable = false }
-            field("Sales") { textfield(contact.moneyReceived).isEditable = false }
+            field("Sales") { textfield(contact.moneySent).isEditable = false }
+            field("Expenses") { textfield(contact.moneyReceived).isEditable = false }
         }
     }
 

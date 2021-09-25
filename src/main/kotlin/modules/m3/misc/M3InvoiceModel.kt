@@ -1,9 +1,6 @@
 package modules.m3.misc
 
-import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
+import javafx.beans.property.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -43,6 +40,8 @@ class InvoiceProperty {
     val itemsProperty = observableListOf<M3InvoicePosition>()
     val priceCategoryProperty = SimpleIntegerProperty(0)
     var priceCategory: Int by priceCategoryProperty
+    val finishedProperty = SimpleBooleanProperty(false)
+    var finished: Boolean by finishedProperty
 }
 
 @ExperimentalSerializationApi
@@ -58,6 +57,7 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     var paid = bind(InvoiceProperty::paidProperty)
     var items = bind(InvoiceProperty::itemsProperty)
     var priceCategory = bind(InvoiceProperty::priceCategoryProperty)
+    var finished = bind(InvoiceProperty::finishedProperty)
 }
 
 @ExperimentalSerializationApi
@@ -76,6 +76,7 @@ fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
         invoiceProperty.itemsProperty.add(Json.decodeFromString(v))
     }
     invoiceProperty.priceCategory = invoice.priceCategory
+    invoiceProperty.finished = invoice.finished
     return invoiceProperty
 }
 
@@ -95,5 +96,6 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): M3Invoice {
         invoice.items[invoice.items.size] = Json.encodeToString(item)
     }
     invoice.priceCategory = invoiceProperty.priceCategory
+    invoice.finished = invoiceProperty.finished
     return invoice
 }

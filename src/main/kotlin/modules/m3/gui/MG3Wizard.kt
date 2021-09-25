@@ -38,9 +38,8 @@ class NewInvoiceMainData : Fragment("Main") {
     override val root = form {
         prefWidth = 400.0
         fieldset {
-            field("UID") {
-                label(invoice.uID)
-            }
+            field("UID") { label(invoice.uID) }
+            field("Finished") { label(invoice.finished) }
             field("Seller") {
                 textfield(invoice.seller) {
                     contextmenu {

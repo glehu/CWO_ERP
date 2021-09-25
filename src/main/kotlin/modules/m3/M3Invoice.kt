@@ -40,12 +40,12 @@ data class M3Invoice(override var uID: Int) : IEntry, IInvoice {
      */
     var items: MutableMap<Int, String> = mutableMapOf()
 
-    var priceCategory: Int = 0
-
     //*************************************************
     //****************** Auto Generated Data **********
     //*************************************************
 
+    var finished: Boolean = false
+    var priceCategory: Int = 0
     private var isIncome: Boolean = false
 
     override fun initialize() {

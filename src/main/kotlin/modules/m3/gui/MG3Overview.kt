@@ -2,6 +2,7 @@ package modules.m3.gui
 
 import interfaces.IOverview
 import io.ktor.util.*
+import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -48,6 +49,15 @@ class MG3Overview : IOverview, View("M3 Invoices") {
                 isDisable = true
                 tooltip("Import contact data from a .csv file.")
                 prefWidth = rightButtonsWidth
+            }
+            separator(Orientation.HORIZONTAL) {
+                paddingVertical = 10
+            }
+            button("Process") {
+                action { m3Controller.processInvoice() }
+                tooltip("Processes the invoice.")
+                prefWidth = rightButtonsWidth
+                style { unsafe("-fx-base", Color.DARKGREEN) }
             }
         }
         center = form {
