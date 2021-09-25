@@ -62,30 +62,36 @@ class NewContactFinancialData : Fragment("Financial Data") {
         fieldset {
             field("Price Category") { textfield(contact.priceCategory) }
             field("Sales") {
-                textfield(contact.moneySent) {
-                    contextmenu {
-                        item("Show invoices (as seller)").action {
-                            val m3Finder = MG3InvoiceFinder()
-                            m3Finder.exactSearch.isSelected = true
-                            m3Finder.searchText.text = contact.name.value
-                            m3Finder.ixNr.value = m3GlobalIndex.getIndexUserSelection()[1]
-                            m3Finder.openModal()
+                hbox {
+                    textfield(contact.moneySent) {
+                        contextmenu {
+                            item("Show invoices (as seller)").action {
+                                val m3Finder = MG3InvoiceFinder()
+                                m3Finder.exactSearch.isSelected = true
+                                m3Finder.searchText.text = contact.name.value
+                                m3Finder.ixNr.value = m3GlobalIndex.getIndexUserSelection()[1]
+                                m3Finder.openModal()
+                            }
                         }
-                    }
-                }.isEditable = false
+                    }.isEditable = false
+                    label("EUR") { paddingHorizontal = 20 }
+                }
             }
             field("Expenses") {
-                textfield(contact.moneyReceived) {
-                    contextmenu {
-                        item("Show invoices (as buyer)").action {
-                            val m3Finder = MG3InvoiceFinder()
-                            m3Finder.exactSearch.isSelected = true
-                            m3Finder.searchText.text = contact.name.value
-                            m3Finder.ixNr.value = m3GlobalIndex.getIndexUserSelection()[0]
-                            m3Finder.openModal()
+                hbox {
+                    textfield(contact.moneyReceived) {
+                        contextmenu {
+                            item("Show invoices (as buyer)").action {
+                                val m3Finder = MG3InvoiceFinder()
+                                m3Finder.exactSearch.isSelected = true
+                                m3Finder.searchText.text = contact.name.value
+                                m3Finder.ixNr.value = m3GlobalIndex.getIndexUserSelection()[0]
+                                m3Finder.openModal()
+                            }
                         }
-                    }
-                }.isEditable = false
+                    }.isEditable = false
+                    label("EUR") { paddingHorizontal = 20 }
+                }
             }
         }
     }
