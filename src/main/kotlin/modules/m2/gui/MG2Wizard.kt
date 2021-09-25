@@ -65,7 +65,7 @@ class NewContactFinancialData : Fragment("Financial Data") {
                 textfield(contact.moneySent) {
                     contextmenu {
                         item("Show invoices").action {
-                            val m3Finder = find<MG3InvoiceFinder>()
+                            val m3Finder = MG3InvoiceFinder()
                             m3Finder.exactSearch.isSelected = true
                             m3Finder.searchText.text = contact.name.value
                             m3Finder.ixNr.value = m3GlobalIndex.getIndexUserSelection()[1]
@@ -78,7 +78,7 @@ class NewContactFinancialData : Fragment("Financial Data") {
                 textfield(contact.moneyReceived) {
                     contextmenu {
                         item("Show invoices").action {
-                            val m3Finder = find<MG3InvoiceFinder>()
+                            val m3Finder = MG3InvoiceFinder()
                             m3Finder.exactSearch.isSelected = true
                             m3Finder.searchText.text = contact.name.value
                             m3Finder.ixNr.value = m3GlobalIndex.getIndexUserSelection()[0]

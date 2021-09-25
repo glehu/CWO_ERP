@@ -62,8 +62,9 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                 @Suppress("UNCHECKED_CAST")
                 tableview(entriesFound as ObservableList<M3Invoice>) {
                     readonlyColumn("ID", M3Invoice::uID).prefWidth(65.0)
-                    readonlyColumn("Seller", M3Invoice::seller).prefWidth(300.0)
-                    readonlyColumn("Buyer", M3Invoice::buyer).prefWidth(300.0)
+                    readonlyColumn("Seller", M3Invoice::seller).prefWidth(250.0)
+                    readonlyColumn("Buyer", M3Invoice::buyer).prefWidth(250.0)
+                    readonlyColumn("Price", M3Invoice::price).prefWidth(100.0)
                     readonlyColumn("Text", M3Invoice::text).prefWidth(400.0)
                     onUserSelect(1) {
                         if (!getEntryLock(it.uID)) {
