@@ -29,6 +29,13 @@ data class M2Contact(override var uID: Int, var name: String) : IEntry {
     var country: String = "?"
 
     //----------------------------------v
+    //--------- Financial Data ---------|
+    //----------------------------------^
+    var priceCategory: Int = 0
+    var moneySent: Double = 0.0
+    var moneyReceived: Double = 0.0
+
+    //----------------------------------v
     //-------- Profession Data ---------|
     //----------------------------------^
     var isVocalist: Boolean = false

@@ -2,10 +2,16 @@ package modules.m3.gui
 
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import modules.m2.M2Contact
 import modules.m2.logic.M2Controller
 import modules.m3.M3InvoicePosition
 import modules.m3.logic.M3Controller
 import modules.m3.misc.InvoiceModel
+import modules.m4.M4PriceCategory
+import modules.m4.logic.M4Controller
+import modules.mx.activeUser
 import tornadofx.*
 
 @InternalAPI
@@ -122,13 +128,31 @@ class NewInvoiceItemData : Fragment("Items") {
                 onEditCommit {
                     m3Controller.calculate(invoice.item)
                 }
+
+                enableCellEditing()
+                isFocusTraversable = false
             }
-            button("Add Position") {
-                action {
-                    val item = m3Controller.createAndReturnItem()
-                    item.initialize()
-                    invoice.items.value.add(item)
-                    m3Controller.calculate(invoice.item)
+            hbox {
+                button("Add Position") {
+                    action {
+                        val itemPosition = M3InvoicePosition(-1, "")
+                        itemPosition.userName = activeUser.username
+                        invoice.items.value.add(itemPosition)
+                    }
+                }
+                button("Load Item") {
+                    action {
+                        val item = M4Controller().selectAndReturnItem()
+                        val itemPosition = M3InvoicePosition(item.uID, item.description)
+                        var priceCategory = 0
+                        if (invoice.buyerUID.value != -1) {
+                            val contact = M2Controller().get(invoice.buyerUID.value) as M2Contact
+                            priceCategory = contact.priceCategory
+                        }
+                        itemPosition.price = Json.decodeFromString<M4PriceCategory>(item.prices[priceCategory]!!).price
+                        itemPosition.userName = activeUser.username
+                        invoice.items.value.add(itemPosition)
+                    }
                 }
             }
         }

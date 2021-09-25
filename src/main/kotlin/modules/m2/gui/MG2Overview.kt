@@ -63,6 +63,18 @@ class MG2Overview : IOverview, View("M2 Contacts") {
                         add(NewContactMainData::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
+                    fieldset("Financial Data") {
+                        add(NewContactFinancialData::class)
+                        addClass(Stylesheet.fieldsetBorder)
+                    }
+                    fieldset("Profession Data") {
+                        add(NewContactProfessionData::class)
+                        addClass(Stylesheet.fieldsetBorder)
+                    }
+                    fieldset("Misc Data") {
+                        add(NewContactMiscData::class)
+                        addClass(Stylesheet.fieldsetBorder)
+                    }
                 }
             }
         }

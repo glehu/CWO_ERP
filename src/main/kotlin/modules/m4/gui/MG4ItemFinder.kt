@@ -11,8 +11,9 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m4.logic.M4Controller
+import modules.m1.misc.SongPropertyMainDataModel
 import modules.m4.M4Item
+import modules.m4.logic.M4Controller
 import modules.mx.gui.userAlerts.MGXLocked
 import modules.mx.m4GlobalIndex
 import tornadofx.*
@@ -33,6 +34,7 @@ class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
     override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
     override val threadIDCurrentProperty = SimpleIntegerProperty()
     private val m4Controller: M4Controller by inject()
+    private val song: SongPropertyMainDataModel by inject()
     override val root = borderpane {
         center = form {
             prefWidth = 1200.0
@@ -63,12 +65,20 @@ class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
                     readonlyColumn("ID", M4Item::uID).prefWidth(65.0)
                     readonlyColumn("Description", M4Item::description).prefWidth(500.0)
                     onUserSelect(1) {
-                        if (!getEntryLock(it.uID)) {
-                            m4Controller.showEntry(it.uID)
-                            searchText.text = ""
+                        if (song.uID.value == -2) {
+                            //Data transfer
+                            song.uID.value = it.uID
+                            song.name.value = it.description
+                            song.commit()
                             close()
                         } else {
-                            find<MGXLocked>().openModal()
+                            if (!getEntryLock(it.uID)) {
+                                m4Controller.showEntry(it.uID)
+                                searchText.text = ""
+                                close()
+                            } else {
+                                find<MGXLocked>().openModal()
+                            }
                         }
                     }
                     isFocusTraversable = false

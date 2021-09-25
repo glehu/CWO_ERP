@@ -5,6 +5,7 @@ import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import modules.m1.misc.SongPropertyMainDataModel
 import modules.m4.M4Item
 import modules.m4.gui.M4ItemConfiguratorWizard
 import modules.m4.gui.MG4ItemFinder
@@ -14,6 +15,7 @@ import modules.m4.misc.getM4ItemPropertyFromItem
 import modules.mx.activeUser
 import modules.mx.m4GlobalIndex
 import tornadofx.Controller
+import tornadofx.Scope
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -59,5 +61,18 @@ class M4Controller : IController, Controller() {
         wizard.item.item = getM4ItemPropertyFromItem(item)
         wizard.openModal(block = true)
         return getM4ItemFromItemProperty(wizard.item.item)
+    }
+
+    fun selectAndReturnItem(): M4Item {
+        val item: M4Item
+        val newScope = Scope()
+        val dataTransfer = SongPropertyMainDataModel()
+        dataTransfer.uID.value = -2
+        setInScope(dataTransfer, newScope)
+        tornadofx.find<MG4ItemFinder>(newScope).openModal(block = true)
+        item = if (dataTransfer.name.value != null) {
+            load(dataTransfer.uID.value) as M4Item
+        } else M4Item(-1, "")
+        return item
     }
 }

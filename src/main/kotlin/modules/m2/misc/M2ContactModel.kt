@@ -1,9 +1,6 @@
 package modules.m2.misc
 
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
+import javafx.beans.property.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.M2Contact
 import tornadofx.ItemViewModel
@@ -44,6 +41,16 @@ class ContactProperty {
     var country: String by countryProperty
 
     //----------------------------------v
+    //--------- Financial Data ---------|
+    //----------------------------------^
+    val priceCategoryProperty = SimpleIntegerProperty(0)
+    var priceCategory by priceCategoryProperty
+    val moneySentProperty = SimpleDoubleProperty(0.0)
+    var moneySent by moneySentProperty
+    val moneyReceivedProperty = SimpleDoubleProperty(0.0)
+    var moneyReceived by moneyReceivedProperty
+
+    //----------------------------------v
     //-------- Profession Data ---------|
     //----------------------------------^
     val isVocalistProperty = SimpleBooleanProperty(false)
@@ -81,6 +88,9 @@ class ContactModel : ItemViewModel<ContactProperty>(ContactProperty()) {
     val isManager = bind(ContactProperty::isManagerProperty)
     val isFan = bind(ContactProperty::isFanProperty)
     val spotifyID = bind(ContactProperty::spotifyIDProperty)
+    val priceCategory = bind(ContactProperty::priceCategoryProperty)
+    val moneySent = bind(ContactProperty::moneySentProperty)
+    val moneyReceived = bind(ContactProperty::moneyReceivedProperty)
 }
 
 @ExperimentalSerializationApi
@@ -107,6 +117,13 @@ fun getContactPropertyFromContact(contact: M2Contact): ContactProperty {
     contactProperty.city = contact.city
     contactProperty.postCode = contact.postCode
     contactProperty.country = contact.country
+
+    //----------------------------------v
+    //--------- Financial Data ---------|
+    //----------------------------------^
+    contactProperty.priceCategory = contact.priceCategory
+    contactProperty.moneySent = contact.moneySent
+    contactProperty.moneyReceived = contact.moneyReceived
 
     //----------------------------------v
     //-------- Profession Data ---------|
@@ -148,6 +165,13 @@ fun getContactFromProperty(contactProperty: ContactProperty): M2Contact {
     contact.city = contactProperty.city
     contact.postCode = contactProperty.postCode
     contact.country = contactProperty.country
+
+    //----------------------------------v
+    //--------- Financial Data ---------|
+    //----------------------------------^
+    contact.priceCategory = contactProperty.priceCategory
+    contact.moneySent = contactProperty.moneySent
+    contact.moneyReceived = contactProperty.moneyReceived
 
     //----------------------------------v
     //-------- Profession Data ---------|
