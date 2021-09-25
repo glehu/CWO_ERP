@@ -41,6 +41,8 @@ class InvoiceProperty {
     val paidProperty = SimpleDoubleProperty()
     var paid: Double by paidProperty
     val itemsProperty = observableListOf<M3InvoicePosition>()
+    val priceCategoryProperty = SimpleIntegerProperty(0)
+    var priceCategory: Int by priceCategoryProperty
 }
 
 @ExperimentalSerializationApi
@@ -55,6 +57,7 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     var price = bind(InvoiceProperty::priceProperty)
     var paid = bind(InvoiceProperty::paidProperty)
     var items = bind(InvoiceProperty::itemsProperty)
+    var priceCategory = bind(InvoiceProperty::priceCategoryProperty)
 }
 
 @ExperimentalSerializationApi
@@ -72,6 +75,7 @@ fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
     for ((_, v) in invoice.items) {
         invoiceProperty.itemsProperty.add(Json.decodeFromString(v))
     }
+    invoiceProperty.priceCategory = invoice.priceCategory
     return invoiceProperty
 }
 
@@ -90,5 +94,6 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): M3Invoice {
     for (item in invoiceProperty.itemsProperty) {
         invoice.items[invoice.items.size] = Json.encodeToString(item)
     }
+    invoice.priceCategory = invoiceProperty.priceCategory
     return invoice
 }

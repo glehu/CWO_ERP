@@ -64,6 +64,7 @@ class NewInvoiceMainData : Fragment("Main") {
                             val contact = m2controller.selectAndReturnContact()
                             invoice.buyerUID.value = contact.uID
                             invoice.buyer.value = contact.name
+                            invoice.priceCategory.value = contact.priceCategory
                         }
                         item("Show contact").action {
                             if (invoice.buyerUID.value != -1) m2controller.showEntry(invoice.buyerUID.value)
@@ -100,6 +101,7 @@ class NewInvoiceItemData : Fragment("Items") {
     //----------------------------------^
     override val root = form {
         fieldset {
+            field("Price Category") { label(invoice.priceCategory) }
             field("Price") {
                 hbox {
                     textfield(invoice.price) {
@@ -152,6 +154,7 @@ class NewInvoiceItemData : Fragment("Items") {
                         itemPosition.price = Json.decodeFromString<M4PriceCategory>(item.prices[priceCategory]!!).price
                         itemPosition.userName = activeUser.username
                         invoice.items.value.add(itemPosition)
+                        m3Controller.calculate(invoice.item)
                     }
                 }
             }
