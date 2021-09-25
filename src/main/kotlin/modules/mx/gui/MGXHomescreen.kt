@@ -62,35 +62,38 @@ class MXGLogin : Fragment("CWO ERP") {
         center = form {
             checkInstallation()
             fieldset("Login Credentials") {
-                addClass(Stylesheet.fieldsetBorder)
-                vbox {
-                    fieldset {
-                        field("Username") { textfield(loginUser.username).required() }
-                        field("Password") { passwordfield(loginUser.password).required() }
-                    }
-                }
-                button("Login") {
-                    enableWhen(loginUser.dirty)
-                    shortcut("Enter")
-                    action {
-                        var validResponse = false
-                        runAsyncWithProgress {
-                            if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty()) {
-                                validResponse = userManager.login(loginUser.username.value, loginUser.password.value)
-                            }
-                        } ui {
-                            if (validResponse) {
-                                startupRoutines()
-                                replaceWith<MXGUserInterface>()
-                            } else {
-                                loginUser.password.value = ""
-                                if (isClientGlobal) {
-                                    //The server's login response could not be validated => security warning
-                                    MGXUserAlert(
-                                        type = MXLog.LogType.WARNING,
-                                        message = "The server's login response could not be validated.\n\n" +
-                                                "Please notify the administrator as this poses a security thread."
-                                    ).openModal()
+                hbox {
+                    addClass(Stylesheet.fieldsetBorder)
+                    vbox {
+                        fieldset {
+                            field("Username") { textfield(loginUser.username).required() }
+                            field("Password") { passwordfield(loginUser.password).required() }
+                        }
+                        button("Login") {
+                            enableWhen(loginUser.dirty)
+                            shortcut("Enter")
+                            action {
+                                var validResponse = false
+                                runAsyncWithProgress {
+                                    if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty()) {
+                                        validResponse =
+                                            userManager.login(loginUser.username.value, loginUser.password.value)
+                                    }
+                                } ui {
+                                    if (validResponse) {
+                                        startupRoutines()
+                                        replaceWith<MXGUserInterface>()
+                                    } else {
+                                        loginUser.password.value = ""
+                                        if (isClientGlobal) {
+                                            //The server's login response could not be validated => security warning
+                                            MGXUserAlert(
+                                                type = MXLog.LogType.WARNING,
+                                                message = "The server's login response could not be validated.\n\n" +
+                                                        "Please notify the administrator as this poses a security thread."
+                                            ).openModal()
+                                        }
+                                    }
                                 }
                             }
                         }

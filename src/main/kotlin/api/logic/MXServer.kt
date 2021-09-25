@@ -3,6 +3,7 @@ package api.logic
 import api.gui.GSpotify
 import api.misc.json.EntryJson
 import api.misc.json.SpotifyAuthCallbackJson
+import api.misc.json.UPPriceCategoryJson
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -92,6 +93,9 @@ class MXServer : IModule, Controller() {
                 }
                 route("/api")
                 {
+                    /**
+                     * General Endpoints
+                     */
                     getIndexSelection(
                         m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
                     )
@@ -107,7 +111,14 @@ class MXServer : IModule, Controller() {
                     setEntryLock(
                         m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
                     )
+
+                    /**
+                     * M4 Endpoints
+                     */
                     getPriceCategories()
+                    getPriceCategoryNumber()
+                    savePriceCategory()
+                    deletePriceCategory()
                 }
             }
         }
@@ -180,6 +191,26 @@ class MXServer : IModule, Controller() {
             call.respond(
                 M4PriceManager().getCategories()
             )
+        }
+    }
+
+    private fun Route.getPriceCategoryNumber() {
+        get("m4/categorynumber") {
+            call.respond(
+                M4PriceManager().getNumber(M4PriceManager().getCategories())
+            )
+        }
+    }
+
+    private fun Route.savePriceCategory() {
+        post("m4/savecategory") {
+            call.respond(MXServerController.updatePriceCategories(call.receive() as UPPriceCategoryJson))
+        }
+    }
+
+    private fun Route.deletePriceCategory() {
+        post("m4/deletecategory") {
+            call.respond(MXServerController.deletePriceCategory(call.receive() as UPPriceCategoryJson))
         }
     }
 

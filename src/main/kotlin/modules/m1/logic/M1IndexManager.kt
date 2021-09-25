@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
 class M1IndexManager : IModule, IIndexManager, Controller() {
-    override val moduleNameLong = "M1IndexManager"
+    override val moduleNameLong = "Discography"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
         return m1GlobalIndex

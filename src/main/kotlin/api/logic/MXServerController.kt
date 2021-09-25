@@ -1,14 +1,17 @@
 package api.logic
 
 import api.misc.json.LoginResponseJson
+import api.misc.json.UPPriceCategoryJson
 import api.misc.json.ValidationContainerJson
 import interfaces.IIndexManager
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.m4.logic.M4PriceManager
 import modules.mx.MXUser
 import modules.mx.logic.encryptKeccak
 
@@ -100,6 +103,23 @@ class MXServerController {
                     pepper = encryptKeccak("CWO_ERP LoginValidation")
                 )
             )
+        }
+
+        @InternalAPI
+        fun updatePriceCategories(categoryJson: UPPriceCategoryJson): Boolean {
+            M4PriceManager().updateCategory(
+                categoryNew = Json.decodeFromString(categoryJson.catNew),
+                categoryOld = Json.decodeFromString(categoryJson.catOld)
+            )
+            return true
+        }
+
+        @InternalAPI
+        fun deletePriceCategory(categoryJson: UPPriceCategoryJson): Boolean {
+            M4PriceManager().deleteCategory(
+                category = Json.decodeFromString(categoryJson.catNew),
+            )
+            return true
         }
     }
 }

@@ -76,11 +76,7 @@ class MXUserManager : IModule, Controller() {
         if (user != null && user.password == encryptAES(password)) {
             successful = true
             if (activeUser.username.isEmpty()) activeUser = user
-            if (!isClientGlobal) {
-                log(MXLog.LogType.INFO, "User \"$username\" login successful")
-            } else {
-                log(MXLog.LogType.COM, "User \"$username\" login successful")
-            }
+            log(MXLog.LogType.INFO, "User \"$username\" login successful")
         } else log(MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials")
         return successful
     }
@@ -107,6 +103,7 @@ class MXUserManager : IModule, Controller() {
                         activeUser.canAccessM1 = loginResponse.accessM1
                         activeUser.canAccessM2 = loginResponse.accessM2
                         activeUser.canAccessM3 = loginResponse.accessM3
+                        activeUser.canAccessM4 = loginResponse.accessM4
                     } else validResponse = false
                 }
             }

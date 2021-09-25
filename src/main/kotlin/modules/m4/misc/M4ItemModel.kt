@@ -12,7 +12,6 @@ import modules.m4.M4PriceCategory
 import modules.m4.logic.M4PriceManager
 import tornadofx.ItemViewModel
 import tornadofx.getValue
-import tornadofx.observableListOf
 import tornadofx.setValue
 
 @InternalAPI
@@ -30,8 +29,7 @@ class M4ItemProperty {
     var manufacturerCode: String by manufacturerCodeProperty
     val productInfoJsonProperty = SimpleStringProperty("?")
     var productInfoJson: String by productInfoJsonProperty
-    var priceCategoriesProperty = M4PriceManager()
-        .getCategories(observableListOf(), M4PriceManager().getCategories())
+    var priceCategoriesProperty = M4PriceManager().getCategories(M4PriceManager().getCategories())
 }
 
 @InternalAPI
@@ -59,8 +57,7 @@ fun getM4ItemPropertyFromItem(item: M4Item): M4ItemProperty {
     /**
      * Get the current price categories, so we are working with the latest data
      */
-    itemProperty.priceCategoriesProperty = M4PriceManager()
-        .getCategories(observableListOf(), M4PriceManager().getCategories())
+    itemProperty.priceCategoriesProperty = M4PriceManager().getCategories(M4PriceManager().getCategories())
     /**
      * Fill the price categories' prices according to their number
      */

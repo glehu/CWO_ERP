@@ -1,9 +1,11 @@
 package modules.m4.logic
 
 import api.logic.getCWOClient
+import api.misc.json.UPPriceCategoryJson
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.ktor.util.*
 import javafx.collections.ObservableList
 import kotlinx.coroutines.launch
@@ -15,9 +17,11 @@ import kotlinx.serialization.json.Json
 import modules.m4.M4PriceCategories
 import modules.m4.M4PriceCategory
 import modules.m4.gui.MG4PriceCategory
+import modules.m4.gui.MG4PriceManager
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
 import tornadofx.Controller
+import tornadofx.observableListOf
 import java.io.File
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -32,18 +36,50 @@ class M4PriceManager : IModule, Controller() {
         return null
     }
 
-    fun updateCategory(categoryNew: M4PriceCategory, categoryOld: M4PriceCategory, categories: M4PriceCategories) {
-        //Check if username changed
-        if (categoryNew.number != categoryOld.number) {
-            categories.priceCategories.remove(categoryOld.number)
+    fun updateCategory(categoryNew: M4PriceCategory, categoryOld: M4PriceCategory) {
+        if (!isClientGlobal) {
+            val categories = getCategories()
+            //Check if number changed
+            if (categoryNew.number != categoryOld.number) {
+                categories.priceCategories.remove(categoryOld.number)
+            }
+            categories.priceCategories[categoryNew.number] = categoryNew
+            writeCategories(categories)
+        } else {
+            runBlocking {
+                launch {
+                    getCWOClient().post("${getApiUrl()}savecategory") {
+                        contentType(ContentType.Application.Json)
+                        body = UPPriceCategoryJson(
+                            catNew = Json.encodeToString(categoryNew),
+                            catOld = Json.encodeToString(categoryOld)
+                        )
+                    }
+                }
+            }
         }
-        categories.priceCategories[categoryNew.number] = categoryNew
-        writeCategories(categories)
+        tornadofx.find<MG4PriceManager>().refreshCategories()
     }
 
-    fun deleteCategory(category: M4PriceCategory, categories: M4PriceCategories) {
-        categories.priceCategories.remove(category.number)
-        writeCategories(categories)
+    fun deleteCategory(category: M4PriceCategory) {
+        if (!isClientGlobal) {
+            val categories = getCategories()
+            categories.priceCategories.remove(category.number)
+            writeCategories(categories)
+        } else {
+            runBlocking {
+                launch {
+                    getCWOClient().post("${getApiUrl()}deletecategory") {
+                        contentType(ContentType.Application.Json)
+                        body = UPPriceCategoryJson(
+                            catNew = Json.encodeToString(category),
+                            catOld = ""
+                        )
+                    }
+                }
+            }
+        }
+        tornadofx.find<MG4PriceManager>().refreshCategories()
     }
 
     fun getCategories(): M4PriceCategories {
@@ -84,42 +120,45 @@ class M4PriceManager : IModule, Controller() {
      * Used to retrieve the first new available number.
      * @return a number to be used for a price category.
      */
-    private fun getNumber(categories: M4PriceCategories): Int {
-        val numbers = IntArray(categories.priceCategories.size)
-        var counter = 0
-        if (categories.priceCategories.isNotEmpty()) {
-            for ((_, category) in categories.priceCategories) {
-                numbers[counter] = category.number
-                counter++
+    fun getNumber(categories: M4PriceCategories): Int {
+        var categoryNumber = 0
+        if (!isClientGlobal) {
+            val numbers = IntArray(categories.priceCategories.size)
+            var counter = 0
+            if (categories.priceCategories.isNotEmpty()) {
+                for ((_, category) in categories.priceCategories) {
+                    numbers[counter] = category.number
+                    counter++
+                }
+                numbers.sort()
+                counter = 0
+                for (number in numbers) {
+                    if (number == counter) counter++
+                }
             }
-            numbers.sort()
-            counter = 0
-            for (number in numbers) {
-                if (number == counter) counter++
+            categoryNumber = counter
+        } else {
+            runBlocking {
+                launch {
+                    categoryNumber = getCWOClient().get("${getApiUrl()}categorynumber")
+                }
             }
         }
-        return counter
+        return categoryNumber
     }
 
-    fun addCategory(categories: M4PriceCategories, priceCategories: ObservableList<M4PriceCategory>) =
-        showCategory(M4PriceCategory(getNumber(categories), ""), categories, priceCategories)
+    fun addCategory(categories: M4PriceCategories) =
+        showCategory(M4PriceCategory(getNumber(categories), ""), categories)
 
-    fun getCategories(
-        priceCategories: ObservableList<M4PriceCategory>,
-        categories: M4PriceCategories
-    ): ObservableList<M4PriceCategory> {
-        priceCategories.clear()
+    fun getCategories(categories: M4PriceCategories): ObservableList<M4PriceCategory> {
+        val priceCategories = observableListOf<M4PriceCategory>()
         val sortedMap = categories.priceCategories.toSortedMap()
         for ((_, v) in sortedMap) priceCategories.add(v)
         return priceCategories
     }
 
-    fun showCategory(
-        category: M4PriceCategory,
-        categories: M4PriceCategories,
-        priceCategories: ObservableList<M4PriceCategory>
-    ) {
-        MG4PriceCategory(category, categories).openModal(block = true)
-        getCategories(priceCategories, categories)
+    fun showCategory(category: M4PriceCategory, categories: M4PriceCategories) {
+        MG4PriceCategory(category).openModal(block = true)
+        getCategories(categories)
     }
 }

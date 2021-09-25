@@ -11,7 +11,7 @@ import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class MG4Overview : IOverview, View("M4 Item") {
+class MG4Overview : IOverview, View("M4 Inventory") {
     private val m4Controller: M4Controller by inject()
     override val root = borderpane {
         right = vbox {

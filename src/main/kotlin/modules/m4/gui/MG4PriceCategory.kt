@@ -3,7 +3,6 @@ package modules.m4.gui
 import io.ktor.util.*
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m4.M4PriceCategories
 import modules.m4.M4PriceCategory
 import modules.m4.logic.M4PriceManager
 import modules.m4.misc.M4PriceCategoryModel
@@ -14,10 +13,7 @@ import tornadofx.*
 
 @ExperimentalSerializationApi
 @InternalAPI
-class MG4PriceCategory(
-    priceCategory: M4PriceCategory,
-    categories: M4PriceCategories
-) : Fragment("Price Category") {
+class MG4PriceCategory(priceCategory: M4PriceCategory) : Fragment("Price Category") {
     private val priceManager: M4PriceManager by inject()
     private val priceCategoryModel = M4PriceCategoryModel(getPriceCategoryPropertyFromCategory(priceCategory))
     private val originalPriceCategory = priceCategory.copy()
@@ -33,7 +29,8 @@ class MG4PriceCategory(
                 if (priceCategoryModel.isValid) {
                     priceCategoryModel.commit()
                     priceManager.updateCategory(
-                        getPriceCategoryFromCategoryProperty(priceCategoryModel.item), originalPriceCategory, categories
+                        categoryNew = getPriceCategoryFromCategoryProperty(priceCategoryModel.item),
+                        categoryOld = originalPriceCategory
                     )
                     close()
                 }
@@ -43,7 +40,7 @@ class MG4PriceCategory(
         button("Delete") {
             prefWidth = rightButtonsWidth
             action {
-                priceManager.deleteCategory(originalPriceCategory, categories)
+                priceManager.deleteCategory(originalPriceCategory)
                 close()
             }
             style { unsafe("-fx-base", Color.DARKRED) }

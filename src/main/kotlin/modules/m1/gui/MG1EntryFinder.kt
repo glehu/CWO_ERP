@@ -36,6 +36,26 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
     override val ixNrList: ObservableList<String> = observableArrayList(getIndexUserSelection())
     override val threadIDCurrentProperty = SimpleIntegerProperty()
     private val m1Controller: M1Controller by inject()
+
+    @Suppress("UNCHECKED_CAST")
+    val table = tableview(entriesFound as ObservableList<M1Song>) {
+        readonlyColumn("ID", M1Song::uID).prefWidth(65.0)
+        readonlyColumn("Name", M1Song::name).prefWidth(310.0)
+        readonlyColumn("Vocalist", M1Song::vocalist).prefWidth(200.0)
+        readonlyColumn("Producer", M1Song::producer).prefWidth(200.0)
+        readonlyColumn("Genre", M1Song::genre).prefWidth(100.0)
+        readonlyColumn("Type", M1Song::type).prefWidth(100.0)
+        onUserSelect(1) {
+            if (!getEntryLock(it.uID)) {
+                m1Controller.showEntry(it.uID)
+                searchText.text = ""
+                close()
+            } else {
+                find<MGXLocked>().openModal()
+            }
+        }
+        isFocusTraversable = false
+    }
     override val root = borderpane {
         center = form {
             prefWidth = 1200.0
@@ -48,6 +68,7 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                                 runAsync {
                                     threadIDCurrentProperty.value++
                                     searchForEntries(threadIDCurrentProperty.value)
+                                    table.refresh()
                                 }
                             }
                             tooltip("Contains the search text that will be used to find an entry.")
@@ -64,24 +85,7 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                         }
                     }
                 }
-                @Suppress("UNCHECKED_CAST")
-                tableview(entriesFound as ObservableList<M1Song>) {
-                    readonlyColumn("ID", M1Song::uID).prefWidth(65.0)
-                    readonlyColumn("Name", M1Song::name).prefWidth(310.0)
-                    readonlyColumn("Vocalist", M1Song::vocalist).prefWidth(200.0)
-                    readonlyColumn("Producer", M1Song::producer).prefWidth(200.0)
-                    readonlyColumn("Genre", M1Song::genre).prefWidth(200.0)
-                    onUserSelect(1) {
-                        if (!getEntryLock(it.uID)) {
-                            m1Controller.showEntry(it.uID)
-                            searchText.text = ""
-                            close()
-                        } else {
-                            find<MGXLocked>().openModal()
-                        }
-                    }
-                    isFocusTraversable = false
-                }
+                add(table)
             }
         }
     }

@@ -14,6 +14,7 @@ import modules.m1.M1Song
 import modules.m2.M2Contact
 import modules.mx.logic.MXLog
 import modules.mx.logic.getDefaultDate
+import modules.mx.logic.indexFormat
 import modules.mx.m1GlobalIndex
 import modules.mx.m2GlobalIndex
 import tornadofx.Controller
@@ -97,6 +98,7 @@ class M1Import : IModule, Controller() {
             song.inAlbum = true
             song.nameAlbum = album.name
             song.typeAlbum = album.type
+            song.albumUID = album.uID
             song.releaseDate = album.releaseDate
 
             //Do the artists exist?
@@ -108,7 +110,6 @@ class M1Import : IModule, Controller() {
                 raf = raf,
                 indexWriteToDisk = false,
             )
-            log(MXLog.LogType.INFO, "Data Insertion uID ${song.uID}")
             updateProgress(Pair(counter, "Importing spotify tracks..."))
         }
     }
@@ -116,19 +117,16 @@ class M1Import : IModule, Controller() {
     @ExperimentalSerializationApi
     private fun createOrSaveAlbum(album: SpotifyAlbumJson, raf: RandomAccessFile, m2raf: RandomAccessFile): M1Song {
         val song: M1Song
-        val uID: Int
         var releaseDate: String = getDefaultDate()
 
         //New album or existing album
         val filteredMap = m1GlobalIndex.indexList[5]!!.indexMap.filterValues {
-            it.content.contains(album.id)
+            it.content.contains(indexFormat(album.id).uppercase())
         }
-        if (filteredMap.isEmpty()) {
-            song = M1Song(-1, "")
+        song = if (filteredMap.isEmpty()) {
+            M1Song(-1, "")
         } else {
-            val indexContent = filteredMap.values.first()
-            uID = indexContent.uID
-            song = get(uID) as M1Song
+            get(filteredMap.keys.first()) as M1Song
         }
 
         //Spotify META Data
@@ -160,7 +158,6 @@ class M1Import : IModule, Controller() {
             raf = raf,
             indexWriteToDisk = false,
         )
-        log(MXLog.LogType.INFO, "Data Insertion uID ${song.uID}")
         return song
     }
 
@@ -171,7 +168,7 @@ class M1Import : IModule, Controller() {
         var filteredMap: Map<Int, IndexContent>
         for ((artistCounter, artist: SpotifyArtistJson) in artists.withIndex()) {
             filteredMap = m2GlobalIndex.indexList[3]!!.indexMap.filterValues {
-                it.content.contains(artist.id)
+                it.content.contains(indexFormat(artist.id).uppercase())
             }
             if (filteredMap.isEmpty()) {
                 contact = M2Contact(-1, artist.name)
@@ -183,8 +180,7 @@ class M1Import : IModule, Controller() {
                     indexWriteToDisk = false,
                 )
             } else {
-                val indexContent = filteredMap.values.first()
-                contact = m2GlobalIndex.get(indexContent.uID) as M2Contact
+                contact = m2GlobalIndex.get(filteredMap.keys.first()) as M2Contact
                 artistUID = contact.uID
             }
             when (artistCounter) {

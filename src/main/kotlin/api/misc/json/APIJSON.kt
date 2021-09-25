@@ -50,3 +50,9 @@ data class ValidationContainerJson(
     val contentJson: String,
     val hash: String
 )
+
+@Serializable
+data class UPPriceCategoryJson(
+    val catNew: String,
+    val catOld: String
+)
