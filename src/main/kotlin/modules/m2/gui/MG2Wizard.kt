@@ -1,8 +1,14 @@
 package modules.m2.gui
 
+import io.ktor.util.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.misc.ContactModel
+import modules.m3.gui.MG3InvoiceFinder
+import modules.mx.m3GlobalIndex
 import tornadofx.*
 
+@ExperimentalSerializationApi
+@InternalAPI
 class ContactConfiguratorWizard : Wizard("Add new contact") {
     val contact: ContactModel by inject()
 
@@ -44,6 +50,8 @@ class NewContactMainData : Fragment("Main Data") {
     }
 }
 
+@ExperimentalSerializationApi
+@InternalAPI
 class NewContactFinancialData : Fragment("Financial Data") {
     private val contact: ContactModel by inject()
 
@@ -53,8 +61,32 @@ class NewContactFinancialData : Fragment("Financial Data") {
     override val root = form {
         fieldset {
             field("Price Category") { textfield(contact.priceCategory) }
-            field("Sales") { textfield(contact.moneySent).isEditable = false }
-            field("Expenses") { textfield(contact.moneyReceived).isEditable = false }
+            field("Sales") {
+                textfield(contact.moneySent) {
+                    contextmenu {
+                        item("Show invoices").action {
+                            val m3Finder = find<MG3InvoiceFinder>()
+                            m3Finder.exactSearch.isSelected = true
+                            m3Finder.searchText.text = contact.name.value
+                            m3Finder.ixNr.value = m3GlobalIndex.getIndexUserSelection()[1]
+                            m3Finder.openModal()
+                        }
+                    }
+                }.isEditable = false
+            }
+            field("Expenses") {
+                textfield(contact.moneyReceived) {
+                    contextmenu {
+                        item("Show invoices").action {
+                            val m3Finder = find<MG3InvoiceFinder>()
+                            m3Finder.exactSearch.isSelected = true
+                            m3Finder.searchText.text = contact.name.value
+                            m3Finder.ixNr.value = m3GlobalIndex.getIndexUserSelection()[0]
+                            m3Finder.openModal()
+                        }
+                    }
+                }.isEditable = false
+            }
         }
     }
 
