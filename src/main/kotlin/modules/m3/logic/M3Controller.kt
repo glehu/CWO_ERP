@@ -72,9 +72,7 @@ class M3Controller : IController, Controller() {
     }
 
     fun processInvoice() {
-        wizard.invoice.commit()
-        wizard.invoice.validate()
-        if (wizard.invoice.isValid && !wizard.invoice.item.finished) {
+        if (checkInvoice()) {
             var contact: M2Contact
             if (wizard.invoice.item.buyerUID != -1) {
                 contact = m2GlobalIndex.get(wizard.invoice.item.buyerUID) as M2Contact
@@ -86,10 +84,38 @@ class M3Controller : IController, Controller() {
                 contact.moneyReceived += wizard.invoice.item.paid
                 m2GlobalIndex.save(contact)
             }
-            wizard.invoice.item.finished = true
-            saveEntry()
-        } else if (wizard.invoice.item.finished) {
-            MGXUserAlert(MXLog.LogType.INFO, "The invoice is already finished.").openModal()
+            finishInvoice()
         }
+    }
+
+    private fun finishInvoice() {
+        wizard.invoice.item.finished = true
+        saveEntry()
+    }
+
+    private fun checkInvoice(): Boolean {
+        var valid = false
+        wizard.invoice.validate()
+        if (wizard.invoice.isValid) {
+            wizard.invoice.commit()
+            if (!wizard.invoice.item.finished) {
+                if (wizard.invoice.item.paid == wizard.invoice.item.price) {
+                    valid = true
+                } else if (wizard.invoice.item.paid < wizard.invoice.item.price) {
+                    MGXUserAlert(MXLog.LogType.ERROR, "Paid amount is less than invoice total.").openModal()
+                } else if (wizard.invoice.item.paid > wizard.invoice.item.price) {
+                    MGXUserAlert(MXLog.LogType.ERROR, "Paid amount is more than invoice total.").openModal()
+                }
+            } else {
+                MGXUserAlert(MXLog.LogType.ERROR, "The invoice is already finished.").openModal()
+            }
+        } else {
+            MGXUserAlert(
+                MXLog.LogType.ERROR,
+                "Please fill out the invoice completely.\n\n" +
+                        "Missing fields are marked red."
+            ).openModal()
+        }
+        return valid
     }
 }
