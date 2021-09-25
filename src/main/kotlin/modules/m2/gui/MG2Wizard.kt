@@ -64,7 +64,7 @@ class NewContactFinancialData : Fragment("Financial Data") {
             field("Sales") {
                 textfield(contact.moneySent) {
                     contextmenu {
-                        item("Show invoices").action {
+                        item("Show invoices (as seller)").action {
                             val m3Finder = MG3InvoiceFinder()
                             m3Finder.exactSearch.isSelected = true
                             m3Finder.searchText.text = contact.name.value
@@ -77,7 +77,7 @@ class NewContactFinancialData : Fragment("Financial Data") {
             field("Expenses") {
                 textfield(contact.moneyReceived) {
                     contextmenu {
-                        item("Show invoices").action {
+                        item("Show invoices (as buyer)").action {
                             val m3Finder = MG3InvoiceFinder()
                             m3Finder.exactSearch.isSelected = true
                             m3Finder.searchText.text = contact.name.value
