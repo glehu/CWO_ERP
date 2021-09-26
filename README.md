@@ -1,5 +1,5 @@
 # CWO ERP
-CWO Enterprise Resource Planning Software using a custom self-written database. 
+CWO Enterprise Resource Planning Software using a custom self-written recursive relational object database. 
 
 ## First steps
 If you run the file `CWO_ERP.jar`, that is included in every release, for the first time, 
@@ -52,13 +52,33 @@ This module is designed to store contacts. Contacts can be loaded into songs and
 Next to inserting and looking up entries, there is also an analytics module, 
 that allows the user to generate a pie chart, showing the distribution of cities across all stored contacts.
 
+Right clicking the "Sales" or "Expenses" fields of a contact enable the user to look up invoices of this contact.
+
 #### M3 Invoices
 This module is designed to store invoice data, e.g. income and expenses. 
-Positions (items, services) can be added to the basket via the "Add Position" button, while specifying name, amount and price.
+Positions (items, services) from the M4 Inventory module can be added to the basket via the "Load Item" button.
+With "Add Position" you can also an empty invoice position for custom temporary items.
 Amount and price of positions can be edited inside the table by double-clicking the cells containing the values and confirming by hitting enter.
 
 Contacts can be loaded via the context menu, to avoid typos and to load more data with less user actions.
 Contacts loaded this way are being kept in sync with their main module's data.
+
+Loading a buyer contact sets the price category of this invoice according to the contact's data.
+
+Clicking "Paid" or entering the invoice total price into the field "Paid" sets the amount of money that got already paid.
+Upon processing an invoice by clicking "Process" the invoice gets set to "Finished".
+In case a buyer and/or seller was loaded, they get the invoice paid amount stored as "Sales" or "Expenses", depending on their role in the invoice.
+
+#### M4 Inventory
+This module is designed to store items and services and specifying their prices.
+The price categories are being managed in the M4 Price Categories module.
+
+Entries of this module can be loaded into invoices.
+
+#### M4 Price Categories
+This module holds the price categories that can be loaded into contacts and that you find in items to set their price for different uses.
+
+Loading a buyer contact sets the price category of an invoice according to the contact's price category.
 
 #### MX Management
 In this module the administrative tools lie. In summary:
@@ -130,7 +150,7 @@ If used with type=name all entries that match the search text will be sent back 
 * indexselection
 * getentrylock/ {uID}
 
-## Things for the future:
+# Things for the future:
 + A website and app solution for easy access from everywhere
 + A webshop integrated into the website solution to enable the user to sell services and products online and to promote work
 + Blockchain to reassure financial data integrity, e.g. verifying the process of selling a product and receiving a transaction.
