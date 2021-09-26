@@ -102,39 +102,10 @@ Authentication is being achieved via basic auth.
 
 Currently, following API endpoints are available:
 
-### server IPv4:8000/api/m1/
-* entry/ {searchText} &type= {uid or name} &format=json
-
-If used with type=uid the entry related to the uID provided in the search text will be sent back in json format.
-If used with type=name all entries that match the search text will be sent back inside a json response with following format:
-
-```
-{
-    total: Int,
-    resultsList: ArrayList<String>
-}
-```
-
-* indexselection
-* getentrylock/ {uID}
-
-### server IPv4:8000/api/m2/
-* entry/ {searchText} &type= {uid or name} &format=json
-
-If used with type=uid the entry related to the uID provided in the search text will be sent back in json format.
-If used with type=name all entries that match the search text will be sent back inside a json response with following format:
-
-```
-{
-    total: Int,
-    resultsList: ArrayList<String>
-}
-```
-
-* indexselection
-* getentrylock/ {uID}
-
-### server IPv4:8000/api/m3/
+#### server IPv4:8000/api/m1/
+#### server IPv4:8000/api/m2/
+#### server IPv4:8000/api/m3/
+#### server IPv4:8000/api/m4/
 * entry/ {searchText} &type= {uid or name} &format=json
 
 If used with type=uid the entry related to the uID provided in the search text will be sent back in json format.
