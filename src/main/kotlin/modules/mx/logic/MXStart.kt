@@ -2,6 +2,7 @@ package modules.mx.logic
 
 import api.logic.MXServer
 import io.ktor.util.*
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -13,9 +14,9 @@ import modules.mx.*
 import modules.mx.gui.CWOMainGUI
 import modules.mx.gui.showPreferences
 import tornadofx.launch
-import tornadofx.runAsync
 import java.io.File
 
+@DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
 fun main() {
@@ -63,6 +64,7 @@ fun readAndSetIniValues() {
 /**
  * Starts the software with all necessary precautions
  */
+@DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
 fun startupRoutines() {
@@ -82,8 +84,6 @@ fun startupRoutines() {
         /**
          * Start a long-running coroutine task to do various stuff
          */
-        taskGlobal = runAsync {
-            MXTicker.startTicker()
-        }
+        taskJobGlobal = MXTicker.startTicker()
     }
 }

@@ -5,6 +5,7 @@ import interfaces.IModule
 import io.ktor.util.*
 import javafx.scene.control.TabPane
 import javafx.stage.Stage
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.MG1Overview
 import modules.m1.logic.M1Benchmark
@@ -14,12 +15,16 @@ import modules.m4.gui.MG4Overview
 import modules.m4.gui.MG4PriceManager
 import modules.mx.*
 import modules.mx.gui.userAlerts.MGXUserAlert
-import modules.mx.logic.*
+import modules.mx.logic.MXLog
+import modules.mx.logic.MXUserManager
+import modules.mx.logic.checkInstallation
+import modules.mx.logic.startupRoutines
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
 import styling.Stylesheet
 import tornadofx.*
 
+@DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
 class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
@@ -40,7 +45,9 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
                 log(MXLog.LogType.INFO, "Shutting down server...")
                 server.serverEngine.stop(100L, 100L)
             } else {
-                if (taskGlobal.isRunning) taskGlobal.cancel()
+                if (taskJobGlobal.isActive) {
+                    taskJobGlobal.cancel()
+                }
             }
         } finally {
             super.stop()
@@ -48,6 +55,7 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
     }
 }
 
+@DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
 class MXGLogin : Fragment("CWO ERP") {
@@ -104,6 +112,7 @@ class MXGLogin : Fragment("CWO ERP") {
     }
 }
 
+@DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
 class MXGUserInterface : View(titleGlobal) {
@@ -130,15 +139,6 @@ class MXGUserInterface : View(titleGlobal) {
                 }
             }
             menu("Dev-Tools") {
-                menu("Task Ticker") {
-                    item("Start Ticker") {
-                        action {
-                            taskGlobal.cancel()
-                            taskGlobal = runAsync { MXTicker.startTicker() }
-                        }
-                    }
-                    item("Stop Ticker") { action { taskGlobal.cancel() } }
-                }
                 menu("Benchmark (M1)") {
                     item("Insert 10k random songs").action {
                         M1Benchmark().insertRandomEntries(

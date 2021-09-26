@@ -3,7 +3,7 @@ package modules.mx
 import api.logic.MXServer
 import interfaces.IEntry
 import io.ktor.util.*
-import javafx.concurrent.Task
+import kotlinx.coroutines.Job
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -82,7 +82,7 @@ var activeUser: MXUser = MXUser("", "")
 var tokenGlobal: String = ""
 
 //Task
-lateinit var taskGlobal: Task<Any>
+lateinit var taskJobGlobal: Job
 
 //File locations
 val programPath: String = System.getProperty("user.dir")
