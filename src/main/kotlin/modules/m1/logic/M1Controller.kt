@@ -52,6 +52,10 @@ class M1Controller : IController, Controller() {
     }
 
     override fun newEntry() {
+        wizard.songMainData.commit()
+        if (wizard.songMainData.isValid && wizard.songMainData.uID.value != -1) {
+            setEntryLock(wizard.songMainData.uID.value, false)
+        }
         wizard.songMainData.item = SongPropertyMainData()
         wizard.songCompletionState.item = SongPropertyCompletionState()
         wizard.songPromotionData.item = SongPropertyPromotionData()

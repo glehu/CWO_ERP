@@ -36,6 +36,10 @@ class M3Controller : IController, Controller() {
     }
 
     override fun newEntry() {
+        wizard.invoice.commit()
+        if (wizard.invoice.isValid && wizard.invoice.uID.value != -1) {
+            setEntryLock(wizard.invoice.uID.value, false)
+        }
         wizard.invoice.item = InvoiceProperty()
         wizard.invoice.validate()
         wizard.isComplete = false

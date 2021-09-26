@@ -96,7 +96,7 @@ interface IModule {
      */
     @ExperimentalSerializationApi
     fun get(uID: Int): IEntry {
-        return decode(getBytes(uID))
+        return decode(getBytes(uID, true))
     }
 
     /**
@@ -108,7 +108,7 @@ interface IModule {
      */
     @ExperimentalSerializationApi
     fun load(uID: Int): IEntry {
-        return decode(getBytes(uID))
+        return decode(getBytes(uID, false))
     }
 
     /**
@@ -116,7 +116,7 @@ interface IModule {
      * It is possible to retrieve an entry of another module if that module gets passed into the function.
      * @return the byte array of an entry with the provided unique identifier.
      */
-    fun getBytes(uID: Int): ByteArray {
+    fun getBytes(uID: Int, lock: Boolean = false): ByteArray {
         var entryBytes: ByteArray = byteArrayOf()
         if (uID != -1) {
             if (!isClientGlobal) {
@@ -126,7 +126,10 @@ interface IModule {
                     module = indexManager.module,
                     index = indexManager.indexList[0]!!
                 )
-                setEntryLock(uID, true)
+                /**
+                 * Lock the entry (if: GET)
+                 */
+                getIndexManager()!!.setEntryLock(uID, lock)
             } else {
                 runBlocking {
                     launch {
@@ -241,11 +244,9 @@ interface IModule {
                     success = true
                 }
             } else {
-                if (entryLocked) {
-                    if (indexManager.getBaseIndex(uID).content == userName) {
-                        indexManager.getBaseIndex(uID).content = "?"
-                        success = true
-                    }
+                if (indexManager.getBaseIndex(uID).content == userName) {
+                    indexManager.getBaseIndex(uID).content = "?"
+                    success = true
                 }
             }
         } else {

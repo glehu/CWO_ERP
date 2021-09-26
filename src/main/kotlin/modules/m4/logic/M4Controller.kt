@@ -34,6 +34,10 @@ class M4Controller : IController, Controller() {
     }
 
     override fun newEntry() {
+        wizard.item.commit()
+        if (wizard.item.isValid && wizard.item.uID.value != -1) {
+            setEntryLock(wizard.item.uID.value, false)
+        }
         wizard.item.priceCategories.value.clear()
         wizard.item.item = M4ItemProperty()
         wizard.item.validate()

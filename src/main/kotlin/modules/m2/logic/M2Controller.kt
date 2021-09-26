@@ -45,6 +45,10 @@ class M2Controller : IController, Controller() {
     }
 
     override fun newEntry() {
+        wizard.contact.commit()
+        if (wizard.contact.isValid && wizard.contact.uID.value != -1) {
+            setEntryLock(wizard.contact.uID.value, false)
+        }
         wizard.contact.item = ContactProperty()
         wizard.contact.validate()
         wizard.isComplete = false
