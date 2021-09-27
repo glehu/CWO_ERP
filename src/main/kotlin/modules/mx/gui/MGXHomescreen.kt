@@ -163,7 +163,10 @@ class MXGUserInterface : View(titleGlobal) {
                 tab<MG4Overview>()
                 tab<MG4PriceManager>()
             }
-            if (activeUser.canAccessMX) tab<MGXManagement>()
+            if (activeUser.canAccessMX) {
+                //Only server can do this
+                if (!isClientGlobal) tab<MGXManagement>()
+            }
         }
     }
 }
