@@ -123,10 +123,12 @@ interface IIndexManager : IModule {
     ) {
         buildDefaultIndex(uID, posDB, byteSize)
         for ((ixNr, ixContent) in indices) {
-            if (indexList[ixNr] == null) addIndex(ixNr)
-            indexList[ixNr]!!.indexMap[uID] = IndexContent(
-                content = indexFormat(ixContent).uppercase()
-            )
+            if (ixContent.isNotEmpty()) {
+                if (indexList[ixNr] == null) addIndex(ixNr)
+                indexList[ixNr]!!.indexMap[uID] = IndexContent(
+                    content = indexFormat(ixContent).uppercase()
+                )
+            }
         }
         if (writeToDisk) runBlocking {
             launch { writeIndexData() }
