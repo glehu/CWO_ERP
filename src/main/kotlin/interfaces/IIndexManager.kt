@@ -3,8 +3,8 @@ package interfaces
 import db.CwODB
 import db.Index
 import db.IndexContent
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -102,7 +102,7 @@ interface IIndexManager : IModule {
     /**
      * This function must call buildIndices, which will build all indices for an entry.
      */
-    fun indexEntry(
+    suspend fun indexEntry(
         entry: IEntry,
         posDB: Long,
         byteSize: Int,
@@ -113,7 +113,7 @@ interface IIndexManager : IModule {
     /**
      * Used to build indices for an entry.
      */
-    fun buildIndices(
+    suspend fun buildIndices(
         uID: Int,
         posDB: Long,
         byteSize: Int,
@@ -130,8 +130,8 @@ interface IIndexManager : IModule {
                 )
             }
         }
-        if (writeToDisk) runBlocking {
-            launch { writeIndexData() }
+        if (writeToDisk) {
+            coroutineScope { launch { writeIndexData() } }
         }
         setLastChangeData(uID, userName)
     }

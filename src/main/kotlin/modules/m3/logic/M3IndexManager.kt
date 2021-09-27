@@ -45,7 +45,7 @@ class M3IndexManager : IIndexManager, Controller() {
         return arrayListOf("1-Seller", "2-Buyer", "3-Description")
     }
 
-    override fun indexEntry(
+    override suspend fun indexEntry(
         entry: IEntry,
         posDB: Long,
         byteSize: Int,

@@ -3,8 +3,8 @@ package modules.m1.logic
 import db.CwODB
 import interfaces.IIndexManager
 import interfaces.IModule
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.M1Song
 import modules.m1.misc.getGenreList
@@ -23,7 +23,7 @@ class M1Benchmark : IModule, Controller() {
         return m1GlobalIndex
     }
 
-    fun insertRandomEntries(amount: Int) {
+    suspend fun insertRandomEntries(amount: Int) {
         log(MXLog.LogType.INFO, "Benchmark entry insertion start")
         val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
         val timeInMillis = measureTimeMillis {
@@ -41,7 +41,7 @@ class M1Benchmark : IModule, Controller() {
                 )
                 if (i % 5000 == 0) {
                     log(MXLog.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
-                    runBlocking { launch { m1GlobalIndex.writeIndexData() } }
+                    coroutineScope { launch { m1GlobalIndex.writeIndexData() } }
                 }
             }
         }

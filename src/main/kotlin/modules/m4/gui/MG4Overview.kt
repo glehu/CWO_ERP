@@ -3,6 +3,7 @@ package modules.m4.gui
 import interfaces.IOverview
 import io.ktor.util.*
 import javafx.scene.paint.Color
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.logic.M4Controller
 import modules.mx.rightButtonsWidth
@@ -26,7 +27,7 @@ class MG4Overview : IOverview, View("M4 Inventory") {
                 prefWidth = rightButtonsWidth
             }
             button("Save") {
-                action { m4Controller.saveEntry() }
+                action { runBlocking { m4Controller.saveEntry() } }
                 tooltip("Saves the current contact.")
                 prefWidth = rightButtonsWidth
             }

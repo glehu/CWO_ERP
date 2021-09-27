@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.Button
 import javafx.stage.FileChooser
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Import
 import modules.m2.misc.ContactModel
@@ -48,51 +49,53 @@ class MG2Import : Fragment("Contact Data Import") {
                 isDisable = (filenameProperty.value == null || filenameProperty.value.isEmpty())
                 action {
                     runAsync {
-                        m2controller.importData(file, contactSchema, birthdayHeaderName.value) {
-                            progressN = it.first
-                            updateProgress(it.first.toDouble(), it.first.toDouble())
-                            updateMessage("${it.second} ${it.first}")
+                        runBlocking {
+                            m2controller.importData(file, contactSchema, birthdayHeaderName.value) {
+                                progressN = it.first
+                                updateProgress(it.first.toDouble(), it.first.toDouble())
+                                updateMessage("${it.second} ${it.first}")
+                            }
                         }
                     }
                 }
-                prefWidth = buttonWidth
             }
-            add<MGXProgressbar>()
+            prefWidth = buttonWidth
+        }
+        add<MGXProgressbar>()
 
-            //Custom import scheme
-            contactSchema.name.value = "name"
-            contactSchema.firstName.value = "firstname"
-            contactSchema.lastName.value = "lastname"
-            contactSchema.street.value = "street"
-            contactSchema.city.value = "city"
-            contactSchema.postCode.value = "postcode"
-            contactSchema.country.value = "country"
-            birthdayHeaderName.value = "birthdate"
-            fieldset("Header column names") {
-                field("Name") {
-                    textfield(contactSchema.name) { prefWidth = 50.0 }
-                }
-                field("First Name") {
-                    textfield(contactSchema.firstName) { prefWidth = 50.0 }
-                }
-                field("Last Name") {
-                    textfield(contactSchema.lastName) { prefWidth = 50.0 }
-                }
-                field("Street") {
-                    textfield(contactSchema.street) { prefWidth = 50.0 }
-                }
-                field("City") {
-                    textfield(contactSchema.city) { prefWidth = 50.0 }
-                }
-                field("Post Code") {
-                    textfield(contactSchema.postCode) { prefWidth = 50.0 }
-                }
-                field("Country") {
-                    textfield(contactSchema.country) { prefWidth = 50.0 }
-                }
-                field("Birthdate") {
-                    textfield(birthdayHeaderName) { prefWidth = 50.0 }
-                }
+        //Custom import scheme
+        contactSchema.name.value = "name"
+        contactSchema.firstName.value = "firstname"
+        contactSchema.lastName.value = "lastname"
+        contactSchema.street.value = "street"
+        contactSchema.city.value = "city"
+        contactSchema.postCode.value = "postcode"
+        contactSchema.country.value = "country"
+        birthdayHeaderName.value = "birthdate"
+        fieldset("Header column names") {
+            field("Name") {
+                textfield(contactSchema.name) { prefWidth = 50.0 }
+            }
+            field("First Name") {
+                textfield(contactSchema.firstName) { prefWidth = 50.0 }
+            }
+            field("Last Name") {
+                textfield(contactSchema.lastName) { prefWidth = 50.0 }
+            }
+            field("Street") {
+                textfield(contactSchema.street) { prefWidth = 50.0 }
+            }
+            field("City") {
+                textfield(contactSchema.city) { prefWidth = 50.0 }
+            }
+            field("Post Code") {
+                textfield(contactSchema.postCode) { prefWidth = 50.0 }
+            }
+            field("Country") {
+                textfield(contactSchema.country) { prefWidth = 50.0 }
+            }
+            field("Birthdate") {
+                textfield(birthdayHeaderName) { prefWidth = 50.0 }
             }
         }
     }

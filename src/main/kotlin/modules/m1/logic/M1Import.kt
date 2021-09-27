@@ -7,8 +7,8 @@ import db.IndexContent
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.M1Song
 import modules.m2.M2Contact
@@ -32,7 +32,7 @@ class M1Import : IModule, Controller() {
     }
 
     @ExperimentalSerializationApi
-    fun importSpotifyAlbumList(
+    suspend fun importSpotifyAlbumList(
         albumListJson: SpotifyAlbumListJson,
         entriesAdded: Int = 0,
         updateProgress: (Pair<Int, String>) -> Unit
@@ -56,15 +56,17 @@ class M1Import : IModule, Controller() {
                 updateProgress(Pair(counter, "Importing spotify albums..."))
             }
         }
-        runBlocking { launch { m1GlobalIndex.writeIndexData() } }
-        runBlocking { launch { m2GlobalIndex.writeIndexData() } }
+        coroutineScope {
+            launch { m1GlobalIndex.writeIndexData() }
+            launch { m2GlobalIndex.writeIndexData() }
+        }
         CwODB.closeRandomFileAccess(raf)
         CwODB.closeRandomFileAccess(m2raf)
         log(MXLog.LogType.INFO, "Spotify album list import end (${timeInMillis / 1000} sec)")
     }
 
     @ExperimentalSerializationApi
-    private fun createOrSaveTracksOfAlbum(
+    private suspend fun createOrSaveTracksOfAlbum(
         trackList: SpotifyTracklistJson,
         album: M1Song,
         raf: RandomAccessFile,
@@ -115,7 +117,11 @@ class M1Import : IModule, Controller() {
     }
 
     @ExperimentalSerializationApi
-    private fun createOrSaveAlbum(album: SpotifyAlbumJson, raf: RandomAccessFile, m2raf: RandomAccessFile): M1Song {
+    private suspend fun createOrSaveAlbum(
+        album: SpotifyAlbumJson,
+        raf: RandomAccessFile,
+        m2raf: RandomAccessFile
+    ): M1Song {
         val song: M1Song
         var releaseDate: String = getDefaultDate()
 
@@ -162,7 +168,11 @@ class M1Import : IModule, Controller() {
     }
 
     @ExperimentalSerializationApi
-    private fun createOrSaveArtistsOfAlbum(artists: List<SpotifyArtistJson>, song: M1Song, m2raf: RandomAccessFile) {
+    private suspend fun createOrSaveArtistsOfAlbum(
+        artists: List<SpotifyArtistJson>,
+        song: M1Song,
+        m2raf: RandomAccessFile
+    ) {
         var contact: M2Contact
         var artistUID: Int
         var filteredMap: Map<Int, IndexContent>

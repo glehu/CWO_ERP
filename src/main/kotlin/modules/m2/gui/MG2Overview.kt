@@ -3,6 +3,7 @@ package modules.m2.gui
 import interfaces.IOverview
 import io.ktor.util.*
 import javafx.scene.paint.Color
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Controller
 import modules.mx.isClientGlobal
@@ -27,7 +28,7 @@ class MG2Overview : IOverview, View("M2 Contacts") {
                 prefWidth = rightButtonsWidth
             }
             button("Save") {
-                action { m2Controller.saveEntry() }
+                action { runBlocking { m2Controller.saveEntry() } }
                 tooltip("Saves the current contact.")
                 prefWidth = rightButtonsWidth
             }

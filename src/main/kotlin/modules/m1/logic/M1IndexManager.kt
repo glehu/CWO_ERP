@@ -44,7 +44,7 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
         )
     }
 
-    override fun indexEntry(
+    override suspend fun indexEntry(
         entry: IEntry,
         posDB: Long,
         byteSize: Int,

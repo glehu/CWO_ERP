@@ -18,7 +18,7 @@ import modules.mx.logic.encryptKeccak
 class MXServerController {
     @ExperimentalSerializationApi
     companion object Server {
-        fun saveEntry(entry: ByteArray, indexManager: IIndexManager, username: String): Int {
+        suspend fun saveEntry(entry: ByteArray, indexManager: IIndexManager, username: String): Int {
             return indexManager.save(
                 entry = indexManager.decode(entry),
                 userName = username

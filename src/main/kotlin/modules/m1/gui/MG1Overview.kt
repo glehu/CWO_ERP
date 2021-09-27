@@ -4,6 +4,7 @@ import interfaces.IOverview
 import io.ktor.util.*
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.M1Controller
 import modules.mx.isClientGlobal
@@ -28,7 +29,7 @@ class MG1Overview : IOverview, View("M1 Discography") {
                 prefWidth = rightButtonsWidth
             }
             button("Save") {
-                action { m1Controller.saveEntry() }
+                action { runBlocking { m1Controller.saveEntry() } }
                 tooltip("Saves the current song.")
                 prefWidth = rightButtonsWidth
             }

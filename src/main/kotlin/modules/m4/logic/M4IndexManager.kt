@@ -43,7 +43,7 @@ class M4IndexManager : IIndexManager, Controller() {
         return arrayListOf("1-Description")
     }
 
-    override fun indexEntry(
+    override suspend fun indexEntry(
         entry: IEntry,
         posDB: Long,
         byteSize: Int,

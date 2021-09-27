@@ -36,7 +36,7 @@ class M2Controller : IController, Controller() {
         find<MG2ContactFinder>().openModal()
     }
 
-    override fun saveEntry() {
+    override suspend fun saveEntry() {
         if (wizard.contact.isValid) {
             wizard.contact.commit()
             wizard.contact.uID.value = save(getContactFromProperty(wizard.contact.item))

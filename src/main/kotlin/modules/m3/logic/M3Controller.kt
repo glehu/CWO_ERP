@@ -45,7 +45,7 @@ class M3Controller : IController, Controller() {
         wizard.isComplete = false
     }
 
-    override fun saveEntry() {
+    override suspend fun saveEntry() {
         if (wizard.invoice.isValid) {
             wizard.invoice.commit()
             wizard.invoice.uID.value = save(getInvoiceFromInvoiceProperty(wizard.invoice.item))
@@ -65,7 +65,7 @@ class M3Controller : IController, Controller() {
         }
     }
 
-    fun processInvoice() {
+    suspend fun processInvoice() {
         if (checkInvoice() && checkForProcess()) {
             var contact: M2Contact
             if (wizard.invoice.item.buyerUID != -1) {
@@ -83,7 +83,7 @@ class M3Controller : IController, Controller() {
         }
     }
 
-    fun setPaidInvoice() {
+    suspend fun setPaidInvoice() {
         if (checkInvoice() && checkForSetPaid()) {
             wizard.invoice.item.paid = wizard.invoice.item.price
             saveEntry()

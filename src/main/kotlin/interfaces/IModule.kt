@@ -7,6 +7,7 @@ import api.misc.json.EntryListJson
 import db.CwODB
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -38,7 +39,7 @@ interface IModule {
      * Saves the entry to the database.
      * @return the uID of the entry.
      */
-    fun save(
+    suspend fun save(
         entry: IEntry,
         raf: RandomAccessFile? = null,
         indexWriteToDisk: Boolean = true,
@@ -74,7 +75,7 @@ interface IModule {
              */
             getIndexManager()!!.setEntryLock(uID, false)
         } else {
-            runBlocking {
+            coroutineScope {
                 launch {
                     uID = getCWOClient().post("${getApiUrl()}saveentry") {
                         contentType(ContentType.Application.Json)

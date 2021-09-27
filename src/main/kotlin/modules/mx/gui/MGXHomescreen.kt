@@ -6,6 +6,7 @@ import io.ktor.util.*
 import javafx.scene.control.TabPane
 import javafx.stage.Stage
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.MG1Overview
 import modules.m1.logic.M1Benchmark
@@ -141,19 +142,25 @@ class MXGUserInterface : View(titleGlobal) {
             menu("Dev-Tools") {
                 menu("Benchmark (M1)") {
                     item("Insert 10k random songs").action {
-                        M1Benchmark().insertRandomEntries(
-                            10_000
-                        )
+                        runBlocking {
+                            M1Benchmark().insertRandomEntries(
+                                10_000
+                            )
+                        }
                     }
                     item("Insert 100k random songs").action {
-                        M1Benchmark().insertRandomEntries(
-                            100_000
-                        )
+                        runBlocking {
+                            M1Benchmark().insertRandomEntries(
+                                100_000
+                            )
+                        }
                     }
                     item("Insert 1m random songs").action {
-                        M1Benchmark().insertRandomEntries(
-                            1_000_000
-                        )
+                        runBlocking {
+                            M1Benchmark().insertRandomEntries(
+                                1_000_000
+                            )
+                        }
                     }
                 }
             }

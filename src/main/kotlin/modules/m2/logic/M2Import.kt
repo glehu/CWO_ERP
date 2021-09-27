@@ -4,6 +4,7 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import db.CwODB
 import interfaces.IIndexManager
 import interfaces.IModule
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -23,7 +24,7 @@ class M2Import : IModule, Controller() {
         return m2GlobalIndex
     }
 
-    fun importData(
+    suspend fun importData(
         file: File,
         contactSchema: ContactModel,
         birthdayHeaderName: String,
@@ -47,12 +48,15 @@ class M2Import : IModule, Controller() {
                     contact.postCode = import(row[contactSchema.postCode.value].toString())
                     contact.birthdate = import(row[birthdayHeaderName].toString(), "01.01.1980")
                     contact.country = import(row[contactSchema.country.value].toString())
-
-                    save(
-                        entry = contact,
-                        raf = raf,
-                        indexWriteToDisk = false,
-                    )
+                    runBlocking {
+                        launch {
+                            save(
+                                entry = contact,
+                                raf = raf,
+                                indexWriteToDisk = false,
+                            )
+                        }
+                    }
                     updateProgress(Pair(counter, "Importing data..."))
                     if (counter % 5000 == 0) {
                         log(MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}")
@@ -61,7 +65,7 @@ class M2Import : IModule, Controller() {
                 }
             }
             log(MXLog.LogType.INFO, "Data Insertion uID ${m2GlobalIndex.getLastUniqueID()}")
-            runBlocking { launch { m2GlobalIndex.writeIndexData() } }
+            coroutineScope { launch { m2GlobalIndex.writeIndexData() } }
         }
         CwODB.closeRandomFileAccess(raf)
         log(MXLog.LogType.INFO, "Data Import end (${timeInMillis / 1000} sec)")

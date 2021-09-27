@@ -33,7 +33,7 @@ class M1Controller : IController, Controller() {
         find<MG1EntryFinder>().openModal()
     }
 
-    override fun saveEntry() {
+    override suspend fun saveEntry() {
         if (wizard.songMainData.isValid) {
             wizard.songMainData.commit()
             wizard.songCompletionState.commit()

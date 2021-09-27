@@ -5,6 +5,7 @@ import io.ktor.util.*
 import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.logic.M3Controller
 import modules.mx.rightButtonsWidth
@@ -28,7 +29,7 @@ class MG3Overview : IOverview, View("M3 Invoices") {
                 prefWidth = rightButtonsWidth
             }
             button("Save") {
-                action { m3Controller.saveEntry() }
+                action { runBlocking { m3Controller.saveEntry() } }
                 tooltip("Saves the current contact.")
                 prefWidth = rightButtonsWidth
             }
@@ -54,13 +55,13 @@ class MG3Overview : IOverview, View("M3 Invoices") {
                 paddingVertical = 10
             }
             button("Paid") {
-                action { m3Controller.setPaidInvoice() }
+                action { runBlocking { m3Controller.setPaidInvoice() } }
                 tooltip("Processes the invoice.")
                 prefWidth = rightButtonsWidth
                 style { unsafe("-fx-base", Color.GRAY) }
             }
             button("Process") {
-                action { m3Controller.processInvoice() }
+                action { runBlocking { m3Controller.processInvoice() } }
                 tooltip("Processes the invoice.")
                 prefWidth = rightButtonsWidth
                 style { unsafe("-fx-base", Color.DARKGREEN) }

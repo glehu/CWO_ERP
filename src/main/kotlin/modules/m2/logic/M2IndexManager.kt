@@ -45,7 +45,7 @@ class M2IndexManager : IIndexManager, Controller() {
         return arrayListOf("1-Name", "2-City")
     }
 
-    override fun indexEntry(
+    override suspend fun indexEntry(
         entry: IEntry,
         posDB: Long,
         byteSize: Int,
