@@ -43,15 +43,15 @@ class NewInvoiceMainData : Fragment("Main") {
             field("Seller") {
                 textfield(invoice.seller) {
                     contextmenu {
-                        item("Show contact").action {
-                            if (invoice.sellerUID.value != -1) m2controller.showEntry(invoice.sellerUID.value)
-                            invoice.seller.value =
-                                m2controller.getContactName(invoice.sellerUID.value, invoice.seller.value)
-                        }
                         item("Load contact").action {
                             val contact = m2controller.selectAndReturnContact()
                             invoice.sellerUID.value = contact.uID
                             invoice.seller.value = contact.name
+                        }
+                        item("Show contact").action {
+                            if (invoice.sellerUID.value != -1) m2controller.showEntry(invoice.sellerUID.value)
+                            invoice.seller.value =
+                                m2controller.getContactName(invoice.sellerUID.value, invoice.seller.value)
                         }
                     }
                 }.required()

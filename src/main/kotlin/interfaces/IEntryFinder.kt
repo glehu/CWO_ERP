@@ -46,12 +46,14 @@ interface IEntryFinder : IModule {
                 if (searchText.text.isNotEmpty()) {
                     runBlocking {
                         launch {
+                            var url = getApiUrl() +
+                                    "entry/${indexFormat(searchText.text)}" +
+                                    "?type=name"
+                            if (exactSearch.isSelected) {
+                                url += "&index=" + ixNr.value.substring(0, 1)
+                            }
                             val entryBytesListJson: EntryBytesListJson = getCWOClient()
-                                .get(
-                                    getApiUrl() +
-                                            "entry/${indexFormat(searchText.text)}" +
-                                            "?type=name"
-                                )
+                                .get(url)
                             if (threadID == threadIDCurrentProperty.value) {
                                 this@IEntryFinder.entriesFound.clear()
                                 for (entryBytes: ByteArray in entryBytesListJson.resultsList) {

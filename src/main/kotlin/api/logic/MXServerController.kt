@@ -42,15 +42,20 @@ class MXServerController {
                         }
                     }
                     "name" -> {
+                        val requestIndex = appCall.request.queryParameters["index"]
+                        val ixNr: Int = (requestIndex?.toInt()) ?: 1
+                        val exactSearch = requestIndex != null
                         return if (appCall.request.queryParameters["format"] == "json") {
                             indexManager.getEntryListJson(
                                 searchText = routePar,
-                                ixNr = 1,
+                                ixNr,
+                                exactSearch = exactSearch
                             )
                         } else {
                             indexManager.getEntryBytesListJson(
                                 searchText = routePar,
-                                ixNr = 1
+                                ixNr,
+                                exactSearch = exactSearch
                             )
                         }
                     }

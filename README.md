@@ -52,7 +52,7 @@ This module is designed to store contacts. Contacts can be loaded into songs and
 Next to inserting and looking up entries, there is also an analytics module, 
 that allows the user to generate a pie chart, showing the distribution of cities across all stored contacts.
 
-Right clicking the "Sales" or "Expenses" fields of a contact enable the user to look up invoices of this contact.
+Right-clicking the "Sales" or "Expenses" fields of a contact enable the user to look up invoices for this contact.
 
 #### M3 Invoices
 This module is designed to store invoice data, e.g. income and expenses. 

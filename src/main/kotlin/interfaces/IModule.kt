@@ -155,13 +155,17 @@ interface IModule {
         return protoBufGlobal.decodeFromByteArray(entryBytes)
     }
 
-    fun getEntryBytesListJson(searchText: String, ixNr: Int): EntryBytesListJson {
+    fun getEntryBytesListJson(
+        searchText: String,
+        ixNr: Int,
+        exactSearch: Boolean = false
+    ): EntryBytesListJson {
         val resultsListJson = EntryBytesListJson(0, arrayListOf())
         var resultCounter = 0
         CwODB.getEntriesFromSearchString(
             searchText = searchText.uppercase(),
             ixNr = ixNr,
-            exactSearch = false,
+            exactSearch = exactSearch,
             indexManager = getIndexManager()!!
         ) { _, bytes ->
             resultCounter++
@@ -171,13 +175,18 @@ interface IModule {
         return resultsListJson
     }
 
-    fun getEntryListJson(searchText: String, ixNr: Int, prettyPrint: Boolean = false): EntryListJson {
+    fun getEntryListJson(
+        searchText: String,
+        ixNr: Int,
+        prettyPrint: Boolean = false,
+        exactSearch: Boolean = false
+    ): EntryListJson {
         val resultsListJson = EntryListJson(0, arrayListOf())
         var resultCounter = 0
         CwODB.getEntriesFromSearchString(
             searchText = searchText.uppercase(),
             ixNr = ixNr,
-            exactSearch = false,
+            exactSearch = exactSearch,
             indexManager = getIndexManager()!!
         ) { _, bytes ->
             resultCounter++

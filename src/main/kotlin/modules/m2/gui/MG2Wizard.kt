@@ -4,7 +4,7 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.misc.ContactModel
 import modules.m3.gui.MG3InvoiceFinder
-import modules.mx.m3GlobalIndex
+import modules.m3.logic.M3Controller
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -69,7 +69,8 @@ class NewContactFinancialData : Fragment("Financial Data") {
                                 val m3Finder = MG3InvoiceFinder()
                                 m3Finder.exactSearch.isSelected = true
                                 m3Finder.searchText.text = contact.name.value
-                                m3Finder.ixNr.value = m3GlobalIndex.getIndexUserSelection()[1]
+                                m3Finder.ixNr.value = M3Controller().getIndexUserSelection()[1]
+                                m3Finder.searchForEntries(m3Finder.threadIDCurrentProperty.value++)
                                 m3Finder.openModal()
                             }
                         }
@@ -85,7 +86,8 @@ class NewContactFinancialData : Fragment("Financial Data") {
                                 val m3Finder = MG3InvoiceFinder()
                                 m3Finder.exactSearch.isSelected = true
                                 m3Finder.searchText.text = contact.name.value
-                                m3Finder.ixNr.value = m3GlobalIndex.getIndexUserSelection()[0]
+                                m3Finder.ixNr.value = M3Controller().getIndexUserSelection()[0]
+                                m3Finder.searchForEntries(m3Finder.threadIDCurrentProperty.value++)
                                 m3Finder.openModal()
                             }
                         }
