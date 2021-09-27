@@ -106,7 +106,7 @@ class MG1Overview : IOverview, View("M1 Discography") {
                     fold("Copyright Data", expanded = false, closeable = false) {
                         add(SongCopyrightData::class)
                     }
-                    fold("Miscellaneous", expanded = false, closeable = false) {
+                    fold("Miscellaneous", expanded = true, closeable = false) {
                         add(SongMiscData::class)
                     }
                 }
