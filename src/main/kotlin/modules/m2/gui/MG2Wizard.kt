@@ -61,34 +61,34 @@ class NewContactFinancialData : Fragment("Financial Data") {
     override val root = form {
         fieldset {
             field("Price Category") { textfield(contact.priceCategory) }
-            field("Sales") {
+            field("Contact's Sales") {
                 hbox {
-                    textfield(contact.moneySent) {
+                    textfield(contact.moneyReceived) {
                         contextmenu {
                             item("Show invoices (as seller)").action {
                                 val m3Finder = MG3InvoiceFinder()
                                 m3Finder.exactSearch.isSelected = true
-                                m3Finder.searchText.text = contact.name.value
-                                m3Finder.ixNr.value = M3Controller().getIndexUserSelection()[1]
-                                m3Finder.searchForEntries(m3Finder.threadIDCurrentProperty.value++)
+                                m3Finder.ixNr.value = M3Controller().getIndexUserSelection()[0]
                                 m3Finder.openModal()
+                                m3Finder.searchText.text = ""
+                                m3Finder.searchText.text = contact.name.value
                             }
                         }
                     }.isEditable = false
                     label("EUR") { paddingHorizontal = 20 }
                 }
             }
-            field("Expenses") {
+            field("Contact's Expenses") {
                 hbox {
-                    textfield(contact.moneyReceived) {
+                    textfield(contact.moneySent) {
                         contextmenu {
                             item("Show invoices (as buyer)").action {
                                 val m3Finder = MG3InvoiceFinder()
                                 m3Finder.exactSearch.isSelected = true
-                                m3Finder.searchText.text = contact.name.value
-                                m3Finder.ixNr.value = M3Controller().getIndexUserSelection()[0]
-                                m3Finder.searchForEntries(m3Finder.threadIDCurrentProperty.value++)
+                                m3Finder.ixNr.value = M3Controller().getIndexUserSelection()[1]
                                 m3Finder.openModal()
+                                m3Finder.searchText.text = ""
+                                m3Finder.searchText.text = contact.name.value
                             }
                         }
                     }.isEditable = false
