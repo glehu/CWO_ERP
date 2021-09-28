@@ -3,6 +3,7 @@ package modules.mx.gui
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
+import javafx.geometry.Pos
 import javafx.scene.control.TabPane
 import javafx.stage.Stage
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -70,8 +71,11 @@ class MXGLogin : Fragment("CWO ERP") {
         }
         center = form {
             checkInstallation()
-            fieldset("Login Credentials") {
+            setStageIcon(getIcon())
+            fieldset("Login") {
+                alignment = Pos.CENTER
                 hbox {
+                    alignment = Pos.CENTER
                     addClass(Stylesheet.fieldsetBorder)
                     vbox {
                         fieldset {
@@ -105,6 +109,9 @@ class MXGLogin : Fragment("CWO ERP") {
                                     }
                                 }
                             }
+                        }
+                        imageview {
+                            image = getLogo()
                         }
                     }
                 }

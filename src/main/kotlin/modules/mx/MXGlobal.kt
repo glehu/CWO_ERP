@@ -3,6 +3,7 @@ package modules.mx
 import api.logic.MXServer
 import interfaces.IEntry
 import io.ktor.util.*
+import javafx.scene.image.Image
 import kotlinx.coroutines.Job
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
@@ -90,6 +91,8 @@ var dataPath: String = ""
 fun getModulePath(module: String) = "$dataPath\\data\\$module"
 fun getIniFile() = File("$programPath\\cwo_erp.ini")
 fun getClientSecretFile(api: String) = File("$dataPath\\data\\api\\${api}_cs.txt")
+fun getIcon() = Image("file:///$dataPath\\data\\img\\orochi_logo_red_200x200.png")
+fun getLogo() = Image("file:///$dataPath\\data\\img\\orochi_logo_red_500x500.png")
 
 //Search settings
 var maxSearchResultsGlobal: Int = 0
