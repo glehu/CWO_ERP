@@ -15,7 +15,6 @@ import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.mx.activeUser
 import modules.mx.gui.userAlerts.MGXUserAlert
-import modules.mx.logic.MXLog
 import modules.mx.m3GlobalIndex
 import tornadofx.Controller
 
@@ -95,7 +94,7 @@ class M3Controller : IController, Controller() {
         if (wizard.invoice.item.paid < wizard.invoice.item.price) {
             valid = true
         } else {
-            MGXUserAlert(MXLog.LogType.ERROR, "Invoice is already paid.").openModal()
+            MGXUserAlert("Invoice is already paid.").openModal()
         }
         return valid
     }
@@ -105,9 +104,9 @@ class M3Controller : IController, Controller() {
         if (wizard.invoice.item.paid == wizard.invoice.item.price) {
             valid = true
         } else if (wizard.invoice.item.paid < wizard.invoice.item.price) {
-            MGXUserAlert(MXLog.LogType.ERROR, "Paid amount is less than invoice total.").openModal()
+            MGXUserAlert("Paid amount is less than invoice total.").openModal()
         } else if (wizard.invoice.item.paid > wizard.invoice.item.price) {
-            MGXUserAlert(MXLog.LogType.ERROR, "Paid amount is more than invoice total.").openModal()
+            MGXUserAlert("Paid amount is more than invoice total.").openModal()
         }
         return valid
     }
@@ -120,11 +119,10 @@ class M3Controller : IController, Controller() {
             if (!wizard.invoice.item.finished) {
                 valid = true
             } else {
-                MGXUserAlert(MXLog.LogType.ERROR, "The invoice is already finished.").openModal()
+                MGXUserAlert("The invoice is already finished.").openModal()
             }
         } else {
             MGXUserAlert(
-                MXLog.LogType.ERROR,
                 "Please fill out the invoice completely.\n\n" +
                         "Missing fields are marked red."
             ).openModal()

@@ -1,12 +1,16 @@
 package modules.mx.gui.userAlerts
 
-import modules.mx.logic.MXLog
+import javafx.scene.paint.Color
+import javafx.scene.text.Font
 import tornadofx.Fragment
 import tornadofx.form
-import tornadofx.label
+import tornadofx.text
 
-class MGXUserAlert(type: MXLog.LogType, message: String) : Fragment("User Alert") {
+class MGXUserAlert(message: String) : Fragment() {
     override val root = form {
-        label(message)
+        text(message) {
+            font = Font(17.0)
+            fill = Color.WHITE
+        }
     }
 }
