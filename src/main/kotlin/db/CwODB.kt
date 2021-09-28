@@ -96,7 +96,7 @@ class CwODB {
                          * Searches in the provided index
                          */
                         indexManager.indexList[ixNr]!!.indexMap.filterValues {
-                            it.content.contains(searchText)
+                            it.content.contains(searchText.toRegex())
                         }
                     } else {
                         /**
@@ -129,12 +129,7 @@ class CwODB {
         }
 
         private fun isGetAll(searchText: String): Boolean {
-            var getAll = false
-            when (searchText) {
-                "" -> getAll = true
-                "*" -> getAll = true
-            }
-            return getAll
+            return searchText == "*"
         }
 
         /**
