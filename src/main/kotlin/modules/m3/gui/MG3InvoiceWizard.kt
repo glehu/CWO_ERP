@@ -116,8 +116,11 @@ class NewInvoiceItemData : Fragment("Items") {
                     makeEditable()
                     prefWidth = 300.0
                 }
-                column("Price", M3InvoicePosition::price) {
+                column("Gross", M3InvoicePosition::grossPrice) {
                     makeEditable()
+                    prefWidth = 100.0
+                }
+                readonlyColumn("Net", M3InvoicePosition::netPrice) {
                     prefWidth = 100.0
                 }
                 column("Amount", M3InvoicePosition::amount) {
@@ -128,6 +131,7 @@ class NewInvoiceItemData : Fragment("Items") {
 
                 onEditCommit {
                     m3Controller.calculate(invoice.item)
+                    this.tableView.refresh()
                 }
 
                 enableCellEditing()
@@ -150,7 +154,8 @@ class NewInvoiceItemData : Fragment("Items") {
                             val contact = M2Controller().get(invoice.buyerUID.value) as M2Contact
                             priceCategory = contact.priceCategory
                         }
-                        itemPosition.price = Json.decodeFromString<M4PriceCategory>(item.prices[priceCategory]!!).price
+                        itemPosition.grossPrice =
+                            Json.decodeFromString<M4PriceCategory>(item.prices[priceCategory]!!).grossPrice
                         itemPosition.userName = activeUser.username
                         invoice.items.value.add(itemPosition)
                         m3Controller.calculate(invoice.item)

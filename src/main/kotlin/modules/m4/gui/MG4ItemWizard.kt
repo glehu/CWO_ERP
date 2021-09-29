@@ -53,7 +53,7 @@ class NewM4ItemPricesData : Fragment("Prices") {
         isEditable = true
         readonlyColumn("Number", M4PriceCategory::number).prefWidth = 100.0
         readonlyColumn("User", M4PriceCategory::description).prefWidth = 250.0
-        column("Price", M4PriceCategory::price) {
+        column("Price", M4PriceCategory::grossPrice) {
             prefWidth = 100.0
             makeEditable()
         }

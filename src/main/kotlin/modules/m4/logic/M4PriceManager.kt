@@ -105,7 +105,7 @@ class M4PriceManager : IModule, Controller() {
     private fun getCategoriesFile() = File("${getModulePath(module)}\\categories.dat")
 
     private fun initializeCategories(credentialsFile: File) {
-        val mainCategory = M4PriceCategory(0, "default")
+        val mainCategory = M4PriceCategory(0, "default", 19.0)
         credentialsFile.createNewFile()
         val categories = M4PriceCategories(CategoryType.MAIN)
         categories.priceCategories[mainCategory.number] = mainCategory
@@ -148,7 +148,7 @@ class M4PriceManager : IModule, Controller() {
     }
 
     fun addCategory(categories: M4PriceCategories) =
-        showCategory(M4PriceCategory(getNumber(categories), ""), categories)
+        showCategory(M4PriceCategory(getNumber(categories), "", 19.0), categories)
 
     fun getCategories(categories: M4PriceCategories): ObservableList<M4PriceCategory> {
         val priceCategories = observableListOf<M4PriceCategory>()

@@ -13,8 +13,10 @@ import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
+import modules.m4.logic.M4PriceManager
 import modules.mx.activeUser
 import modules.mx.gui.userAlerts.MGXUserAlert
+import modules.mx.logic.roundTo
 import modules.mx.m3GlobalIndex
 import tornadofx.Controller
 
@@ -58,9 +60,21 @@ class M3Controller : IController, Controller() {
     }
 
     fun calculate(invoice: InvoiceProperty) {
+        var pos = 0
+        val categories = M4PriceManager().getCategories()
+        val vat = (categories.priceCategories[invoice.priceCategory]?.vatPercent) ?: 0.0
         invoice.price = 0.0
         for (item in invoice.itemsProperty) {
-            invoice.price += (item.price * item.amount)
+            /**
+             * Invoice specific calculation
+             */
+            invoice.price += (item.grossPrice * item.amount)
+
+            /**
+             * Line specific calculation
+             */
+            invoice.itemsProperty[pos].netPrice = (item.grossPrice / (1 + (vat / 100))).roundTo(2)
+            pos++
         }
     }
 

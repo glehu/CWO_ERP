@@ -1,5 +1,6 @@
 package modules.m4.misc
 
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import modules.m4.M4PriceCategory
@@ -13,20 +14,24 @@ class M4PriceCategoryProperty {
     var number: Int by numberProperty
     val descriptionProperty = SimpleStringProperty("")
     var description: String by descriptionProperty
+    val vatPercentProperty = SimpleDoubleProperty(19.0)
+    var vatPercent: Double by vatPercentProperty
 }
 
 class M4PriceCategoryModel(category: M4PriceCategoryProperty) : ItemViewModel<M4PriceCategoryProperty>(category) {
     val number = bind(M4PriceCategoryProperty::numberProperty)
     val description = bind(M4PriceCategoryProperty::descriptionProperty)
+    val vatPercent = bind(M4PriceCategoryProperty::vatPercentProperty)
 }
 
 fun getPriceCategoryPropertyFromCategory(category: M4PriceCategory): M4PriceCategoryProperty {
     val categoryProperty = M4PriceCategoryProperty()
     categoryProperty.number = category.number
     categoryProperty.description = category.description
+    categoryProperty.vatPercent = category.vatPercent
     return categoryProperty
 }
 
 fun getPriceCategoryFromCategoryProperty(categoryProperty: M4PriceCategoryProperty): M4PriceCategory {
-    return M4PriceCategory(categoryProperty.number, categoryProperty.description)
+    return M4PriceCategory(categoryProperty.number, categoryProperty.description, categoryProperty.vatPercent)
 }

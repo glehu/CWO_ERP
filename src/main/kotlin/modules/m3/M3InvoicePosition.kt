@@ -13,8 +13,11 @@ data class M3InvoicePosition(
     @SerialName("d")
     var description: String
 ) : IEntry {
-    @SerialName("p")
-    var price: Double = 0.0
+    @SerialName("gp")
+    var grossPrice: Double = 0.0
+
+    @SerialName("np")
+    var netPrice: Double = 0.0
 
     @SerialName("a")
     var amount: Int = 1

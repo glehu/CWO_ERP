@@ -63,7 +63,7 @@ fun getM4ItemPropertyFromItem(item: M4Item): M4ItemProperty {
      */
     for ((_, v) in item.prices) {
         val x = Json.decodeFromString<M4PriceCategory>(v)
-        itemProperty.priceCategoriesProperty[x.number].price = x.price
+        itemProperty.priceCategoriesProperty[x.number].grossPrice = x.grossPrice
     }
     return itemProperty
 }

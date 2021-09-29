@@ -21,6 +21,7 @@ class MG4PriceCategory(priceCategory: M4PriceCategory) : Fragment("Price Categor
         fieldset {
             field("Number") { label(priceCategoryModel.number) }
             field("Description") { textfield(priceCategoryModel.description).required() }
+            field("VAT%") { textfield(priceCategoryModel.vatPercent).required() }
         }
         button("Save") {
             shortcut("Enter")

@@ -30,7 +30,8 @@ data class M3Invoice(override var uID: Int) : IEntry, IInvoice {
     //------------- What? --------------|
     //----------------------------------^
     var text: String = "?"
-    var price: Double = 0.0
+    var grossPrice: Double = 0.0
+    var netPrice: Double = 0.0
     var paid: Double = 0.0
 
     /**
@@ -50,6 +51,6 @@ data class M3Invoice(override var uID: Int) : IEntry, IInvoice {
 
     override fun initialize() {
         if (uID == -1) uID = m3GlobalIndex.getUID().toInt()
-        if (price > 0) isIncome = true
+        if (grossPrice > 0) isIncome = true
     }
 }

@@ -35,7 +35,7 @@ class M3ItemModel : ItemViewModel<M3ItemProperty>() {
 fun getItemPropertyFromItem(item: M3InvoicePosition): M3ItemProperty {
     val itemProperty = M3ItemProperty()
     itemProperty.description = item.description
-    itemProperty.price = item.price
+    itemProperty.price = item.grossPrice
     itemProperty.amount = item.amount
     itemProperty.userName = item.userName
     itemProperty.uID = item.uID
@@ -46,7 +46,7 @@ fun getItemPropertyFromItem(item: M3InvoicePosition): M3ItemProperty {
 fun getItemFromItemProperty(itemProperty: M3ItemProperty): M3InvoicePosition {
     val item = M3InvoicePosition(-1, "")
     item.description = itemProperty.description
-    item.price = itemProperty.price
+    item.grossPrice = itemProperty.price
     item.amount = itemProperty.amount
     item.userName = itemProperty.userName
     item.uID = itemProperty.uID

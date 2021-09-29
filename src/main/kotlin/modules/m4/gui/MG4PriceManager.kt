@@ -19,6 +19,7 @@ class MG4PriceManager : View("M4 Price Categories") {
     private val table = tableview(priceCategories) {
         readonlyColumn("Number", M4PriceCategory::number).prefWidth(100.0)
         readonlyColumn("Description", M4PriceCategory::description).prefWidth(400.0)
+        readonlyColumn("VAT%", M4PriceCategory::vatPercent).prefWidth(75.0)
         onUserSelect(1) {
             if (it.number != 0) {
                 categoryManager.showCategory(it, categories)

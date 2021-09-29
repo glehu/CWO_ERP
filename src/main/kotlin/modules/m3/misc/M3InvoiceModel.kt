@@ -70,7 +70,7 @@ fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
     invoiceProperty.buyerUID = invoice.buyerUID
     invoiceProperty.date = LocalDate.parse(invoice.date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
     invoiceProperty.text = invoice.text
-    invoiceProperty.price = invoice.price
+    invoiceProperty.price = invoice.grossPrice
     invoiceProperty.paid = invoice.paid
     for ((_, v) in invoice.items) {
         invoiceProperty.itemsProperty.add(Json.decodeFromString(v))
@@ -90,7 +90,7 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): M3Invoice {
     invoice.buyerUID = invoiceProperty.buyerUID
     invoice.date = invoiceProperty.date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
     invoice.text = invoiceProperty.text
-    invoice.price = invoiceProperty.price
+    invoice.grossPrice = invoiceProperty.price
     invoice.paid = invoiceProperty.paid
     for (item in invoiceProperty.itemsProperty) {
         invoice.items[invoice.items.size] = Json.encodeToString(item)
