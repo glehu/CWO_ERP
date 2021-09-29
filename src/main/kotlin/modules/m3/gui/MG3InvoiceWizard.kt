@@ -130,6 +130,7 @@ class NewInvoiceItemData : Fragment("Items") {
                 readonlyColumn("User", M3InvoicePosition::userName).prefWidth = 250.0
 
                 onEditCommit {
+                    invoice.commit()
                     m3Controller.calculate(invoice.item)
                     this.tableView.refresh()
                 }
@@ -158,6 +159,7 @@ class NewInvoiceItemData : Fragment("Items") {
                             Json.decodeFromString<M4PriceCategory>(item.prices[priceCategory]!!).grossPrice
                         itemPosition.userName = activeUser.username
                         invoice.items.value.add(itemPosition)
+                        invoice.commit()
                         m3Controller.calculate(invoice.item)
                     }
                 }
