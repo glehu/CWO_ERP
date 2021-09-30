@@ -71,7 +71,7 @@ class MXGLogin : Fragment("CWO ERP") {
         }
         center = form {
             checkInstallation()
-            setStageIcon(getIcon())
+            if (!isClientGlobal) setStageIcon(getIcon())
             fieldset("Login") {
                 alignment = Pos.CENTER
                 hbox {
@@ -109,8 +109,8 @@ class MXGLogin : Fragment("CWO ERP") {
                                 }
                             }
                         }
-                        imageview {
-                            image = getLogo()
+                        if (!isClientGlobal) {
+                            imageview { image = getLogo() }
                         }
                     }
                 }

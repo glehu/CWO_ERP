@@ -23,6 +23,8 @@ class MXUserModelProperty {
     var canAccessM2 by canAccessM2Property
     val canAccessM3Property = SimpleBooleanProperty(true)
     var canAccessM3 by canAccessM3Property
+    val canAccessM4Property = SimpleBooleanProperty(true)
+    var canAccessM4 by canAccessM3Property
 }
 
 class MXUserModel(user: MXUserModelProperty) : ItemViewModel<MXUserModelProperty>(user) {
@@ -32,6 +34,7 @@ class MXUserModel(user: MXUserModelProperty) : ItemViewModel<MXUserModelProperty
     val canAccessM1 = bind(MXUserModelProperty::canAccessM1Property)
     val canAccessM2 = bind(MXUserModelProperty::canAccessM2Property)
     val canAccessM3 = bind(MXUserModelProperty::canAccessM3Property)
+    val canAccessM4 = bind(MXUserModelProperty::canAccessM4Property)
 }
 
 fun getUserPropertyFromUser(user: MXUser): MXUserModelProperty {
@@ -42,6 +45,7 @@ fun getUserPropertyFromUser(user: MXUser): MXUserModelProperty {
     userProperty.canAccessM1 = user.canAccessM1
     userProperty.canAccessM2 = user.canAccessM2
     userProperty.canAccessM3 = user.canAccessM3
+    userProperty.canAccessM4 = user.canAccessM4
     return userProperty
 }
 
@@ -51,5 +55,6 @@ fun getUserFromUserProperty(userProperty: MXUserModelProperty): MXUser {
     user.canAccessM1 = userProperty.canAccessM1
     user.canAccessM2 = userProperty.canAccessM2
     user.canAccessM3 = userProperty.canAccessM3
+    user.canAccessM3 = userProperty.canAccessM4
     return user
 }

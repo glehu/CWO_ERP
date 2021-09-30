@@ -32,6 +32,7 @@ class MGXUser(user: MXUser, credentials: MXCredentials) : Fragment("User") {
                 field("M1Songs") { checkbox("", userModel.canAccessM1) }
                 field("M2Contacts") { checkbox("", userModel.canAccessM2) }
                 field("M3Invoice") { checkbox("", userModel.canAccessM3) }
+                field("M4Inventory") { checkbox("", userModel.canAccessM4) }
             }
         }
         button("Save") {

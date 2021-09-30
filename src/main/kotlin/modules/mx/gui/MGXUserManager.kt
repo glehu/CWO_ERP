@@ -29,6 +29,8 @@ class MGXUserManager : View("User Management") {
                 .cellFormat { text = ""; style { backgroundColor = userManager.getRightsCellColor(it) } }
             readonlyColumn("M3", MXUser::canAccessM3)
                 .cellFormat { text = ""; style { backgroundColor = userManager.getRightsCellColor(it) } }
+            readonlyColumn("M4", MXUser::canAccessM4)
+                .cellFormat { text = ""; style { backgroundColor = userManager.getRightsCellColor(it) } }
             onUserSelect(1) {
                 userManager.showUser(it, credentials, users)
             }
