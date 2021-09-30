@@ -55,6 +55,6 @@ fun getUserFromUserProperty(userProperty: MXUserModelProperty): MXUser {
     user.canAccessM1 = userProperty.canAccessM1
     user.canAccessM2 = userProperty.canAccessM2
     user.canAccessM3 = userProperty.canAccessM3
-    user.canAccessM3 = userProperty.canAccessM4
+    user.canAccessM4 = userProperty.canAccessM4
     return user
 }
