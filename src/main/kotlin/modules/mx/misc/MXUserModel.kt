@@ -24,7 +24,7 @@ class MXUserModelProperty {
     val canAccessM3Property = SimpleBooleanProperty(true)
     var canAccessM3 by canAccessM3Property
     val canAccessM4Property = SimpleBooleanProperty(true)
-    var canAccessM4 by canAccessM3Property
+    var canAccessM4 by canAccessM4Property
 }
 
 class MXUserModel(user: MXUserModelProperty) : ItemViewModel<MXUserModelProperty>(user) {
