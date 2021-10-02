@@ -1,6 +1,7 @@
 package modules.m3.gui
 
 import io.ktor.util.*
+import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -94,6 +95,43 @@ class NewInvoiceMainData : Fragment("Main") {
 class NewInvoiceItemData : Fragment("Items") {
     private val invoice: InvoiceModel by inject()
     private val m3Controller: M3Controller by inject()
+    private val table = tableview(invoice.items) {
+        isEditable = true
+        column("Description", M3InvoicePosition::description) {
+            makeEditable()
+            prefWidth = 300.0
+        }
+        column("Gross", M3InvoicePosition::grossPrice) {
+            makeEditable()
+            prefWidth = 100.0
+        }
+        readonlyColumn("Net", M3InvoicePosition::netPrice) {
+            prefWidth = 100.0
+        }
+        column("Amount", M3InvoicePosition::amount) {
+            makeEditable()
+            prefWidth = 100.0
+        }
+        readonlyColumn("User", M3InvoicePosition::userName).prefWidth = 250.0
+
+        onEditCommit {
+            invoice.commit()
+            m3Controller.calculate(invoice.item)
+            this.tableView.refresh()
+        }
+
+        contextmenu {
+            item("Remove") {
+                action {
+                    invoice.items.value.remove(selectedItem)
+                }
+                tooltip("Removes the selected item from the invoice")
+            }
+        }
+
+        enableCellEditing()
+        isFocusTraversable = false
+    }
 
     //----------------------------------v
     //----------- Main Data ------------|
@@ -110,34 +148,10 @@ class NewInvoiceItemData : Fragment("Items") {
                     label("EUR") { paddingHorizontal = 20 }
                 }
             }
-            tableview(invoice.items) {
-                isEditable = true
-                column("Description", M3InvoicePosition::description) {
-                    makeEditable()
-                    prefWidth = 300.0
-                }
-                column("Gross", M3InvoicePosition::grossPrice) {
-                    makeEditable()
-                    prefWidth = 100.0
-                }
-                readonlyColumn("Net", M3InvoicePosition::netPrice) {
-                    prefWidth = 100.0
-                }
-                column("Amount", M3InvoicePosition::amount) {
-                    makeEditable()
-                    prefWidth = 100.0
-                }
-                readonlyColumn("User", M3InvoicePosition::userName).prefWidth = 250.0
-
-                onEditCommit {
-                    invoice.commit()
-                    m3Controller.calculate(invoice.item)
-                    this.tableView.refresh()
-                }
-
-                enableCellEditing()
-                isFocusTraversable = false
-            }
+            /**
+             * Invoice positions table
+             */
+            add(table)
             hbox {
                 button("Add Position") {
                     action {
@@ -162,6 +176,13 @@ class NewInvoiceItemData : Fragment("Items") {
                         invoice.commit()
                         m3Controller.calculate(invoice.item)
                     }
+                }
+                button("Remove item") {
+                    action {
+                        invoice.items.value.remove(table.selectedItem)
+                    }
+                    tooltip("Removes the selected item from the invoice")
+                    style { unsafe("-fx-base", Color.DARKRED) }
                 }
             }
         }
