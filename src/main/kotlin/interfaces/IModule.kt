@@ -117,24 +117,22 @@ interface IModule {
      * It is possible to retrieve an entry of another module if that module gets passed into the function.
      * @return the byte array of an entry with the provided unique identifier.
      */
-    fun getBytes(uID: Int, lock: Boolean = false): ByteArray {
+    fun getBytes(uID: Int, lock: Boolean = false, userName: String = activeUser.username): ByteArray {
         var entryBytes: ByteArray = byteArrayOf()
         if (uID != -1) {
             if (!isClientGlobal) {
-                val indexManager = getIndexManager()!!
                 entryBytes = CwODB.getEntryFromUniqueID(
                     uID = uID,
-                    module = indexManager.module,
-                    index = indexManager.indexList[0]!!
+                    indexManager = getIndexManager()!!
                 )
                 /**
                  * Lock the entry (if: GET)
                  */
-                getIndexManager()!!.setEntryLock(uID, lock)
+                getIndexManager()!!.setEntryLock(uID, lock, userName)
             } else {
                 runBlocking {
                     launch {
-                        entryBytes = getCWOClient().get("${getApiUrl()}entry/$uID?type=uid")
+                        entryBytes = getCWOClient().get("${getApiUrl()}entry/$uID?type=uid&lock=$lock")
                     }
                 }
             }
@@ -243,17 +241,20 @@ interface IModule {
         return locked
     }
 
-    fun setEntryLock(uID: Int, locked: Boolean, userName: String = activeUser.username): Boolean {
+    fun setEntryLock(uID: Int, doLock: Boolean, userName: String = activeUser.username): Boolean {
         var success = false
         if (!isClientGlobal) {
             val indexManager = getIndexManager()!!
-            val entryLocked = indexManager.getEntryLock(uID)
-            if (locked) {
+            val entryLocked = indexManager.getEntryLock(uID, userName)
+            if (doLock) {
                 if (!entryLocked) {
                     indexManager.getBaseIndex(uID).content = userName
                     success = true
                 }
             } else {
+                /**
+                 * If the entry is locked by the user that is trying to unlock -> unlock
+                 */
                 if (indexManager.getBaseIndex(uID).content == userName) {
                     indexManager.getBaseIndex(uID).content = "?"
                     success = true
@@ -262,7 +263,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    success = getCWOClient().get("${getApiUrl()}setentrylock/$uID?type=$locked")
+                    success = getCWOClient().get("${getApiUrl()}setentrylock/$uID?type=$doLock")
                 }
             }
         }

@@ -30,6 +30,10 @@ class MXServerController {
             if (routePar != null && routePar.isNotEmpty()) {
                 when (appCall.request.queryParameters["type"]) {
                     "uid" -> {
+                        val doLock = when (appCall.request.queryParameters["lock"]) {
+                            "true" -> true
+                            else -> false
+                        }
                         return if (appCall.request.queryParameters["format"] == "json") {
                             indexManager.encodeToJsonString(
                                 entry = indexManager.decode(
@@ -38,7 +42,11 @@ class MXServerController {
                                 prettyPrint = true
                             )
                         } else {
-                            indexManager.getBytes(uID = routePar.toInt())
+                            indexManager.getBytes(
+                                uID = routePar.toInt(),
+                                lock = doLock,
+                                userName = appCall.principal<UserIdPrincipal>()?.name!!
+                            )
                         }
                     }
                     "name" -> {
@@ -82,7 +90,7 @@ class MXServerController {
             if (routePar != null && routePar.isNotEmpty()) {
                 return indexManager.setEntryLock(
                     uID = routePar.toInt(),
-                    locked = queryPar.toBoolean(),
+                    doLock = queryPar.toBoolean(),
                     userName = appCall.principal<UserIdPrincipal>()?.name!!
                 )
             }

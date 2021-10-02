@@ -136,12 +136,12 @@ class CwODB {
          * Used to retrieve a single entry with the provided unique identifier.
          * @return the ByteArray of the entry
          */
-        fun getEntryFromUniqueID(uID: Int, module: String, index: Index): ByteArray {
+        fun getEntryFromUniqueID(uID: Int, indexManager: IIndexManager): ByteArray {
             lateinit var entryBytes: ByteArray
-            if (getDatabaseFile(module).isFile) {
-                val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
-                val indexContent = index.indexMap[uID]
-                entryBytes = readDBEntry(indexContent!!.pos, indexContent.byteSize, raf)
+            if (getDatabaseFile(indexManager.module).isFile) {
+                val raf: RandomAccessFile = openRandomFileAccess(indexManager.module, RafMode.READ)
+                val indexContent = indexManager.getBaseIndex(uID)
+                entryBytes = readDBEntry(indexContent.pos, indexContent.byteSize, raf)
                 closeRandomFileAccess(raf)
             }
             return entryBytes
