@@ -123,7 +123,7 @@ interface IIndexManager : IModule {
     ) {
         buildDefaultIndex(uID, posDB, byteSize)
         for ((ixNr, ixContent) in indices) {
-            if (ixContent.isNotEmpty()) {
+            if (ixContent != "?") {
                 if (indexList[ixNr] == null) addIndex(ixNr)
                 indexList[ixNr]!!.indexMap[uID] = IndexContent(
                     content = indexFormat(ixContent).uppercase()
