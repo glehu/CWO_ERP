@@ -52,11 +52,9 @@ interface IModule {
             var posDB: Long = -1L
             var byteSize: Int = -1
             if (entry.uID != -1) {
-                val index = indexManager.indexList[0]!!.indexMap[entry.uID]
-                if (index != null) {
-                    posDB = index.pos
-                    byteSize = index.byteSize
-                }
+                val index = indexManager.getBaseIndex(entry.uID)
+                posDB = index.pos
+                byteSize = index.byteSize
             }
             entry.initialize()
             val (posDBX, byteSizeX) = CwODB.saveEntry(
