@@ -53,7 +53,7 @@ class GSpotify : View("Spotify API") {
                 form {
                     fieldset {
                         addClass(fieldsetBorder)
-                        button("Get Data") {
+                        button("Sync Account") {
                             action {
                                 updateUserData()
                             }
@@ -156,7 +156,7 @@ class GSpotify : View("Spotify API") {
         }
     }
 
-    private fun updateUserData() {
+    fun updateUserData() {
         val userData = sAPI.getAccountData()
         showUserData(userData)
     }

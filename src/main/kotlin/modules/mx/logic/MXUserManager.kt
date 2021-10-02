@@ -34,9 +34,9 @@ class MXUserManager : IModule, Controller() {
         return null
     }
 
-    fun login(username: String, password: String): Boolean {
+    fun login(username: String, password: String, doLog: Boolean = true): Boolean {
         return if (!isClientGlobal) {
-            compareCredentials(username, password, getCredentials())
+            compareCredentials(username, password, getCredentials(), doLog)
         } else {
             compareCredentialsServer(username, password)
         }
@@ -70,14 +70,21 @@ class MXUserManager : IModule, Controller() {
 
     private fun getCredentialsFile() = File("${getModulePath(module)}\\credentials.dat")
 
-    private fun compareCredentials(username: String, password: String, credentials: MXCredentials): Boolean {
+    private fun compareCredentials(
+        username: String,
+        password: String,
+        credentials: MXCredentials,
+        doLog: Boolean
+    ): Boolean {
         var successful = false
         val user = credentials.credentials[username]
         if (user != null && user.password == encryptAES(password)) {
             successful = true
             if (activeUser.username.isEmpty()) activeUser = user
-            log(MXLog.LogType.INFO, "User \"$username\" login successful")
-        } else log(MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials")
+            if (doLog) log(MXLog.LogType.INFO, "User \"$username\" login successful")
+        } else {
+            if (doLog) log(MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials")
+        }
         return successful
     }
 

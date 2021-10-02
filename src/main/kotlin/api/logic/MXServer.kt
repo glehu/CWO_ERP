@@ -49,7 +49,7 @@ class MXServer : IModule, Controller() {
             basic("auth-basic") {
                 realm = "Access to the '/' path"
                 validate { credentials ->
-                    if (userManager.login(credentials.name, credentials.password)) {
+                    if (userManager.login(credentials.name, credentials.password, false)) {
                         UserIdPrincipal(credentials.name)
                     } else {
                         null
@@ -64,13 +64,17 @@ class MXServer : IModule, Controller() {
         }
         routing {
             get("/authcallback/spotify") {
-                log(MXLog.LogType.COM, "Spotify Auth Callback received")
-                call.respondText("CWO ERP Spotify Authorization Callback Site")
                 val code: String? = call.request.queryParameters["code"]
-                find<GSpotify>().authCodeProperty.value = code
-                find<GSpotify>().showTokenData(
-                    SpotifyAUTH().getAccessTokenFromAuthCode(code!!) as SpotifyAuthCallbackJson
-                )
+                if (code != null) {
+                    call.respondFile(File("$dataPath\\data\\web\\spotifyCallback.html"))
+                    log(MXLog.LogType.COM, "Spotify Auth Callback received")
+                    val spotifyAPI = find<GSpotify>()
+                    spotifyAPI.authCodeProperty.value = code
+                    spotifyAPI.showTokenData(
+                        SpotifyAUTH().getAccessTokenFromAuthCode(code) as SpotifyAuthCallbackJson
+                    )
+                    spotifyAPI.updateUserData()
+                }
             }
             //----------------------------------v
             //------------ CWO  API ------------|
