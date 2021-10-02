@@ -80,10 +80,9 @@ fun startupRoutines() {
          * Start the embedded server
          */
         server = MXServer()
-    } else {
-        /**
-         * Start a long-running coroutine task to do various stuff
-         */
-        taskJobGlobal = MXTicker.startTicker()
     }
+    /**
+     * Start a long-running coroutine task to do various stuff
+     */
+    taskJobGlobal = MXTicker.startTicker()
 }

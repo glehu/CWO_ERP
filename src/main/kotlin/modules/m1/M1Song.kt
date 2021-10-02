@@ -3,6 +3,7 @@ package modules.m1
 import interfaces.IEntry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import modules.mx.logic.getDefaultDate
 import modules.mx.m1GlobalIndex
 
 @ExperimentalSerializationApi
@@ -58,7 +59,7 @@ data class M1Song(override var uID: Int, var name: String) : IEntry {
     //------- Availability Data --------|
     //----------------------------------^
     var isPublic: Boolean = false
-    var releaseDate: String = "??.??.????"
+    var releaseDate: String = getDefaultDate()
     var onSpotify: Boolean = false
     var onYouTube: Boolean = false
     var onSoundCloud: Boolean = false

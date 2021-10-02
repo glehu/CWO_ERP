@@ -32,6 +32,7 @@ import tornadofx.*
 class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
     override val moduleNameLong = "CWO ERP"
     override val module = "MX"
+    private val userManager: MXUserManager by inject()
     override fun getIndexManager(): IIndexManager? {
         return null
     }
@@ -43,13 +44,14 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
 
     override fun stop() {
         try {
+            userManager.logout(activeUser.username, activeUser.password)
             if (!isClientGlobal) {
                 log(MXLog.LogType.INFO, "Shutting down server...")
                 server.serverEngine.stop(100L, 100L)
-            } else {
-                if (taskJobGlobal.isActive) {
-                    taskJobGlobal.cancel()
-                }
+            }
+            if (taskJobGlobal.isActive) {
+                log(MXLog.LogType.INFO, "Shutting down ticker...")
+                taskJobGlobal.cancel()
             }
         } finally {
             super.stop()

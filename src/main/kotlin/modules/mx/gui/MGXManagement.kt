@@ -14,6 +14,7 @@ class MGXManagement : View("MX Management") {
     override val root = tabpane {
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
+        tab<MGXDashboard>()
         tab<MGXUserManager>()
         tab<MGXDatabaseManager>()
         if (!isClientGlobal) tab<MGXAPI>() //TODO client work

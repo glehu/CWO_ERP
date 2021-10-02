@@ -21,6 +21,8 @@ import modules.mx.gui.MGXUser
 import tornadofx.Controller
 import tornadofx.MultiValue
 import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -34,11 +36,31 @@ class MXUserManager : IModule, Controller() {
         return null
     }
 
+    /**
+     * Attempts to log in a user.
+     * @return true if the user is logged in.
+     */
     fun login(username: String, password: String, doLog: Boolean = true): Boolean {
         return if (!isClientGlobal) {
             compareCredentials(username, password, getCredentials(), doLog)
         } else {
             compareCredentialsServer(username, password)
+        }
+    }
+
+    /**
+     * Logs out a user.
+     */
+    fun logout(username: String, password: String) {
+        if (!isClientGlobal) {
+            setUserOnlineStatus(username, false)
+        } else {
+            val client = getCWOClient(username, password)
+            runBlocking {
+                launch {
+                    client.get("${getServerUrl()}logout")
+                }
+            }
         }
     }
 
@@ -57,6 +79,15 @@ class MXUserManager : IModule, Controller() {
         writeCredentials(credentials)
     }
 
+    fun setUserOnlineStatus(username: String, online: Boolean) {
+        val credentials = getCredentials()
+        credentials.credentials[username]!!.online = online
+        credentials.credentials[username]!!.onlineSince = if (online) {
+            LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+        } else "?"
+        writeCredentials(credentials)
+    }
+
     fun getCredentials(): MXCredentials {
         val credentialsFile = getCredentialsFile()
         if (!credentialsFile.isFile) initializeCredentials(credentialsFile)
@@ -64,7 +95,7 @@ class MXUserManager : IModule, Controller() {
     }
 
     private fun writeCredentials(credentials: MXCredentials) {
-        getCredentialsFile().writeText(Json.encodeToString(credentials))
+        getCredentialsFile().writeText(json(true).encodeToString(credentials))
         log(MXLog.LogType.INFO, "Credentials updated")
     }
 

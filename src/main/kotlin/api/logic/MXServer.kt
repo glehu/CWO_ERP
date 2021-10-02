@@ -82,12 +82,24 @@ class MXServer : IModule, Controller() {
             authenticate("auth-basic") {
                 get("/login") {
                     log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} login")
+                    val userManager = MXUserManager()
+                    userManager.setUserOnlineStatus(
+                        username = call.principal<UserIdPrincipal>()?.name!!,
+                        online = true
+                    )
                     call.respond(
                         MXServerController.generateLoginResponse(
-                            MXUserManager()
+                            userManager
                                 .getCredentials()
                                 .credentials[call.principal<UserIdPrincipal>()?.name]!!
                         )
+                    )
+                }
+                get("/logout") {
+                    log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} logout")
+                    MXUserManager().setUserOnlineStatus(
+                        username = call.principal<UserIdPrincipal>()?.name!!,
+                        online = false
                     )
                 }
                 route("/") {

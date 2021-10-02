@@ -33,24 +33,18 @@ class MGXDatabaseManager : View("Databases") {
         indexManagers.addAll(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex)
     }
 
-    private val table = tableview(indexManagers) {
+    val table = tableview(indexManagers) {
         readonlyColumn("Database", IIndexManager::module).prefWidth(80.0)
         readonlyColumn("Description", IIndexManager::moduleNameLong).prefWidth(150.0)
         readonlyColumn("# Entries", IIndexManager::lastUID).prefWidth(125.0)
         readonlyColumn("DB Size (KiB)", IIndexManager::dbSizeKiByte).prefWidth(125.0)
         readonlyColumn("Index Size (KiB)", IIndexManager::ixSizeKiByte).prefWidth(125.0)
         readonlyColumn("Last Change", IIndexManager::lastChangeDateLocal).prefWidth(175.0)
-        readonlyColumn("by User", IIndexManager::lastChangeUser).prefWidth(200.0)
+        readonlyColumn("by User", IIndexManager::lastChangeUser).remainingWidth()
     }
 
-    override val root = borderpane {
-        right = vbox {
-            button("Refresh Stats") {
-                action {
-                    refreshStats()
-                }
-                prefWidth = rightButtonsWidth
-            }
+    override val root = form {
+        vbox {
             button("Update Databases") {
                 action {
                     updateDatabases()
@@ -69,12 +63,9 @@ class MGXDatabaseManager : View("Databases") {
                 }
             }
         }
-        center {
-            add(table)
-        }
     }
 
-    private fun refreshStats() {
+    fun refreshStats() {
         table.refresh()
     }
 }

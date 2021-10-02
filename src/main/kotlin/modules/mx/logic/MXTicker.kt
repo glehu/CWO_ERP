@@ -7,6 +7,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.gui.MG4PriceManager
+import modules.mx.gui.MGXDatabaseManager
+import modules.mx.isClientGlobal
 import tornadofx.find
 
 /**
@@ -23,15 +25,17 @@ class MXTicker {
         fun startTicker() = GlobalScope.launch {
             do {
                 delay(5000L)
-                /**
-                 * #### Ticker Actions: ####
-                 */
-
-                find<MG4PriceManager>().refreshCategories()
-
-                /**
-                 * #########################
-                 */
+                if (isClientGlobal) {
+                    /**
+                     * #### Client Ticker Actions: ####
+                     */
+                    find<MG4PriceManager>().refreshCategories()
+                } else {
+                    /**
+                     * #### Server Ticker Actions: ####
+                     */
+                    find<MGXDatabaseManager>().refreshStats()
+                }
             } while (true)
         }
     }
