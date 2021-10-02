@@ -21,6 +21,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import modules.m4.logic.M4PriceManager
 import modules.mx.*
+import modules.mx.gui.MGXDashboard
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import tornadofx.Controller
@@ -94,6 +95,8 @@ class MXServer : IModule, Controller() {
                                 .credentials[call.principal<UserIdPrincipal>()?.name]!!
                         )
                     )
+                    find<MGXDashboard>().activeUsers.items = userManager.getActiveUsers()
+                    find<MGXDashboard>().activeUsers.refresh()
                 }
                 get("/logout") {
                     log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} logout")
@@ -101,6 +104,8 @@ class MXServer : IModule, Controller() {
                         username = call.principal<UserIdPrincipal>()?.name!!,
                         online = false
                     )
+                    find<MGXDashboard>().activeUsers.items = userManager.getActiveUsers()
+                    find<MGXDashboard>().activeUsers.refresh()
                 }
                 route("/") {
                     get {

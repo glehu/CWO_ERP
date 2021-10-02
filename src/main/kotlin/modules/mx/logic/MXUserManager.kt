@@ -20,6 +20,7 @@ import modules.mx.*
 import modules.mx.gui.MGXUser
 import tornadofx.Controller
 import tornadofx.MultiValue
+import tornadofx.observableListOf
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -169,14 +170,33 @@ class MXUserManager : IModule, Controller() {
     fun addUser(credentials: MXCredentials, users: ObservableList<MXUser>) =
         showUser(MXUser("", ""), credentials, users)
 
-    fun getUsers(users: ObservableList<MXUser>, credentials: MXCredentials): ObservableList<MXUser> {
+    /**
+     * Retrieves all users and puts them in an observable list.
+     * if onlineOnline is true, filters users that are offline.
+     * @return an observable list of users.
+     */
+    fun getUsersObservableList(
+        users: ObservableList<MXUser>,
+        credentials: MXCredentials,
+        onlineOnly: Boolean = false
+    ): ObservableList<MXUser> {
         users.clear()
-        for ((_, v) in credentials.credentials) users.add(v)
+        for ((_, user) in credentials.credentials) {
+            if (!onlineOnly || (onlineOnly && user.online)) users.add(user)
+        }
         return users
     }
 
     fun showUser(user: MXUser, credentials: MXCredentials, users: ObservableList<MXUser>) {
         MGXUser(user, credentials).openModal(block = true)
-        getUsers(users, credentials)
+        getUsersObservableList(users, credentials)
+    }
+
+    fun getActiveUsers(): ObservableList<MXUser> {
+        return getUsersObservableList(
+            users = observableListOf(MXUser("", "")),
+            credentials = getCredentials(),
+            onlineOnly = true
+        )
     }
 }

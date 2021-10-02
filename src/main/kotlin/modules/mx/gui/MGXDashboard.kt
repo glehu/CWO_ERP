@@ -1,16 +1,28 @@
 package modules.mx.gui
 
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import tornadofx.View
-import tornadofx.fieldset
-import tornadofx.form
+import modules.mx.MXUser
+import modules.mx.logic.MXUserManager
+import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MGXDashboard : View("Dashboard") {
+    private val userManager: MXUserManager by inject()
     private val dbManager = find<MGXDatabaseManager>()
-    override val root = form {
-        fieldset(dbManager.title) {
-            add(dbManager.table)
+    val activeUsers = tableview(userManager.getActiveUsers()) {
+        readonlyColumn("Username", MXUser::username).prefWidth(200.0)
+        readonlyColumn("Online since", MXUser::onlineSince).prefWidth(200.0)
+    }
+    override val root = vbox {
+        hbox(10) {
+            fieldset(dbManager.title) {
+                add(dbManager.table)
+            }
+            fieldset("Active Users") {
+                add(activeUsers)
+            }
         }
     }
 }

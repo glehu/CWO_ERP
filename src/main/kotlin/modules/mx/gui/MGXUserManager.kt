@@ -17,7 +17,7 @@ class MGXUserManager : View("User Management") {
     private val credentials = userManager.getCredentials()
     private var users: ObservableList<MXUser> = observableListOf(MXUser("", ""))
     override val root = borderpane {
-        users = userManager.getUsers(users, credentials)
+        users = userManager.getUsersObservableList(users, credentials)
         center = tableview(users) {
             readonlyColumn("Username", MXUser::username).prefWidth(200.0)
             readonlyColumn("Password (encrypted)", MXUser::password)
