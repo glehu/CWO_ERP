@@ -40,7 +40,7 @@ class MGXDatabaseManager : View("Databases") {
         readonlyColumn("DB Size (KiB)", IIndexManager::dbSizeKiByte).prefWidth(125.0)
         readonlyColumn("Index Size (KiB)", IIndexManager::ixSizeKiByte).prefWidth(125.0)
         readonlyColumn("Last Change", IIndexManager::lastChangeDateLocal).prefWidth(175.0)
-        readonlyColumn("by User", IIndexManager::lastChangeUser)
+        readonlyColumn("by User", IIndexManager::lastChangeUser).prefWidth(175.0)
     }
 
     override val root = form {

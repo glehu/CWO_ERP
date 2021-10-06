@@ -77,9 +77,6 @@ class MXServer : IModule, Controller() {
                     spotifyAPI.updateUserData()
                 }
             }
-            //----------------------------------v
-            //------------ CWO  API ------------|
-            //----------------------------------^
             authenticate("auth-basic") {
                 get("/login") {
                     log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} login")
@@ -112,6 +109,9 @@ class MXServer : IModule, Controller() {
                         call.respondFile(File("$dataPath\\data\\web\\home.html"))
                     }
                 }
+                //----------------------------------v
+                //------------ CWO  API ------------|
+                //----------------------------------^
                 route("/api")
                 {
                     /**

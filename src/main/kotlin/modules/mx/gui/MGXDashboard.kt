@@ -12,7 +12,7 @@ class MGXDashboard : View("Dashboard") {
     private val userManager: MXUserManager by inject()
     private val dbManager = find<MGXDatabaseManager>()
     val activeUsers = tableview(userManager.getActiveUsers()) {
-        readonlyColumn("Username", MXUser::username).prefWidth(200.0)
+        readonlyColumn("Username", MXUser::username).prefWidth(175.0)
         readonlyColumn("Online since", MXUser::onlineSince).prefWidth(200.0)
     }
     override val root = vbox {
