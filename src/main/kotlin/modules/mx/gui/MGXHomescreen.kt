@@ -17,10 +17,7 @@ import modules.m4.gui.MG4Overview
 import modules.m4.gui.MG4PriceManager
 import modules.mx.*
 import modules.mx.gui.userAlerts.MGXUserAlert
-import modules.mx.logic.MXLog
-import modules.mx.logic.MXUserManager
-import modules.mx.logic.checkInstallation
-import modules.mx.logic.startupRoutines
+import modules.mx.logic.*
 import modules.mx.misc.MXUserModel
 import modules.mx.misc.getUserPropertyFromUser
 import styling.Stylesheet
@@ -44,15 +41,7 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
 
     override fun stop() {
         try {
-            userManager.logout(activeUser.username, activeUser.password)
-            if (!isClientGlobal) {
-                log(MXLog.LogType.INFO, "Shutting down server...")
-                server.serverEngine.stop(100L, 100L)
-            }
-            if (taskJobGlobal.isActive) {
-                log(MXLog.LogType.INFO, "Shutting down ticker...")
-                taskJobGlobal.cancel()
-            }
+            exitMain()
         } finally {
             super.stop()
         }

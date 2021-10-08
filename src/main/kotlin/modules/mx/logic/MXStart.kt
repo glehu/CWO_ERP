@@ -19,8 +19,18 @@ import java.io.File
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
-fun main() {
-    launch<CWOMainGUI>()
+fun main(args: Array<String>) {
+    if (args.isEmpty() || args[0] == "gui") {
+        /**
+         * GUI
+         */
+        launch<CWOMainGUI>()
+    } else if (args[0] == "cli" || args[0] == "cmd") {
+        /**
+         * Command Line Interpreter
+         */
+        MXCLI().runCLI()
+    }
 }
 
 @ExperimentalSerializationApi
@@ -72,10 +82,7 @@ fun startupRoutines() {
         /**
          * Load index managers
          */
-        m1GlobalIndex = M1IndexManager()
-        m2GlobalIndex = M2IndexManager()
-        m3GlobalIndex = M3IndexManager()
-        m4GlobalIndex = M4IndexManager()
+        loadIndex()
         /**
          * Start the embedded server
          */
@@ -85,4 +92,35 @@ fun startupRoutines() {
      * Start a long-running coroutine task to do various stuff
      */
     taskJobGlobal = MXTicker.startTicker()
+}
+
+@ExperimentalSerializationApi
+fun loadIndex(module: String = "") {
+    if (module.isNotEmpty()) {
+        when (module) {
+            "m1" -> m1GlobalIndex = M1IndexManager()
+            "m2" -> m2GlobalIndex = M2IndexManager()
+            "m3" -> m3GlobalIndex = M3IndexManager()
+            "m4" -> m4GlobalIndex = M4IndexManager()
+        }
+    } else {
+        m1GlobalIndex = M1IndexManager()
+        m2GlobalIndex = M2IndexManager()
+        m3GlobalIndex = M3IndexManager()
+        m4GlobalIndex = M4IndexManager()
+    }
+}
+
+@ExperimentalSerializationApi
+@InternalAPI
+fun exitMain() {
+    MXUserManager().logout(activeUser.username, activeUser.password)
+    if (!isClientGlobal) {
+        MXLog.log(MXLog.LogType.INFO, "Shutting down server...")
+        server.serverEngine.stop(100L, 100L)
+    }
+    if (taskJobGlobal.isActive) {
+        MXLog.log(MXLog.LogType.INFO, "Shutting down ticker...")
+        taskJobGlobal.cancel()
+    }
 }
