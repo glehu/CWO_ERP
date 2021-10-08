@@ -67,7 +67,7 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
     }
 
     override fun getIndicesList(): ArrayList<String> {
-        return arrayListOf("1-Name", "2-Vocalist", "3-Producer", "4-Genre")
+        return arrayListOf("1-Name", "2-Vocalist", "3-Producer", "4-Genre", "5-SpotifyID")
     }
 
     override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
