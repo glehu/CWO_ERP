@@ -6,9 +6,8 @@ import interfaces.IModule
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.mx.activeUser
-import modules.mx.server
-import modules.mx.taskJobGlobal
+import modules.mx.*
+import tornadofx.observableListOf
 import kotlin.system.exitProcess
 
 @DelicateCoroutinesApi
@@ -40,15 +39,40 @@ class MXCLI : IModule {
         var terminated = !login
         var inputArgs: List<String>
         while (!terminated) {
-            print("\n${activeUser.username} :> "); inputArgs = (readLine() ?: "").split(" ")
+            print("\n${activeUser.username}:> "); inputArgs = (readLine() ?: "").split(" ")
             when (inputArgs[0]) {
                 "exit", "close", "terminate" -> terminated = true
                 "help" -> cliHelp(inputArgs)
                 "start" -> cliStart(inputArgs)
                 "load" -> cliLoad(inputArgs)
+                "show" -> cliShow(inputArgs)
             }
         }
         cliExit()
+    }
+
+    private fun cliShow(args: List<String>) {
+        if (args.size < 2) {
+            log(MXLog.LogType.ERROR, "Not enough arguments.")
+        } else {
+            when (args[1]) {
+                "dbstats" -> {
+                    val header = arrayOf("DB", "Desc", "#", "DB KiB", "IX KiB", "Date", "User")
+                    val ix = observableListOf(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex)
+                    val data = Array(ix.size) { Array(header.size) { "" } }
+                    for (index in 0 until ix.size) {
+                        data[index][0] = ix[index].module
+                        data[index][1] = ix[index].moduleNameLong
+                        data[index][2] = ix[index].getLastUniqueID().toString()
+                        data[index][3] = ix[index].dbSizeKiByte.toString()
+                        data[index][4] = ix[index].ixSizeKiByte.toString()
+                        data[index][5] = ix[index].lastChangeDateUTC
+                        data[index][6] = ix[index].lastChangeUser
+                    }
+                    cliPrint(header, data)
+                }
+            }
+        }
     }
 
     private fun cliStart(args: List<String>) {
@@ -113,7 +137,8 @@ class MXCLI : IModule {
         val show =
             "show [argument] -> shows info about [argument]"
         val showDetail = "$show\n" +
-                "modules -> shows all available modules"
+                "\tmodules -> shows all available modules\n" +
+                "\tdbstats -> shows database stats"
         //****************************************************
         val helpText = when (args[1]) {
             "help" -> help
@@ -155,5 +180,46 @@ class MXCLI : IModule {
             loggedIn = MXUserManager().login(username, password, doLog = true)
         }
         return loggedIn
+    }
+
+    /**
+     * Prints an ASCII table of the provided contents.
+     */
+    private fun cliPrint(header: Array<String>, data: Array<Array<String>>) {
+        val boundaries = IntArray(header.size)
+        for (hd in header.indices) {
+            boundaries[hd] = header[hd].length + 2
+        }
+        for (col in data.indices) {
+            for (row in 0 until data[col].size) {
+                if ((data[col][row].length + 2) > boundaries[row]) {
+                    boundaries[row] = data[col][row].length + 2
+                }
+            }
+        }
+        println()
+        var separator = ""
+        for (col in boundaries.indices) {
+            separator += "+"
+            for (tmp in 0 until boundaries[col]) separator += "-"
+            if (col == header.size - 1) separator += "+"
+        }
+        println(separator)
+        var cell: String
+        for (row in -1 until data.size) {
+            for (col in boundaries.indices) {
+                cell = if (row == -1) {
+                    "| ${header[col]}"
+                } else {
+                    "| ${data[row][col]}"
+                }
+                print(cell)
+                for (pad in 0..(boundaries[col] - cell.length)) print(" ")
+                if (col == header.size - 1) print("|")
+            }
+            println()
+            if (row == -1) println(separator)
+        }
+        println(separator)
     }
 }
