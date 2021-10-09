@@ -49,3 +49,11 @@ fun Double.roundTo(numFractionDigits: Int): Double {
     val factor = 10.0.pow(numFractionDigits.toDouble())
     return (this * factor).roundToInt() / factor
 }
+
+/**
+ * Creates a two-dimensional array with a fixed length.
+ * @return a two-dimensional array.
+ */
+fun d2Array(rows: Int, cols: Int): Array<Array<String>> {
+    return Array(rows) { Array(cols) { "" } }
+}

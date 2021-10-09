@@ -59,7 +59,7 @@ class MXCLI : IModule {
                 "dbstats" -> {
                     val header = arrayOf("DB", "Desc", "#", "DB KiB", "IX KiB", "Date", "User")
                     val ix = observableListOf(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex)
-                    val data = Array(ix.size) { Array(header.size) { "" } }
+                    val data = d2Array(ix.size, header.size)
                     for (index in 0 until ix.size) {
                         data[index][0] = ix[index].module
                         data[index][1] = ix[index].moduleNameLong

@@ -17,6 +17,9 @@ import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import modules.m4.logic.M4PriceManager
@@ -27,6 +30,7 @@ import modules.mx.logic.MXUserManager
 import tornadofx.Controller
 import java.io.File
 
+@DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
 class MXServer : IModule, Controller() {
@@ -236,7 +240,7 @@ class MXServer : IModule, Controller() {
     }
 
     init {
-        runAsync {
+        serverJobGlobal = GlobalScope.launch {
             serverEngine.start(wait = true)
         }
     }

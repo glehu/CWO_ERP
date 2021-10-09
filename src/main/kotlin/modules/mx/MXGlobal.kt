@@ -4,6 +4,7 @@ import api.logic.MXServer
 import interfaces.IEntry
 import io.ktor.util.*
 import javafx.scene.image.Image
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
@@ -104,8 +105,10 @@ const val rightButtonsWidth = 150.0
 var differenceFromUTC: Int = 0
 
 //Server/Client
+@DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
 lateinit var server: MXServer
+lateinit var serverJobGlobal: Job
 var isClientGlobal: Boolean = false
 var serverIPAddressGlobal: String = "?"

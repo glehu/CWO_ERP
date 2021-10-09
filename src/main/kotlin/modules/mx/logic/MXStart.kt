@@ -111,13 +111,17 @@ fun loadIndex(module: String = "") {
     }
 }
 
+@DelicateCoroutinesApi
 @ExperimentalSerializationApi
 @InternalAPI
 fun exitMain() {
     MXUserManager().logout(activeUser.username, activeUser.password)
     if (!isClientGlobal) {
-        MXLog.log(MXLog.LogType.INFO, "Shutting down server...")
-        server.serverEngine.stop(100L, 100L)
+        if (serverJobGlobal.isActive) {
+            MXLog.log(MXLog.LogType.INFO, "Shutting down server...")
+            server.serverEngine.stop(100L, 100L)
+            serverJobGlobal.cancel()
+        }
     }
     if (taskJobGlobal.isActive) {
         MXLog.log(MXLog.LogType.INFO, "Shutting down ticker...")
