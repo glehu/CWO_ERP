@@ -84,7 +84,7 @@ var activeUser: MXUser = MXUser("", "")
 var tokenGlobal: String = ""
 
 //Task
-lateinit var taskJobGlobal: Job
+var taskJobGlobal: Job? = null
 
 //File locations
 val programPath: String = System.getProperty("user.dir")
@@ -109,6 +109,11 @@ var differenceFromUTC: Int = 0
 @InternalAPI
 @ExperimentalSerializationApi
 lateinit var server: MXServer
-lateinit var serverJobGlobal: Job
+var serverJobGlobal: Job? = null
 var isClientGlobal: Boolean = false
 var serverIPAddressGlobal: String = "?"
+
+/**
+ * CLI mode
+ */
+var cliMode = false

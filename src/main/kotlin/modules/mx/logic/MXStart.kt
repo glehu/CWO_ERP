@@ -29,6 +29,7 @@ fun main(args: Array<String>) {
         /**
          * Command Line Interpreter
          */
+        cliMode = true
         MXCLI().runCLI()
     }
 }
@@ -117,14 +118,14 @@ fun loadIndex(module: String = "") {
 fun exitMain() {
     MXUserManager().logout(activeUser.username, activeUser.password)
     if (!isClientGlobal) {
-        if (serverJobGlobal.isActive) {
+        if (serverJobGlobal?.isActive != false) {
             MXLog.log(MXLog.LogType.INFO, "Shutting down server...")
             server.serverEngine.stop(100L, 100L)
-            serverJobGlobal.cancel()
+            serverJobGlobal!!.cancel()
         }
     }
-    if (taskJobGlobal.isActive) {
+    if (taskJobGlobal?.isActive != false) {
         MXLog.log(MXLog.LogType.INFO, "Shutting down ticker...")
-        taskJobGlobal.cancel()
+        taskJobGlobal!!.cancel()
     }
 }

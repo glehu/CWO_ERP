@@ -18,6 +18,7 @@ import modules.m4.M4PriceCategories
 import modules.m4.M4PriceCategory
 import modules.m4.gui.MG4PriceCategory
 import modules.m4.gui.MG4PriceManager
+import modules.mx.cliMode
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
 import tornadofx.Controller
@@ -58,7 +59,7 @@ class M4PriceManager : IModule, Controller() {
                 }
             }
         }
-        tornadofx.find<MG4PriceManager>().refreshCategories()
+        if (!cliMode) find<MG4PriceManager>().refreshCategories()
     }
 
     fun deleteCategory(category: M4PriceCategory) {

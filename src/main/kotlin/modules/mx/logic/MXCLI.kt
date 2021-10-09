@@ -80,8 +80,10 @@ class MXCLI : IModule {
             log(MXLog.LogType.ERROR, "Not enough arguments.")
         } else {
             when (args[1]) {
-                "server" -> server = MXServer()
-                "ticker" -> taskJobGlobal = MXTicker.startTicker()
+                "server" -> {
+                    server = MXServer()
+                    taskJobGlobal = MXTicker.startTicker()
+                }
             }
         }
     }
@@ -131,8 +133,7 @@ class MXCLI : IModule {
         val start =
             "start [argument] -> starts [argument]"
         val startDetail = "$start\n" +
-                "\tserver -> starts the server\n" +
-                "\tticker -> starts the ticker task"
+                "\tserver -> starts the server"
 
         val show =
             "show [argument] -> shows info about [argument]"
@@ -155,7 +156,7 @@ class MXCLI : IModule {
                         "\n$show"
             }
         }
-        println("$helpText\n")
+        println(helpText)
     }
 
     /**

@@ -96,8 +96,10 @@ class MXServer : IModule, Controller() {
                                 .credentials[call.principal<UserIdPrincipal>()?.name]!!
                         )
                     )
-                    find<MGXDashboard>().activeUsers.items = userManager.getActiveUsers()
-                    find<MGXDashboard>().activeUsers.refresh()
+                    if (!cliMode) {
+                        find<MGXDashboard>().activeUsers.items = userManager.getActiveUsers()
+                        find<MGXDashboard>().activeUsers.refresh()
+                    }
                 }
                 get("/logout") {
                     log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} logout")
@@ -105,8 +107,10 @@ class MXServer : IModule, Controller() {
                         username = call.principal<UserIdPrincipal>()?.name!!,
                         online = false
                     )
-                    find<MGXDashboard>().activeUsers.items = userManager.getActiveUsers()
-                    find<MGXDashboard>().activeUsers.refresh()
+                    if (!cliMode) {
+                        find<MGXDashboard>().activeUsers.items = userManager.getActiveUsers()
+                        find<MGXDashboard>().activeUsers.refresh()
+                    }
                 }
                 route("/") {
                     get {
