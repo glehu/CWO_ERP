@@ -15,7 +15,7 @@ class M2Analytics : IModule, Controller() {
     override val moduleNameLong = "M2Analytics"
     override val module = "M2"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex
+        return m2GlobalIndex!!
     }
 
     fun getChartDataOnCityDistribution(

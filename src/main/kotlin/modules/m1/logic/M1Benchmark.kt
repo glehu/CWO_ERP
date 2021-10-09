@@ -20,7 +20,7 @@ class M1Benchmark : IModule, Controller() {
     override val moduleNameLong = "M1Benchmark"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex
+        return m1GlobalIndex!!
     }
 
     suspend fun insertRandomEntries(amount: Int) {
@@ -41,7 +41,7 @@ class M1Benchmark : IModule, Controller() {
                 )
                 if (i % 5000 == 0) {
                     log(MXLog.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
-                    coroutineScope { launch { m1GlobalIndex.writeIndexData() } }
+                    coroutineScope { launch { m1GlobalIndex!!.writeIndexData() } }
                 }
             }
         }

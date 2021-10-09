@@ -22,7 +22,7 @@ class M1Controller : IController, Controller() {
     override val moduleNameLong = "M1Controller"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex
+        return m1GlobalIndex!!
     }
 
     private val m2Controller: M2Controller by inject()

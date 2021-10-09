@@ -22,6 +22,13 @@ class MXCLI : IModule {
         return null
     }
 
+    //****************************************************
+    //******************* VARIABLES **********************
+    //****************************************************
+
+
+    //****************************************************
+
     /**
      * Runs the software without GUI in command line interpretation mode.
      */
@@ -66,13 +73,18 @@ class MXCLI : IModule {
                     val ix = observableListOf(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex)
                     val data = d2Array(ix.size, header.size)
                     for (i in 0 until ix.size) {
-                        data[i][0] = ix[i].module
-                        data[i][1] = ix[i].moduleNameLong
-                        data[i][2] = ix[i].getLastUniqueID().toString()
-                        data[i][3] = ix[i].dbSizeKiByte.toString()
-                        data[i][4] = ix[i].ixSizeKiByte.toString()
-                        data[i][5] = ix[i].lastChangeDateUTC
-                        data[i][6] = ix[i].lastChangeUser
+                        if (ix[i] != null) {
+                            data[i][0] = ix[i]!!.module
+                            data[i][1] = ix[i]!!.moduleNameLong
+                            data[i][2] = ix[i]!!.getLastUniqueID().toString()
+                            data[i][3] = ix[i]!!.dbSizeKiByte.toString()
+                            data[i][4] = ix[i]!!.ixSizeKiByte.toString()
+                            data[i][5] = ix[i]!!.lastChangeDateUTC
+                            data[i][6] = ix[i]!!.lastChangeUser
+                        } else {
+                            data[i][0] = "<M${i + 1}?>"
+                            data[i][1] = "<Not initialized>"
+                        }
                     }
                     cliPrint(header, data)
                 }

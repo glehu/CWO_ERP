@@ -15,7 +15,7 @@ class M1Analytics : IModule, Controller() {
     override val moduleNameLong = "M1Analytics"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex
+        return m1GlobalIndex!!
     }
 
     enum class DistType {
@@ -37,7 +37,7 @@ class M1Analytics : IModule, Controller() {
                 ixNr = 0,
                 exactSearch = false,
                 maxSearchResults = -1,
-                indexManager = m1GlobalIndex
+                indexManager = m1GlobalIndex!!
             )
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping data..."))

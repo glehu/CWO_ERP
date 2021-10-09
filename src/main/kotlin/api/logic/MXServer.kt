@@ -126,19 +126,19 @@ class MXServer : IModule, Controller() {
                      * General Endpoints
                      */
                     getIndexSelection(
-                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
+                        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
                     )
                     getEntry(
-                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
+                        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
                     )
                     saveEntry(
-                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
+                        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
                     )
                     getEntryLock(
-                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
+                        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
                     )
                     setEntryLock(
-                        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
+                        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
                     )
 
                     /**

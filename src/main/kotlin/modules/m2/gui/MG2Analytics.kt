@@ -33,9 +33,9 @@ class MG2Analytics : Fragment("Analytics") {
             button("City distribution") {
                 prefWidth = 200.0
                 action {
-                    maxEntries = m2GlobalIndex.getLastUniqueID().toInt()
+                    maxEntries = m2GlobalIndex!!.getLastUniqueID().toInt()
                     runAsync {
-                        val cityDist = m2controller.getChartDataOnCityDistribution(m2GlobalIndex, numberOfCities)
+                        val cityDist = m2controller.getChartDataOnCityDistribution(m2GlobalIndex!!, numberOfCities)
                         {
                             progressN = it.first
                             updateProgress(it.first.toDouble(), maxEntries.toDouble())

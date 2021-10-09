@@ -28,6 +28,6 @@ data class M4Item(
     var prices: MutableMap<Int, String> = mutableMapOf()
 
     override fun initialize() {
-        if (uID == -1) uID = m4GlobalIndex.getUID().toInt()
+        if (uID == -1) uID = m4GlobalIndex!!.getUID().toInt()
     }
 }

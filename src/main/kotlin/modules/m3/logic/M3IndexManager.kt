@@ -15,7 +15,7 @@ class M3IndexManager : IIndexManager, Controller() {
     override val moduleNameLong = "Invoices"
     override val module = "M3"
     override fun getIndexManager(): IIndexManager {
-        return m3GlobalIndex
+        return m3GlobalIndex!!
     }
 
     override var lastChangeDateHex: String = ""

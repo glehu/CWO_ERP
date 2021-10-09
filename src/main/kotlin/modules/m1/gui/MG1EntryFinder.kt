@@ -26,7 +26,7 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
     override val moduleNameLong = "MG1EntryFinder"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex
+        return m1GlobalIndex!!
     }
 
     override var searchText: TextField by singleAssign()

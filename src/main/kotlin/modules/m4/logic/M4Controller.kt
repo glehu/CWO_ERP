@@ -23,7 +23,7 @@ class M4Controller : IController, Controller() {
     override val moduleNameLong = "M4Controller"
     override val module = "M4"
     override fun getIndexManager(): IIndexManager {
-        return m4GlobalIndex
+        return m4GlobalIndex!!
     }
 
     private val wizard = find<M4ItemConfiguratorWizard>()

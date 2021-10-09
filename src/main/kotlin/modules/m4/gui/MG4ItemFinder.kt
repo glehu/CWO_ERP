@@ -24,7 +24,7 @@ class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
     override val moduleNameLong = "MG4ItemFinder"
     override val module = "M4"
     override fun getIndexManager(): IIndexManager {
-        return m4GlobalIndex
+        return m4GlobalIndex!!
     }
 
     override var searchText: TextField by singleAssign()

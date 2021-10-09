@@ -19,7 +19,7 @@ class SpotifyAPI : IModule, IAPI {
     override val moduleNameLong = "SpotifyAPI"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex
+        return m1GlobalIndex!!
     }
 
     val controller = SpotifyController()

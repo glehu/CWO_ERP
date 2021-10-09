@@ -50,7 +50,7 @@ data class M3Invoice(override var uID: Int) : IEntry, IInvoice {
     private var isIncome: Boolean = false
 
     override fun initialize() {
-        if (uID == -1) uID = m3GlobalIndex.getUID().toInt()
+        if (uID == -1) uID = m3GlobalIndex!!.getUID().toInt()
         if (grossPrice > 0) isIncome = true
     }
 }

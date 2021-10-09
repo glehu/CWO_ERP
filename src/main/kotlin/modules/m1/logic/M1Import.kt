@@ -28,7 +28,7 @@ class M1Import : IModule, Controller() {
     override val moduleNameLong = "M1Import"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex
+        return m1GlobalIndex!!
     }
 
     @ExperimentalSerializationApi
@@ -57,8 +57,8 @@ class M1Import : IModule, Controller() {
             }
         }
         coroutineScope {
-            launch { m1GlobalIndex.writeIndexData() }
-            launch { m2GlobalIndex.writeIndexData() }
+            launch { m1GlobalIndex!!.writeIndexData() }
+            launch { m2GlobalIndex!!.writeIndexData() }
         }
         CwODB.closeRandomFileAccess(raf)
         CwODB.closeRandomFileAccess(m2raf)
@@ -81,7 +81,7 @@ class M1Import : IModule, Controller() {
         for (track: SpotifyTrackJson in trackList.tracks) {
             counter++
             //New album or existing album
-            val filteredMap = m1GlobalIndex.indexList[5]!!.indexMap.filterValues {
+            val filteredMap = m1GlobalIndex!!.indexList[5]!!.indexMap.filterValues {
                 it.content.contains(track.id)
             }
             if (filteredMap.isEmpty()) {
@@ -126,7 +126,7 @@ class M1Import : IModule, Controller() {
         var releaseDate: String = getDefaultDate()
 
         //New album or existing album
-        val filteredMap = m1GlobalIndex.indexList[5]!!.indexMap.filterValues {
+        val filteredMap = m1GlobalIndex!!.indexList[5]!!.indexMap.filterValues {
             it.content.contains(indexFormat(album.id).uppercase())
         }
         song = if (filteredMap.isEmpty()) {
@@ -177,20 +177,20 @@ class M1Import : IModule, Controller() {
         var artistUID: Int
         var filteredMap: Map<Int, IndexContent>
         for ((artistCounter, artist: SpotifyArtistJson) in artists.withIndex()) {
-            filteredMap = m2GlobalIndex.indexList[3]!!.indexMap.filterValues {
+            filteredMap = m2GlobalIndex!!.indexList[3]!!.indexMap.filterValues {
                 it.content.contains(indexFormat(artist.id).uppercase())
             }
             if (filteredMap.isEmpty()) {
                 contact = M2Contact(-1, artist.name)
                 contact.spotifyID = artist.id
                 contact.birthdate = getDefaultDate()
-                artistUID = m2GlobalIndex.save(
+                artistUID = m2GlobalIndex!!.save(
                     entry = contact,
                     raf = m2raf,
                     indexWriteToDisk = false,
                 )
             } else {
-                contact = m2GlobalIndex.get(filteredMap.keys.first()) as M2Contact
+                contact = m2GlobalIndex!!.get(filteredMap.keys.first()) as M2Contact
                 artistUID = contact.uID
             }
             when (artistCounter) {

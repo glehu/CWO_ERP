@@ -26,7 +26,7 @@ class M3Controller : IController, Controller() {
     override val moduleNameLong = "M3Controller"
     override val module = "M3"
     override fun getIndexManager(): IIndexManager {
-        return m3GlobalIndex
+        return m3GlobalIndex!!
     }
 
     private val wizard = find<InvoiceConfiguratorWizard>()

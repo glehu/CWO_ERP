@@ -26,7 +26,7 @@ class M2Controller : IController, Controller() {
     override val moduleNameLong = "M2Controller"
     override val module = "M2"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex
+        return m2GlobalIndex!!
     }
 
     private val wizard = find<ContactConfiguratorWizard>()

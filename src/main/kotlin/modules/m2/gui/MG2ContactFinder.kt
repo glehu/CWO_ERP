@@ -25,7 +25,7 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
     override val moduleNameLong = "MG2ContactFinder"
     override val module = "M2"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex
+        return m2GlobalIndex!!
     }
 
     override var searchText: TextField by singleAssign()

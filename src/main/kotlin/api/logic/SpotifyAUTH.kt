@@ -31,7 +31,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
     override val moduleNameLong = "SpotifyAUTH"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex
+        return m1GlobalIndex!!
     }
 
     override val apiName = "spotify"

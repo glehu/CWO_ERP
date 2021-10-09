@@ -21,7 +21,7 @@ class M2Import : IModule, Controller() {
     override val moduleNameLong = "M2Import"
     override val module = "M2"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex
+        return m2GlobalIndex!!
     }
 
     suspend fun importData(
@@ -60,12 +60,12 @@ class M2Import : IModule, Controller() {
                     updateProgress(Pair(counter, "Importing data..."))
                     if (counter % 5000 == 0) {
                         log(MXLog.LogType.INFO, "Data Insertion uID ${contact.uID}")
-                        runBlocking { launch { m2GlobalIndex.writeIndexData() } }
+                        runBlocking { launch { m2GlobalIndex!!.writeIndexData() } }
                     }
                 }
             }
-            log(MXLog.LogType.INFO, "Data Insertion uID ${m2GlobalIndex.getLastUniqueID()}")
-            coroutineScope { launch { m2GlobalIndex.writeIndexData() } }
+            log(MXLog.LogType.INFO, "Data Insertion uID ${m2GlobalIndex!!.getLastUniqueID()}")
+            coroutineScope { launch { m2GlobalIndex!!.writeIndexData() } }
         }
         CwODB.closeRandomFileAccess(raf)
         log(MXLog.LogType.INFO, "Data Import end (${timeInMillis / 1000} sec)")

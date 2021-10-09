@@ -20,7 +20,7 @@ class MG1Analytics : Fragment("Analytics") {
             button("Genre Distribution") {
                 prefWidth = 200.0
                 action {
-                    maxEntries = m1GlobalIndex.getLastUniqueID().toInt()
+                    maxEntries = m1GlobalIndex!!.getLastUniqueID().toInt()
                     runAsync {
                         val genreDist =
                             m1controller.getDistributionChartData(M1Analytics.DistType.GENRE) {
@@ -35,7 +35,7 @@ class MG1Analytics : Fragment("Analytics") {
             button("Type Distribution") {
                 prefWidth = 200.0
                 action {
-                    maxEntries = m1GlobalIndex.getLastUniqueID().toInt()
+                    maxEntries = m1GlobalIndex!!.getLastUniqueID().toInt()
                     runAsync {
                         val genreDist =
                             m1controller.getDistributionChartData(M1Analytics.DistType.TYPE) {

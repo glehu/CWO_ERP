@@ -118,13 +118,13 @@ fun loadIndex(module: String = "") {
 fun exitMain() {
     MXUserManager().logout(activeUser.username, activeUser.password)
     if (!isClientGlobal) {
-        if (serverJobGlobal?.isActive != false) {
+        if (serverJobGlobal != null && serverJobGlobal!!.isActive) {
             MXLog.log(MXLog.LogType.INFO, "Shutting down server...")
             server.serverEngine.stop(100L, 100L)
             serverJobGlobal!!.cancel()
         }
     }
-    if (taskJobGlobal?.isActive != false) {
+    if (taskJobGlobal != null && taskJobGlobal!!.isActive) {
         MXLog.log(MXLog.LogType.INFO, "Shutting down ticker...")
         taskJobGlobal!!.cancel()
     }

@@ -124,6 +124,6 @@ data class M1Song(override var uID: Int, var name: String) : IEntry {
     var spotifyID: String = "?"
 
     override fun initialize() {
-        if (uID == -1) uID = m1GlobalIndex.getUID().toInt()
+        if (uID == -1) uID = m1GlobalIndex!!.getUID().toInt()
     }
 }

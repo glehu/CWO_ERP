@@ -50,25 +50,25 @@ val protoBufGlobal = ProtoBuf {
  * The global index for songs
  */
 @ExperimentalSerializationApi
-lateinit var m1GlobalIndex: M1IndexManager
+var m1GlobalIndex: M1IndexManager? = null
 
 /**
  * The global index for contacts
  */
 @ExperimentalSerializationApi
-lateinit var m2GlobalIndex: M2IndexManager
+var m2GlobalIndex: M2IndexManager? = null
 
 /**
  * The global index for invoices
  */
 @ExperimentalSerializationApi
-lateinit var m3GlobalIndex: M3IndexManager
+var m3GlobalIndex: M3IndexManager? = null
 
 /**
  * The global index for items
  */
 @ExperimentalSerializationApi
-lateinit var m4GlobalIndex: M4IndexManager
+var m4GlobalIndex: M4IndexManager? = null
 
 //*************************************************
 //********************** MISCELLANEOUS ************

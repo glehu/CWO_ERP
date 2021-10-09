@@ -16,7 +16,7 @@ class M1IndexManager : IModule, IIndexManager, Controller() {
     override val moduleNameLong = "Discography"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex
+        return m1GlobalIndex!!
     }
 
     override var lastChangeDateHex: String = ""

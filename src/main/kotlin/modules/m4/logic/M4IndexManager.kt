@@ -15,7 +15,7 @@ class M4IndexManager : IIndexManager, Controller() {
     override val moduleNameLong = "Inventory"
     override val module = "M4"
     override fun getIndexManager(): IIndexManager {
-        return m4GlobalIndex
+        return m4GlobalIndex!!
     }
 
     override var lastChangeDateHex: String = ""

@@ -24,7 +24,7 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
     override val moduleNameLong = "MG3InvoiceFinder"
     override val module = "M3"
     override fun getIndexManager(): IIndexManager {
-        return m3GlobalIndex
+        return m3GlobalIndex!!
     }
 
     override var searchText: TextField by singleAssign()

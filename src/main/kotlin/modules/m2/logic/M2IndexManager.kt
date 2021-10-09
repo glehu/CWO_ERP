@@ -15,7 +15,7 @@ class M2IndexManager : IIndexManager, Controller() {
     override val moduleNameLong = "Contacts"
     override val module = "M2"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex
+        return m2GlobalIndex!!
     }
 
     override var lastChangeDateHex: String = ""

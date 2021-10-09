@@ -18,7 +18,7 @@ class MGXDatabaseManager : View("Databases") {
      * This list needs to be updated in case a new index manager was added.
      */
     private var indexManagers: ObservableList<IIndexManager> = observableListOf(
-        m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex
+        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
     )
 
     /**
