@@ -4,6 +4,7 @@ import api.logic.MXServer
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
+import javafx.collections.ObservableList
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.*
@@ -42,6 +43,10 @@ class MXCLI : IModule {
             print("\n${activeUser.username}:> "); inputArgs = (readLine() ?: "").split(" ")
             when (inputArgs[0]) {
                 "exit", "close", "terminate" -> terminated = true
+                "chuser" -> {
+                    activeUser = MXUser("", "")
+                    cliLogin()
+                }
                 "help" -> cliHelp(inputArgs)
                 "start" -> cliStart(inputArgs)
                 "load" -> cliLoad(inputArgs)
@@ -60,14 +65,37 @@ class MXCLI : IModule {
                     val header = arrayOf("DB", "Desc", "#", "DB KiB", "IX KiB", "Date", "User")
                     val ix = observableListOf(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex)
                     val data = d2Array(ix.size, header.size)
-                    for (index in 0 until ix.size) {
-                        data[index][0] = ix[index].module
-                        data[index][1] = ix[index].moduleNameLong
-                        data[index][2] = ix[index].getLastUniqueID().toString()
-                        data[index][3] = ix[index].dbSizeKiByte.toString()
-                        data[index][4] = ix[index].ixSizeKiByte.toString()
-                        data[index][5] = ix[index].lastChangeDateUTC
-                        data[index][6] = ix[index].lastChangeUser
+                    for (i in 0 until ix.size) {
+                        data[i][0] = ix[i].module
+                        data[i][1] = ix[i].moduleNameLong
+                        data[i][2] = ix[i].getLastUniqueID().toString()
+                        data[i][3] = ix[i].dbSizeKiByte.toString()
+                        data[i][4] = ix[i].ixSizeKiByte.toString()
+                        data[i][5] = ix[i].lastChangeDateUTC
+                        data[i][6] = ix[i].lastChangeUser
+                    }
+                    cliPrint(header, data)
+                }
+                "users" -> {
+                    val userManager = MXUserManager()
+                    val users: ObservableList<MXUser> = if (args.size > 2 && args[2] == "-active") {
+                        userManager.getActiveUsers()
+                    } else {
+                        userManager.getUsersObservableList(
+                            users = observableListOf(MXUser("", "")),
+                            credentials = userManager.getCredentials()
+                        )
+                    }
+                    userManager.getActiveUsers()
+                    val header = arrayOf("User", "rM1", "rM2", "rM3", "rM4", "Online since")
+                    val data = d2Array(users.size, header.size)
+                    for (i in 0 until users.size) {
+                        data[i][0] = users[i].username
+                        data[i][1] = users[i].canAccessM1.toString()
+                        data[i][2] = users[i].canAccessM2.toString()
+                        data[i][3] = users[i].canAccessM3.toString()
+                        data[i][4] = users[i].canAccessM4.toString()
+                        data[i][5] = users[i].onlineSince
                     }
                     cliPrint(header, data)
                 }
@@ -139,7 +167,9 @@ class MXCLI : IModule {
             "show [argument] -> shows info about [argument]"
         val showDetail = "$show\n" +
                 "\tmodules -> shows all available modules\n" +
-                "\tdbstats -> shows database stats"
+                "\tdbstats -> shows database stats\n" +
+                "\tusers {flag} -> shows a list of users\n" +
+                "\t\t-active -> shows all active users"
         //****************************************************
         val helpText = when (args[1]) {
             "help" -> help
