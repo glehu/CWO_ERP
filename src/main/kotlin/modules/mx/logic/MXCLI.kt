@@ -122,7 +122,6 @@ class MXCLI : IModule {
             when (args[1]) {
                 "server" -> {
                     server = MXServer()
-                    taskJobGlobal = MXTicker.startTicker()
                 }
             }
         }
