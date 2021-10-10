@@ -111,6 +111,7 @@ class MXCLI : IModule {
                     }
                     cliPrint(header, data)
                 }
+                "config" -> print(getIniFile().readText())
             }
         }
     }
@@ -156,7 +157,7 @@ class MXCLI : IModule {
         } else uArgs
         val help = "help {option} -> shows help"
         val exit =
-            "exit/close/terminate -> terminates the software, shutting down the server and ticker task"
+            "exit/close/terminate -> terminates the software and shuts down the server if it is running."
         //****************************************************
         //******************* HELP TEXTS *********************
         //****************************************************
@@ -177,6 +178,7 @@ class MXCLI : IModule {
         val show =
             "show [argument] -> shows info about [argument]"
         val showDetail = "$show\n" +
+                "\tconfig  -> shows the config data\n" +
                 "\tmodules -> shows all available modules\n" +
                 "\tdbstats -> shows database stats\n" +
                 "\tusers {flag} -> shows a list of users\n" +
