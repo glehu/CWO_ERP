@@ -8,7 +8,6 @@ import modules.mx.getModulePath
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestampFromUnix
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestamp
-import tornadofx.runAsync
 import java.io.File
 
 class MXLog {
@@ -35,9 +34,7 @@ class MXLog {
                 val logText = "<$type><${activeUser.username}> $caller :> $text\n"
                 print(logText)
                 if (write) {
-                    runAsync {
-                        getLogFile(module).appendText("${getUTCTimestampFromUnix(getUnixTimestamp())}$logText")
-                    }
+                    getLogFile(module).appendText("${getUTCTimestampFromUnix(getUnixTimestamp())}$logText")
                 }
             }
         }

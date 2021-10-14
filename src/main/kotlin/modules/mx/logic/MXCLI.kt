@@ -16,7 +16,7 @@ import kotlin.system.exitProcess
 @InternalAPI
 class MXCLI : IModule {
     override val moduleNameLong = "CLI"
-    override val module = "CLI"
+    override val module = "MX"
 
     override fun getIndexManager(): IIndexManager? {
         return null
