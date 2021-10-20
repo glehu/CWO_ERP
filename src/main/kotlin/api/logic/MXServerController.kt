@@ -11,7 +11,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.m4.logic.M4PriceManager
+import modules.m4Items.logic.M4PriceManager
 import modules.mx.MXUser
 import modules.mx.logic.encryptKeccak
 

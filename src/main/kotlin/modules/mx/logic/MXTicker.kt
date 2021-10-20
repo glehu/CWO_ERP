@@ -6,7 +6,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m4.gui.MG4PriceManager
+import modules.m4Items.gui.MG4PriceManager
 import modules.mx.gui.MGXDatabaseManager
 import modules.mx.isClientGlobal
 import tornadofx.find

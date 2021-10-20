@@ -22,7 +22,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import modules.m4.logic.M4PriceManager
+import modules.m4Items.logic.M4PriceManager
 import modules.mx.*
 import modules.mx.gui.MGXDashboard
 import modules.mx.logic.MXLog
@@ -142,7 +142,12 @@ class MXServer : IModule, Controller() {
                     )
 
                     /**
-                     * M4 Endpoints
+                     * M3 Endpoints (Invoice)
+                     */
+                    addWebshopOrder()
+
+                    /**
+                     * M4 Endpoints (Item)
                      */
                     getPriceCategories()
                     getPriceCategoryNumber()
@@ -212,6 +217,12 @@ class MXServer : IModule, Controller() {
                     )
                 )
             }
+        }
+    }
+
+    private fun Route.addWebshopOrder() {
+        get("m3/order") {
+
         }
     }
 
