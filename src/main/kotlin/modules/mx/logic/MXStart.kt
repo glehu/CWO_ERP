@@ -6,10 +6,10 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import modules.m1.logic.M1IndexManager
-import modules.m2.logic.M2IndexManager
-import modules.m3.logic.M3IndexManager
-import modules.m4.logic.M4IndexManager
+import modules.m1Discography.logic.M1IndexManager
+import modules.m2Contacts.logic.M2IndexManager
+import modules.m3Invoices.logic.M3IndexManager
+import modules.m4Items.logic.M4IndexManager
 import modules.mx.*
 import modules.mx.gui.CWOMainGUI
 import modules.mx.gui.showPreferences
