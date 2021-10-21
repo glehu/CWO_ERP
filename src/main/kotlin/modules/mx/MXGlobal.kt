@@ -11,15 +11,15 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.protobuf.ProtoBuf
 import kotlinx.serialization.serializer
-import modules.m1Discography.M1Song
-import modules.m1Discography.logic.M1IndexManager
-import modules.m2Contacts.M2Contact
-import modules.m2Contacts.logic.M2IndexManager
-import modules.m3Invoices.M3Invoice
-import modules.m3Invoices.M3InvoicePosition
-import modules.m3Invoices.logic.M3IndexManager
-import modules.m4Items.M4Item
-import modules.m4Items.logic.M4IndexManager
+import modules.m1.M1Song
+import modules.m1.logic.M1IndexManager
+import modules.m2.M2Contact
+import modules.m2.logic.M2IndexManager
+import modules.m3.M3Invoice
+import modules.m3.M3InvoicePosition
+import modules.m3.logic.M3IndexManager
+import modules.m4.M4Item
+import modules.m4.logic.M4IndexManager
 import java.io.File
 
 //*************************************************

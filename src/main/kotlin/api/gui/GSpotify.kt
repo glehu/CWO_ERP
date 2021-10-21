@@ -12,7 +12,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.scene.paint.Color
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1Discography.logic.M1Import
+import modules.m1.logic.M1Import
 import modules.mx.gui.MGXProgressbar
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet.Companion.fieldsetBorder
