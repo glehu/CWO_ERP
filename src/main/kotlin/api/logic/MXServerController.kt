@@ -11,11 +11,22 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.m3.M3Invoice
+import modules.m3.M3InvoicePosition
+import modules.m3.logic.M3CLIController
+import modules.m4.M4Item
+import modules.m4.M4PriceCategory
 import modules.m4.logic.M4PriceManager
 import modules.mx.MXUser
+import modules.mx.activeUser
 import modules.mx.logic.encryptKeccak
+import modules.mx.m3GlobalIndex
+import modules.mx.m4GlobalIndex
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class MXServerController {
+    @InternalAPI
     @ExperimentalSerializationApi
     companion object Server {
         suspend fun saveEntry(entry: ByteArray, indexManager: IIndexManager, username: String): Int {
@@ -133,6 +144,43 @@ class MXServerController {
                 category = Json.decodeFromString(categoryJson.catNew),
             )
             return true
+        }
+
+        suspend fun placeWebshopOrder(appCall: ApplicationCall): Int {
+            /**
+             * The webshop order
+             */
+            val order = M3Invoice(-1)
+
+            /**
+             * The ordered item's UID
+             */
+            val requestID = appCall.parameters["itemID"]
+            val itemUID: Int = (requestID?.toInt()) ?: -1
+            if (itemUID != -1) {
+                val item = m4GlobalIndex!!.get(itemUID) as M4Item
+                if (item.description.isNotEmpty()) {
+                    val userName = appCall.principal<UserIdPrincipal>()?.name!!
+
+                    /**
+                     * Item position
+                     */
+                    val itemPosition = M3InvoicePosition(item.uID, item.description)
+                    itemPosition.grossPrice = Json.decodeFromString<M4PriceCategory>(item.prices[0]!!).grossPrice
+                    itemPosition.userName = activeUser.username
+                    order.items[0] = Json.encodeToString(itemPosition)
+                    /**
+                     * Finalize the order and save it
+                     */
+                    M3CLIController().calculate(order)
+                    order.date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                    order.text = "Web Order"
+                    order.buyer = userName
+                    order.seller = "<Self>"
+                    m3GlobalIndex!!.save(entry = order, userName = userName)
+                }
+            }
+            return order.uID
         }
     }
 }

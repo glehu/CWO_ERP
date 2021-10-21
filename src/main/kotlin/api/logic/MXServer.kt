@@ -142,7 +142,12 @@ class MXServer : IModule, Controller() {
                     )
 
                     /**
-                     * M4 Endpoints
+                     * M3 Endpoints (Invoice)
+                     */
+                    addWebshopOrder()
+
+                    /**
+                     * M4 Endpoints (Item)
                      */
                     getPriceCategories()
                     getPriceCategoryNumber()
@@ -212,6 +217,12 @@ class MXServer : IModule, Controller() {
                     )
                 )
             }
+        }
+    }
+
+    private fun Route.addWebshopOrder() {
+        get("m3/neworder/{itemID}") {
+            call.respond(MXServerController.placeWebshopOrder(call))
         }
     }
 
