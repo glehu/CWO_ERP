@@ -3,9 +3,11 @@ package api.logic
 import api.misc.json.LoginResponseJson
 import api.misc.json.UPPriceCategoryJson
 import api.misc.json.ValidationContainerJson
+import api.misc.json.WebshopOrder
 import interfaces.IIndexManager
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.request.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
@@ -155,30 +157,30 @@ class MXServerController {
             /**
              * The ordered item's UID
              */
-            val requestID = appCall.parameters["itemID"]
-            val itemUID: Int = (requestID?.toInt()) ?: -1
-            if (itemUID != -1) {
-                val item = m4GlobalIndex!!.get(itemUID) as M4Item
-                if (item.description.isNotEmpty()) {
-                    val userName = appCall.principal<UserIdPrincipal>()?.name!!
-
-                    /**
-                     * Item position
-                     */
-                    val itemPosition = M3InvoicePosition(item.uID, item.description)
-                    itemPosition.grossPrice = Json.decodeFromString<M4PriceCategory>(item.prices[0]!!).grossPrice
-                    itemPosition.userName = activeUser.username
-                    order.items[0] = Json.encodeToString(itemPosition)
-                    /**
-                     * Finalize the order and save it
-                     */
-                    M3CLIController().calculate(order)
-                    order.date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-                    order.text = "Web Order"
-                    order.buyer = userName
-                    order.seller = "<Self>"
-                    m3GlobalIndex!!.save(entry = order, userName = userName)
+            val body = appCall.receive<WebshopOrder>()
+            if (body.itemUIDs.size != -1) {
+                for (i in 0 until body.itemUIDs.size) {
+                    val item = m4GlobalIndex!!.get(body.itemUIDs[i]) as M4Item
+                    if (item.uID != -1) {
+                        /**
+                         * Item position
+                         */
+                        val itemPosition = M3InvoicePosition(item.uID, item.description)
+                        itemPosition.grossPrice = Json.decodeFromString<M4PriceCategory>(item.prices[0]!!).grossPrice
+                        itemPosition.userName = activeUser.username
+                        order.items[i] = Json.encodeToString(itemPosition)
+                    }
                 }
+                /**
+                 * Finalize the order and save it
+                 */
+                val userName = appCall.principal<UserIdPrincipal>()?.name!!
+                M3CLIController().calculate(order)
+                order.date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                order.text = "Web Order"
+                order.buyer = userName
+                order.seller = "<Self>"
+                m3GlobalIndex!!.save(entry = order, userName = userName)
             }
             return order.uID
         }

@@ -221,7 +221,7 @@ class MXServer : IModule, Controller() {
     }
 
     private fun Route.addWebshopOrder() {
-        get("m3/neworder/{itemID}") {
+        post("m3/neworder") {
             call.respond(MXServerController.placeWebshopOrder(call))
         }
     }

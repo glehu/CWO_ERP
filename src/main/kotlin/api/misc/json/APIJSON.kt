@@ -56,3 +56,20 @@ data class UPPriceCategoryJson(
     val catNew: String,
     val catOld: String
 )
+
+@Serializable
+data class WebshopOrder(
+    val itemUIDs: Array<Int>
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as WebshopOrder
+        if (!itemUIDs.contentEquals(other.itemUIDs)) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return itemUIDs.contentHashCode()
+    }
+}
