@@ -215,12 +215,16 @@ interface IModule {
         return indexUserSelection
     }
 
-    fun log(logType: MXLog.LogType, text: String) {
+    /**
+     * Displays text on the console and writes it to the module's log file.
+     */
+    fun log(logType: MXLog.LogType, text: String, apiEndpoint: String = "") {
         MXLog.log(
             module = module,
             type = logType,
             text = text,
-            caller = moduleNameLong
+            caller = moduleNameLong,
+            apiEndpoint = apiEndpoint
         )
     }
 

@@ -117,6 +117,11 @@ class MXServer : IModule, Controller() {
                         call.respondFile(File("$dataPath\\data\\web\\home.html"))
                     }
                 }
+                route("/web") {
+                    get {
+                        call.respondRedirect("https://orochi.netlify.app/")
+                    }
+                }
                 //----------------------------------v
                 //------------ CWO  API ------------|
                 //----------------------------------^
@@ -153,8 +158,19 @@ class MXServer : IModule, Controller() {
                     getPriceCategoryNumber()
                     savePriceCategory()
                     deletePriceCategory()
+
+                    /**
+                     * Web Solution Endpoints
+                     */
+                    register()
                 }
             }
+        }
+    }
+
+    private fun Route.register() {
+        post("register") {
+            call.respond(MXServerController.registerUser(call))
         }
     }
 

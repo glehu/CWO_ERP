@@ -30,9 +30,19 @@ class MXLog {
         /**
          * Writes a log message to the disk.
          */
-        fun log(module: String, type: LogType, text: String, caller: String, write: Boolean = true) {
+        fun log(
+            module: String,
+            type: LogType,
+            text: String,
+            caller: String,
+            write: Boolean = true,
+            apiEndpoint: String = ""
+        ) {
             if (!isClientGlobal) {
-                val logText = "<$type><${activeUser.username}> $caller :> $text\n"
+                val apiEndpointTxt = if (apiEndpoint.isNotEmpty()) {
+                    ";a:$apiEndpoint"
+                } else ""
+                val logText = "<t:$type;u:${activeUser.username};c:$caller$apiEndpointTxt:> $text\n"
                 print(logText)
                 if (write) {
                     thread {

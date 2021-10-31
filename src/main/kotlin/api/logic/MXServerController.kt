@@ -1,10 +1,8 @@
 package api.logic
 
-import api.misc.json.LoginResponseJson
-import api.misc.json.UPPriceCategoryJson
-import api.misc.json.ValidationContainerJson
-import api.misc.json.WebshopOrder
+import api.misc.json.*
 import interfaces.IIndexManager
+import interfaces.IModule
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.request.*
@@ -21,16 +19,26 @@ import modules.m4.M4PriceCategory
 import modules.m4.logic.M4PriceManager
 import modules.mx.MXUser
 import modules.mx.activeUser
+import modules.mx.logic.MXLog
+import modules.mx.logic.MXUserManager
+import modules.mx.logic.encryptAES
 import modules.mx.logic.encryptKeccak
 import modules.mx.m3GlobalIndex
 import modules.mx.m4GlobalIndex
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@ExperimentalSerializationApi
 class MXServerController {
     @InternalAPI
     @ExperimentalSerializationApi
-    companion object Server {
+    companion object Server : IModule {
+        override val moduleNameLong = "MXServerController"
+        override val module = "MX"
+        override fun getIndexManager(): IIndexManager? {
+            return null
+        }
+
         suspend fun saveEntry(entry: ByteArray, indexManager: IIndexManager, username: String): Int {
             return indexManager.save(
                 entry = indexManager.decode(entry),
@@ -183,6 +191,29 @@ class MXServerController {
                 m3GlobalIndex!!.save(entry = order, userName = userName)
             }
             return order.uID
+        }
+
+        suspend fun registerUser(appCall: ApplicationCall): RegistrationResponse {
+            val registrationPayload = appCall.receive<RegistrationPayload>()
+            val userManager = MXUserManager()
+            val credentials = userManager.getCredentials()
+            var exists = false
+            var success = true
+            var message = ""
+            for (user in credentials.credentials) {
+                if (user.value.username.uppercase() == registrationPayload.username.uppercase()) {
+                    exists = true
+                }
+            }
+            if (exists) {
+                success = false
+                message = "User already exists"
+            } else {
+                val user = MXUser(registrationPayload.username, encryptAES(registrationPayload.password))
+                userManager.updateUser(user, user, credentials)
+                log(MXLog.LogType.COM, "User ${registrationPayload.username} registered.", appCall.request.uri)
+            }
+            return RegistrationResponse(success, message)
         }
     }
 }

@@ -73,3 +73,15 @@ data class WebshopOrder(
         return itemUIDs.contentHashCode()
     }
 }
+
+@Serializable
+data class RegistrationPayload(
+    val username: String,
+    val password: String
+)
+
+@Serializable
+data class RegistrationResponse(
+    val success: Boolean,
+    val message: String
+)
