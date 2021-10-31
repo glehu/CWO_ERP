@@ -25,7 +25,7 @@ class MXLog {
         }
 
         private fun getLogPath(module: String) = "${getModulePath(module)}\\log"
-        private fun getLogFile(module: String) = File("${getLogPath(module)}\\${module}_log.txt")
+        fun getLogFile(module: String) = File("${getLogPath(module)}\\${module}_log.txt")
 
         /**
          * Writes a log message to the disk.

@@ -85,3 +85,13 @@ data class RegistrationResponse(
     val success: Boolean,
     val message: String
 )
+
+@Serializable
+data class LogMsg(
+    var tstamp: String = "",
+    var type: String = "",
+    var caller: String = "",
+    var msg: String,
+    var user: String = "",
+    var apiEndpoint: String = ""
+)

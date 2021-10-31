@@ -29,7 +29,6 @@ import tornadofx.*
 class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
     override val moduleNameLong = "CWO ERP"
     override val module = "MX"
-    private val userManager: MXUserManager by inject()
     override fun getIndexManager(): IIndexManager? {
         return null
     }
@@ -122,9 +121,18 @@ class MXGUserInterface : View(titleGlobal) {
             menu("Misc") {
                 menu("Log") {
                     menu("Show Logfile") {
-                        item("M1 Songs").isDisable = true //Not yet implemented
-                        item("M2 Contacts").isDisable = true //Not yet implemented
-                        item("M3 Invoice").isDisable = true //Not yet implemented
+                        item("M1 Songs").action {
+                            MGXLog().showLog(MXLog.getLogFile("M1"), ".*".toRegex())
+                        }
+                        item("M2 Contacts").action {
+                            MGXLog().showLog(MXLog.getLogFile("M2"), ".*".toRegex())
+                        }
+                        item("M3 Invoice").action {
+                            MGXLog().showLog(MXLog.getLogFile("M3"), ".*".toRegex())
+                        }
+                        item("M4 Item").action {
+                            MGXLog().showLog(MXLog.getLogFile("M4"), ".*".toRegex())
+                        }
                     }
                     separator()
                     item("Clear Logfiles").action { MXLog.deleteLogFiles() }
