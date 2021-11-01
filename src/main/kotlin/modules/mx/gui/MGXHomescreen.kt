@@ -133,6 +133,9 @@ class MXGUserInterface : View(titleGlobal) {
                         item("M4 Item").action {
                             MGXLog().showLog(MXLog.getLogFile("M4"), ".*".toRegex())
                         }
+                        item("MX").action {
+                            MGXLog().showLog(MXLog.getLogFile("MX"), ".*".toRegex())
+                        }
                     }
                     separator()
                     item("Clear Logfiles").action { MXLog.deleteLogFiles() }
@@ -140,6 +143,7 @@ class MXGUserInterface : View(titleGlobal) {
                         item("M1 Songs").action { MXLog.deleteLogFile("M1") }
                         item("M2 Contacts").action { MXLog.deleteLogFile("M2") }
                         item("M3 Invoice").action { MXLog.deleteLogFile("M3") }
+                        item("M4 Item").action { MXLog.deleteLogFile("M4") }
                         item("MX").action { MXLog.deleteLogFile("MX") }
                     }
                 }

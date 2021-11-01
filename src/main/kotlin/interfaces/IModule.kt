@@ -57,13 +57,29 @@ interface IModule {
                 byteSize = index.byteSize
             }
             entry.initialize()
-            val (posDBX, byteSizeX) = CwODB.saveEntry(
-                entryBytes = encode(entry),
-                uID = entry.uID,
-                posDB = posDB,
-                byteSize = byteSize,
-                module = indexManager.module,
-                raf = rafLocal
+            val posDBX: Long
+            val byteSizeX: Int
+            synchronized(this) {
+                log(
+                    logType = MXLog.LogType.SYS,
+                    text = "SAVE START uID ${entry.uID}",
+                    moduleAlt = indexManager.module
+                )
+                val (posDBXt, byteSizeXt) = CwODB.saveEntry(
+                    entryBytes = encode(entry),
+                    uID = entry.uID,
+                    posDB = posDB,
+                    byteSize = byteSize,
+                    module = indexManager.module,
+                    raf = rafLocal
+                )
+                posDBX = posDBXt
+                byteSizeX = byteSizeXt
+            }
+            log(
+                logType = MXLog.LogType.SYS,
+                text = "SAVE END uID ${entry.uID}",
+                moduleAlt = indexManager.module
             )
             indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, userName)
             if (raf == null) CwODB.closeRandomFileAccess(rafLocal)

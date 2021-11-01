@@ -134,9 +134,11 @@ interface IIndexManager : IModule {
         for ((ixNr, ixContent) in indices) {
             if (ixContent != "?") {
                 if (indexList[ixNr] == null) addIndex(ixNr)
-                indexList[ixNr]!!.indexMap[uID] = IndexContent(
-                    content = indexFormat(ixContent).uppercase()
-                )
+                synchronized(this) {
+                    indexList[ixNr]!!.indexMap[uID] = IndexContent(
+                        content = indexFormat(ixContent).uppercase()
+                    )
+                }
             }
         }
         if (writeToDisk) {
@@ -164,12 +166,14 @@ interface IIndexManager : IModule {
      * Writes the index values stored in the RAM into the database.
      */
     suspend fun writeIndexData() {
-        for (index in indexList.entries) {
-            getIndexFile(index.key).writeText(
-                Json.encodeToString(indexList[index.key])
-            )
+        synchronized(this) {
+            for (index in indexList.entries) {
+                getIndexFile(index.key).writeText(
+                    Json.encodeToString(indexList[index.key])
+                )
+            }
+            getFileSizes()
         }
-        getFileSizes()
     }
 
     fun getIndicesFromArray(ixNumbers: IntArray) {

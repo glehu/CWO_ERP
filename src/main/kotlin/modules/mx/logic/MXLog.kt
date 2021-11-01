@@ -9,7 +9,6 @@ import modules.mx.isClientGlobal
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestampFromUnix
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestamp
 import java.io.File
-import kotlin.concurrent.thread
 
 class MXLog {
     enum class LogType {
@@ -45,9 +44,7 @@ class MXLog {
                 val logText = "<t:$type;u:${activeUser.username};c:$caller$apiEndpointTxt:> $text\n"
                 print(logText)
                 if (write) {
-                    thread {
-                        getLogFile(module).appendText("${getUTCTimestampFromUnix(getUnixTimestamp())}$logText")
-                    }
+                    getLogFile(module).appendText("${getUTCTimestampFromUnix(getUnixTimestamp())}$logText")
                 }
             }
         }

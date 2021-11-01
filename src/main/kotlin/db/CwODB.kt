@@ -35,51 +35,52 @@ class CwODB {
             var posDBNew: Long
             val previousByteSize: Long
             val indexError = false
-            /**
-             * If the byteSize of the new entry is greater than the old one we have to attach the new entry at the end
-             */
-            if (!canOverride) {
-                indexText = lastEntryFile.readText()
-                if (indexText.isNotEmpty()) {
-                    val lastEntryIndex = Json.decodeFromString<IndexContent>(indexText)
-
-                    /**
-                     * Now we get the previous PosInDatabase and ByteSize
-                     */
-                    val indexPosInDB = lastEntryIndex.pos
-                    val indexByteSize = lastEntryIndex.byteSize
-                    previousByteSize = indexByteSize.toLong()
-                    posDBNew = indexPosInDB
-                    /**
-                     * Now add the current entry's byteSize to the previous posInDatabase
-                     */
-                    posDBNew += previousByteSize
-                } else posDBNew = 0L
-            } else {
+            synchronized(this) {
                 /**
-                 * Old entry can be overridden since the byteSize is less or equal to the old one
+                 * If the byteSize of the new entry is greater than the old one we have to attach the new entry at the end
                  */
-                posDBNew = posDB
-            }
-            if (!indexError) {
-                /**
-                 * Save the serialized entry to the determined destination file
-                 */
-                writeDBEntry(entryBytes, posDBNew, raf)
-                /**
-                 * If we saved a preexisting entry we have to delete the old entry
-                 * ...if the new byteSize is greater than the old one
-                 */
-                if (posDB > -1L && !canOverride) {
-                    val emptyEntry = ByteArray(byteSize)
-                    val emptyRaf = openRandomFileAccess(module, RafMode.READWRITE)
-                    writeDBEntry(emptyEntry, posDB, emptyRaf)
-                    closeRandomFileAccess(emptyRaf)
-                }
                 if (!canOverride) {
+
+                    indexText = lastEntryFile.readText()
+                    if (indexText.isNotEmpty()) {
+                        val lastEntryIndex = Json.decodeFromString<IndexContent>(indexText)
+
+                        /**
+                         * Now we get the previous PosInDatabase and ByteSize
+                         */
+                        val indexPosInDB = lastEntryIndex.pos
+                        val indexByteSize = lastEntryIndex.byteSize
+                        previousByteSize = indexByteSize.toLong()
+                        posDBNew = indexPosInDB
+                        /**
+                         * Now add the current entry's byteSize to the previous posInDatabase
+                         */
+                        posDBNew += previousByteSize
+                    } else posDBNew = 0L
                     getLastEntryFile(module).writeText(
                         Json.encodeToString(IndexContent(uID, "", posDBNew, byteSizeNew))
                     )
+                } else {
+                    /**
+                     * Old entry can be overridden since the byteSize is less or equal to the old one
+                     */
+                    posDBNew = posDB
+                }
+                if (!indexError) {
+                    /**
+                     * Save the serialized entry to the determined destination file
+                     */
+                    writeDBEntry(entryBytes, posDBNew, raf)
+                    /**
+                     * If we saved a preexisting entry we have to delete the old entry
+                     * ...if the new byteSize is greater than the old one
+                     */
+                    if (posDB > -1L && !canOverride) {
+                        val emptyEntry = ByteArray(byteSize)
+                        val emptyRaf = openRandomFileAccess(module, RafMode.READWRITE)
+                        writeDBEntry(emptyEntry, posDB, emptyRaf)
+                        closeRandomFileAccess(emptyRaf)
+                    }
                 }
             }
             return Pair(posDBNew, byteSizeNew)
