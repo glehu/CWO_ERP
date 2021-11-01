@@ -216,6 +216,7 @@ class CwODB {
             if (File(modulePath).isDirectory) {
                 File("$modulePath\\$module.db").delete()
                 File("$modulePath\\$module.nu").delete()
+                File("$modulePath\\lastentry.db").delete()
                 for (i in 0..99) File("$modulePath\\$module.ix$i").delete()
             }
         }
