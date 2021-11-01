@@ -98,9 +98,35 @@ Download your and other's spotify discography and have them be in the database.
 # Database access via its own API
 
 The software's data can be requested via API. All requests need to have valid credentials in the Authorization header. 
-Authentication is being achieved via basic auth.
+Authentication is being achieved via basic authentication ("**Bearer username:password**" in Base64) .
 
 Currently, following API endpoints are available:
+
+## Endpoints without authentication:
+
+#### server IPv4:8000/
+
+Shows a primitive home page of the local server.
+
+#### server IPv4:8000/web
+
+Redirects to the 0R0CHI Batsuzoku website.
+
+## General endpoints: (with authentication)
+
+#### server IPv4:8000/api/
+* login
+* logout
+* register
+
+```
+{
+    username: String,
+    password: Password
+}
+```
+
+## General module endpoints:
 
 #### server IPv4:8000/api/m1/
 #### server IPv4:8000/api/m2/
@@ -121,9 +147,20 @@ If used with type=name all entries that match the search text will be sent back 
 * indexselection
 * getentrylock/ {uID}
 
+## Specific module endpoints:
+
+#### server IPv4:8000/api/m3/
+* neworder
+
+This endpoint is used to add a web shop order to the database, providing an array of item uIDs:
+
+```
+{
+    itemUIDs: []
+}
+```
+
 # Things for the future:
-+ A website and app solution for easy access from everywhere
-+ A webshop integrated into the website solution to enable the user to sell services and products online and to promote work
++ App solution.
 + Blockchain to reassure financial data integrity, e.g. verifying the process of selling a product and receiving a transaction.
-+ Using ANNs (Artificial Neural Networks) possible user inputs or other actions will be predicted 
-and complex analytics and forecasts will be made possible.
++ Using ANNs (Artificial Neural Networks) possible user inputs or other actions will be predicted and complex analytics and forecasts will be made possible.
