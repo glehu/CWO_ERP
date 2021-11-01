@@ -91,6 +91,7 @@ class M3Controller : IController, Controller() {
                 contact.moneyReceived += wizard.invoice.item.paid
                 M2Controller().save(contact)
             }
+            wizard.invoice.item.status = 4
             wizard.invoice.item.finished = true
             saveEntry()
         }
@@ -142,5 +143,14 @@ class M3Controller : IController, Controller() {
             ).openModal()
         }
         return valid
+    }
+
+    fun showToDoInvoices() {
+        val m3Finder = MG3InvoiceFinder()
+        m3Finder.exactSearch.isSelected = true
+        m3Finder.ixNr.value = M3Controller().getIndexUserSelection()[3]
+        m3Finder.openModal()
+        m3Finder.searchText.text = ""
+        m3Finder.searchText.text = "0"
     }
 }

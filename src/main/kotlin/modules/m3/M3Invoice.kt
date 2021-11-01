@@ -45,6 +45,7 @@ data class M3Invoice(override var uID: Int) : IEntry, IInvoice {
     //****************** Auto Generated Data **********
     //*************************************************
 
+    var status: Int = 0
     var finished: Boolean = false
     var priceCategory: Int = 0
     private var isIncome: Boolean = false

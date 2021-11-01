@@ -182,7 +182,9 @@ class MXUserManager : IModule, Controller() {
     ): ObservableList<MXUser> {
         users.clear()
         for ((_, user) in credentials.credentials) {
-            if (!onlineOnly || (onlineOnly && user.online)) users.add(user)
+            if (!onlineOnly || (onlineOnly && user.online)) {
+                if (user.username != "") users.add(user)
+            }
         }
         return users
     }

@@ -37,12 +37,13 @@ class M3IndexManager : IIndexManager, Controller() {
         initialize(
             1, //Seller
             2, //Buyer
-            3 //Text
+            3, //Text
+            4 //Status
         )
     }
 
     override fun getIndicesList(): ArrayList<String> {
-        return arrayListOf("1-Seller", "2-Buyer", "3-Description")
+        return arrayListOf("1-Seller", "2-Buyer", "3-Description", "4-Status")
     }
 
     override suspend fun indexEntry(
@@ -62,6 +63,7 @@ class M3IndexManager : IIndexManager, Controller() {
             Pair(1, entry.seller),
             Pair(2, entry.buyer),
             Pair(3, entry.text),
+            Pair(4, entry.status.toString())
         )
     }
 

@@ -40,6 +40,8 @@ class InvoiceProperty {
     val itemsProperty = observableListOf<M3InvoicePosition>()
     val priceCategoryProperty = SimpleIntegerProperty(0)
     var priceCategory: Int by priceCategoryProperty
+    val statusProperty = SimpleIntegerProperty(0)
+    var status: Int by statusProperty
     val finishedProperty = SimpleBooleanProperty(false)
     var finished: Boolean by finishedProperty
 }
@@ -57,6 +59,7 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     var paid = bind(InvoiceProperty::paidProperty)
     var items = bind(InvoiceProperty::itemsProperty)
     var priceCategory = bind(InvoiceProperty::priceCategoryProperty)
+    var status = bind(InvoiceProperty::statusProperty)
     var finished = bind(InvoiceProperty::finishedProperty)
 }
 
@@ -76,6 +79,7 @@ fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
         invoiceProperty.itemsProperty.add(Json.decodeFromString(v))
     }
     invoiceProperty.priceCategory = invoice.priceCategory
+    invoiceProperty.status = invoice.status
     invoiceProperty.finished = invoice.finished
     return invoiceProperty
 }
@@ -96,6 +100,7 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): M3Invoice {
         invoice.items[invoice.items.size] = Json.encodeToString(item)
     }
     invoice.priceCategory = invoiceProperty.priceCategory
+    invoice.status = invoiceProperty.status
     invoice.finished = invoiceProperty.finished
     return invoice
 }

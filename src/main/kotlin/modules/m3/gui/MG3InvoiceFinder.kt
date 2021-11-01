@@ -34,6 +34,26 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
     override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
     override val threadIDCurrentProperty = SimpleIntegerProperty()
     private val m3Controller: M3Controller by inject()
+
+    @Suppress("UNCHECKED_CAST")
+    val table = tableview(entriesFound as ObservableList<M3Invoice>) {
+        readonlyColumn("ID", M3Invoice::uID).prefWidth(65.0)
+        readonlyColumn("Seller", M3Invoice::seller).prefWidth(225.0)
+        readonlyColumn("Buyer", M3Invoice::buyer).prefWidth(225.0)
+        readonlyColumn("Price", M3Invoice::grossPrice).prefWidth(100.0)
+        readonlyColumn("Date", M3Invoice::date).prefWidth(100.0)
+        readonlyColumn("Text", M3Invoice::text).prefWidth(400.0)
+        onUserSelect(1) {
+            if (!getEntryLock(it.uID)) {
+                m3Controller.showEntry(it.uID)
+                searchText.text = ""
+                close()
+            } else {
+                find<MGXLocked>().openModal()
+            }
+        }
+        isFocusTraversable = false
+    }
     override val root = borderpane {
         center = form {
             prefWidth = 1200.0
@@ -44,6 +64,7 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                             runAsync {
                                 threadIDCurrentProperty.value++
                                 searchForEntries(threadIDCurrentProperty.value)
+                                table.refresh()
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
@@ -59,25 +80,7 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                         tooltip("Selects the index file that will be searched in.")
                     }
                 }
-                @Suppress("UNCHECKED_CAST")
-                tableview(entriesFound as ObservableList<M3Invoice>) {
-                    readonlyColumn("ID", M3Invoice::uID).prefWidth(65.0)
-                    readonlyColumn("Seller", M3Invoice::seller).prefWidth(225.0)
-                    readonlyColumn("Buyer", M3Invoice::buyer).prefWidth(225.0)
-                    readonlyColumn("Price", M3Invoice::grossPrice).prefWidth(100.0)
-                    readonlyColumn("Date", M3Invoice::date).prefWidth(100.0)
-                    readonlyColumn("Text", M3Invoice::text).prefWidth(400.0)
-                    onUserSelect(1) {
-                        if (!getEntryLock(it.uID)) {
-                            m3Controller.showEntry(it.uID)
-                            searchText.text = ""
-                            close()
-                        } else {
-                            find<MGXLocked>().openModal()
-                        }
-                    }
-                    isFocusTraversable = false
-                }
+                add(table)
             }
         }
     }

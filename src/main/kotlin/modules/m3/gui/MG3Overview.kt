@@ -51,14 +51,28 @@ class MG3Overview : IOverview, View("M3 Invoices") {
                 tooltip("Import contact data from a .csv file.")
                 prefWidth = rightButtonsWidth
             }
+            // ##################################################
+            // ################### Lookups ######################
+            // ##################################################
             separator(Orientation.HORIZONTAL) {
-                paddingVertical = 10
+                paddingVertical = 15
+            }
+            button("To Do") {
+                action { m3Controller.showToDoInvoices() }
+                tooltip("Shows invoices that need to be processed.")
+                prefWidth = rightButtonsWidth
+            }
+            // ##################################################
+            // ############### Invoice Operations ###############
+            // ##################################################
+            separator(Orientation.HORIZONTAL) {
+                paddingVertical = 15
             }
             button("Paid") {
                 action { runBlocking { m3Controller.setPaidInvoice() } }
                 tooltip("Processes the invoice.")
                 prefWidth = rightButtonsWidth
-                style { unsafe("-fx-base", Color.GRAY) }
+                style { unsafe("-fx-base", Color.DARKOLIVEGREEN) }
             }
             button("Process") {
                 action { runBlocking { m3Controller.processInvoice() } }

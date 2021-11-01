@@ -40,6 +40,7 @@ class NewInvoiceMainData : Fragment("Main") {
         prefWidth = 400.0
         fieldset {
             field("UID") { label(invoice.uID) }
+            field("Status") { label(invoice.status) }
             field("Finished") { label(invoice.finished) }
             field("Seller") {
                 textfield(invoice.seller) {
