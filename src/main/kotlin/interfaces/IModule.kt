@@ -67,7 +67,6 @@ interface IModule {
                 )
                 val (posDBXt, byteSizeXt) = CwODB.saveEntry(
                     entryBytes = encode(entry),
-                    uID = entry.uID,
                     posDB = posDB,
                     byteSize = byteSize,
                     module = indexManager.module,
