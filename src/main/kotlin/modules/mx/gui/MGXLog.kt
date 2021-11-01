@@ -15,6 +15,7 @@ class MGXLog : Fragment("Log") {
     private lateinit var regex: Regex
     private val logContent: ObservableList<LogMsg> = observableListOf()
     private val table = tableview(logContent) {
+        readonlyColumn("ID", LogMsg::id)
         readonlyColumn("TStamp", LogMsg::tstamp)
         readonlyColumn("Type", LogMsg::type)
         readonlyColumn("Caller", LogMsg::caller)
@@ -41,10 +42,13 @@ class MGXLog : Fragment("Log") {
             val msgRgx = ":>.*".toRegex()
             val userRgx = "u:[^;]*;".toRegex()
             val apiEndpointRgx = "a:.*:".toRegex()
+            var counter = 0
             inputStream.bufferedReader().forEachLine {
                 if (it.uppercase().contains(regex)) {
+                    counter++
                     logContent.add(
                         LogMsg(
+                            id = counter,
                             tstamp = tstampRgx.find(it)?.value?.dropLast(1) ?: "",
                             type = typeRgx.find(it)?.value?.drop(2)?.dropLast(1) ?: "",
                             caller = callerRgx.find(it)?.value?.drop(2)?.dropLast(1) ?: "",

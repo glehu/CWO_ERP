@@ -40,6 +40,12 @@ class MXServerController {
         }
 
         suspend fun saveEntry(entry: ByteArray, indexManager: IIndexManager, username: String): Int {
+            log(
+                logType = MXLog.LogType.COM,
+                text = "API ${indexManager.module} entry save",
+                apiEndpoint = "/api/${indexManager.module}/save",
+                moduleAlt = indexManager.module
+            )
             return indexManager.save(
                 entry = indexManager.decode(entry),
                 userName = username
@@ -188,6 +194,13 @@ class MXServerController {
                 order.text = "Web Order"
                 order.buyer = userName
                 order.seller = "<Self>"
+                order.initialize()
+                log(
+                    logType = MXLog.LogType.COM,
+                    text = "API web shop order #${order.uID} submitted",
+                    apiEndpoint = appCall.request.uri,
+                    moduleAlt = m3GlobalIndex!!.module
+                )
                 m3GlobalIndex!!.save(entry = order, userName = userName)
             }
             return order.uID

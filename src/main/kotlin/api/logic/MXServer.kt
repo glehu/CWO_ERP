@@ -83,7 +83,11 @@ class MXServer : IModule, Controller() {
             }
             authenticate("auth-basic") {
                 get("/login") {
-                    log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} login")
+                    log(
+                        MXLog.LogType.COM,
+                        "User ${call.principal<UserIdPrincipal>()?.name} login",
+                        call.request.uri
+                    )
                     val userManager = MXUserManager()
                     userManager.setUserOnlineStatus(
                         username = call.principal<UserIdPrincipal>()?.name!!,
@@ -102,10 +106,14 @@ class MXServer : IModule, Controller() {
                     }
                 }
                 get("/logout") {
-                    log(MXLog.LogType.COM, "User ${call.principal<UserIdPrincipal>()?.name} logout")
                     MXUserManager().setUserOnlineStatus(
                         username = call.principal<UserIdPrincipal>()?.name!!,
                         online = false
+                    )
+                    log(
+                        MXLog.LogType.COM,
+                        "User ${call.principal<UserIdPrincipal>()?.name} logout",
+                        call.request.uri
                     )
                     if (!cliMode) {
                         find<MGXDashboard>().activeUsers.items = userManager.getActiveUsers()

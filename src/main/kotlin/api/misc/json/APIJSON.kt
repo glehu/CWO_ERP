@@ -88,6 +88,7 @@ data class RegistrationResponse(
 
 @Serializable
 data class LogMsg(
+    var id: Int,
     var tstamp: String = "",
     var type: String = "",
     var caller: String = "",

@@ -218,9 +218,9 @@ interface IModule {
     /**
      * Displays text on the console and writes it to the module's log file.
      */
-    fun log(logType: MXLog.LogType, text: String, apiEndpoint: String = "") {
+    fun log(logType: MXLog.LogType, text: String, apiEndpoint: String = "", moduleAlt: String? = null) {
         MXLog.log(
-            module = module,
+            module = moduleAlt ?: module,
             type = logType,
             text = text,
             caller = moduleNameLong,
