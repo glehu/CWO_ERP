@@ -19,9 +19,11 @@ import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
 import modules.mx.logic.indexFormat
 import modules.mx.logic.roundTo
+import modules.mx.m3GlobalIndex
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
+import kotlin.concurrent.thread
 
 @ExperimentalSerializationApi
 interface IIndexManager : IModule {
@@ -58,10 +60,17 @@ interface IIndexManager : IModule {
     /**
      * @return a new unique identifier as an AtomicInteger.
      */
-    fun getUID(): AtomicInteger {
-        lastUID.getAndIncrement()
-        setLastUniqueID(lastUID)
-        return lastUID
+    fun getUID(): Int {
+        val uID = lastUID.getAndIncrement()
+        thread {
+            setLastUniqueID(lastUID)
+            log(
+                logType = MXLog.LogType.SYS,
+                text = "UID $uID generated",
+                moduleAlt = m3GlobalIndex!!.module
+            )
+        }
+        return uID
     }
 
     fun setLastChangeData(uID: Int, userName: String) {
@@ -173,7 +182,7 @@ interface IIndexManager : IModule {
      * @return an instance of Index to be used in IndexManagers
      */
     fun getIndex(ixNr: Int): Index {
-        log(MXLog.LogType.INFO, "Deserializing index $ixNr for $module...")
+        log(MXLog.LogType.SYS, "Deserializing index $ixNr for $module...")
         checkIndexFile(module, ixNr)
         return Json.decodeFromString(getIndexFile(ixNr).readText())
     }
@@ -236,9 +245,7 @@ interface IIndexManager : IModule {
      * Used to write the last unique identifier to the database.
      */
     fun setLastUniqueID(uniqueID: AtomicInteger) {
-        val nuFile = getNuFile()
-        val uniqueIDString = uniqueID.toString()
-        nuFile.writeText(uniqueIDString)
+        getNuFile().writeText(uniqueID.toString())
     }
 
     /**

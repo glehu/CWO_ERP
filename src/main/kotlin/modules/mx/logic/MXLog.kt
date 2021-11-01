@@ -13,7 +13,7 @@ import kotlin.concurrent.thread
 
 class MXLog {
     enum class LogType {
-        INFO, WARNING, ERROR, COM
+        INFO, WARNING, ERROR, COM, SYS
     }
 
     @ExperimentalSerializationApi
