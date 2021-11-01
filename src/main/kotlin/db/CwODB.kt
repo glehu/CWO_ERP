@@ -2,9 +2,6 @@ package db
 
 import interfaces.IIndexManager
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import modules.mx.getModulePath
 import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
@@ -20,7 +17,6 @@ class CwODB {
          */
         fun saveEntry(
             entryBytes: ByteArray,
-            uID: Int,
             posDB: Long,
             byteSize: Int,
             module: String,
@@ -29,42 +25,19 @@ class CwODB {
             val byteSizeNew = entryBytes.size
             var canOverride = false
             if (byteSizeNew <= byteSize) canOverride = true
-            checkLastEntryFile(module)
-            val lastEntryFile = getLastEntryFile(module)
-            val indexText: String
             var posDBNew: Long
-            val previousByteSize: Long
             val indexError = false
             synchronized(this) {
                 /**
                  * If the byteSize of the new entry is greater than the old one we have to attach the new entry at the end
                  */
-                if (!canOverride) {
-
-                    indexText = lastEntryFile.readText()
-                    if (indexText.isNotEmpty()) {
-                        val lastEntryIndex = Json.decodeFromString<IndexContent>(indexText)
-
-                        /**
-                         * Now we get the previous PosInDatabase and ByteSize
-                         */
-                        val indexPosInDB = lastEntryIndex.pos
-                        val indexByteSize = lastEntryIndex.byteSize
-                        previousByteSize = indexByteSize.toLong()
-                        posDBNew = indexPosInDB
-                        /**
-                         * Now add the current entry's byteSize to the previous posInDatabase
-                         */
-                        posDBNew += previousByteSize
-                    } else posDBNew = 0L
-                    getLastEntryFile(module).writeText(
-                        Json.encodeToString(IndexContent(uID, "", posDBNew, byteSizeNew))
-                    )
+                posDBNew = if (!canOverride) {
+                    getDatabaseFile(module).length()
                 } else {
                     /**
                      * Old entry can be overridden since the byteSize is less or equal to the old one
                      */
-                    posDBNew = posDB
+                    posDB
                 }
                 if (!indexError) {
                     /**
@@ -219,23 +192,6 @@ class CwODB {
                 File("$modulePath\\lastentry.db").delete()
                 for (i in 0..99) File("$modulePath\\$module.ix$i").delete()
             }
-        }
-
-        private fun checkLastEntryFile(module: String): Boolean {
-            var ok = false
-            val nuPath = File(getModulePath(module))
-            if (!nuPath.isDirectory) nuPath.mkdirs()
-            val nuFile = getLastEntryFile(module)
-            if (!nuFile.isFile) {
-                ok = false
-                nuFile.createNewFile()
-                if (nuFile.isFile) ok = true
-            }
-            return ok
-        }
-
-        private fun getLastEntryFile(module: String): File {
-            return File("${getModulePath(module)}\\lastentry.db")
         }
 
         /**
