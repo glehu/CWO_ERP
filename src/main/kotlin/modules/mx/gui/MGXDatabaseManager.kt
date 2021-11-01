@@ -10,6 +10,7 @@ import modules.m2.logic.M2IndexManager
 import modules.m3.logic.M3IndexManager
 import modules.m4.logic.M4IndexManager
 import modules.mx.*
+import modules.mx.logic.MXLog
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -43,24 +44,44 @@ class MGXDatabaseManager : View("Databases") {
         readonlyColumn("by User", IIndexManager::lastChangeUser).prefWidth(175.0)
     }
 
-    override val root = form {
-        vbox {
-            button("Update Databases") {
-                action {
-                    updateDatabases()
-                }
-                prefWidth = rightButtonsWidth
-            }
-            for ((counter, indexManager) in indexManagers.withIndex()) {
-                button("Reset M${counter + 1}") {
+    override val root = borderpane {
+        center = form {
+            vbox {
+                button("Update Databases") {
                     action {
-                        CwODB.resetModuleDatabase("M${counter + 1}")
-                        indexManager.setLastChangeData(-1, activeUser.username)
                         updateDatabases()
                     }
                     prefWidth = rightButtonsWidth
-                    style { unsafe("-fx-base", Color.DARKRED) }
                 }
+                for ((counter, indexManager) in indexManagers.withIndex()) {
+                    button("Reset M${counter + 1}") {
+                        action {
+                            CwODB.resetModuleDatabase("M${counter + 1}")
+                            indexManager.setLastChangeData(-1, activeUser.username)
+                            updateDatabases()
+                            indexManager.log(
+                                logType = MXLog.LogType.INFO,
+                                text = "Database ${counter + 1} reset",
+                                moduleAlt = "M${counter + 1}"
+                            )
+                            indexManager.log(
+                                logType = MXLog.LogType.INFO,
+                                text = "Database ${counter + 1} reset",
+                                moduleAlt = "MX"
+                            )
+                        }
+                        prefWidth = rightButtonsWidth
+                        style { unsafe("-fx-base", Color.DARKRED) }
+                    }
+                }
+            }
+        }
+        right = vbox {
+            button("Show log") {
+                action {
+                    MGXLog().showLog(MXLog.getLogFile("MX"), "DATABASE".toRegex())
+                }
+                prefWidth = rightButtonsWidth
             }
         }
     }
