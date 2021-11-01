@@ -47,6 +47,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.6")
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.1.0")
     implementation("com.github.komputing.khash:keccak:1.1.1")
+    implementation("com.benasher44:uuid:0.3.1")
 }
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"

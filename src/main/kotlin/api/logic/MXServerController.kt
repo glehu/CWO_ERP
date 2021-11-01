@@ -194,10 +194,9 @@ class MXServerController {
                 order.text = "Web Order"
                 order.buyer = userName
                 order.seller = "<Self>"
-                order.initialize()
                 log(
                     logType = MXLog.LogType.COM,
-                    text = "API web shop order #${order.uID} submitted",
+                    text = "API web shop order submitted",
                     apiEndpoint = appCall.request.uri,
                     moduleAlt = m3GlobalIndex!!.module
                 )

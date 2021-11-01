@@ -1,3 +1,3 @@
 rootProject.name = "CWO_ERP"
 
-//enableFeaturePreview("GRADLE_METADATA")
+enableFeaturePreview("GRADLE_METADATA")
