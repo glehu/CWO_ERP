@@ -208,22 +208,24 @@ class MXServerController {
         suspend fun registerUser(appCall: ApplicationCall): RegistrationResponse {
             val registrationPayload = appCall.receive<RegistrationPayload>()
             val userManager = MXUserManager()
-            val credentials = userManager.getCredentials()
             var exists = false
             var success = true
             var message = ""
-            for (user in credentials.credentials) {
-                if (user.value.username.uppercase() == registrationPayload.username.uppercase()) {
-                    exists = true
+            synchronized(this) {
+                val credentials = userManager.getCredentials()
+                for (user in credentials.credentials) {
+                    if (user.value.username.uppercase() == registrationPayload.username.uppercase()) {
+                        exists = true
+                    }
                 }
-            }
-            if (exists) {
-                success = false
-                message = "User already exists"
-            } else {
-                val user = MXUser(registrationPayload.username, encryptAES(registrationPayload.password))
-                userManager.updateUser(user, user, credentials)
-                log(MXLog.LogType.COM, "User ${registrationPayload.username} registered.", appCall.request.uri)
+                if (exists) {
+                    success = false
+                    message = "User already exists"
+                } else {
+                    val user = MXUser(registrationPayload.username, encryptAES(registrationPayload.password))
+                    userManager.updateUser(user, user, credentials)
+                    log(MXLog.LogType.COM, "User ${registrationPayload.username} registered.", appCall.request.uri)
+                }
             }
             return RegistrationResponse(success, message)
         }

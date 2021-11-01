@@ -155,11 +155,6 @@ class MXServer : IModule, Controller() {
                     )
 
                     /**
-                     * M3 Endpoints (Invoice)
-                     */
-                    addWebshopOrder()
-
-                    /**
                      * M4 Endpoints (Item)
                      */
                     getPriceCategories()
@@ -171,6 +166,7 @@ class MXServer : IModule, Controller() {
                      * Web Solution Endpoints
                      */
                     register()
+                    addWebshopOrder()
                 }
             }
         }
