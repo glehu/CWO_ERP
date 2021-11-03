@@ -43,7 +43,7 @@ class M1Analytics : IModule, Controller() {
                 updateProgress(Pair(uID, "Mapping data..."))
                 val song = decode(entryBytes) as M1Song
                 if (song.uID != -1) {
-                    songCount += 1.0
+                    songCount++
                     distTypeData = when (distType) {
                         DistType.GENRE -> song.genre
                         DistType.TYPE -> song.type
