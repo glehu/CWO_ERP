@@ -35,6 +35,7 @@ class M2Analytics : IModule, Controller() {
                 searchText = "",
                 ixNr = 0,
                 exactSearch = false,
+                maxSearchResults = -1,
                 indexManager = indexManager
             )                       // shout out blkghst
             { uID, entryBytes ->
