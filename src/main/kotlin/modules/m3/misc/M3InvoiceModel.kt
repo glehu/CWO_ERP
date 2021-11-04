@@ -55,7 +55,7 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     val buyerUID = bind(InvoiceProperty::buyerUIDProperty)
     var date = bind(InvoiceProperty::dateProperty)
     var text = bind(InvoiceProperty::textProperty)
-    var price = bind(InvoiceProperty::priceProperty)
+    var total = bind(InvoiceProperty::priceProperty)
     var paid = bind(InvoiceProperty::paidProperty)
     var items = bind(InvoiceProperty::itemsProperty)
     var priceCategory = bind(InvoiceProperty::priceCategoryProperty)

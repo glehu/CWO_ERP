@@ -140,9 +140,9 @@ class NewInvoiceItemData : Fragment("Items") {
     override val root = form {
         fieldset {
             field("Price Category") { label(invoice.priceCategory) }
-            field("Price") {
+            field("Total") {
                 hbox {
-                    textfield(invoice.price) {
+                    textfield(invoice.total) {
                         prefWidth = 100.0
                         isEditable = false
                     }.required()
