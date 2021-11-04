@@ -167,8 +167,15 @@ class MXServer : IModule, Controller() {
                      */
                     register()
                     addWebshopOrder()
+                    userTracking()
                 }
             }
+        }
+    }
+
+    private fun Route.userTracking() {
+        post("utr") {
+            call.respond(usageTracker.writeUsageTrackingData(call))
         }
     }
 

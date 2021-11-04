@@ -1,6 +1,7 @@
 package modules.mx
 
 import api.logic.MXServer
+import api.logic.MXUsageTracker
 import interfaces.IEntry
 import io.ktor.util.*
 import javafx.scene.image.Image
@@ -69,6 +70,13 @@ var m3GlobalIndex: M3IndexManager? = null
  */
 @ExperimentalSerializationApi
 var m4GlobalIndex: M4IndexManager? = null
+
+//*************************************************
+//********************** TRACKER ******************
+//*************************************************
+
+@ExperimentalSerializationApi
+val usageTracker = MXUsageTracker()
 
 //*************************************************
 //********************** MISCELLANEOUS ************

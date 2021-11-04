@@ -96,3 +96,15 @@ data class LogMsg(
     var user: String = "",
     var apiEndpoint: String = ""
 )
+
+@Serializable
+data class UsageTrackerStats(
+    var totalAPICalls: Long
+)
+
+@Serializable
+data class UsageTrackerData(
+    val source: String,
+    val module: String,
+    val action: String
+)
