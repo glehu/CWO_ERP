@@ -1,6 +1,7 @@
 package modules.mx.gui
 
 import api.misc.json.LogMsg
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.collections.ObservableList
 import javafx.scene.control.TextField
 import tornadofx.*
@@ -16,7 +17,8 @@ class MGXLog : Fragment("Log") {
     private lateinit var regex: Regex
     private val logContent: ObservableList<LogMsg> = observableListOf()
     private val logDisplay: ObservableList<LogMsg> = observableListOf()
-    var searchText: TextField by singleAssign()
+    private val resultsCounter = SimpleIntegerProperty(0)
+    private var searchText: TextField by singleAssign()
     private val table = tableview(logDisplay) {
         readonlyColumn("ID", LogMsg::id)
         readonlyColumn("TStamp", LogMsg::tstamp)
@@ -50,6 +52,10 @@ class MGXLog : Fragment("Log") {
                             showLog(logFile!!, ".*".toRegex())
                         }
                     }
+                    field("Results:") {
+                        paddingLeft = 50
+                        label(resultsCounter)
+                    }
                 }
             }
         }
@@ -60,6 +66,7 @@ class MGXLog : Fragment("Log") {
         this.logFile = logFile
         logContent.clear()
         logDisplay.clear()
+        resultsCounter.value = 0
         searchText.text = ""
         if (logFile.isFile) {
             this.regex = regex
@@ -85,6 +92,7 @@ class MGXLog : Fragment("Log") {
                     )
                     logContent.add(msgT)
                     logDisplay.add(msgT)
+                    resultsCounter += 1
                 }
             }
         }
@@ -98,9 +106,11 @@ class MGXLog : Fragment("Log") {
             filter.uppercase().toRegex()
         } else ".*".toRegex()
         logDisplay.clear()
+        resultsCounter.value = 0
         for (msg in logContent) {
             if (msg.toString().uppercase().contains(regex)) {
                 logDisplay.add(msg)
+                resultsCounter += 1
             }
         }
         table.refresh()
