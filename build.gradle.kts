@@ -48,6 +48,9 @@ dependencies {
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.1.0")
     implementation("com.github.komputing.khash:keccak:1.1.1")
     implementation("com.benasher44:uuid:0.3.1")
+    implementation("com.google.api-client:google-api-client:1.32.2")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.32.1")
+    implementation("com.google.apis:google-api-services-gmail:v1-rev20210614-1.32.1")
 }
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
