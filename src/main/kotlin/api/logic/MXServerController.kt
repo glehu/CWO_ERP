@@ -7,6 +7,8 @@ import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.request.*
 import io.ktor.util.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -39,17 +41,23 @@ class MXServerController {
             return null
         }
 
+        private val mutex = Mutex()
+
         suspend fun saveEntry(entry: ByteArray, indexManager: IIndexManager, username: String): Int {
-            log(
-                logType = MXLog.LogType.COM,
-                text = "API ${indexManager.module} entry save",
-                apiEndpoint = "/api/${indexManager.module}/save",
-                moduleAlt = indexManager.module
-            )
-            return indexManager.save(
-                entry = indexManager.decode(entry),
-                userName = username
-            )
+            val uID: Int
+            mutex.withLock {
+                log(
+                    logType = MXLog.LogType.COM,
+                    text = "API ${indexManager.module} entry save",
+                    apiEndpoint = "/api/${indexManager.module}/save",
+                    moduleAlt = indexManager.module
+                )
+                uID = indexManager.save(
+                    entry = indexManager.decode(entry),
+                    userName = username
+                )
+            }
+            return uID
         }
 
         fun getEntry(appCall: ApplicationCall, indexManager: IIndexManager): Any {
@@ -111,17 +119,19 @@ class MXServerController {
             return false
         }
 
-        fun setEntryLock(appCall: ApplicationCall, indexManager: IIndexManager): Boolean {
+        suspend fun setEntryLock(appCall: ApplicationCall, indexManager: IIndexManager): Boolean {
             val routePar = appCall.parameters["searchString"]
             val queryPar = appCall.request.queryParameters["type"]
-            if (routePar != null && routePar.isNotEmpty()) {
-                return indexManager.setEntryLock(
-                    uID = routePar.toInt(),
-                    doLock = queryPar.toBoolean(),
-                    userName = appCall.principal<UserIdPrincipal>()?.name!!
-                )
-            }
-            return false
+            val success: Boolean = if (routePar != null && routePar.isNotEmpty()) {
+                mutex.withLock {
+                    indexManager.setEntryLock(
+                        uID = routePar.toInt(),
+                        doLock = queryPar.toBoolean(),
+                        userName = appCall.principal<UserIdPrincipal>()?.name!!
+                    )
+                }
+            } else false
+            return success
         }
 
         @InternalAPI
@@ -194,13 +204,15 @@ class MXServerController {
                 order.text = "Web Order"
                 order.buyer = userName
                 order.seller = "<Self>"
-                log(
-                    logType = MXLog.LogType.COM,
-                    text = "API web shop order submitted",
-                    apiEndpoint = appCall.request.uri,
-                    moduleAlt = m3GlobalIndex!!.module
-                )
-                m3GlobalIndex!!.save(entry = order, userName = userName)
+                mutex.withLock {
+                    log(
+                        logType = MXLog.LogType.COM,
+                        text = "API web shop order submitted",
+                        apiEndpoint = appCall.request.uri,
+                        moduleAlt = m3GlobalIndex!!.module
+                    )
+                    m3GlobalIndex!!.save(entry = order, userName = userName)
+                }
             }
             return order.uID
         }
@@ -211,7 +223,7 @@ class MXServerController {
             var exists = false
             var success = true
             var message = ""
-            synchronized(this) {
+            mutex.withLock {
                 val credentials = userManager.getCredentials()
                 for (user in credentials.credentials) {
                     if (user.value.username.uppercase() == registrationPayload.username.uppercase()) {

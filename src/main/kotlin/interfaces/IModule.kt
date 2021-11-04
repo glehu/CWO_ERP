@@ -59,22 +59,20 @@ interface IModule {
             entry.initialize()
             val posDBX: Long
             val byteSizeX: Int
-            synchronized(this) {
-                log(
-                    logType = MXLog.LogType.SYS,
-                    text = "SAVE START uID ${entry.uID}",
-                    moduleAlt = indexManager.module
-                )
-                val (posDBXt, byteSizeXt) = CwODB.saveEntry(
-                    entryBytes = encode(entry),
-                    posDB = posDB,
-                    byteSize = byteSize,
-                    module = indexManager.module,
-                    raf = rafLocal
-                )
-                posDBX = posDBXt
-                byteSizeX = byteSizeXt
-            }
+            log(
+                logType = MXLog.LogType.SYS,
+                text = "SAVE START uID ${entry.uID}",
+                moduleAlt = indexManager.module
+            )
+            val (posDBXt, byteSizeXt) = CwODB.saveEntry(
+                entryBytes = encode(entry),
+                posDB = posDB,
+                byteSize = byteSize,
+                module = indexManager.module,
+                raf = rafLocal
+            )
+            posDBX = posDBXt
+            byteSizeX = byteSizeXt
             log(
                 logType = MXLog.LogType.SYS,
                 text = "SAVE END uID ${entry.uID}",
