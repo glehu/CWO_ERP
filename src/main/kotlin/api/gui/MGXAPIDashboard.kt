@@ -15,8 +15,10 @@ class MGXAPIDashboard : View("API Dashboard") {
     private val progressProperty = SimpleIntegerProperty()
     private var progressN by progressProperty
     private var maxEntries: Long = 0L
-    private lateinit var webModuleUsage: MutableMap<String, MutableMap<String, Int>>
-    private var chart = linechart("Web Module Tracking (8 Days)", CategoryAxis(), NumberAxis())
+    private lateinit var webModuleUsageWeek: MutableMap<String, MutableMap<String, Int>>
+    private lateinit var webModuleUsageDay: MutableMap<String, MutableMap<String, Int>>
+    private var chartWeek = areachart("Web Module Tracking (8 Days)", CategoryAxis(), NumberAxis())
+    private var chartDay = areachart("Web Module Tracking (Today)", CategoryAxis(), NumberAxis())
     override val root = form {
         vbox {
             button("Get Data") {
@@ -25,7 +27,10 @@ class MGXAPIDashboard : View("API Dashboard") {
                     getWebModuleUsageData()
                 }
             }
-            add(chart)
+            hbox {
+                add(chartWeek)
+                add(chartDay)
+            }
             add<MGXProgressbar>()
         }
     }
@@ -33,20 +38,34 @@ class MGXAPIDashboard : View("API Dashboard") {
     fun getWebModuleUsageData() {
         maxEntries = usageTracker.totalAPICalls.get()
         runAsync {
-            webModuleUsage =
-                MXAPIDashboard().getWebModuleUsageData {
+            webModuleUsageWeek =
+                MXAPIDashboard().getWebUsageDays(8) {
+                    progressN = it.first
+                    updateProgress(it.first.toDouble(), maxEntries.toDouble())
+                    updateMessage("${it.second} (${it.first} / $maxEntries)")
+                }
+            webModuleUsageDay =
+                MXAPIDashboard().getWebUsageToday {
                     progressN = it.first
                     updateProgress(it.first.toDouble(), maxEntries.toDouble())
                     updateMessage("${it.second} (${it.first} / $maxEntries)")
                 }
             ui {
-                chart.data.clear()
-                for (data in webModuleUsage) {
+                chartWeek.data.clear()
+                for (data in webModuleUsageWeek) {
                     val dataList = observableListOf<XYChart.Data<String, Number>>()
                     for (tstamp in data.value) {
                         dataList.add(XYChart.Data(tstamp.key, tstamp.value))
                     }
-                    chart.data.add(XYChart.Series(data.key, dataList))
+                    chartWeek.data.add(XYChart.Series(data.key, dataList))
+                }
+                chartDay.data.clear()
+                for (data in webModuleUsageDay) {
+                    val dataList = observableListOf<XYChart.Data<String, Number>>()
+                    for (tstamp in data.value) {
+                        dataList.add(XYChart.Data(tstamp.key, tstamp.value))
+                    }
+                    chartDay.data.add(XYChart.Series(data.key, dataList))
                 }
             }
         }
