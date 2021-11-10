@@ -45,7 +45,7 @@ class MGXUserManager : View("User Management") {
             }
             button("Show log") {
                 action {
-                    MGXLog().showLog(MXLog.getLogFile("MX"), "USER".toRegex())
+                    MGXLog("MX").showLog(MXLog.getLogFile("MX"), "USER".toRegex())
                 }
                 prefWidth = rightButtonsWidth
             }

@@ -122,19 +122,19 @@ class MXGUserInterface : View(titleGlobal) {
                 menu("Log") {
                     menu("Show Logfile") {
                         item("M1 Songs").action {
-                            MGXLog().showLog(MXLog.getLogFile("M1"), ".*".toRegex())
+                            MGXLog("M1 Songs").showLog(MXLog.getLogFile("M1"), ".*".toRegex())
                         }
                         item("M2 Contacts").action {
-                            MGXLog().showLog(MXLog.getLogFile("M2"), ".*".toRegex())
+                            MGXLog("M2 Contacts").showLog(MXLog.getLogFile("M2"), ".*".toRegex())
                         }
                         item("M3 Invoice").action {
-                            MGXLog().showLog(MXLog.getLogFile("M3"), ".*".toRegex())
+                            MGXLog("M3 Invoice").showLog(MXLog.getLogFile("M3"), ".*".toRegex())
                         }
                         item("M4 Item").action {
-                            MGXLog().showLog(MXLog.getLogFile("M4"), ".*".toRegex())
+                            MGXLog("M4 Item").showLog(MXLog.getLogFile("M4"), ".*".toRegex())
                         }
                         item("MX").action {
-                            MGXLog().showLog(MXLog.getLogFile("MX"), ".*".toRegex())
+                            MGXLog("MX").showLog(MXLog.getLogFile("MX"), ".*".toRegex())
                         }
                     }
                     separator()

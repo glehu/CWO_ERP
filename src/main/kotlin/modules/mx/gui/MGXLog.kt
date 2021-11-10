@@ -2,14 +2,19 @@ package modules.mx.gui
 
 import api.misc.json.LogMsg
 import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
+import javafx.geometry.Orientation
 import javafx.scene.control.TextField
+import modules.mx.gui.userAlerts.MGXUserAlert
+import modules.mx.rightButtonsWidth
 import tornadofx.*
 import java.io.File
 import java.io.InputStream
+import kotlin.math.roundToInt
 
-class MGXLog : Fragment("Log") {
-    var logFile: File? = null
+class MGXLog(title: String) : Fragment(title) {
+    private var logFile: File? = null
 
     /**
      * The filter criteria for log lookups.
@@ -17,7 +22,9 @@ class MGXLog : Fragment("Log") {
     private lateinit var regex: Regex
     private val logContent: ObservableList<LogMsg> = observableListOf()
     private val logDisplay: ObservableList<LogMsg> = observableListOf()
-    private val resultsCounter = SimpleIntegerProperty(0)
+    private val results = SimpleIntegerProperty(0)
+    private val maxResults = SimpleIntegerProperty(0)
+    private val resultsText = SimpleStringProperty("")
     private var searchText: TextField by singleAssign()
     private val table = tableview(logDisplay) {
         readonlyColumn("ID", LogMsg::id)
@@ -40,22 +47,34 @@ class MGXLog : Fragment("Log") {
                             tooltip("Contains the search text that will be used to find an entry.")
                         }
                     }
-                    button("Filter (Enter)") {
-                        shortcut("Enter")
-                        action {
-                            filterLog(searchText.text)
+                    separator(Orientation.VERTICAL).paddingHorizontal = 25
+                    vbox {
+                        button("Filter (Enter)") {
+                            shortcut("Enter")
+                            prefWidth = rightButtonsWidth
+                            action {
+                                filterLog(searchText.text)
+                            }
+                        }
+                        button("Reset (CTRL-X)") {
+                            shortcut("CTRL+X")
+                            prefWidth = rightButtonsWidth
+                            action {
+                                searchText.text = ".*"
+                                filterLog(".*")
+                                searchText.selectAll()
+                            }
                         }
                     }
                     button("Reload (CTRL+R)") {
                         shortcut("CTRL+R")
+                        prefWidth = rightButtonsWidth
                         action {
                             showLog(logFile!!, ".*".toRegex())
                         }
                     }
-                    field("Results:") {
-                        paddingLeft = 50
-                        label(resultsCounter)
-                    }
+                    separator(Orientation.VERTICAL).paddingHorizontal = 25
+                    label(resultsText)
                 }
             }
         }
@@ -63,11 +82,13 @@ class MGXLog : Fragment("Log") {
     }
 
     fun showLog(logFile: File, regex: Regex) {
+        val loadingNotification = MGXUserAlert("Loading...")
+        loadingNotification.openModal()
         this.logFile = logFile
         logContent.clear()
         logDisplay.clear()
-        resultsCounter.value = 0
-        searchText.text = ""
+        results.value = 0
+        searchText.text = ".*"
         if (logFile.isFile) {
             this.regex = regex
             val inputStream: InputStream = logFile.inputStream()
@@ -92,13 +113,20 @@ class MGXLog : Fragment("Log") {
                     )
                     logContent.add(msgT)
                     logDisplay.add(msgT)
-                    resultsCounter += 1
+                    results += 1
                 }
             }
+            if (maxResults.value == 0) {
+                maxResults.value = results.value
+            }
+            resultsText.value = results.value.toString() + " / " + maxResults.value.toString()
         }
+        loadingNotification.close()
         openModal()
         table.refresh()
         table.smartResize()
+        searchText.requestFocus()
+        searchText.selectAll()
     }
 
     private fun filterLog(filter: String) {
@@ -106,13 +134,15 @@ class MGXLog : Fragment("Log") {
             filter.uppercase().toRegex()
         } else ".*".toRegex()
         logDisplay.clear()
-        resultsCounter.value = 0
+        results.value = 0
         for (msg in logContent) {
             if (msg.toString().uppercase().contains(regex)) {
                 logDisplay.add(msg)
-                resultsCounter += 1
+                results += 1
             }
         }
+        resultsText.value =
+            "${results.value} / ${maxResults.value} (${((results.value.toFloat() / maxResults.value.toFloat()) * 100).roundToInt()}%)"
         table.refresh()
         table.smartResize()
     }

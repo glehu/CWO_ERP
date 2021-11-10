@@ -79,7 +79,7 @@ class MGXDatabaseManager : View("Databases") {
         right = vbox {
             button("Show log") {
                 action {
-                    MGXLog().showLog(MXLog.getLogFile("MX"), "DATABASE".toRegex())
+                    MGXLog("MX").showLog(MXLog.getLogFile("MX"), "DATABASE".toRegex())
                 }
                 prefWidth = rightButtonsWidth
             }
