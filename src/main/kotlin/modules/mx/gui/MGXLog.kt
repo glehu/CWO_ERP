@@ -1,12 +1,16 @@
 package modules.mx.gui
 
 import api.misc.json.LogMsg
+import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import javafx.geometry.Orientation
 import javafx.scene.control.TextField
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import modules.mx.gui.userAlerts.MGXUserAlert
+import modules.mx.logic.MXTimestamp
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 import java.io.File
@@ -44,7 +48,7 @@ class MGXLog(title: String) : Fragment(title) {
                 hbox {
                     field("Search") {
                         searchText = textfield {
-                            tooltip("Contains the search text that will be used to find an entry.")
+                            tooltip("Contains the regex pattern the log file will be filtered with.")
                         }
                     }
                     separator(Orientation.VERTICAL).paddingHorizontal = 25
@@ -55,6 +59,7 @@ class MGXLog(title: String) : Fragment(title) {
                             action {
                                 filterLog(searchText.text)
                             }
+                            tooltip("Filters the log file with the provided regex pattern.")
                         }
                         button("Reset (CTRL-X)") {
                             shortcut("CTRL+X")
@@ -64,13 +69,25 @@ class MGXLog(title: String) : Fragment(title) {
                                 filterLog(".*")
                                 searchText.selectAll()
                             }
+                            tooltip("Resets the filter.")
                         }
                     }
-                    button("Reload (CTRL+R)") {
-                        shortcut("CTRL+R")
-                        prefWidth = rightButtonsWidth
-                        action {
-                            showLog(logFile!!, ".*".toRegex())
+                    vbox {
+                        button("Reload (CTRL+R)") {
+                            shortcut("CTRL+R")
+                            prefWidth = rightButtonsWidth
+                            action {
+                                showLog(logFile!!, ".*".toRegex())
+                            }
+                            tooltip("Reloads the log file from the disk.")
+                        }
+                        button("Save (CTRL+S)") {
+                            shortcut("CTRL+S")
+                            prefWidth = rightButtonsWidth
+                            action {
+                                saveLog()
+                            }
+                            tooltip("Saves the filtered log file as a CSV file.")
                         }
                     }
                     separator(Orientation.VERTICAL).paddingHorizontal = 25
@@ -79,6 +96,22 @@ class MGXLog(title: String) : Fragment(title) {
             }
         }
         center = table
+    }
+
+    private fun saveLog() {
+        val directory = chooseDirectory("Choose directory for the CSV file to be saved in:")
+        val timestamp = MXTimestamp.getUTCTimestamp(MXTimestamp.getUnixTimestamp()).replace(':', '-')
+        val file = File(
+            directory!!.path +
+                    "\\$timestamp-$title-log.csv"
+        )
+        file.createNewFile()
+        val list = logDisplay.toList()
+        csvWriter().open(file) {
+            for (i in list.indices) {
+                writeRow(Json.encodeToString(list[i]).drop(1).dropLast(1))
+            }
+        }
     }
 
     fun showLog(logFile: File, regex: Regex) {
