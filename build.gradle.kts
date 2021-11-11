@@ -45,7 +45,7 @@ dependencies {
     implementation("io.ktor:ktor-client-auth:1.6.4")
     implementation("io.ktor:ktor-serialization:1.6.4")
     implementation("ch.qos.logback:logback-classic:1.2.6")
-    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.1.0")
+    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.2.0")
     implementation("com.github.komputing.khash:keccak:1.1.1")
     implementation("com.benasher44:uuid:0.3.1")
     implementation("com.google.api-client:google-api-client:1.32.2")
