@@ -4,6 +4,8 @@ import api.misc.json.UsageTrackerData
 import api.misc.json.UsageTrackerStats
 import io.ktor.application.*
 import io.ktor.request.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -17,22 +19,17 @@ import java.util.concurrent.atomic.AtomicLong
 @ExperimentalSerializationApi
 class MXUsageTracker {
     var totalAPICalls: AtomicLong = AtomicLong(0)
+    private val mutex = Mutex()
 
     init {
         readUsageStats()
     }
 
     suspend fun writeUsageTrackingData(appCall: ApplicationCall) {
-        val data = appCall.receive<UsageTrackerData>()
-        synchronized(this) {
-            getUsageLogFile().appendText(
-                MXTimestamp.getUTCTimestampFromUnix(MXTimestamp.getUnixTimestamp()) +
-                        "<${Json.encodeToString(data)}>\n"
-            )
-        }
-        synchronized(this) {
-            writeUsageStats()
-        }
+        val data = MXTimestamp.getUTCTimestampFromUnix(MXTimestamp.getUnixTimestamp()) +
+                "<${Json.encodeToString(appCall.receive<UsageTrackerData>())}>\n"
+        mutex.withLock { getUsageLogFile().appendText(data) }
+        mutex.withLock { writeUsageStats() }
     }
 
     private fun readUsageStats() {
