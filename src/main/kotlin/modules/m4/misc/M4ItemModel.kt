@@ -27,6 +27,8 @@ class M4ItemProperty {
     var ean: String by eanProperty
     val manufacturerCodeProperty = SimpleStringProperty("?")
     var manufacturerCode: String by manufacturerCodeProperty
+    val imagePathProperty = SimpleStringProperty("?")
+    var imagePath: String by imagePathProperty
     val productInfoJsonProperty = SimpleStringProperty("?")
     var productInfoJson: String by productInfoJsonProperty
     var priceCategoriesProperty = M4PriceManager().getCategories(M4PriceManager().getCategories())
@@ -40,6 +42,7 @@ class M4ItemModel : ItemViewModel<M4ItemProperty>() {
     val articleNumber = bind(M4ItemProperty::articleNumberProperty)
     val ean = bind(M4ItemProperty::eanProperty)
     val manufacturerNr = bind(M4ItemProperty::manufacturerCodeProperty)
+    val imagePath = bind(M4ItemProperty::imagePathProperty)
     val productInfoJson = bind(M4ItemProperty::productInfoJsonProperty)
     val priceCategories = bind(M4ItemProperty::priceCategoriesProperty)
 }
@@ -53,17 +56,22 @@ fun getM4ItemPropertyFromItem(item: M4Item): M4ItemProperty {
     itemProperty.articleNumber = item.articleNumber
     itemProperty.ean = item.ean
     itemProperty.manufacturerCode = item.manufacturerCode
+    itemProperty.imagePath = item.imagePath
     itemProperty.productInfoJson = item.productInfoJson
     /**
      * Get the current price categories, so we are working with the latest data
      */
     itemProperty.priceCategoriesProperty = M4PriceManager().getCategories(M4PriceManager().getCategories())
     /**
+     * Fill the item's statistics
+     */
+
+    /**
      * Fill the price categories' prices according to their number
      */
-    for ((_, v) in item.prices) {
-        val x = Json.decodeFromString<M4PriceCategory>(v)
-        itemProperty.priceCategoriesProperty[x.number].grossPrice = x.grossPrice
+    for ((_, priceCategoryString) in item.prices) {
+        val priceCategory = Json.decodeFromString<M4PriceCategory>(priceCategoryString)
+        itemProperty.priceCategoriesProperty[priceCategory.number].grossPrice = priceCategory.grossPrice
     }
     return itemProperty
 }
@@ -77,6 +85,7 @@ fun getM4ItemFromItemProperty(itemProperty: M4ItemProperty): M4Item {
     item.articleNumber = itemProperty.articleNumber
     item.ean = itemProperty.ean
     item.manufacturerCode = itemProperty.manufacturerCode
+    item.imagePath = itemProperty.imagePath
     item.productInfoJson = itemProperty.productInfoJson
     for (price in itemProperty.priceCategoriesProperty) {
         item.prices[item.prices.size] = Json.encodeToString(price)

@@ -14,11 +14,15 @@ data class M4Item(
     var articleNumber = ""
     var ean = ""
     var manufacturerCode = ""
+    var imagePath = ""
 
     /**
      * Various product info can be added to the item by providing a json string of its details.
      */
     var productInfoJson = ""
+
+    //Webshop and Sales Statistics
+    var statistics: MutableMap<String, String> = mutableMapOf()
 
     /**
      * This map contains the prices of this item for specific price categories.

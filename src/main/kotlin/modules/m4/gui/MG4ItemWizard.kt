@@ -1,9 +1,13 @@
 package modules.m4.gui
 
 import io.ktor.util.*
+import javafx.scene.image.Image
+import javafx.stage.FileChooser
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.M4PriceCategory
 import modules.m4.misc.M4ItemModel
+import modules.mx.gui.MGXImageViewer
+import modules.mx.gui.userAlerts.MGXUserAlert
 import tornadofx.*
 
 @InternalAPI
@@ -28,7 +32,7 @@ class NewM4ItemMainData : Fragment("Main") {
     //----------- Main Data ------------|
     //----------------------------------^
     override val root = form {
-        prefWidth = 400.0
+        prefWidth = 600.0
         fieldset {
             field("UID") {
                 label(item.uID)
@@ -37,6 +41,31 @@ class NewM4ItemMainData : Fragment("Main") {
             field("Article Nr") { textfield(item.articleNumber).required() }
             field("EAN Code") { textfield(item.ean).required() }
             field("Manufacturer Nr") { textfield(item.manufacturerNr).required() }
+            field("Image Path") {
+                textfield(item.imagePath) {
+                    isEditable = false
+                }
+            }
+            hbox {
+                button("Choose file") {
+                    action {
+                        item.imagePath.value = chooseFile(
+                            "Choose file",
+                            arrayOf(FileChooser.ExtensionFilter("PNG file (*.png)", "*.png")),
+                            mode = FileChooserMode.Single
+                        )[0].path
+                    }
+                }
+                button("View image") {
+                    action {
+                        if (item.imagePath.value != "?") {
+                            MGXImageViewer(Image("file:///${item.imagePath.value}")).openModal()
+                        } else {
+                            MGXUserAlert("No image loaded.").openModal()
+                        }
+                    }
+                }
+            }
         }
     }
 

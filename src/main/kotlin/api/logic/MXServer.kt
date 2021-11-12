@@ -161,6 +161,7 @@ class MXServer : IModule, Controller() {
                     getPriceCategoryNumber()
                     savePriceCategory()
                     deletePriceCategory()
+                    getItemImage()
 
                     /**
                      * Web Solution Endpoints
@@ -278,6 +279,12 @@ class MXServer : IModule, Controller() {
     private fun Route.deletePriceCategory() {
         post("m4/deletecategory") {
             call.respond(MXServerController.deletePriceCategory(call.receive() as UPPriceCategoryJson))
+        }
+    }
+
+    private fun Route.getItemImage() {
+        get("m4/getimage/{itemUID}") {
+            call.respond(MXServerController.getItemImage())
         }
     }
 

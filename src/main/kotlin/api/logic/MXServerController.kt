@@ -19,16 +19,15 @@ import modules.m3.logic.M3CLIController
 import modules.m4.M4Item
 import modules.m4.M4PriceCategory
 import modules.m4.logic.M4PriceManager
-import modules.mx.MXUser
-import modules.mx.activeUser
+import modules.mx.*
 import modules.mx.logic.MXLog
 import modules.mx.logic.MXUserManager
 import modules.mx.logic.encryptAES
 import modules.mx.logic.encryptKeccak
-import modules.mx.m3GlobalIndex
-import modules.mx.m4GlobalIndex
+import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 @ExperimentalSerializationApi
 class MXServerController {
@@ -240,6 +239,11 @@ class MXServerController {
                 }
             }
             return RegistrationResponse(success, message)
+        }
+
+        fun getItemImage(): String {
+            val sampleImg = File("$dataPath\\data\\img\\orochi_logo_red_500x500.png")
+            return Base64.getEncoder().encodeToString(sampleImg.readBytes())
         }
     }
 }
