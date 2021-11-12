@@ -2,9 +2,11 @@ package modules.m4.gui
 
 import io.ktor.util.*
 import javafx.scene.image.Image
+import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.M4PriceCategory
+import modules.m4.M4Statistic
 import modules.m4.misc.M4ItemModel
 import modules.mx.gui.MGXImageViewer
 import modules.mx.gui.userAlerts.MGXUserAlert
@@ -19,6 +21,7 @@ class M4ItemConfiguratorWizard : Wizard("Add new item") {
         enableStepLinks = true
         showHeader = false
         add(NewM4ItemMainData::class)
+        add(NewM4ItemStatistics::class)
         add(NewM4ItemPricesData::class)
     }
 }
@@ -64,6 +67,59 @@ class NewM4ItemMainData : Fragment("Main") {
                             MGXUserAlert("No image loaded.").openModal()
                         }
                     }
+                }
+            }
+        }
+    }
+
+    override fun onSave() {
+        isComplete = item.commit()
+    }
+}
+
+@ExperimentalSerializationApi
+@InternalAPI
+class NewM4ItemStatistics : Fragment("Statistics") {
+    private val item: M4ItemModel by inject()
+    private var table = tableview(item.statistics) {
+        isEditable = true
+        column("Description", M4Statistic::description) {
+            prefWidth = 250.0
+            makeEditable()
+        }
+        column("Value", M4Statistic::sValue) {
+            prefWidth = 250.0
+            makeEditable()
+        }
+        enableCellEditing()
+        regainFocusAfterEdit()
+        isFocusTraversable = false
+    }
+
+    //----------------------------------v
+    //----------- Main Data ------------|
+    //----------------------------------^
+    override val root = form {
+        fieldset {
+            item.uID.addListener { _, _, _ ->
+                table.refresh()
+            }
+            add(table)
+            hbox {
+                button("Add Statistic") {
+                    action {
+                        item.statistics.value.add(
+                            M4Statistic("<Description>", "", 0.0F, false)
+                        )
+                        table.refresh()
+                    }
+                }
+                button("Remove Statistic") {
+                    action {
+                        item.statistics.value.remove(table.selectedItem)
+                    }
+                    tooltip("Removes the selected statistic from the item.")
+                    style { unsafe("-fx-base", Color.DARKRED) }
                 }
             }
         }

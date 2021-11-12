@@ -69,6 +69,10 @@ class MG4Overview : IOverview, View("M4 Inventory") {
                         add(NewM4ItemPricesData::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
+                    fieldset("Statistics") {
+                        add(NewM4ItemStatistics::class)
+                        addClass(Stylesheet.fieldsetBorder)
+                    }
                 }
             }
         }

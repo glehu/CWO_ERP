@@ -9,9 +9,11 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m4.M4Item
 import modules.m4.M4PriceCategory
+import modules.m4.M4Statistic
 import modules.m4.logic.M4PriceManager
 import tornadofx.ItemViewModel
 import tornadofx.getValue
+import tornadofx.observableListOf
 import tornadofx.setValue
 
 @InternalAPI
@@ -31,7 +33,14 @@ class M4ItemProperty {
     var imagePath: String by imagePathProperty
     val productInfoJsonProperty = SimpleStringProperty("?")
     var productInfoJson: String by productInfoJsonProperty
+    var statisticsProperty = observableListOf<M4Statistic>()
     var priceCategoriesProperty = M4PriceManager().getCategories(M4PriceManager().getCategories())
+
+    init {
+        if (statisticsProperty.isEmpty()) {
+            statisticsProperty.add(M4Statistic("Sold", "", 0.0F, true))
+        }
+    }
 }
 
 @InternalAPI
@@ -44,6 +53,7 @@ class M4ItemModel : ItemViewModel<M4ItemProperty>() {
     val manufacturerNr = bind(M4ItemProperty::manufacturerCodeProperty)
     val imagePath = bind(M4ItemProperty::imagePathProperty)
     val productInfoJson = bind(M4ItemProperty::productInfoJsonProperty)
+    val statistics = bind(M4ItemProperty::statisticsProperty)
     val priceCategories = bind(M4ItemProperty::priceCategoriesProperty)
 }
 
@@ -65,7 +75,10 @@ fun getM4ItemPropertyFromItem(item: M4Item): M4ItemProperty {
     /**
      * Fill the item's statistics
      */
-
+    for ((_, statisticString) in item.statistics) {
+        val statistic = Json.decodeFromString<M4Statistic>(statisticString)
+        itemProperty.statisticsProperty.add(statistic)
+    }
     /**
      * Fill the price categories' prices according to their number
      */
@@ -87,6 +100,9 @@ fun getM4ItemFromItemProperty(itemProperty: M4ItemProperty): M4Item {
     item.manufacturerCode = itemProperty.manufacturerCode
     item.imagePath = itemProperty.imagePath
     item.productInfoJson = itemProperty.productInfoJson
+    for (statistic in itemProperty.statisticsProperty) {
+        item.statistics[statistic.description] = Json.encodeToString(statistic)
+    }
     for (price in itemProperty.priceCategoriesProperty) {
         item.prices[item.prices.size] = Json.encodeToString(price)
     }
