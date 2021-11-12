@@ -7,8 +7,6 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import javafx.geometry.Orientation
 import javafx.scene.control.TextField
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import modules.mx.gui.userAlerts.MGXUserAlert
 import modules.mx.logic.MXTimestamp
 import modules.mx.rightButtonsWidth
@@ -16,6 +14,7 @@ import tornadofx.*
 import java.io.File
 import java.io.InputStream
 import kotlin.math.roundToInt
+import kotlin.reflect.full.memberProperties
 
 class MGXLog(title: String) : Fragment(title) {
     private var logFile: File? = null
@@ -107,11 +106,27 @@ class MGXLog(title: String) : Fragment(title) {
         )
         file.createNewFile()
         val list = logDisplay.toList()
-        csvWriter().open(file) {
+        csvWriter { delimiter = ';' }.open(file) {
+            val header = arrayListOf<String>()
+            val map = list[0].asMap()
+            for (property in map) {
+                header.add(property.key)
+            }
+            writeRow(header)
             for (i in list.indices) {
-                writeRow(Json.encodeToString(list[i]).drop(1).dropLast(1))
+                val data = arrayListOf<String>()
+                val mapp = list[i].asMap()
+                for (value in mapp.values) {
+                    data.add(value.toString())
+                }
+                writeRow(data)
             }
         }
+    }
+
+    inline fun <reified T : Any> T.asMap(): Map<String, Any?> {
+        val props = T::class.memberProperties.associateBy { it.name }
+        return props.keys.associateWith { props[it]?.get(this) }
     }
 
     fun showLog(logFile: File, regex: Regex) {
