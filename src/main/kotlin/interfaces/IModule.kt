@@ -200,9 +200,11 @@ interface IModule {
             indexManager = getIndexManager()!!
         ) { _, bytes ->
             resultCounter++
+            val entry = decode(bytes)
+            entry.initialize()
             resultsListJson.resultsList.add(
                 getIndexManager()!!.encodeToJsonString(
-                    entry = decode(bytes), prettyPrint = prettyPrint
+                    entry = entry, prettyPrint = prettyPrint
                 )
             )
         }

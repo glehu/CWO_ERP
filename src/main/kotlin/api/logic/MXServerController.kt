@@ -69,10 +69,12 @@ class MXServerController {
                             else -> false
                         }
                         return if (appCall.request.queryParameters["format"] == "json") {
+                            val entry = indexManager.decode(
+                                indexManager.getBytes(uID = routePar.toInt())
+                            )
+                            entry.initialize()
                             indexManager.encodeToJsonString(
-                                entry = indexManager.decode(
-                                    indexManager.getBytes(uID = routePar.toInt())
-                                ),
+                                entry = entry,
                                 prettyPrint = true
                             )
                         } else {

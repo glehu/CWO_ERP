@@ -4,6 +4,8 @@ import interfaces.IEntry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import modules.mx.m4GlobalIndex
+import java.io.File
+import java.util.*
 
 @ExperimentalSerializationApi
 @Serializable
@@ -15,6 +17,7 @@ data class M4Item(
     var ean = ""
     var manufacturerCode = ""
     var imagePath = ""
+    var imageBase64String = ""
 
     /**
      * Various product info can be added to the item by providing a json string of its details.
@@ -33,5 +36,8 @@ data class M4Item(
 
     override fun initialize() {
         if (uID == -1) uID = m4GlobalIndex!!.getUID()
+        if (imagePath != "?") {
+            imageBase64String = Base64.getEncoder().encodeToString(File(imagePath).readBytes())
+        }
     }
 }
