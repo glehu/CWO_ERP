@@ -7,6 +7,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import modules.mx.logic.MXLog
+import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalHour
 import modules.mx.usageTracker
 import tornadofx.Controller
 import java.io.InputStream
@@ -92,7 +93,9 @@ class MXAPIDashboard : IModule, Controller() {
             tstamp = tstampRgx.find(it)?.value?.dropLast(1) ?: ""
             val date = tstampDateRgx.find(tstamp)?.value?.drop(5)?.dropLast(1) ?: "?"
             if (date != "?" && date == today) {
-                val hour = "${(tstampTimeRgx.find(tstamp)?.value?.drop(1)?.dropLast(7) ?: "?")}:00"
+                val hour = getLocalHour(
+                    (tstampTimeRgx.find(tstamp)?.value?.drop(1)?.dropLast(7) ?: "?")
+                ) + ":00"
                 //Get Tracking Data
                 trackerData = trackerDataRgx.find(it)?.value?.drop(1)?.dropLast(1) ?: ""
                 //Put Tracking Data in the map
