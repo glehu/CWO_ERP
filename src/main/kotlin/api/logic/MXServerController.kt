@@ -233,15 +233,15 @@ class MXServerController {
                 }
                 order.seller = "<Self>"
                 mutex.withLock {
+                    m3GlobalIndex!!.save(entry = order, userName = userName)
+                }
+                mutex.withLock {
                     log(
                         logType = MXLog.LogType.COM,
                         text = "web shop order #${order.uID} from ${order.buyer}",
                         apiEndpoint = appCall.request.uri,
                         moduleAlt = m3GlobalIndex!!.module
                     )
-                }
-                mutex.withLock {
-                    m3GlobalIndex!!.save(entry = order, userName = userName)
                 }
             }
             val jsonSerializer = Json {
