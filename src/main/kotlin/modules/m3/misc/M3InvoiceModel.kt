@@ -33,10 +33,14 @@ class InvoiceProperty {
     var date: LocalDate by dateProperty
     val textProperty = SimpleStringProperty()
     var text: String by textProperty
-    val priceProperty = SimpleDoubleProperty()
-    var price: Double by priceProperty
-    val paidProperty = SimpleDoubleProperty()
-    var paid: Double by paidProperty
+    val grossTotalProperty = SimpleDoubleProperty()
+    var grossTotal: Double by grossTotalProperty
+    val netTotalProperty = SimpleDoubleProperty()
+    var netTotal: Double by netTotalProperty
+    val paidGrossProperty = SimpleDoubleProperty()
+    var paidGross: Double by paidGrossProperty
+    val paidNetProperty = SimpleDoubleProperty()
+    var paidNet: Double by paidNetProperty
     val itemsProperty = observableListOf<M3InvoicePosition>()
     val priceCategoryProperty = SimpleIntegerProperty(0)
     var priceCategory: Int by priceCategoryProperty
@@ -55,8 +59,10 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     val buyerUID = bind(InvoiceProperty::buyerUIDProperty)
     var date = bind(InvoiceProperty::dateProperty)
     var text = bind(InvoiceProperty::textProperty)
-    var total = bind(InvoiceProperty::priceProperty)
-    var paid = bind(InvoiceProperty::paidProperty)
+    var grossTotal = bind(InvoiceProperty::grossTotalProperty)
+    var netTotal = bind(InvoiceProperty::netTotalProperty)
+    var paidGross = bind(InvoiceProperty::paidGrossProperty)
+    var paidNet = bind(InvoiceProperty::paidNetProperty)
     var items = bind(InvoiceProperty::itemsProperty)
     var priceCategory = bind(InvoiceProperty::priceCategoryProperty)
     var status = bind(InvoiceProperty::statusProperty)
@@ -73,8 +79,10 @@ fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
     invoiceProperty.buyerUID = invoice.buyerUID
     invoiceProperty.date = LocalDate.parse(invoice.date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
     invoiceProperty.text = invoice.text
-    invoiceProperty.price = invoice.grossPrice
-    invoiceProperty.paid = invoice.paid
+    invoiceProperty.grossTotal = invoice.grossTotal
+    invoiceProperty.netTotal = invoice.netTotal
+    invoiceProperty.paidGross = invoice.grossPaid
+    invoiceProperty.paidNet = invoice.netPaid
     for ((_, v) in invoice.items) {
         invoiceProperty.itemsProperty.add(Json.decodeFromString(v))
     }
@@ -94,8 +102,10 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): M3Invoice {
     invoice.buyerUID = invoiceProperty.buyerUID
     invoice.date = invoiceProperty.date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
     invoice.text = invoiceProperty.text
-    invoice.grossPrice = invoiceProperty.price
-    invoice.paid = invoiceProperty.paid
+    invoice.grossTotal = invoiceProperty.grossTotal
+    invoice.netTotal = invoiceProperty.netTotal
+    invoice.grossPaid = invoiceProperty.paidGross
+    invoice.netPaid = invoiceProperty.paidNet
     for (item in invoiceProperty.itemsProperty) {
         invoice.items[invoice.items.size] = Json.encodeToString(item)
     }

@@ -79,7 +79,7 @@ class NewInvoiceMainData : Fragment("Main") {
             field("Text") { textfield(invoice.text).required() }
             field("Paid") {
                 hbox {
-                    textfield(invoice.paid)
+                    textfield(invoice.paidGross)
                     label("EUR") { paddingHorizontal = 20 }
                 }
             }
@@ -142,7 +142,7 @@ class NewInvoiceItemData : Fragment("Items") {
             field("Price Category") { label(invoice.priceCategory) }
             field("Total") {
                 hbox {
-                    textfield(invoice.total) {
+                    textfield(invoice.grossTotal) {
                         prefWidth = 100.0
                         isEditable = false
                     }.required()

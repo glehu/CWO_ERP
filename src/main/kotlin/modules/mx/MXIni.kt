@@ -5,14 +5,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MXIni(
-    @SerialName("encryption key") var token: String,
-    @SerialName("data path") var dataPath: String,
-    @SerialName("max search results") var maxSearchResults: Int,
-    @SerialName("difference from utc in hours") var differenceFromUTC: Int,
-    @SerialName("client") var isClient: Boolean,
-    @SerialName("server ip address") var serverIPAddress: String,
-    @SerialName("EMail Address") var emailUsername: String,
+    @SerialName("Encryption Key") var token: String,
+    @SerialName("Data Path") var dataPath: String,
+    @SerialName("Max Search Results") var maxSearchResults: Int,
+    @SerialName("Difference from UTC in Hours") var differenceFromUTC: Int,
+    @SerialName("Client") var isClient: Boolean,
+    @SerialName("Server IP Address") var serverIPAddress: String,
+    @SerialName("SMTP Username") var emailUsername: String,
     @SerialName("SMTP Password") var emailPassword: String,
     @SerialName("SMTP Host") var emailHost: String,
-    @SerialName("SMTP Port") var emailPort: String
+    @SerialName("SMTP Port") var emailPort: String,
+    @SerialName("Send EMails as") var emailAddress: String
 )

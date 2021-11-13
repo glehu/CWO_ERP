@@ -18,14 +18,14 @@ class M3CLIController {
         var pos = 0
         val categories = M4PriceManager().getCategories()
         val vat = (categories.priceCategories[invoice.priceCategory]?.vatPercent) ?: 0.0
-        invoice.grossPrice = 0.0
-        invoice.netPrice = 0.0
+        invoice.grossTotal = 0.0
+        invoice.netTotal = 0.0
         for (item in invoice.items) {
             itemPosition = Json.decodeFromString(item.value)
             /**
              * Invoice specific calculation
              */
-            invoice.grossPrice += (itemPosition.grossPrice * itemPosition.amount)
+            invoice.grossTotal += (itemPosition.grossPrice * itemPosition.amount)
 
             /**
              * Line specific calculation

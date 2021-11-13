@@ -63,12 +63,12 @@ class M3Controller : IController, Controller() {
         var pos = 0
         val categories = M4PriceManager().getCategories()
         val vat = (categories.priceCategories[invoice.priceCategory]?.vatPercent) ?: 0.0
-        invoice.price = 0.0
+        invoice.grossTotal = 0.0
         for (item in invoice.itemsProperty) {
             /**
              * Invoice specific calculation
              */
-            invoice.price += (item.grossPrice * item.amount)
+            invoice.grossTotal += (item.grossPrice * item.amount)
 
             /**
              * Line specific calculation
@@ -83,12 +83,12 @@ class M3Controller : IController, Controller() {
             var contact: M2Contact
             if (wizard.invoice.item.buyerUID != -1) {
                 contact = M2Controller().get(wizard.invoice.item.buyerUID) as M2Contact
-                contact.moneySent += wizard.invoice.item.paid
+                contact.moneySent += wizard.invoice.item.paidGross
                 M2Controller().save(contact)
             }
             if (wizard.invoice.item.sellerUID != -1) {
                 contact = M2Controller().get(wizard.invoice.item.sellerUID) as M2Contact
-                contact.moneyReceived += wizard.invoice.item.paid
+                contact.moneyReceived += wizard.invoice.item.paidNet
                 M2Controller().save(contact)
             }
             wizard.invoice.item.status = 4
@@ -99,14 +99,14 @@ class M3Controller : IController, Controller() {
 
     suspend fun setPaidInvoice() {
         if (checkInvoice() && checkForSetPaid()) {
-            wizard.invoice.item.paid = wizard.invoice.item.price
+            wizard.invoice.item.paidGross = wizard.invoice.item.grossTotal
             saveEntry()
         }
     }
 
     private fun checkForSetPaid(): Boolean {
         var valid = false
-        if (wizard.invoice.item.paid < wizard.invoice.item.price) {
+        if (wizard.invoice.item.paidGross < wizard.invoice.item.grossTotal) {
             valid = true
         } else {
             MGXUserAlert("Invoice is already paid.").openModal()
@@ -116,11 +116,11 @@ class M3Controller : IController, Controller() {
 
     private fun checkForProcess(): Boolean {
         var valid = false
-        if (wizard.invoice.item.paid == wizard.invoice.item.price) {
+        if (wizard.invoice.item.paidGross == wizard.invoice.item.grossTotal) {
             valid = true
-        } else if (wizard.invoice.item.paid < wizard.invoice.item.price) {
+        } else if (wizard.invoice.item.paidGross < wizard.invoice.item.grossTotal) {
             MGXUserAlert("Paid amount is less than invoice total.").openModal()
-        } else if (wizard.invoice.item.paid > wizard.invoice.item.price) {
+        } else if (wizard.invoice.item.paidGross > wizard.invoice.item.grossTotal) {
             MGXUserAlert("Paid amount is more than invoice total.").openModal()
         }
         return valid

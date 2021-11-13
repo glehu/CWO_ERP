@@ -15,6 +15,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.m2.M2Contact
 import modules.m3.M3Invoice
 import modules.m3.M3InvoicePosition
 import modules.m3.logic.M3CLIController
@@ -30,6 +31,7 @@ import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.set
 
 @ExperimentalSerializationApi
 class MXServerController {
@@ -206,11 +208,27 @@ class MXServerController {
                 order.date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
                 order.text = "Web Order"
                 order.buyer = userName
+                //Check if the customer is an existing contact, if not, create it
+                val contactsMatched = m2GlobalIndex!!.getEntryBytesListJson(
+                    searchText = userName,
+                    ixNr = 1,
+                    exactSearch = false
+                )
+                if (contactsMatched.resultsList.isEmpty()) {
+                    val contact = M2Contact(-1, userName)
+                    contact.moneySent = order.netTotal
+                    order.buyerUID = m2GlobalIndex!!.save(contact)
+                } else {
+                    val contact = m2GlobalIndex!!.decode(contactsMatched.resultsList[0]) as M2Contact
+                    order.buyerUID = contact.uID
+                    contact.moneySent = order.netTotal
+                    m2GlobalIndex!!.save(contact)
+                }
                 order.seller = "<Self>"
                 mutex.withLock {
                     log(
                         logType = MXLog.LogType.COM,
-                        text = "API web shop order submitted",
+                        text = "web shop order #${order.uID} from ${order.buyer}",
                         apiEndpoint = appCall.request.uri,
                         moduleAlt = m3GlobalIndex!!.module
                     )
@@ -228,9 +246,9 @@ class MXServerController {
                 password = iniVal.emailPassword
             ).sendEmail(
                 Email(
-                    from = iniVal.emailUsername,
+                    from = "orochi@batsuzoku.eg",
                     subject = "Web Shop Order #${order.uID}",
-                    body = "Hey, we're confirming your order over ${order.grossPrice} Euro.\n" +
+                    body = "Hey, we're confirming your order over ${order.grossTotal} Euro.\n" +
                             "Order Number: #${order.uID}\n" +
                             "Date: ${order.date}",
                     recipient = order.buyer

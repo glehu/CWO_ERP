@@ -1,4 +1,5 @@
-@file:Suppress("DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
+@file:Suppress(
+    "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
     "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode",
     "DuplicatedCode", "DuplicatedCode", "DuplicatedCode", "DuplicatedCode"
 )
@@ -112,7 +113,9 @@ fun getContactPropertyFromContact(contact: M2Contact): ContactProperty {
     //----------------------------------^
     contactProperty.firstName = contact.firstName
     contactProperty.lastName = contact.lastName
-    contactProperty.birthdate = LocalDate.parse(contact.birthdate, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+    if (contact.birthdate != "??.??.????") {
+        contactProperty.birthdate = LocalDate.parse(contact.birthdate, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+    }
 
     //----------------------------------v
     //--------- Location Data ----------|

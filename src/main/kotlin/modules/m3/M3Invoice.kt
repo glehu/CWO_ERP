@@ -30,9 +30,13 @@ data class M3Invoice(override var uID: Int) : IEntry, IInvoice {
     //------------- What? --------------|
     //----------------------------------^
     var text: String = "?"
-    var grossPrice: Double = 0.0
-    var netPrice: Double = 0.0
-    var paid: Double = 0.0
+    var grossTotal: Double = 0.0
+    var netTotal: Double = 0.0
+    var grossPaid: Double = 0.0
+    var netPaid: Double = 0.0
+
+    var customerNote: String = "?"
+    var internalNote: String = "?"
 
     /**
      * This map contains the items of the invoice.
@@ -52,6 +56,6 @@ data class M3Invoice(override var uID: Int) : IEntry, IInvoice {
 
     override fun initialize() {
         if (uID == -1) uID = m3GlobalIndex!!.getUID()
-        if (grossPrice > 0) isIncome = true
+        if (grossTotal > 0) isIncome = true
     }
 }

@@ -24,6 +24,7 @@ class MGXPreferences : View("Preferences") {
     private val emailPasswordProperty = SimpleStringProperty("?")
     private val emailHostProperty = SimpleStringProperty("?")
     private val emailPortProperty = SimpleStringProperty("?")
+    private val emailAddressProperty = SimpleStringProperty("?")
     private val jsonSerializer = Json {
         prettyPrint = true
     }
@@ -45,7 +46,8 @@ class MGXPreferences : View("Preferences") {
                         emailUsername = emailUsernameProperty.value,
                         emailPassword = emailPasswordProperty.value,
                         emailHost = emailHostProperty.value,
-                        emailPort = emailPortProperty.value
+                        emailPort = emailPortProperty.value,
+                        emailAddress = emailAddressProperty.value
                     )
                 )
             )
@@ -62,6 +64,7 @@ class MGXPreferences : View("Preferences") {
             emailPasswordProperty.value = iniVal.emailPassword
             emailHostProperty.value = iniVal.emailHost
             emailPortProperty.value = iniVal.emailPort
+            emailAddressProperty.value = iniVal.emailAddress
         }
         vbox {
             fieldset {
@@ -90,11 +93,20 @@ class MGXPreferences : View("Preferences") {
                 field("Server IP Address") {
                     textfield(serverIPAddressProperty) { prefWidth = 200.0 }
                 }
-                field("EMail Address") {
+                field("SMTP Username") {
                     textfield(emailUsernameProperty) { prefWidth = 200.0 }
                 }
                 field("SMTP Password") {
                     textfield(emailPasswordProperty) { prefWidth = 200.0 }
+                }
+                field("SMTP Host") {
+                    textfield(emailHostProperty) { prefWidth = 200.0 }
+                }
+                field("SMTP Port") {
+                    textfield(emailPortProperty) { prefWidth = 200.0 }
+                }
+                field("Send EMails as") {
+                    textfield(emailAddressProperty) { prefWidth = 200.0 }
                 }
                 button("Save") {
                     shortcut("Enter")
@@ -111,7 +123,8 @@ class MGXPreferences : View("Preferences") {
                                 emailUsername = emailUsernameProperty.value,
                                 emailPassword = emailPasswordProperty.value,
                                 emailHost = emailHostProperty.value,
-                                emailPort = emailPortProperty.value
+                                emailPort = emailPortProperty.value,
+                                emailAddress = emailAddressProperty.value
                             )
                         )
                     )
