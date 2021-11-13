@@ -18,6 +18,7 @@ data class M2Contact(override var uID: Int, var name: String) : IEntry {
     var firstName: String = "?"
     var lastName: String = "?"
     var birthdate: String = "??.??.????"
+    var email: String = "?"
 
     //----------------------------------v
     //--------- Location Data ----------|

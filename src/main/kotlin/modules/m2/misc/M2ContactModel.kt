@@ -31,6 +31,8 @@ class ContactProperty {
     var lastName: String by lastNameProperty
     val birthdateProperty = SimpleObjectProperty(LocalDate.now())
     var birthdate: LocalDate by birthdateProperty
+    val emailProperty = SimpleStringProperty("?")
+    var email: String by emailProperty
 
     //----------------------------------v
     //--------- Location Data ----------|
@@ -83,6 +85,7 @@ class ContactModel : ItemViewModel<ContactProperty>(ContactProperty()) {
     val firstName = bind(ContactProperty::firstNameProperty)
     val lastName = bind(ContactProperty::lastNameProperty)
     val birthdate = bind(ContactProperty::birthdateProperty)
+    val email = bind(ContactProperty::emailProperty)
     val street = bind(ContactProperty::streetProperty)
     val houseNr = bind(ContactProperty::houseNrProperty)
     val city = bind(ContactProperty::cityProperty)
@@ -116,6 +119,7 @@ fun getContactPropertyFromContact(contact: M2Contact): ContactProperty {
     if (contact.birthdate != "??.??.????") {
         contactProperty.birthdate = LocalDate.parse(contact.birthdate, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
     }
+    contactProperty.email = contact.email
 
     //----------------------------------v
     //--------- Location Data ----------|
@@ -164,6 +168,7 @@ fun getContactFromProperty(contactProperty: ContactProperty): M2Contact {
     contact.firstName = contactProperty.firstName
     contact.lastName = contactProperty.lastName
     contact.birthdate = contactProperty.birthdate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+    contact.email = contactProperty.email
 
     //----------------------------------v
     //--------- Location Data ----------|

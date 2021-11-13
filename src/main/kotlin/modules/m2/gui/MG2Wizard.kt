@@ -34,6 +34,7 @@ class NewContactMainData : Fragment("Main Data") {
                 label(contact.uID)
             }
             field("Name") { textfield(contact.name).required() }
+            field("EMail Address") { textfield(contact.email) }
             field("First Name") { textfield(contact.firstName) }
             field("Last Name") { textfield(contact.lastName) }
             field("Birthdate") { datepicker(contact.birthdate) }

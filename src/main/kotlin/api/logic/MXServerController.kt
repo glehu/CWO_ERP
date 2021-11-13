@@ -214,6 +214,7 @@ class MXServerController {
                 )
                 if (contactsMatched.resultsList.isEmpty() && m3IniVal.autoCreateContacts) {
                     val contact = M2Contact(-1, userName)
+                    contact.email = userName
                     contact.moneySent = order.netTotal
                     mutex.withLock {
                         order.buyerUID = m2GlobalIndex!!.save(contact)
@@ -221,6 +222,7 @@ class MXServerController {
                 } else {
                     val contact = m2GlobalIndex!!.decode(contactsMatched.resultsList[0]) as M2Contact
                     order.buyerUID = contact.uID
+                    if (contact.email.isEmpty() || contact.email == "?") contact.email = userName
                     contact.moneySent = order.netTotal
                     mutex.withLock {
                         m2GlobalIndex!!.save(contact)
