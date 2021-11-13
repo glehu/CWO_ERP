@@ -15,6 +15,7 @@ import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import modules.m2.misc.getContactPropertyFromContact
 import modules.mx.activeUser
+import modules.mx.gui.MGXEMailer
 import modules.mx.m2GlobalIndex
 import tornadofx.Controller
 import tornadofx.Scope
@@ -85,5 +86,9 @@ class M2Controller : IController, Controller() {
         return if (uID != -1) {
             (load(uID) as M2Contact).name
         } else default
+    }
+
+    fun showEMailer() {
+        find<MGXEMailer>().openModal()
     }
 }

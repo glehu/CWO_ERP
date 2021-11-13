@@ -2,6 +2,7 @@ package modules.m2.gui
 
 import interfaces.IOverview
 import io.ktor.util.*
+import javafx.geometry.Orientation
 import javafx.scene.paint.Color
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -48,6 +49,17 @@ class MG2Overview : IOverview, View("M2 Contacts") {
                 isDisable = isClientGlobal
                 action { m2Controller.openDataImport() }
                 tooltip("Import contact data from a .csv file.")
+                prefWidth = rightButtonsWidth
+            }
+            // ##################################################
+            // ################### Actions ######################
+            // ##################################################
+            separator(Orientation.HORIZONTAL) {
+                paddingVertical = 15
+            }
+            button("Send EMail") {
+                action { m2Controller.showEMailer() }
+                tooltip("Opens the EMailer.")
                 prefWidth = rightButtonsWidth
             }
         }
