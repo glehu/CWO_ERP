@@ -1,6 +1,8 @@
 package api.logic
 
 import api.misc.json.*
+import com.sultanofcardio.models.Email
+import com.sultanofcardio.models.MailServer
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -215,6 +217,25 @@ class MXServerController {
                     m3GlobalIndex!!.save(entry = order, userName = userName)
                 }
             }
+            val jsonSerializer = Json {
+                prettyPrint = true
+            }
+            val iniVal = jsonSerializer.decodeFromString<MXIni>(getIniFile().readText())
+            MailServer(
+                host = iniVal.emailHost,
+                port = iniVal.emailPort,
+                username = iniVal.emailUsername,
+                password = iniVal.emailPassword
+            ).sendEmail(
+                Email(
+                    from = iniVal.emailUsername,
+                    subject = "Web Shop Order #${order.uID}",
+                    body = "Hey, we're confirming your order over ${order.grossPrice} Euro.\n" +
+                            "Order Number: #${order.uID}\n" +
+                            "Date: ${order.date}",
+                    recipient = order.buyer
+                )
+            )
             return order.uID
         }
 

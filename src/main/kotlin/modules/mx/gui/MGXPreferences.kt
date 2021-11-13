@@ -20,6 +20,10 @@ class MGXPreferences : View("Preferences") {
     private val differenceFromUTCProperty = SimpleIntegerProperty(0)
     private val isClientProperty = SimpleStringProperty("false")
     private val serverIPAddressProperty = SimpleStringProperty("?")
+    private val emailUsernameProperty = SimpleStringProperty("?")
+    private val emailPasswordProperty = SimpleStringProperty("?")
+    private val emailHostProperty = SimpleStringProperty("?")
+    private val emailPortProperty = SimpleStringProperty("?")
     private val jsonSerializer = Json {
         prettyPrint = true
     }
@@ -37,7 +41,11 @@ class MGXPreferences : View("Preferences") {
                         maxSearchResults = maxSearchResultsProperty.value,
                         differenceFromUTC = differenceFromUTCProperty.value,
                         isClient = isClientProperty.value.toBoolean(),
-                        serverIPAddress = serverIPAddressProperty.value
+                        serverIPAddress = serverIPAddressProperty.value,
+                        emailUsername = emailUsernameProperty.value,
+                        emailPassword = emailPasswordProperty.value,
+                        emailHost = emailHostProperty.value,
+                        emailPort = emailPortProperty.value
                     )
                 )
             )
@@ -50,6 +58,10 @@ class MGXPreferences : View("Preferences") {
             differenceFromUTCProperty.value = iniVal.differenceFromUTC
             isClientProperty.value = iniVal.isClient.toString()
             serverIPAddressProperty.value = iniVal.serverIPAddress
+            emailUsernameProperty.value = iniVal.emailUsername
+            emailPasswordProperty.value = iniVal.emailPassword
+            emailHostProperty.value = iniVal.emailHost
+            emailPortProperty.value = iniVal.emailPort
         }
         vbox {
             fieldset {
@@ -78,6 +90,12 @@ class MGXPreferences : View("Preferences") {
                 field("Server IP Address") {
                     textfield(serverIPAddressProperty) { prefWidth = 200.0 }
                 }
+                field("EMail Address") {
+                    textfield(emailUsernameProperty) { prefWidth = 200.0 }
+                }
+                field("SMTP Password") {
+                    textfield(emailPasswordProperty) { prefWidth = 200.0 }
+                }
                 button("Save") {
                     shortcut("Enter")
                 }.action {
@@ -89,7 +107,11 @@ class MGXPreferences : View("Preferences") {
                                 maxSearchResults = maxSearchResultsProperty.value,
                                 differenceFromUTC = differenceFromUTCProperty.value,
                                 isClient = isClientProperty.value.toBoolean(),
-                                serverIPAddress = serverIPAddressProperty.value
+                                serverIPAddress = serverIPAddressProperty.value,
+                                emailUsername = emailUsernameProperty.value,
+                                emailPassword = emailPasswordProperty.value,
+                                emailHost = emailHostProperty.value,
+                                emailPort = emailPortProperty.value
                             )
                         )
                     )

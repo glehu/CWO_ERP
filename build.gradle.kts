@@ -20,6 +20,8 @@ repositories {
                 "\u0039\u0032\u0037\u0034\u0031\u0064\u0038\u0033\u0064\u0036\u0039\u0061\u0063\u0061\u0066\u0031\u0062\u0034\u0061\u0030\u0034\u0035\u0033\u0061\u0063\u0032\u0036\u0038\u0036\u0062\u0036\u0032\u0035\u0065\u0034\u0061\u0065\u0034\u0032\u0062"
         }
     }
+    maven { url = uri("https://repo.sultanofcardio.com/artifactory/sultanofcardio") }
+    maven { url = uri("https://dl.bintray.com/timrs2998/maven") }
 }
 
 application {
@@ -51,6 +53,7 @@ dependencies {
     implementation("com.google.api-client:google-api-client:1.32.2")
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.32.1")
     implementation("com.google.apis:google-api-services-gmail:v1-rev20210614-1.32.1")
+    implementation("com.sultanofcardio:mailman:3.1.2")
 }
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"

@@ -31,5 +31,15 @@
       <option name="name" value="komputing/KHash GitHub Packages" />
       <option name="url" value="https://maven.pkg.github.com/komputing/KHash" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="komputing/KHash GitHub Packages" />
+      <option name="name" value="komputing/KHash GitHub Packages" />
+      <option name="url" value="https://repo.sultanofcardio.com/artifactory/sultanofcardio" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="https://dl.bintray.com/timrs2998/maven" />
+    </remote-repository>
   </component>
 </project>
