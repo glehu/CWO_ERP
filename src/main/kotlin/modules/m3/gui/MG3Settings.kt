@@ -10,7 +10,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.M3Ini
 import modules.m3.logic.M3CLIController
-import modules.mx.getIniFile
 import modules.mx.m3GlobalIndex
 import modules.mx.rightButtonsWidth
 import tornadofx.*
@@ -64,7 +63,7 @@ class MG3Settings : IModule, Fragment("M3 Settings") {
                 prefWidth = rightButtonsWidth
                 shortcut("Enter")
             }.action {
-                getIniFile().writeText(
+                getSettingsFile().writeText(
                     Json.encodeToString(
                         M3Ini(
                             autoCreateContacts = autoCreateContacts.value,

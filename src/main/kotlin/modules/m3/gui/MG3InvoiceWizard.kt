@@ -42,8 +42,16 @@ class NewInvoiceMainData : Fragment("Main") {
         fieldset {
             field("UID") { label(invoice.uID) }
             field("Status") { label(invoice.status) }
-            field("Finished") { label(invoice.finished) }
-            field("EMail Confirmation Sent") { label(invoice.emailConfirmationSent) }
+            field("Finished") {
+                label(invoice.finished) {
+                    tooltip("True, if the invoice got processed, applying transactions to the participants.")
+                }
+            }
+            field("Notified") {
+                label(invoice.emailConfirmationSent) {
+                    tooltip("True, if the customer got notified by EMail.")
+                }
+            }
             field("Seller") {
                 textfield(invoice.seller) {
                     contextmenu {
