@@ -39,10 +39,9 @@ class MG3Overview : IOverview, View("M3 Invoices") {
                 tooltip("Display a chart to show the distribution of genres.")
                 prefWidth = rightButtonsWidth
             }
-            button("Rebuild indices") {
-                //TODO: Not yet implemented
-                isDisable = true
-                tooltip("Rebuilds all indices in case of faulty indices.")
+            button("Settings") {
+                action { runBlocking { m3Controller.showSettings() } }
+                tooltip("Opens the settings screen.")
                 prefWidth = rightButtonsWidth
             }
             button("Data Import") {

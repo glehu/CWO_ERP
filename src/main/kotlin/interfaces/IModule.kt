@@ -15,9 +15,11 @@ import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.json.Json
 import modules.mx.activeUser
+import modules.mx.getModulePath
 import modules.mx.isClientGlobal
 import modules.mx.logic.MXLog
 import modules.mx.protoBufGlobal
+import java.io.File
 import java.io.RandomAccessFile
 
 @ExperimentalSerializationApi
@@ -57,8 +59,6 @@ interface IModule {
                 byteSize = index.byteSize
             }
             entry.initialize()
-            val posDBX: Long
-            val byteSizeX: Int
             log(
                 logType = MXLog.LogType.SYS,
                 text = "SAVE START uID ${entry.uID}",
@@ -71,8 +71,8 @@ interface IModule {
                 module = indexManager.module,
                 raf = rafLocal
             )
-            posDBX = posDBXt
-            byteSizeX = byteSizeXt
+            val posDBX: Long = posDBXt
+            val byteSizeX: Int = byteSizeXt
             log(
                 logType = MXLog.LogType.SYS,
                 text = "SAVE END uID ${entry.uID}",
@@ -293,5 +293,26 @@ interface IModule {
      */
     fun json(prettyPrint: Boolean): Json {
         return Json { this.prettyPrint = prettyPrint }
+    }
+
+    /**
+     * @return the settings file of a provided module
+     */
+    fun getSettingsFile(check: Boolean = true): File {
+        if (check) checkSettingsFile()
+        return File("${getModulePath(module)}\\$module.ini")
+    }
+
+    private fun checkSettingsFile(): Boolean {
+        var ok = false
+        val settingsPath = File(getModulePath(module))
+        if (!settingsPath.isDirectory) settingsPath.mkdirs()
+        val settingsFile = getSettingsFile(false)
+        if (!settingsFile.isFile) {
+            ok = false
+            settingsFile.createNewFile()
+            if (settingsFile.isFile) ok = true
+        }
+        return ok
     }
 }
