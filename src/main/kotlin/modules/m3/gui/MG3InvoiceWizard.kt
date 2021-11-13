@@ -181,6 +181,7 @@ class NewInvoiceItemData : Fragment("Items") {
                 button("Remove item") {
                     action {
                         invoice.items.value.remove(table.selectedItem)
+                        m3Controller.calculate(invoice.item)
                     }
                     tooltip("Removes the selected item from the invoice")
                     style { unsafe("-fx-base", Color.DARKRED) }
