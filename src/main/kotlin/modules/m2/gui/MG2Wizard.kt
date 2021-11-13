@@ -34,6 +34,7 @@ class NewContactMainData : Fragment("Main Data") {
                 label(contact.uID)
             }
             field("Name") { textfield(contact.name).required() }
+            field("Salutation") { textfield(contact.salutation) }
             field("EMail Address") { textfield(contact.email) }
             field("First Name") { textfield(contact.firstName) }
             field("Last Name") { textfield(contact.lastName) }

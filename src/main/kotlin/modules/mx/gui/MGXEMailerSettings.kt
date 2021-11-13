@@ -32,8 +32,8 @@ class MGXEMailerSettings : IModule, Fragment("EMailer Settings") {
 
     override val root = borderpane {
         prefWidth = 800.0
-        prefHeight = 500.0
-        center = tabpane {
+        prefHeight = 400.0
+        left = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             tab("Default Texts") {
                 form {
@@ -46,9 +46,9 @@ class MGXEMailerSettings : IModule, Fragment("EMailer Settings") {
             }
         }
         bottom = hbox {
-            button("Save (Enter)") {
+            button("Save (CTRL+S)") {
                 prefWidth = rightButtonsWidth
-                shortcut("Enter")
+                shortcut("CTRL+S")
             }.action {
                 getSettingsFile(subSetting = "MGXEMailer").writeText(
                     Json.encodeToString(

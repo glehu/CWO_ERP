@@ -25,6 +25,8 @@ class ContactProperty {
     //----------------------------------v
     //--------- Personal Data ----------|
     //----------------------------------^
+    val salutationProperty = SimpleStringProperty("?")
+    var salutation: String by salutationProperty
     val firstNameProperty = SimpleStringProperty("?")
     var firstName: String by firstNameProperty
     val lastNameProperty = SimpleStringProperty("?")
@@ -82,6 +84,7 @@ class ContactProperty {
 class ContactModel : ItemViewModel<ContactProperty>(ContactProperty()) {
     val uID = bind(ContactProperty::uIDProperty)
     val name = bind(ContactProperty::nameProperty)
+    val salutation = bind(ContactProperty::salutationProperty)
     val firstName = bind(ContactProperty::firstNameProperty)
     val lastName = bind(ContactProperty::lastNameProperty)
     val birthdate = bind(ContactProperty::birthdateProperty)
@@ -114,6 +117,7 @@ fun getContactPropertyFromContact(contact: M2Contact): ContactProperty {
     //----------------------------------v
     //--------- Personal Data ----------|
     //----------------------------------^
+    contactProperty.salutation = contact.salutation
     contactProperty.firstName = contact.firstName
     contactProperty.lastName = contact.lastName
     if (contact.birthdate != "??.??.????") {
@@ -165,6 +169,7 @@ fun getContactFromProperty(contactProperty: ContactProperty): M2Contact {
     //----------------------------------v
     //--------- Personal Data ----------|
     //----------------------------------^
+    contact.salutation = contactProperty.salutation
     contact.firstName = contactProperty.firstName
     contact.lastName = contactProperty.lastName
     contact.birthdate = contactProperty.birthdate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
