@@ -98,6 +98,10 @@ class M2Controller : IController, Controller() {
             if (wizard.contact.salutation.value.isNotEmpty() && wizard.contact.salutation.value != "?") {
                 wizard.contact.salutation.value
             } else ""
+        val contact = if (wizard.contact.uID.value != -1) {
+            load(wizard.contact.uID.value) as M2Contact
+        } else null
+        if (contact != null) mailer.contact = contact
         mailer.openModal()
     }
 }

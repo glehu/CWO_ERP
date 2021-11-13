@@ -89,12 +89,6 @@ class ContactProperty {
     //----------------------------------^
     val spotifyIDProperty = SimpleStringProperty("?")
     var spotifyID: String by spotifyIDProperty
-
-    init {
-        if (statisticsProperty.isEmpty()) {
-            statisticsProperty.add(Statistic("EMails Sent", "0", 0.0F, true))
-        }
-    }
 }
 
 class ContactModel : ItemViewModel<ContactProperty>(ContactProperty()) {

@@ -35,12 +35,6 @@ class M4ItemProperty {
     var productInfoJson: String by productInfoJsonProperty
     var statisticsProperty = observableListOf<Statistic>()
     var priceCategoriesProperty = M4PriceManager().getCategories(M4PriceManager().getCategories())
-
-    init {
-        if (statisticsProperty.isEmpty()) {
-            statisticsProperty.add(Statistic("Sold", "", 0.0F, true))
-        }
-    }
 }
 
 @InternalAPI
