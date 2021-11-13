@@ -6,6 +6,8 @@ import interfaces.IModule
 import io.ktor.util.*
 import javafx.collections.ObservableList
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.*
 import tornadofx.observableListOf
@@ -58,9 +60,19 @@ class MXCLI : IModule {
                 "start" -> cliStart(inputArgs)
                 "load" -> cliLoad(inputArgs)
                 "show" -> cliShow(inputArgs)
+                "qs" -> cliQuickStart()
             }
         }
         cliExit()
+    }
+
+    private fun cliQuickStart() {
+        runBlocking {
+            launch {
+                loadIndex()
+            }
+        }
+        server = MXServer()
     }
 
     private fun cliShow(args: List<String>) {
@@ -183,6 +195,8 @@ class MXCLI : IModule {
                 "\tdbstats -> shows database stats\n" +
                 "\tusers {flag} -> shows a list of users\n" +
                 "\t\t-active -> shows all active users"
+        val qs =
+            "qs -> quick start. loads the indices and starts the server."
         //****************************************************
         val helpText = when (args[1]) {
             "help" -> help
@@ -196,7 +210,8 @@ class MXCLI : IModule {
                         "\n$chuser" +
                         "\n$start" +
                         "\n$load" +
-                        "\n$show"
+                        "\n$show" +
+                        "\n$qs"
             }
         }
         println(helpText)

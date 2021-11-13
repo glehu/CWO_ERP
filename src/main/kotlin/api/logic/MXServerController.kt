@@ -203,6 +203,7 @@ class MXServerController {
                         order.items[i] = Json.encodeToString(itemPosition)
                     }
                 }
+                order.customerNote = body.customerNote
                 /**
                  * Finalize the order and save it
                  */

@@ -59,7 +59,8 @@ data class UPPriceCategoryJson(
 
 @Serializable
 data class WebshopOrder(
-    val itemUIDs: Array<Int>
+    val itemUIDs: Array<Int>,
+    val customerNote: String = ""
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
