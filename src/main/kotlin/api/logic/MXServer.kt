@@ -1,6 +1,7 @@
 package api.logic
 
 import api.gui.GSpotify
+import api.misc.json.EMailJson
 import api.misc.json.EntryJson
 import api.misc.json.SpotifyAuthCallbackJson
 import api.misc.json.UPPriceCategoryJson
@@ -153,6 +154,7 @@ class MXServer : IModule, Controller() {
                     setEntryLock(
                         m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
                     )
+                    sendEMail()
 
                     /**
                      * M4 Endpoints (Item)
@@ -285,6 +287,14 @@ class MXServer : IModule, Controller() {
     private fun Route.getItemImage() {
         get("m4/getimage/{itemUID}") {
             call.respond(MXServerController.getItemImage())
+        }
+    }
+
+    private fun Route.sendEMail() {
+        post("sendemail") {
+            val body = call.receive<EMailJson>()
+            sendEMail(body.subject, body.body, body.recipient)
+            call.respond(true)
         }
     }
 

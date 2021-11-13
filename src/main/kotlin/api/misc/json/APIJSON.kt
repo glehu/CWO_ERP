@@ -109,3 +109,10 @@ data class UsageTrackerData(
     val module: String,
     val action: String
 )
+
+@Serializable
+data class EMailJson(
+    val subject: String,
+    val body: String,
+    val recipient: String
+)

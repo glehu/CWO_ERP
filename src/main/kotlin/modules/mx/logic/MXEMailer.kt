@@ -34,7 +34,7 @@ class MXEMailer : IModule {
         log(MXLog.LogType.SYS, "EMail Server ${iniVal.emailUsername} created.")
     }
 
-    fun sendEMail(
+    fun sendEMailOverMailServer(
         subject: String,
         body: String,
         recipient: String

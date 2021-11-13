@@ -1,6 +1,7 @@
 package interfaces
 
 import api.logic.getCWOClient
+import api.misc.json.EMailJson
 import api.misc.json.EntryBytesListJson
 import api.misc.json.EntryJson
 import api.misc.json.EntryListJson
@@ -17,6 +18,7 @@ import kotlinx.serialization.json.Json
 import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
+import modules.mx.logic.MXEMailer
 import modules.mx.logic.MXLog
 import modules.mx.protoBufGlobal
 import java.io.File
@@ -314,5 +316,27 @@ interface IModule {
             if (settingsFile.isFile) ok = true
         }
         return ok
+    }
+
+    fun sendEMail(
+        subject: String,
+        body: String,
+        recipient: String
+    ): Boolean {
+        var success = false
+        if (!isClientGlobal) {
+            MXEMailer().sendEMailOverMailServer(subject, body, recipient)
+            success = true
+        } else {
+            runBlocking {
+                launch {
+                    success = getCWOClient().post("${getApiUrl()}sendemail") {
+                        contentType(ContentType.Application.Json)
+                        this.body = EMailJson(subject, body, recipient)
+                    }
+                }
+            }
+        }
+        return success
     }
 }
