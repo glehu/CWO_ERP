@@ -43,6 +43,7 @@ class NewInvoiceMainData : Fragment("Main") {
             field("UID") { label(invoice.uID) }
             field("Status") { label(invoice.status) }
             field("Finished") { label(invoice.finished) }
+            field("EMail Confirmation Sent") { label(invoice.emailConfirmationSent) }
             field("Seller") {
                 textfield(invoice.seller) {
                     contextmenu {

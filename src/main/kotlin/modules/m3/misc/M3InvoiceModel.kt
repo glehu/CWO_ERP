@@ -52,6 +52,8 @@ class InvoiceProperty {
     var customerNote: String by customerNoteProperty
     val internalNoteProperty = SimpleStringProperty("?")
     var internalNote: String by internalNoteProperty
+    val emailConfirmationSentProperty = SimpleBooleanProperty(false)
+    var emailConfirmationSent: Boolean by emailConfirmationSentProperty
 }
 
 @ExperimentalSerializationApi
@@ -73,6 +75,7 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     var finished = bind(InvoiceProperty::finishedProperty)
     var customerNote = bind(InvoiceProperty::customerNoteProperty)
     var internalNote = bind(InvoiceProperty::internalNoteProperty)
+    var emailConfirmationSent = bind(InvoiceProperty::emailConfirmationSentProperty)
 }
 
 @ExperimentalSerializationApi
@@ -97,6 +100,7 @@ fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
     invoiceProperty.finished = invoice.finished
     invoiceProperty.customerNote = invoice.customerNote
     invoiceProperty.internalNote = invoice.internalNote
+    invoiceProperty.emailConfirmationSent = invoice.emailConfirmationSent
     return invoiceProperty
 }
 
@@ -122,5 +126,6 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): M3Invoice {
     invoice.finished = invoiceProperty.finished
     invoice.customerNote = invoiceProperty.customerNote
     invoice.internalNote = invoiceProperty.internalNote
+    invoice.emailConfirmationSent = invoiceProperty.emailConfirmationSent
     return invoice
 }

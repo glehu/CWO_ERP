@@ -153,6 +153,8 @@ class M3Controller : IController, Controller() {
         m3Finder.openModal()
         m3Finder.searchText.text = ""
         m3Finder.searchText.text = "0"
+        m3Finder.table.refresh()
+        m3Finder.table.requestFocus()
     }
 
     fun showSettings() {

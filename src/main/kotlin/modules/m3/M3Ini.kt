@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class M3Ini(
-    var autoCreateContacts: Boolean = true
+    var autoCreateContacts: Boolean = true,
+    var autoSendEMailConfirmation: Boolean = true
 )

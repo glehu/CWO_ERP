@@ -4,6 +4,7 @@ import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -26,10 +27,13 @@ class MG3Settings : IModule, Fragment("M3 Settings") {
     private val iniVal = M3CLIController().getIni()
 
     private val autoCreateContacts = SimpleBooleanProperty(iniVal.autoCreateContacts)
+    private val autoSendEMailConfirmation = SimpleBooleanProperty(iniVal.autoSendEMailConfirmation)
+
     override val root = borderpane {
         prefWidth = 800.0
         prefHeight = 500.0
         center = tabpane {
+            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             tab("Database & Indices") {
                 form {
                     fieldset("Indices") {
@@ -48,6 +52,9 @@ class MG3Settings : IModule, Fragment("M3 Settings") {
                         field("Auto-Create new Contacts") {
                             checkbox(property = autoCreateContacts)
                         }
+                        field("Auto-Send EMail Confirmation") {
+                            checkbox(property = autoSendEMailConfirmation)
+                        }
                     }
                 }
             }
@@ -60,7 +67,8 @@ class MG3Settings : IModule, Fragment("M3 Settings") {
                 getIniFile().writeText(
                     Json.encodeToString(
                         M3Ini(
-                            autoCreateContacts = autoCreateContacts.value
+                            autoCreateContacts = autoCreateContacts.value,
+                            autoSendEMailConfirmation = autoSendEMailConfirmation.value
                         )
                     )
                 )

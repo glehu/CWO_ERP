@@ -51,6 +51,7 @@ data class M3Invoice(override var uID: Int) : IEntry, IInvoice {
 
     var status: Int = 0
     var finished: Boolean = false
+    var emailConfirmationSent: Boolean = false
     var priceCategory: Int = 0
     private var isIncome: Boolean = false
 

@@ -1,8 +1,6 @@
 package api.logic
 
 import api.misc.json.*
-import com.sultanofcardio.models.Email
-import com.sultanofcardio.models.MailServer
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -23,10 +21,7 @@ import modules.m4.M4Item
 import modules.m4.M4PriceCategory
 import modules.m4.logic.M4PriceManager
 import modules.mx.*
-import modules.mx.logic.MXLog
-import modules.mx.logic.MXUserManager
-import modules.mx.logic.encryptAES
-import modules.mx.logic.encryptKeccak
+import modules.mx.logic.*
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -232,6 +227,7 @@ class MXServerController {
                     }
                 }
                 order.seller = "<Self>"
+                if (m3IniVal.autoSendEMailConfirmation) order.emailConfirmationSent = true
                 mutex.withLock {
                     m3GlobalIndex!!.save(entry = order, userName = userName)
                 }
@@ -244,25 +240,15 @@ class MXServerController {
                     )
                 }
             }
-            val jsonSerializer = Json {
-                prettyPrint = true
-            }
-            val iniVal = jsonSerializer.decodeFromString<MXIni>(getIniFile().readText())
-            MailServer(
-                host = iniVal.emailHost,
-                port = iniVal.emailPort,
-                username = iniVal.emailUsername,
-                password = iniVal.emailPassword
-            ).sendEmail(
-                Email(
-                    from = "orochi@batsuzoku.eg",
+            if (m3IniVal.autoSendEMailConfirmation) {
+                MXEMailer().sendEMail(
                     subject = "Web Shop Order #${order.uID}",
                     body = "Hey, we're confirming your order over ${order.grossTotal} Euro.\n" +
                             "Order Number: #${order.uID}\n" +
                             "Date: ${order.date}",
                     recipient = order.buyer
                 )
-            )
+            }
             return order.uID
         }
 
