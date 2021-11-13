@@ -35,7 +35,6 @@ class MXTicker {
                      * #### Server Ticker Actions: ####
                      */
                     find<MGXDatabaseManager>().refreshStats()
-                    //find<MGXUserManager>().refreshUsers()
                 }
                 /**
                  * #### General Ticker Actions: ####
