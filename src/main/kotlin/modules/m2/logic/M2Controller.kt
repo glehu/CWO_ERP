@@ -89,6 +89,15 @@ class M2Controller : IController, Controller() {
     }
 
     fun showEMailer() {
-        find<MGXEMailer>().openModal()
+        val mailer = find<MGXEMailer>()
+        mailer.recipientProperty.value =
+            if (wizard.contact.email.value.isNotEmpty() && wizard.contact.email.value != "?") {
+                wizard.contact.email.value
+            } else ""
+        mailer.salutationProperty.value =
+            if (wizard.contact.salutation.value.isNotEmpty() && wizard.contact.salutation.value != "?") {
+                wizard.contact.salutation.value
+            } else ""
+        mailer.openModal()
     }
 }

@@ -26,9 +26,9 @@ class MGXEMailer : IModule, View("EMailer") {
     private var iniVal = getIni()
 
     private val subjectProperty = SimpleStringProperty()
-    private val salutationProperty = SimpleStringProperty()
+    val salutationProperty = SimpleStringProperty()
     private val bodyProperty = SimpleStringProperty(getDefaultTexts())
-    private val recipientProperty = SimpleStringProperty()
+    val recipientProperty = SimpleStringProperty()
 
     private fun getDefaultTexts(): String {
         iniVal = getIni()
@@ -83,6 +83,7 @@ class MGXEMailer : IModule, View("EMailer") {
                 prefWidth = rightButtonsWidth * 1.5
                 action {
                     subjectProperty.value = ""
+                    salutationProperty.value = ""
                     bodyProperty.value = getDefaultTexts()
                     recipientProperty.value = ""
                     statusProperty.value = "Draft"
