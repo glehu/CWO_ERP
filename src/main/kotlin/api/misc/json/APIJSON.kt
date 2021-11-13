@@ -116,3 +116,14 @@ data class EMailJson(
     val body: String,
     val recipient: String
 )
+
+@Serializable
+data class M3Ini(
+    var autoCreateContacts: Boolean = true,
+    var autoSendEMailConfirmation: Boolean = true
+)
+
+@Serializable
+data class MGXEMailerIni(
+    var defaultFooter: String = "",
+)

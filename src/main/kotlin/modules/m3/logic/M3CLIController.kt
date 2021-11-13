@@ -1,5 +1,6 @@
 package modules.m3.logic
 
+import api.misc.json.M3Ini
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
@@ -7,7 +8,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.m3.M3Ini
 import modules.m3.M3Invoice
 import modules.m3.M3InvoicePosition
 import modules.m4.logic.M4PriceManager

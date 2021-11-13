@@ -4,6 +4,7 @@ import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
 import javafx.beans.property.SimpleStringProperty
+import javafx.geometry.Orientation
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.M2Controller
@@ -68,6 +69,21 @@ class MGXEMailer : IModule, View("EMailer") {
                     statusProperty.value = "Draft"
                 }
             }
+            // ##################################################
+            // ################## Settings ######################
+            // ##################################################
+            separator(Orientation.HORIZONTAL) {
+                paddingVertical = 15
+            }
+            button("Settings") {
+                action { showSettings() }
+                tooltip("Shows the settings.")
+                prefWidth = rightButtonsWidth * 1.5
+            }
         }
+    }
+
+    private fun showSettings() {
+        find<MGXEMailerSettings>().openModal()
     }
 }

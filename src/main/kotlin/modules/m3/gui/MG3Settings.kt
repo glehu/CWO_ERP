@@ -1,5 +1,6 @@
 package modules.m3.gui
 
+import api.misc.json.M3Ini
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
@@ -8,7 +9,6 @@ import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.m3.M3Ini
 import modules.m3.logic.M3CLIController
 import modules.mx.m3GlobalIndex
 import modules.mx.rightButtonsWidth

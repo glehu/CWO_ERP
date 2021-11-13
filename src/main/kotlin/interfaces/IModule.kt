@@ -300,16 +300,19 @@ interface IModule {
     /**
      * @return the settings file of a provided module
      */
-    fun getSettingsFile(check: Boolean = true): File {
-        if (check) checkSettingsFile()
-        return File("${getModulePath(module)}\\$module.ini")
+    fun getSettingsFile(subSetting: String = "", check: Boolean = true): File {
+        if (check) checkSettingsFile(subSetting)
+        val sub = if (subSetting.isNotEmpty()) {
+            "-$subSetting"
+        } else ""
+        return File("${getModulePath(module)}\\$module$sub.ini")
     }
 
-    private fun checkSettingsFile(): Boolean {
+    private fun checkSettingsFile(subSetting: String = ""): Boolean {
         var ok = false
         val settingsPath = File(getModulePath(module))
         if (!settingsPath.isDirectory) settingsPath.mkdirs()
-        val settingsFile = getSettingsFile(false)
+        val settingsFile = getSettingsFile(subSetting = subSetting, check = false)
         if (!settingsFile.isFile) {
             ok = false
             settingsFile.createNewFile()
