@@ -69,7 +69,7 @@ class M2Controller : IController, Controller() {
         find<MG2Import>().openModal()
     }
 
-    fun selectAndReturnContact(): M2Contact {
+    fun selectAndLoadContact(): M2Contact {
         val contact: M2Contact
         val newScope = Scope()
         val dataTransfer = SongPropertyMainDataModel()

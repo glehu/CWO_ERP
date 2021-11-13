@@ -8,7 +8,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.gui.MG4PriceManager
 import modules.mx.gui.MGXDatabaseManager
-import modules.mx.gui.MGXUserManager
 import modules.mx.isClientGlobal
 import tornadofx.find
 
@@ -36,7 +35,7 @@ class MXTicker {
                      * #### Server Ticker Actions: ####
                      */
                     find<MGXDatabaseManager>().refreshStats()
-                    find<MGXUserManager>().refreshUsers()
+                    //find<MGXUserManager>().refreshUsers()
                 }
                 /**
                  * #### General Ticker Actions: ####

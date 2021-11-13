@@ -3,6 +3,7 @@ package modules.m2.gui
 import interfaces.IOverview
 import io.ktor.util.*
 import javafx.geometry.Orientation
+import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -80,12 +81,21 @@ class MG2Overview : IOverview, View("M2 Contacts") {
                         add(NewContactFinancialData::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
-                    fieldset("Profession Data") {
-                        add(NewContactProfessionData::class)
-                        addClass(Stylesheet.fieldsetBorder)
+                    vbox(10) {
+                        fieldset("Profession Data") {
+                            add(NewContactProfessionData::class)
+                            addClass(Stylesheet.fieldsetBorder)
+                        }
+                        fieldset("Misc Data") {
+                            add(NewContactMiscData::class)
+                            addClass(Stylesheet.fieldsetBorder)
+                            style {
+                                vgrow = Priority.ALWAYS
+                            }
+                        }
                     }
-                    fieldset("Misc Data") {
-                        add(NewContactMiscData::class)
+                    fieldset("Statistics Data") {
+                        add(NewContactStatistics::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
                 }

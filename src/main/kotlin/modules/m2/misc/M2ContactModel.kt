@@ -8,9 +8,14 @@ package modules.m2.misc
 
 import javafx.beans.property.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import modules.m2.M2Contact
+import modules.m4.Statistic
 import tornadofx.ItemViewModel
 import tornadofx.getValue
+import tornadofx.observableListOf
 import tornadofx.setValue
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -75,10 +80,21 @@ class ContactProperty {
     var isFan by isFanProperty
 
     //----------------------------------v
+    //-------- Statistics Data ---------|
+    //----------------------------------^
+    var statisticsProperty = observableListOf<Statistic>()
+
+    //----------------------------------v
     //------------ API Data ------------|
     //----------------------------------^
     val spotifyIDProperty = SimpleStringProperty("?")
     var spotifyID: String by spotifyIDProperty
+
+    init {
+        if (statisticsProperty.isEmpty()) {
+            statisticsProperty.add(Statistic("EMails Sent", "0", 0.0F, true))
+        }
+    }
 }
 
 class ContactModel : ItemViewModel<ContactProperty>(ContactProperty()) {
@@ -99,6 +115,7 @@ class ContactModel : ItemViewModel<ContactProperty>(ContactProperty()) {
     val isInstrumentalist = bind(ContactProperty::isInstrumentalistProperty)
     val isManager = bind(ContactProperty::isManagerProperty)
     val isFan = bind(ContactProperty::isFanProperty)
+    val statistics = bind(ContactProperty::statisticsProperty)
     val spotifyID = bind(ContactProperty::spotifyIDProperty)
     val priceCategory = bind(ContactProperty::priceCategoryProperty)
     val moneySent = bind(ContactProperty::moneySentProperty)
@@ -150,6 +167,14 @@ fun getContactPropertyFromContact(contact: M2Contact): ContactProperty {
     contactProperty.isManager = contact.isManager
     contactProperty.isFan = contact.isFan
 
+    /**
+     * Fill the item's statistics
+     */
+    for ((_, statisticString) in contact.statistics) {
+        val statistic = Json.decodeFromString<Statistic>(statisticString)
+        contactProperty.statisticsProperty.add(statistic)
+    }
+
     //----------------------------------v
     //------------ API Data ------------|
     //----------------------------------^
@@ -199,6 +224,10 @@ fun getContactFromProperty(contactProperty: ContactProperty): M2Contact {
     contact.isInstrumentalist = contactProperty.isInstrumentalist
     contact.isManager = contactProperty.isManager
     contact.isFan = contactProperty.isFan
+
+    for (statistic in contactProperty.statisticsProperty) {
+        contact.statistics[statistic.description] = Json.encodeToString(statistic)
+    }
 
     //----------------------------------v
     //------------ API Data ------------|

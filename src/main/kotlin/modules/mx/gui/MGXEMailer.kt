@@ -7,10 +7,15 @@ import io.ktor.util.*
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Orientation
 import javafx.scene.paint.Color
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.m2.M2Contact
 import modules.m2.logic.M2Controller
+import modules.m4.Statistic
+import modules.mx.m2GlobalIndex
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
@@ -29,6 +34,7 @@ class MGXEMailer : IModule, View("EMailer") {
     val salutationProperty = SimpleStringProperty()
     private val bodyProperty = SimpleStringProperty(getDefaultTexts())
     val recipientProperty = SimpleStringProperty()
+    var contact: M2Contact? = null
 
     private fun getDefaultTexts(): String {
         iniVal = getIni()
@@ -55,9 +61,9 @@ class MGXEMailer : IModule, View("EMailer") {
                     textfield(recipientProperty)
                     button("Load Contact") {
                         action {
-                            val contact = m2controller.selectAndReturnContact()
-                            recipientProperty.value = contact.email
-                            salutationProperty.value = contact.salutation
+                            contact = m2controller.selectAndLoadContact()
+                            recipientProperty.value = contact!!.email
+                            salutationProperty.value = contact!!.salutation
                         }
                     }
                 }
@@ -75,6 +81,17 @@ class MGXEMailer : IModule, View("EMailer") {
                             recipient = recipientProperty.value
                         )) {
                         statusProperty.value = "Sent"
+                        //Add Contact Statistic
+                        if (contact != null) {
+                            if (contact!!.statistics.containsKey("EMails Sent")) {
+                                val statistic = Json.decodeFromString<Statistic>(contact!!.statistics["EMails Sent"]!!)
+                                statistic.sValue = (++statistic.nValue).toString()
+                                contact!!.statistics["EMail Sent"] = Json.encodeToString(statistic)
+                                runBlocking {
+                                    m2GlobalIndex!!.save(contact as M2Contact)
+                                }
+                            }
+                        }
                     } else statusProperty.value = "Draft (Error while sending!)"
                 }
             }

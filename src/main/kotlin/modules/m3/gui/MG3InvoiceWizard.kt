@@ -56,7 +56,7 @@ class NewInvoiceMainData : Fragment("Main") {
                 textfield(invoice.seller) {
                     contextmenu {
                         item("Load contact").action {
-                            val contact = m2controller.selectAndReturnContact()
+                            val contact = m2controller.selectAndLoadContact()
                             invoice.sellerUID.value = contact.uID
                             invoice.seller.value = contact.name
                         }
@@ -72,7 +72,7 @@ class NewInvoiceMainData : Fragment("Main") {
                 textfield(invoice.buyer) {
                     contextmenu {
                         item("Load contact").action {
-                            val contact = m2controller.selectAndReturnContact()
+                            val contact = m2controller.selectAndLoadContact()
                             invoice.buyerUID.value = contact.uID
                             invoice.buyer.value = contact.name
                             invoice.priceCategory.value = contact.priceCategory

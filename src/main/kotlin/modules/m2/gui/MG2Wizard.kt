@@ -1,10 +1,12 @@
 package modules.m2.gui
 
 import io.ktor.util.*
+import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.misc.ContactModel
 import modules.m3.gui.MG3InvoiceFinder
 import modules.m3.logic.M3Controller
+import modules.m4.Statistic
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -19,6 +21,7 @@ class ContactConfiguratorWizard : Wizard("Add new contact") {
         add(NewContactFinancialData::class)
         add(NewContactProfessionData::class)
         add(NewContactMiscData::class)
+        add(NewContactStatistics::class)
     }
 }
 
@@ -135,6 +138,59 @@ class NewContactMiscData : Fragment("Misc Data") {
     override val root = form {
         fieldset {
             field("Spotify ID") { textfield(contact.spotifyID) }
+        }
+    }
+
+    override fun onSave() {
+        isComplete = contact.commit()
+    }
+}
+
+@ExperimentalSerializationApi
+@InternalAPI
+class NewContactStatistics : Fragment("Statistics") {
+    private val contact: ContactModel by inject()
+    private var table = tableview(contact.statistics) {
+        isEditable = true
+        column("Description", Statistic::description) {
+            prefWidth = 250.0
+            makeEditable()
+        }
+        column("Value", Statistic::sValue) {
+            prefWidth = 250.0
+            makeEditable()
+        }
+        enableCellEditing()
+        regainFocusAfterEdit()
+        isFocusTraversable = false
+    }
+
+    //----------------------------------v
+    //----------- Main Data ------------|
+    //----------------------------------^
+    override val root = form {
+        fieldset {
+            contact.uID.addListener { _, _, _ ->
+                table.refresh()
+            }
+            add(table)
+            hbox {
+                button("Add Statistic") {
+                    action {
+                        contact.statistics.value.add(
+                            Statistic("<Description>", "", 0.0F, false)
+                        )
+                        table.refresh()
+                    }
+                }
+                button("Remove Statistic") {
+                    action {
+                        contact.statistics.value.remove(table.selectedItem)
+                    }
+                    tooltip("Removes the selected statistic from the item.")
+                    style { unsafe("-fx-base", Color.DARKRED) }
+                }
+            }
         }
     }
 

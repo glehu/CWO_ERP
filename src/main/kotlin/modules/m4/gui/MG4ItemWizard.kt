@@ -6,7 +6,7 @@ import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.M4PriceCategory
-import modules.m4.M4Statistic
+import modules.m4.Statistic
 import modules.m4.misc.M4ItemModel
 import modules.mx.gui.MGXImageViewer
 import modules.mx.gui.userAlerts.MGXUserAlert
@@ -83,11 +83,11 @@ class NewM4ItemStatistics : Fragment("Statistics") {
     private val item: M4ItemModel by inject()
     private var table = tableview(item.statistics) {
         isEditable = true
-        column("Description", M4Statistic::description) {
+        column("Description", Statistic::description) {
             prefWidth = 250.0
             makeEditable()
         }
-        column("Value", M4Statistic::sValue) {
+        column("Value", Statistic::sValue) {
             prefWidth = 250.0
             makeEditable()
         }
@@ -109,7 +109,7 @@ class NewM4ItemStatistics : Fragment("Statistics") {
                 button("Add Statistic") {
                     action {
                         item.statistics.value.add(
-                            M4Statistic("<Description>", "", 0.0F, false)
+                            Statistic("<Description>", "", 0.0F, false)
                         )
                         table.refresh()
                     }

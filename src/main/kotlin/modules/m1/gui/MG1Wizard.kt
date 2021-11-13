@@ -69,7 +69,7 @@ class SongMainData : Fragment("Main") {
                                 }
                             }
                             item("Load contact").action {
-                                val contact = m2controller.selectAndReturnContact()
+                                val contact = m2controller.selectAndLoadContact()
                                 songMainData.vocalistUID.value = contact.uID
                                 songMainData.vocalist.value = contact.name
                             }
@@ -87,7 +87,7 @@ class SongMainData : Fragment("Main") {
                                 )
                             }
                             item("Load contact").action {
-                                val contact = m2controller.selectAndReturnContact()
+                                val contact = m2controller.selectAndLoadContact()
                                 songMainData.producerUID.value = contact.uID
                                 songMainData.producer.value = contact.name
                             }
@@ -110,7 +110,7 @@ class SongMainData : Fragment("Main") {
                                     )
                             }
                             item("Load contact").action {
-                                val contact = m2controller.selectAndReturnContact()
+                                val contact = m2controller.selectAndLoadContact()
                                 songMainData.mixingUID.value = contact.uID
                                 songMainData.mixing.value = contact.name
                             }
@@ -133,7 +133,7 @@ class SongMainData : Fragment("Main") {
                                     )
                             }
                             item("Load contact").action {
-                                val contact = m2controller.selectAndReturnContact()
+                                val contact = m2controller.selectAndLoadContact()
                                 songMainData.masteringUID.value = contact.uID
                                 songMainData.mastering.value = contact.name
                             }
@@ -364,7 +364,7 @@ class SongCollaborationData : Fragment("Collaboration") {
                                         )
                                 }
                                 item("Load contact").action {
-                                    val contact = m2controller.selectAndReturnContact()
+                                    val contact = m2controller.selectAndLoadContact()
                                     songCollaborationData.coVocalist1UID.value = contact.uID
                                     songCollaborationData.coVocalist1.value = contact.name
                                 }
@@ -388,7 +388,7 @@ class SongCollaborationData : Fragment("Collaboration") {
                                         )
                                 }
                                 item("Load contact").action {
-                                    val contact = m2controller.selectAndReturnContact()
+                                    val contact = m2controller.selectAndLoadContact()
                                     songCollaborationData.coVocalist2UID.value = contact.uID
                                     songCollaborationData.coVocalist2.value = contact.name
                                 }
@@ -414,7 +414,7 @@ class SongCollaborationData : Fragment("Collaboration") {
                                         )
                                 }
                                 item("Load contact").action {
-                                    val contact = m2controller.selectAndReturnContact()
+                                    val contact = m2controller.selectAndLoadContact()
                                     songCollaborationData.coProducer1UID.value = contact.uID
                                     songCollaborationData.coProducer1.value = contact.name
                                 }
@@ -438,7 +438,7 @@ class SongCollaborationData : Fragment("Collaboration") {
                                         )
                                 }
                                 item("Load contact").action {
-                                    val contact = m2controller.selectAndReturnContact()
+                                    val contact = m2controller.selectAndLoadContact()
                                     songCollaborationData.coProducer2UID.value = contact.uID
                                     songCollaborationData.coProducer2.value = contact.name
                                 }

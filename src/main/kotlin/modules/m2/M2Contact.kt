@@ -47,6 +47,11 @@ data class M2Contact(override var uID: Int, var name: String) : IEntry {
     var isFan: Boolean = false
 
     //----------------------------------v
+    //-------- Statistics Data ---------|
+    //----------------------------------^
+    var statistics: MutableMap<String, String> = mutableMapOf()
+
+    //----------------------------------v
     //------------ API Data ------------|
     //----------------------------------^
     var spotifyID: String = "?"
