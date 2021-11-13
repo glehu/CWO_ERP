@@ -210,6 +210,7 @@ class NewInvoiceNotes : Fragment("Notes") {
             field("Customer Note") {
                 textarea(invoice.customerNote) {
                     prefHeight = 100.0
+                    isEditable = false
                 }
             }
             field("Internal Note") {
