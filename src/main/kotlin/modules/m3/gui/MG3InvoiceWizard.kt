@@ -24,6 +24,7 @@ class InvoiceConfiguratorWizard : Wizard("Add new invoice") {
         enableStepLinks = true
         add(NewInvoiceMainData::class)
         add(NewInvoiceItemData::class)
+        add(NewInvoiceNotes::class)
     }
 }
 
@@ -185,6 +186,35 @@ class NewInvoiceItemData : Fragment("Items") {
                     }
                     tooltip("Removes the selected item from the invoice")
                     style { unsafe("-fx-base", Color.DARKRED) }
+                }
+            }
+        }
+    }
+
+    override fun onSave() {
+        isComplete = invoice.commit()
+    }
+}
+
+@InternalAPI
+@ExperimentalSerializationApi
+class NewInvoiceNotes : Fragment("Notes") {
+    private val invoice: InvoiceModel by inject()
+
+    //----------------------------------v
+    //----------- Main Data ------------|
+    //----------------------------------^
+    override val root = form {
+        prefWidth = 400.0
+        fieldset {
+            field("Customer Note") {
+                textarea(invoice.customerNote) {
+                    prefHeight = 100.0
+                }
+            }
+            field("Internal Note") {
+                textarea(invoice.internalNote) {
+                    prefHeight = 100.0
                 }
             }
         }

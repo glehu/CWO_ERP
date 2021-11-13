@@ -48,6 +48,10 @@ class InvoiceProperty {
     var status: Int by statusProperty
     val finishedProperty = SimpleBooleanProperty(false)
     var finished: Boolean by finishedProperty
+    val customerNoteProperty = SimpleStringProperty("?")
+    var customerNote: String by customerNoteProperty
+    val internalNoteProperty = SimpleStringProperty("?")
+    var internalNote: String by internalNoteProperty
 }
 
 @ExperimentalSerializationApi
@@ -67,6 +71,8 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     var priceCategory = bind(InvoiceProperty::priceCategoryProperty)
     var status = bind(InvoiceProperty::statusProperty)
     var finished = bind(InvoiceProperty::finishedProperty)
+    var customerNote = bind(InvoiceProperty::customerNoteProperty)
+    var internalNote = bind(InvoiceProperty::internalNoteProperty)
 }
 
 @ExperimentalSerializationApi
@@ -89,6 +95,8 @@ fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
     invoiceProperty.priceCategory = invoice.priceCategory
     invoiceProperty.status = invoice.status
     invoiceProperty.finished = invoice.finished
+    invoiceProperty.customerNote = invoice.customerNote
+    invoiceProperty.internalNote = invoice.internalNote
     return invoiceProperty
 }
 
@@ -112,5 +120,7 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): M3Invoice {
     invoice.priceCategory = invoiceProperty.priceCategory
     invoice.status = invoiceProperty.status
     invoice.finished = invoiceProperty.finished
+    invoice.customerNote = invoiceProperty.customerNote
+    invoice.internalNote = invoiceProperty.internalNote
     return invoice
 }

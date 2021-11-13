@@ -99,6 +99,11 @@ class MG3Overview : IOverview, View("M3 Invoices") {
                         hgrow = Priority.ALWAYS
                     }
                 }
+                fieldset {
+                    add(NewInvoiceNotes::class)
+                    addClass(Stylesheet.fieldsetBorder)
+                    hgrow = Priority.ALWAYS
+                }
             }
         }
     }
