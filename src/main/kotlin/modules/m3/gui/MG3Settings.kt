@@ -8,7 +8,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.M3Ini
-import modules.m3.logic.M3Controller
+import modules.m3.logic.M3CLIController
 import modules.mx.getIniFile
 import modules.mx.m3GlobalIndex
 import modules.mx.rightButtonsWidth
@@ -23,7 +23,7 @@ class MG3Settings : IModule, Fragment("M3 Settings") {
         return m3GlobalIndex!!
     }
 
-    private val iniVal = M3Controller().getIni()
+    private val iniVal = M3CLIController().getIni()
 
     private val autoCreateContacts = SimpleBooleanProperty(iniVal.autoCreateContacts)
     override val root = borderpane {

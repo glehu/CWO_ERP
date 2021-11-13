@@ -5,11 +5,8 @@ import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import modules.m2.M2Contact
 import modules.m2.logic.M2Controller
-import modules.m3.M3Ini
 import modules.m3.M3Invoice
 import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
@@ -161,11 +158,5 @@ class M3Controller : IController, Controller() {
     fun showSettings() {
         val settings = find<MG3Settings>()
         settings.openModal()
-    }
-
-    fun getIni(): M3Ini {
-        val iniFile = getSettingsFile()
-        val iniTxt = iniFile.readText()
-        return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else M3Ini()
     }
 }

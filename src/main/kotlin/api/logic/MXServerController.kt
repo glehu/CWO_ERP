@@ -19,7 +19,6 @@ import modules.m2.M2Contact
 import modules.m3.M3Invoice
 import modules.m3.M3InvoicePosition
 import modules.m3.logic.M3CLIController
-import modules.m3.logic.M3Controller
 import modules.m4.M4Item
 import modules.m4.M4PriceCategory
 import modules.m4.logic.M4PriceManager
@@ -179,7 +178,7 @@ class MXServerController {
         }
 
         suspend fun placeWebshopOrder(appCall: ApplicationCall): Int {
-            val m3IniVal = M3Controller().getIni()
+            val m3IniVal = M3CLIController().getIni()
 
             /**
              * The webshop order
