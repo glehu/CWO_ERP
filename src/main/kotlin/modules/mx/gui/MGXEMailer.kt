@@ -82,17 +82,19 @@ class MGXEMailer : IModule, View("EMailer") {
                         )) {
                         statusProperty.value = "Sent"
                         //Add Contact Statistic
-                        if (contact != null) {
-                            val statistic: Statistic = if (contact!!.statistics.containsKey("EMails Sent")) {
-                                Json.decodeFromString(contact!!.statistics["EMails Sent"]!!)
-                            } else {
-                                Statistic("EMails Sent", "0", 0.0F, true)
-                            }
-                            statistic.nValue += 1.0F
-                            statistic.sValue = (statistic.nValue).toString()
-                            contact!!.statistics["EMails Sent"] = Json.encodeToString(statistic)
-                            runBlocking {
-                                m2GlobalIndex!!.save(contact as M2Contact)
+                        if (iniVal.writeStatistics) {
+                            if (contact != null) {
+                                val statistic: Statistic = if (contact!!.statistics.containsKey("EMails Sent")) {
+                                    Json.decodeFromString(contact!!.statistics["EMails Sent"]!!)
+                                } else {
+                                    Statistic("EMails Sent", "0", 0.0F, true)
+                                }
+                                statistic.nValue += 1.0F
+                                statistic.sValue = (statistic.nValue).toString()
+                                contact!!.statistics["EMails Sent"] = Json.encodeToString(statistic)
+                                runBlocking {
+                                    m2GlobalIndex!!.save(contact as M2Contact)
+                                }
                             }
                         }
                     } else statusProperty.value = "Draft (Error while sending!)"

@@ -126,4 +126,5 @@ data class M3Ini(
 @Serializable
 data class MGXEMailerIni(
     var defaultFooter: String = "",
+    var writeStatistics: Boolean = true
 )

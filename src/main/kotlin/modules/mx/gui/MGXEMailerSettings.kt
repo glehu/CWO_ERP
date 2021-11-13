@@ -3,6 +3,7 @@ package modules.mx.gui
 import api.misc.json.MGXEMailerIni
 import interfaces.IIndexManager
 import interfaces.IModule
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -29,6 +30,7 @@ class MGXEMailerSettings : IModule, Fragment("EMailer Settings") {
     }
 
     private val defaultFooterProperty = SimpleStringProperty(iniVal.defaultFooter)
+    private val writeStatistics = SimpleBooleanProperty(iniVal.writeStatistics)
 
     override val root = borderpane {
         prefWidth = 800.0
@@ -44,6 +46,20 @@ class MGXEMailerSettings : IModule, Fragment("EMailer Settings") {
                     }
                 }
             }
+            tab("Automatic Processing") {
+                form {
+                    fieldset("Statistics") {
+                        field("Write Statistics") {
+                            checkbox(property = writeStatistics) {
+                                tooltip(
+                                    "When checked, keeps track of the amount of emails sent to each contact.\n" +
+                                            "Amount of EMails sent will be written into the contacts statistics."
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
         bottom = hbox {
             button("Save (CTRL+S)") {
@@ -54,6 +70,7 @@ class MGXEMailerSettings : IModule, Fragment("EMailer Settings") {
                     Json.encodeToString(
                         MGXEMailerIni(
                             defaultFooter = defaultFooterProperty.value,
+                            writeStatistics = writeStatistics.value
                         )
                     )
                 )
