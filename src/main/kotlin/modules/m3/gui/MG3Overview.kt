@@ -71,7 +71,7 @@ class MG3Overview : IOverview, View("M3 Invoices") {
                 action { runBlocking { m3Controller.setPaidInvoice() } }
                 tooltip("Processes the invoice.")
                 prefWidth = rightButtonsWidth
-                style { unsafe("-fx-base", Color.DARKOLIVEGREEN) }
+                style { unsafe("-fx-base", Color.DARKGREEN) }
             }
             button("Process") {
                 action { runBlocking { m3Controller.processInvoice() } }
