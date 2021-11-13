@@ -220,12 +220,16 @@ class MXServerController {
                 if (contactsMatched.resultsList.isEmpty() && m3IniVal.autoCreateContacts) {
                     val contact = M2Contact(-1, userName)
                     contact.moneySent = order.netTotal
-                    order.buyerUID = m2GlobalIndex!!.save(contact)
+                    mutex.withLock {
+                        order.buyerUID = m2GlobalIndex!!.save(contact)
+                    }
                 } else {
                     val contact = m2GlobalIndex!!.decode(contactsMatched.resultsList[0]) as M2Contact
                     order.buyerUID = contact.uID
                     contact.moneySent = order.netTotal
-                    m2GlobalIndex!!.save(contact)
+                    mutex.withLock {
+                        m2GlobalIndex!!.save(contact)
+                    }
                 }
                 order.seller = "<Self>"
                 mutex.withLock {
@@ -235,6 +239,8 @@ class MXServerController {
                         apiEndpoint = appCall.request.uri,
                         moduleAlt = m3GlobalIndex!!.module
                     )
+                }
+                mutex.withLock {
                     m3GlobalIndex!!.save(entry = order, userName = userName)
                 }
             }
