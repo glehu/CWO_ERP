@@ -351,7 +351,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    success = getCWOClient().post("${getApiUrl()}sendemail") {
+                    success = getCWOClient().post("${getServerUrl()}api/sendemail") {
                         contentType(ContentType.Application.Json)
                         this.body = EMailJson(subject, body, recipient)
                     }
