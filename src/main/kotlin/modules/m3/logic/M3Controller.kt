@@ -92,7 +92,8 @@ class M3Controller : IController, Controller() {
                 contact.moneyReceived += wizard.invoice.item.paidNet
                 M2Controller().save(contact)
             }
-            wizard.invoice.item.status = 4
+            wizard.invoice.item.status = 3
+            wizard.invoice.item.statusText = M3CLIController().getStatusText(wizard.invoice.item.status)
             wizard.invoice.item.finished = true
             saveEntry()
         }
@@ -101,6 +102,8 @@ class M3Controller : IController, Controller() {
     suspend fun setPaidInvoice() {
         if (checkInvoice() && checkForSetPaid()) {
             wizard.invoice.item.paidGross = wizard.invoice.item.grossTotal
+            wizard.invoice.item.status = 2
+            wizard.invoice.item.statusText = M3CLIController().getStatusText(wizard.invoice.item.status)
             saveEntry()
         }
     }

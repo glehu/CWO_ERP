@@ -47,8 +47,11 @@ class M3CLIController : IModule {
     }
 
     fun getIni(): M3Ini {
-        val iniFile = getSettingsFile()
-        val iniTxt = iniFile.readText()
+        val iniTxt = getSettingsFileText()
         return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else M3Ini()
+    }
+
+    fun getStatusText(status: Int): String {
+        return getIni().statusTexts[status] ?: "?"
     }
 }

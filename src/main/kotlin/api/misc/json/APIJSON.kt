@@ -119,9 +119,22 @@ data class EMailJson(
 
 @Serializable
 data class M3Ini(
+    var statusTexts: MutableMap<Int, String> = mutableMapOf(),
+    var autoCommission: Boolean = true,
     var autoCreateContacts: Boolean = true,
     var autoSendEMailConfirmation: Boolean = true
-)
+) {
+    init {
+        if (statusTexts.isEmpty()) {
+            statusTexts = mutableMapOf(
+                0 to "Draft",
+                1 to "Commissioned",
+                2 to "Paid",
+                3 to "Processed"
+            )
+        }
+    }
+}
 
 @Serializable
 data class MGXEMailerIni(

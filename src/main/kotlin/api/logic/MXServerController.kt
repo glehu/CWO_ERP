@@ -206,6 +206,8 @@ class MXServerController {
                 order.date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
                 order.text = "Web Order"
                 order.buyer = userName
+                order.status = if (m3IniVal.autoCommission) 1 else 0
+                order.statusText = M3CLIController().getStatusText(order.status)
                 //Check if the customer is an existing contact, if not, create it
                 val contactsMatched = m2GlobalIndex!!.getEntryBytesListJson(
                     searchText = userName,

@@ -1,5 +1,6 @@
 package modules.m3.misc
 
+import io.ktor.util.*
 import javafx.beans.property.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
@@ -7,6 +8,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.M3Invoice
 import modules.m3.M3InvoicePosition
+import modules.m3.logic.M3CLIController
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.observableListOf
@@ -17,6 +19,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
+@InternalAPI
 @ExperimentalSerializationApi
 class InvoiceProperty {
     val uIDProperty = SimpleIntegerProperty(-1)
@@ -46,6 +49,8 @@ class InvoiceProperty {
     var priceCategory: Int by priceCategoryProperty
     val statusProperty = SimpleIntegerProperty(0)
     var status: Int by statusProperty
+    val statusTextProperty = SimpleStringProperty(M3CLIController().getStatusText(0))
+    var statusText: String by statusTextProperty
     val finishedProperty = SimpleBooleanProperty(false)
     var finished: Boolean by finishedProperty
     val customerNoteProperty = SimpleStringProperty("?")
@@ -56,6 +61,7 @@ class InvoiceProperty {
     var emailConfirmationSent: Boolean by emailConfirmationSentProperty
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     val uID = bind(InvoiceProperty::uIDProperty)
@@ -72,12 +78,14 @@ class InvoiceModel : ItemViewModel<InvoiceProperty>(InvoiceProperty()) {
     var items = bind(InvoiceProperty::itemsProperty)
     var priceCategory = bind(InvoiceProperty::priceCategoryProperty)
     var status = bind(InvoiceProperty::statusProperty)
+    var statusText = bind(InvoiceProperty::statusTextProperty)
     var finished = bind(InvoiceProperty::finishedProperty)
     var customerNote = bind(InvoiceProperty::customerNoteProperty)
     var internalNote = bind(InvoiceProperty::internalNoteProperty)
     var emailConfirmationSent = bind(InvoiceProperty::emailConfirmationSentProperty)
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
     val invoiceProperty = InvoiceProperty()
@@ -97,6 +105,7 @@ fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
     }
     invoiceProperty.priceCategory = invoice.priceCategory
     invoiceProperty.status = invoice.status
+    invoiceProperty.statusText = M3CLIController().getStatusText(invoice.status)
     invoiceProperty.finished = invoice.finished
     invoiceProperty.customerNote = invoice.customerNote
     invoiceProperty.internalNote = invoice.internalNote
@@ -104,6 +113,7 @@ fun getInvoicePropertyFromInvoice(invoice: M3Invoice): InvoiceProperty {
     return invoiceProperty
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): M3Invoice {
     val invoice = M3Invoice(-1)
@@ -123,6 +133,7 @@ fun getInvoiceFromInvoiceProperty(invoiceProperty: InvoiceProperty): M3Invoice {
     }
     invoice.priceCategory = invoiceProperty.priceCategory
     invoice.status = invoiceProperty.status
+    invoice.statusText = M3CLIController().getStatusText(invoiceProperty.status)
     invoice.finished = invoiceProperty.finished
     invoice.customerNote = invoiceProperty.customerNote
     invoice.internalNote = invoiceProperty.internalNote

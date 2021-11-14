@@ -42,6 +42,7 @@ class NewInvoiceMainData : Fragment("Main") {
         fieldset {
             field("UID") { label(invoice.uID) }
             field("Status") { label(invoice.status) }
+            field("Status Text") { label(invoice.statusText) }
             field("Finished") {
                 label(invoice.finished) {
                     tooltip("True, if the invoice got processed, applying transactions to the participants.")

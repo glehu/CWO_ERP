@@ -10,6 +10,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.logic.M3CLIController
+import modules.m4.Statistic
 import modules.mx.m3GlobalIndex
 import modules.mx.rightButtonsWidth
 import tornadofx.*
@@ -25,14 +26,57 @@ class MG3Settings : IModule, Fragment("M3 Settings") {
 
     private val iniVal = M3CLIController().getIni()
 
+    private var statusTexts = observableListOf<Statistic>()
+    private val autoCommission = SimpleBooleanProperty(iniVal.autoCommission)
     private val autoCreateContacts = SimpleBooleanProperty(iniVal.autoCreateContacts)
     private val autoSendEMailConfirmation = SimpleBooleanProperty(iniVal.autoSendEMailConfirmation)
 
     override val root = borderpane {
         prefWidth = 800.0
         prefHeight = 500.0
+        for ((n, s) in iniVal.statusTexts) {
+            val element = Statistic(
+                description = "Mapping",
+                sValue = s,
+                nValue = n.toFloat(),
+                number = false
+            )
+            statusTexts.add(element)
+        }
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+            tab("Status Settings") {
+                form {
+                    fieldset("Status Texts") {
+                        tableview(statusTexts) {
+                            isEditable = true
+                            readonlyColumn("Status", Statistic::nValue)
+                            column("Text", Statistic::sValue) {
+                                makeEditable()
+                            }
+                            enableCellEditing()
+                            isFocusTraversable = false
+                        }
+                    }
+                }
+            }
+            tab("API Settings") {
+                form {
+                    fieldset("Automatic Processing") {
+                        field("Auto-Commission Web Orders") {
+                            checkbox(property = autoCommission) {
+                                tooltip("When checked, puts web orders into status 1.")
+                            }
+                        }
+                        field("Auto-Create new Contacts") {
+                            checkbox(property = autoCreateContacts)
+                        }
+                        field("Auto-Send EMail Confirmation") {
+                            checkbox(property = autoSendEMailConfirmation)
+                        }
+                    }
+                }
+            }
             tab("Database & Indices") {
                 form {
                     fieldset("Indices") {
@@ -45,27 +89,21 @@ class MG3Settings : IModule, Fragment("M3 Settings") {
                     }
                 }
             }
-            tab("API Settings") {
-                form {
-                    fieldset("Automatic Processing") {
-                        field("Auto-Create new Contacts") {
-                            checkbox(property = autoCreateContacts)
-                        }
-                        field("Auto-Send EMail Confirmation") {
-                            checkbox(property = autoSendEMailConfirmation)
-                        }
-                    }
-                }
-            }
         }
         bottom = hbox {
-            button("Save (Enter)") {
+            button("Save (CTRL+S)") {
                 prefWidth = rightButtonsWidth
-                shortcut("Enter")
+                shortcut("CTRL+S")
             }.action {
+                val newMap = mutableMapOf<Int, String>()
+                for (statistic in statusTexts) {
+                    newMap[statistic.nValue.toInt()] = statistic.sValue
+                }
                 getSettingsFile().writeText(
                     Json.encodeToString(
                         M3Ini(
+                            statusTexts = newMap,
+                            autoCommission = autoCommission.value,
                             autoCreateContacts = autoCreateContacts.value,
                             autoSendEMailConfirmation = autoSendEMailConfirmation.value
                         )
