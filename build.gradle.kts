@@ -21,7 +21,6 @@ repositories {
         }
     }
     maven { url = uri("https://repo.sultanofcardio.com/artifactory/sultanofcardio") }
-    maven { url = uri("https://dl.bintray.com/timrs2998/maven") }
 }
 
 application {
