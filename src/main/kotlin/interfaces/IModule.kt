@@ -1,10 +1,7 @@
 package interfaces
 
 import api.logic.getCWOClient
-import api.misc.json.EMailJson
-import api.misc.json.EntryBytesListJson
-import api.misc.json.EntryJson
-import api.misc.json.EntryListJson
+import api.misc.json.*
 import db.CwODB
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -300,12 +297,33 @@ interface IModule {
     /**
      * @return the settings file of a provided module
      */
-    fun getSettingsFile(subSetting: String = "", check: Boolean = true): File {
-        if (check) checkSettingsFile(subSetting)
+    fun getSettingsFileText(
+        moduleShort: String = module,
+        subSetting: String = "",
+        check: Boolean = true
+    ): String {
+        var iniTxt = ""
+        if (!isClientGlobal) {
+            iniTxt = getSettingsFile(subSetting = subSetting).readText()
+        } else {
+            runBlocking {
+                launch {
+                    iniTxt = getCWOClient().post("${getServerUrl()}api/getsettingsfiletext") {
+                        contentType(ContentType.Application.Json)
+                        this.body = SettingsRequestJson(moduleShort, subSetting)
+                    }
+                }
+            }
+        }
+        return iniTxt
+    }
+
+    fun getSettingsFile(moduleShort: String = module, subSetting: String = "", check: Boolean = true): File {
+        if (check) checkSettingsFile(subSetting = subSetting)
         val sub = if (subSetting.isNotEmpty()) {
             "-$subSetting"
         } else ""
-        return File("${getModulePath(module)}\\$module$sub.ini")
+        return File("${getModulePath(moduleShort)}\\$moduleShort$sub.ini")
     }
 
     private fun checkSettingsFile(subSetting: String = ""): Boolean {

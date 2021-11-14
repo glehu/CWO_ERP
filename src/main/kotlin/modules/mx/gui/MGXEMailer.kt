@@ -130,8 +130,7 @@ class MGXEMailer : IModule, View("EMailer") {
     }
 
     private fun getIni(): MGXEMailerIni {
-        val iniFile = getSettingsFile(subSetting = "MGXEMailer")
-        val iniTxt = iniFile.readText()
+        val iniTxt = getSettingsFileText(subSetting = "MGXEMailer")
         return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else MGXEMailerIni()
     }
 

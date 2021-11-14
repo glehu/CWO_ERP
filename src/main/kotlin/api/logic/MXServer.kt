@@ -1,10 +1,7 @@
 package api.logic
 
 import api.gui.GSpotify
-import api.misc.json.EMailJson
-import api.misc.json.EntryJson
-import api.misc.json.SpotifyAuthCallbackJson
-import api.misc.json.UPPriceCategoryJson
+import api.misc.json.*
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -22,6 +19,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import modules.m4.logic.M4PriceManager
 import modules.mx.*
@@ -155,6 +153,7 @@ class MXServer : IModule, Controller() {
                         m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
                     )
                     sendEMail()
+                    getSettingsFileText()
 
                     /**
                      * M4 Endpoints (Item)
@@ -295,6 +294,16 @@ class MXServer : IModule, Controller() {
             val body = call.receive<EMailJson>()
             sendEMail(body.subject, body.body, body.recipient)
             call.respond(true)
+        }
+    }
+
+    private fun Route.getSettingsFileText() {
+        post("getsettingsfiletext") {
+            val body: SettingsRequestJson = Json.decodeFromString(call.receive())
+            call.respond(MXServerController.getSettingsFileText(
+                moduleShort = body.module,
+                subSetting = body.subSetting
+            ))
         }
     }
 

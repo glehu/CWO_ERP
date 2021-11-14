@@ -128,3 +128,9 @@ data class MGXEMailerIni(
     var defaultFooter: String = "",
     var writeStatistics: Boolean = true
 )
+
+@Serializable
+data class SettingsRequestJson(
+    val module: String,
+    val subSetting: String
+)
