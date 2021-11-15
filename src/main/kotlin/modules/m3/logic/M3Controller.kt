@@ -17,6 +17,7 @@ import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.m4.logic.M4PriceManager
 import modules.mx.activeUser
 import modules.mx.gui.userAlerts.MGXUserAlert
+import modules.mx.logic.MXLog
 import modules.mx.logic.roundTo
 import modules.mx.m3GlobalIndex
 import tornadofx.Controller
@@ -165,5 +166,14 @@ class M3Controller : IController, Controller() {
     fun showSettings() {
         val settings = find<MG3Settings>()
         settings.openModal()
+    }
+
+    suspend fun cancelInvoice() {
+        if (checkInvoice()) {
+            wizard.invoice.item.status = 8
+            wizard.invoice.item.statusText = M3CLIController().getStatusText(wizard.invoice.item.status)
+            saveEntry()
+            log(MXLog.LogType.INFO, "Invoice ${wizard.invoice.item.uID} cancelled.")
+        }
     }
 }

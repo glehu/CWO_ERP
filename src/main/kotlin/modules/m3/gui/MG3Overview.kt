@@ -69,7 +69,7 @@ class MG3Overview : IOverview, View("M3 Invoices") {
             }
             button("Paid") {
                 action { runBlocking { m3Controller.setPaidInvoice() } }
-                tooltip("Processes the invoice.")
+                tooltip("Sets the invoice to fully paid.")
                 prefWidth = rightButtonsWidth
                 style { unsafe("-fx-base", Color.DARKGREEN) }
             }
@@ -78,6 +78,12 @@ class MG3Overview : IOverview, View("M3 Invoices") {
                 tooltip("Processes the invoice.")
                 prefWidth = rightButtonsWidth
                 style { unsafe("-fx-base", Color.DARKGREEN) }
+            }
+            button("Cancel") {
+                action { runBlocking { m3Controller.cancelInvoice() } }
+                tooltip("Cancels the invoice.")
+                prefWidth = rightButtonsWidth
+                style { unsafe("-fx-base", Color.DARKRED) }
             }
         }
         center = form {

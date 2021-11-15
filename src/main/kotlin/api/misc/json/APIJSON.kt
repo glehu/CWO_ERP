@@ -130,8 +130,10 @@ data class M3Ini(
             statusTexts = mutableMapOf(
                 0 to "Draft",
                 1 to "Commissioned",
-                2 to "Paid",
-                3 to "Processed"
+                2 to "Partially Paid",
+                3 to "Paid",
+                8 to "Cancelled",
+                9 to "Finished"
             )
         }
     }
