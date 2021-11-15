@@ -2,10 +2,13 @@ package api.logic
 
 import api.gui.GSpotify
 import api.misc.json.*
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -40,6 +43,7 @@ class MXServer : IModule, Controller() {
         return null
     }
 
+    val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
     private val userManager: MXUserManager by inject()
     lateinit var text: String
 
@@ -56,6 +60,23 @@ class MXServer : IModule, Controller() {
                 validate { credentials ->
                     if (userManager.login(credentials.name, credentials.password, false)) {
                         UserIdPrincipal(credentials.name)
+                    } else {
+                        null
+                    }
+                }
+            }
+            jwt("auth-jwt") {
+                realm = "Access to the '/' path"
+                verifier(
+                    JWT
+                        .require(Algorithm.HMAC256(iniVal.token))
+                        .withAudience("http://localhost:8000/")
+                        .withIssuer("http://localhost:8000/")
+                        .build()
+                )
+                validate { credential ->
+                    if (credential.payload.getClaim("username").asString() != "") {
+                        JWTPrincipal(credential.payload)
                     } else {
                         null
                     }
@@ -79,6 +100,14 @@ class MXServer : IModule, Controller() {
                         SpotifyAUTH().getAccessTokenFromAuthCode(code) as SpotifyAuthCallbackJson
                     )
                     spotifyAPI.updateUserData()
+                }
+            }
+            authenticate("auth-jwt") {
+                get("/hello") {
+                    val principal = call.principal<JWTPrincipal>()
+                    val username = principal!!.payload.getClaim("username").asString()
+                    val expiresAt = principal.expiresAt?.time?.minus(System.currentTimeMillis())
+                    call.respondText("Hello, $username! Token is expired at $expiresAt ms.")
                 }
             }
             authenticate("auth-basic") {

@@ -1,6 +1,6 @@
 package modules.m3.logic
 
-import api.logic.getCWOClient
+import api.logic.getUserClient
 import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
@@ -32,7 +32,7 @@ class M3Controller : IController, Controller() {
     }
 
     private val wizard = find<InvoiceConfiguratorWizard>()
-    val client = getCWOClient(activeUser.username, activeUser.password)
+    val client = getUserClient(activeUser.username, activeUser.password)
 
     override fun searchEntry() {
         find<MG3InvoiceFinder>().openModal()

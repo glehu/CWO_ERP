@@ -35,6 +35,7 @@ data class EntryJson(
 @Serializable
 data class LoginResponseJson(
     val httpCode: Int,
+    val token: String,
     val accessM1: Boolean,
     val accessM2: Boolean,
     val accessM3: Boolean,

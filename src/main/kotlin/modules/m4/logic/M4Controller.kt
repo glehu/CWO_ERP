@@ -1,6 +1,6 @@
 package modules.m4.logic
 
-import api.logic.getCWOClient
+import api.logic.getUserClient
 import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
@@ -27,7 +27,7 @@ class M4Controller : IController, Controller() {
     }
 
     private val wizard = find<M4ItemConfiguratorWizard>()
-    val client = getCWOClient(activeUser.username, activeUser.password)
+    val client = getUserClient(activeUser.username, activeUser.password)
 
     override fun searchEntry() {
         find<MG4ItemFinder>().openModal()

@@ -1,6 +1,6 @@
 package modules.m1.logic
 
-import api.logic.getCWOClient
+import api.logic.getUserClient
 import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
@@ -27,7 +27,7 @@ class M1Controller : IController, Controller() {
 
     private val m2Controller: M2Controller by inject()
     private val wizard = find<SongConfiguratorWizard>()
-    val client = getCWOClient(activeUser.username, activeUser.password)
+    val client = getUserClient(activeUser.username, activeUser.password)
 
     override fun searchEntry() {
         find<MG1EntryFinder>().openModal()

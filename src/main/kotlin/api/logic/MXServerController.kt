@@ -1,6 +1,8 @@
 package api.logic
 
 import api.misc.json.*
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -137,9 +139,18 @@ class MXServerController {
 
         @InternalAPI
         fun generateLoginResponse(user: MXUser): ValidationContainerJson {
+            val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
+            val expiresAt = Date(System.currentTimeMillis() + 86400000)
+            val token = JWT.create()
+                .withAudience("http://localhost:8000/")
+                .withIssuer("http://localhost:8000/")
+                .withClaim("username", user.username)
+                .withExpiresAt(expiresAt)
+                .sign(Algorithm.HMAC256(iniVal.token))
             val loginResponse = Json.encodeToString(
                 LoginResponseJson(
                     httpCode = 200,
+                    token = token,
                     accessM1 = user.canAccessM1,
                     accessM2 = user.canAccessM2,
                     accessM3 = user.canAccessM3,

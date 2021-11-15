@@ -12,7 +12,7 @@ import modules.mx.activeUser
  * If the software is being run in client mode it needs to communicate with the server to create and edit data.
  * @return an instance of an authorized HttpClient.
  */
-fun getCWOClient(username: String = activeUser.username, password: String = activeUser.password): HttpClient {
+fun getUserClient(username: String = activeUser.username, password: String = activeUser.password): HttpClient {
     return HttpClient(CIO) {
         install(JsonFeature) {
             serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
@@ -27,6 +27,24 @@ fun getCWOClient(username: String = activeUser.username, password: String = acti
                 }
                 sendWithoutRequest { request ->
                     request.url.host == "0.0.0.0"
+                }
+            }
+        }
+    }
+}
+
+fun getTokenClient(token: String = activeUser.apiToken): HttpClient {
+    return HttpClient(CIO) {
+        install(JsonFeature) {
+            serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
+                isLenient = true
+                ignoreUnknownKeys = true
+            })
+        }
+        install(Auth) {
+            bearer {
+                loadTokens {
+                    BearerTokens(token, "")
                 }
             }
         }

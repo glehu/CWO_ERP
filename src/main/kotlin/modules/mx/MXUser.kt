@@ -24,9 +24,14 @@ data class MXUser(
     @SerialName("rM4")
     var canAccessM4: Boolean = true
 
-    //Misc
     @SerialName("ol")
     var online: Boolean = false
+
+    @SerialName("bt")
+    var apiToken: String = ""
+
+    @SerialName("be")
+    var apiTokenExpire: Int = 0
 
     @SerialName("ols")
     var onlineSince: String = "?"

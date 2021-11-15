@@ -1,6 +1,6 @@
 package interfaces
 
-import api.logic.getCWOClient
+import api.logic.getUserClient
 import api.misc.json.*
 import db.CwODB
 import io.ktor.client.request.*
@@ -83,7 +83,7 @@ interface IModule {
         } else {
             coroutineScope {
                 launch {
-                    uID = getCWOClient().post("${getApiUrl()}saveentry") {
+                    uID = getUserClient().post("${getApiUrl()}saveentry") {
                         contentType(ContentType.Application.Json)
                         body = EntryJson(entry.uID, encode(entry))
                     }
@@ -138,7 +138,7 @@ interface IModule {
             } else {
                 runBlocking {
                     launch {
-                        entryBytes = getCWOClient().get("${getApiUrl()}entry/$uID?type=uid&lock=$lock")
+                        entryBytes = getUserClient().get("${getApiUrl()}entry/$uID?type=uid&lock=$lock")
                     }
                 }
             }
@@ -218,7 +218,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    indexUserSelection = getCWOClient().get("${getApiUrl()}indexselection")
+                    indexUserSelection = getUserClient().get("${getApiUrl()}indexselection")
                 }
             }
         }
@@ -246,7 +246,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    locked = getCWOClient().get("${getApiUrl()}/getentrylock/$uID")
+                    locked = getUserClient().get("${getApiUrl()}/getentrylock/$uID")
                 }
             }
         }
@@ -275,7 +275,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    success = getCWOClient().get("${getApiUrl()}setentrylock/$uID?type=$doLock")
+                    success = getUserClient().get("${getApiUrl()}setentrylock/$uID?type=$doLock")
                 }
             }
         }
@@ -304,7 +304,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    iniTxt = getCWOClient().post("${getServerUrl()}api/getsettingsfiletext") {
+                    iniTxt = getUserClient().post("${getServerUrl()}api/getsettingsfiletext") {
                         contentType(ContentType.Application.Json)
                         this.body = SettingsRequestJson(moduleShort, subSetting)
                     }
@@ -347,7 +347,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    success = getCWOClient().post("${getServerUrl()}api/sendemail") {
+                    success = getUserClient().post("${getServerUrl()}api/sendemail") {
                         contentType(ContentType.Application.Json)
                         this.body = EMailJson(subject, body, recipient)
                     }

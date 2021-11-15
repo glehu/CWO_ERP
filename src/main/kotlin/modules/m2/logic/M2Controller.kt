@@ -1,6 +1,6 @@
 package modules.m2.logic
 
-import api.logic.getCWOClient
+import api.logic.getUserClient
 import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
@@ -31,7 +31,7 @@ class M2Controller : IController, Controller() {
     }
 
     private val wizard = find<ContactConfiguratorWizard>()
-    val client = getCWOClient(activeUser.username, activeUser.password)
+    val client = getUserClient(activeUser.username, activeUser.password)
 
     override fun searchEntry() {
         find<MG2ContactFinder>().openModal()

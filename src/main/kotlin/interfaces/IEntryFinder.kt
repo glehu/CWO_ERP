@@ -1,6 +1,6 @@
 package interfaces
 
-import api.logic.getCWOClient
+import api.logic.getUserClient
 import api.misc.json.EntryBytesListJson
 import db.CwODB
 import io.ktor.client.request.*
@@ -52,7 +52,7 @@ interface IEntryFinder : IModule {
                             if (exactSearch.isSelected) {
                                 url += "&index=" + ixNr.value.substring(0, 1)
                             }
-                            val entryBytesListJson: EntryBytesListJson = getCWOClient()
+                            val entryBytesListJson: EntryBytesListJson = getUserClient()
                                 .get(url)
                             if (threadID == threadIDCurrentProperty.value) {
                                 this@IEntryFinder.entriesFound.clear()

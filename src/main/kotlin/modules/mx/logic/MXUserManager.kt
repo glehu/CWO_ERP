@@ -1,6 +1,7 @@
 package modules.mx.logic
 
-import api.logic.getCWOClient
+import api.logic.getTokenClient
+import api.logic.getUserClient
 import api.misc.json.LoginResponseJson
 import api.misc.json.ValidationContainerJson
 import interfaces.IIndexManager
@@ -56,7 +57,7 @@ class MXUserManager : IModule, Controller() {
         if (!isClientGlobal) {
             setUserOnlineStatus(username, false)
         } else {
-            val client = getCWOClient(username, password)
+            val client = getUserClient(username, password)
             runBlocking {
                 launch {
                     client.get("${getServerUrl()}logout")
@@ -126,7 +127,7 @@ class MXUserManager : IModule, Controller() {
      */
     private fun compareCredentialsServer(username: String, password: String): Boolean {
         var validResponse = true
-        val client = getCWOClient(username, password)
+        val client = getUserClient(username, password)
         runBlocking {
             launch {
                 val response: ValidationContainerJson = client.get("${getServerUrl()}login")
@@ -139,10 +140,13 @@ class MXUserManager : IModule, Controller() {
                             pepper = encryptKeccak("CWO_ERP LoginValidation")
                         )) {
                         activeUser = MXUser(username, password)
+                        activeUser.apiToken = loginResponse.token
                         activeUser.canAccessM1 = loginResponse.accessM1
                         activeUser.canAccessM2 = loginResponse.accessM2
                         activeUser.canAccessM3 = loginResponse.accessM3
                         activeUser.canAccessM4 = loginResponse.accessM4
+                        val resp: String = getTokenClient().get("${getServerUrl()}hello")
+                        println(resp)
                     } else validResponse = false
                 }
             }

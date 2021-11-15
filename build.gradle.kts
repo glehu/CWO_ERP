@@ -43,6 +43,7 @@ dependencies {
     implementation("io.ktor:ktor-html-builder:1.6.4")
     implementation("io.ktor:ktor-freemarker:1.6.4")
     implementation("io.ktor:ktor-auth:1.6.4")
+    implementation("io.ktor:ktor-auth-jwt:1.6.4")
     implementation("io.ktor:ktor-client-auth:1.6.4")
     implementation("io.ktor:ktor-serialization:1.6.4")
     implementation("ch.qos.logback:logback-classic:1.2.6")
