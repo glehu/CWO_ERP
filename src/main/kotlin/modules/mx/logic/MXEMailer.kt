@@ -47,6 +47,6 @@ class MXEMailer : IModule {
                 recipient = recipient
             )
         )
-        log(MXLog.LogType.COM, "EMail <$subject> sent to <$recipient>")
+        log(MXLog.LogType.COM, "EMail $subject sent to $recipient")
     }
 }
