@@ -90,9 +90,9 @@ class M4StorageManager : IModule, Controller() {
     fun getStorages(): M4Storages {
         lateinit var storages: M4Storages
         if (!isClientGlobal) {
-            val categoryFile = getCategoriesFile()
-            if (!categoryFile.isFile) initializeCategories(categoryFile)
-            storages = Json.decodeFromString(categoryFile.readText())
+            val storageFile = getStoragesFile()
+            if (!storageFile.isFile) initializeCategories(storageFile)
+            storages = Json.decodeFromString(storageFile.readText())
         } else {
             runBlocking {
                 launch {
@@ -104,10 +104,10 @@ class M4StorageManager : IModule, Controller() {
     }
 
     private fun writeStorages(categories: M4Storages) {
-        getCategoriesFile().writeText(Json.encodeToString(categories))
+        getStoragesFile().writeText(Json.encodeToString(categories))
     }
 
-    private fun getCategoriesFile() = File("${getModulePath(module)}\\storages.dat")
+    private fun getStoragesFile() = File("${getModulePath(module)}\\storages.dat")
 
     private fun initializeCategories(storageFile: File) {
         val mainStorage = M4Storage(0, "default")

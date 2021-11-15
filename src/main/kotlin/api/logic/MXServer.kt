@@ -293,7 +293,7 @@ class MXServer : IModule, Controller() {
     private fun Route.getStorages() {
         get("m4/storages") {
             call.respond(
-                M4PriceManager().getCategories()
+                M4StorageManager().getStorages()
             )
         }
     }
