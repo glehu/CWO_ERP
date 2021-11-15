@@ -172,6 +172,7 @@ class M3Controller : IController, Controller() {
         if (checkInvoice()) {
             wizard.invoice.item.status = 8
             wizard.invoice.item.statusText = M3CLIController().getStatusText(wizard.invoice.item.status)
+            wizard.invoice.item.finished = true
             saveEntry()
             log(MXLog.LogType.INFO, "Invoice ${wizard.invoice.item.uID} cancelled.")
         }
