@@ -20,6 +20,7 @@ import modules.m3.logic.M3CLIController
 import modules.m4.M4Item
 import modules.m4.M4PriceCategory
 import modules.m4.logic.M4PriceManager
+import modules.m4.logic.M4StorageManager
 import modules.mx.*
 import modules.mx.logic.*
 import java.io.File
@@ -168,6 +169,23 @@ class MXServerController {
         fun deletePriceCategory(categoryJson: UPPriceCategoryJson): Boolean {
             M4PriceManager().deleteCategory(
                 category = Json.decodeFromString(categoryJson.catNew),
+            )
+            return true
+        }
+
+        @InternalAPI
+        fun updateStorages(categoryJson: UPPriceCategoryJson): Boolean {
+            M4StorageManager().funUpdateStorage(
+                storageNew = Json.decodeFromString(categoryJson.catNew),
+                storageOld = Json.decodeFromString(categoryJson.catOld)
+            )
+            return true
+        }
+
+        @InternalAPI
+        fun deleteStorage(categoryJson: UPPriceCategoryJson): Boolean {
+            M4StorageManager().deleteStorage(
+                storage = Json.decodeFromString(categoryJson.catNew),
             )
             return true
         }

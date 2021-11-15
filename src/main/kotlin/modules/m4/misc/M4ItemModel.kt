@@ -9,8 +9,10 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m4.M4Item
 import modules.m4.M4PriceCategory
+import modules.m4.M4Storage
 import modules.m4.Statistic
 import modules.m4.logic.M4PriceManager
+import modules.m4.logic.M4StorageManager
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.observableListOf
@@ -35,6 +37,7 @@ class M4ItemProperty {
     var productInfoJson: String by productInfoJsonProperty
     var statisticsProperty = observableListOf<Statistic>()
     var priceCategoriesProperty = M4PriceManager().getCategories(M4PriceManager().getCategories())
+    var storagesProperty = M4StorageManager().getStorages(M4StorageManager().getStorages())
 }
 
 @InternalAPI
@@ -49,6 +52,7 @@ class M4ItemModel : ItemViewModel<M4ItemProperty>() {
     val productInfoJson = bind(M4ItemProperty::productInfoJsonProperty)
     val statistics = bind(M4ItemProperty::statisticsProperty)
     val priceCategories = bind(M4ItemProperty::priceCategoriesProperty)
+    val storages = bind(M4ItemProperty::storagesProperty)
 }
 
 @InternalAPI
@@ -67,6 +71,10 @@ fun getM4ItemPropertyFromItem(item: M4Item): M4ItemProperty {
      */
     itemProperty.priceCategoriesProperty = M4PriceManager().getCategories(M4PriceManager().getCategories())
     /**
+     * Get the current storage locations, so we are working with the latest data
+     */
+    itemProperty.storagesProperty = M4StorageManager().getStorages(M4StorageManager().getStorages())
+    /**
      * Fill the item's statistics
      */
     for ((_, statisticString) in item.statistics) {
@@ -79,6 +87,13 @@ fun getM4ItemPropertyFromItem(item: M4Item): M4ItemProperty {
     for ((_, priceCategoryString) in item.prices) {
         val priceCategory = Json.decodeFromString<M4PriceCategory>(priceCategoryString)
         itemProperty.priceCategoriesProperty[priceCategory.number].grossPrice = priceCategory.grossPrice
+    }
+    /**
+     * Fill the storage locations' stock amount according to their number
+     */
+    for ((_, storageString) in item.stock) {
+        val storage = Json.decodeFromString<M4Storage>(storageString)
+        itemProperty.storagesProperty[storage.number].stock = storage.stock
     }
     return itemProperty
 }
@@ -99,6 +114,9 @@ fun getM4ItemFromItemProperty(itemProperty: M4ItemProperty): M4Item {
     }
     for (price in itemProperty.priceCategoriesProperty) {
         item.prices[item.prices.size] = Json.encodeToString(price)
+    }
+    for (storage in itemProperty.storagesProperty) {
+        item.stock[item.stock.size] = Json.encodeToString(storage)
     }
     return item
 }

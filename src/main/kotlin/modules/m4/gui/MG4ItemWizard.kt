@@ -6,6 +6,7 @@ import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.M4PriceCategory
+import modules.m4.M4Storage
 import modules.m4.Statistic
 import modules.m4.misc.M4ItemModel
 import modules.mx.gui.MGXImageViewer
@@ -23,6 +24,7 @@ class M4ItemConfiguratorWizard : Wizard("Add new item") {
         add(NewM4ItemMainData::class)
         add(NewM4ItemStatistics::class)
         add(NewM4ItemPricesData::class)
+        add(NewM4ItemStorageData::class)
     }
 }
 
@@ -139,6 +141,40 @@ class NewM4ItemPricesData : Fragment("Prices") {
         readonlyColumn("Number", M4PriceCategory::number).prefWidth = 100.0
         readonlyColumn("User", M4PriceCategory::description).prefWidth = 250.0
         column("Price", M4PriceCategory::grossPrice) {
+            prefWidth = 100.0
+            makeEditable()
+        }
+        enableCellEditing()
+        regainFocusAfterEdit()
+        isFocusTraversable = false
+    }
+
+    //----------------------------------v
+    //----------- Main Data ------------|
+    //----------------------------------^
+    override val root = form {
+        fieldset {
+            item.uID.addListener { _, _, _ ->
+                table.refresh()
+            }
+            add(table)
+        }
+    }
+
+    override fun onSave() {
+        isComplete = item.commit()
+    }
+}
+
+@InternalAPI
+@ExperimentalSerializationApi
+class NewM4ItemStorageData : Fragment("Stock") {
+    private val item: M4ItemModel by inject()
+    private var table = tableview(item.storages) {
+        isEditable = true
+        readonlyColumn("Number", M4Storage::number).prefWidth = 100.0
+        readonlyColumn("User", M4Storage::description).prefWidth = 250.0
+        column("Stock", M4Storage::stock) {
             prefWidth = 100.0
             makeEditable()
         }

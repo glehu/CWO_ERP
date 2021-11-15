@@ -22,6 +22,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import modules.m4.logic.M4PriceManager
+import modules.m4.logic.M4StorageManager
 import modules.mx.*
 import modules.mx.gui.MGXDashboard
 import modules.mx.logic.MXLog
@@ -162,6 +163,12 @@ class MXServer : IModule, Controller() {
                     getPriceCategoryNumber()
                     savePriceCategory()
                     deletePriceCategory()
+
+                    getStorages()
+                    getStorageNumber()
+                    saveStorage()
+                    deleteStorage()
+
                     getItemImage()
 
                     /**
@@ -283,6 +290,34 @@ class MXServer : IModule, Controller() {
         }
     }
 
+    private fun Route.getStorages() {
+        get("m4/storages") {
+            call.respond(
+                M4PriceManager().getCategories()
+            )
+        }
+    }
+
+    private fun Route.getStorageNumber() {
+        get("m4/storagenumber") {
+            call.respond(
+                M4StorageManager().getNumber(M4StorageManager().getStorages())
+            )
+        }
+    }
+
+    private fun Route.saveStorage() {
+        post("m4/savestorage") {
+            call.respond(MXServerController.updateStorages(call.receive() as UPPriceCategoryJson))
+        }
+    }
+
+    private fun Route.deleteStorage() {
+        post("m4/deletestorage") {
+            call.respond(MXServerController.deleteStorage(call.receive() as UPPriceCategoryJson))
+        }
+    }
+
     private fun Route.getItemImage() {
         get("m4/getimage/{itemUID}") {
             call.respond(MXServerController.getItemImage())
@@ -300,10 +335,12 @@ class MXServer : IModule, Controller() {
     private fun Route.getSettingsFileText() {
         post("getsettingsfiletext") {
             val body: SettingsRequestJson = Json.decodeFromString(call.receive())
-            call.respond(MXServerController.getSettingsFileText(
-                moduleShort = body.module,
-                subSetting = body.subSetting
-            ))
+            call.respond(
+                MXServerController.getSettingsFileText(
+                    moduleShort = body.module,
+                    subSetting = body.subSetting
+                )
+            )
         }
     }
 

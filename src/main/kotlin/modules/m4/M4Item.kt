@@ -34,6 +34,11 @@ data class M4Item(
      */
     var prices: MutableMap<Int, String> = mutableMapOf()
 
+    /**
+     * This map contains all stock distributed over all storage locations.
+     */
+    var stock: MutableMap<Int, String> = mutableMapOf()
+
     override fun initialize() {
         if (uID == -1) uID = m4GlobalIndex!!.getUID()
         if (imagePath != "?") {

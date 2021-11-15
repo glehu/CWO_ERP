@@ -15,6 +15,7 @@ import modules.m2.gui.MG2Overview
 import modules.m3.gui.MG3Overview
 import modules.m4.gui.MG4Overview
 import modules.m4.gui.MG4PriceManager
+import modules.m4.gui.MG4StorageManager
 import modules.mx.*
 import modules.mx.gui.userAlerts.MGXUserAlert
 import modules.mx.logic.*
@@ -171,6 +172,7 @@ class MXGUserInterface : View(titleGlobal) {
             if (activeUser.canAccessM4) {
                 tab<MG4Overview>()
                 tab<MG4PriceManager>()
+                tab<MG4StorageManager>()
             }
             if (activeUser.canAccessMX) {
                 //Only server can do this
