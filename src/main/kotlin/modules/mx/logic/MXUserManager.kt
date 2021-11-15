@@ -31,7 +31,7 @@ import kotlin.collections.set
 @InternalAPI
 @ExperimentalSerializationApi
 class MXUserManager : IModule, Controller() {
-    override val moduleNameLong = "MXPasswordManager"
+    override val moduleNameLong = "MXUserManager"
     override val module = "MX"
     override fun getIndexManager(): IIndexManager? {
         return null
