@@ -33,7 +33,7 @@ class M1Controller : IController, Controller() {
         find<MG1EntryFinder>().openModal()
     }
 
-    override suspend fun saveEntry() {
+    override suspend fun saveEntry(unlock: Boolean) {
         if (wizard.songMainData.isValid) {
             wizard.songMainData.commit()
             wizard.songCompletionState.commit()
@@ -46,7 +46,7 @@ class M1Controller : IController, Controller() {
             wizard.songCollaborationData.commit()
             wizard.songCopyrightData.commit()
             wizard.songMiscData.commit()
-            wizard.songMainData.uID.value = save(getSongFromProperties(wizard))
+            wizard.songMainData.uID.value = save(getSongFromProperties(wizard), unlock = unlock)
             wizard.isComplete = false
         } else wizard.songMainData.validate()
     }

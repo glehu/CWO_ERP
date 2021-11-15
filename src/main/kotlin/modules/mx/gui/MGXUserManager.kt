@@ -52,7 +52,7 @@ class MGXUserManager : View("User Management") {
         }
     }
 
-    fun refreshUsers() {
+    private fun refreshUsers() {
         users = userManager.getUsersObservableList(users, userManager.getCredentials())
         table.items = users
         table.refresh()

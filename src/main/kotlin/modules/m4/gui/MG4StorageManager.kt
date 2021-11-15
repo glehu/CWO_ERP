@@ -37,7 +37,7 @@ class MG4StorageManager : View("M4 Storage Locations") {
         refreshStorages()
         center = table
         right = vbox {
-            button("Add Storage Location") {
+            button("Add Storage") {
                 action {
                     storageManager.addStorage(storages)
                 }

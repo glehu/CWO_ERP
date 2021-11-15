@@ -48,10 +48,10 @@ class M3Controller : IController, Controller() {
         wizard.isComplete = false
     }
 
-    override suspend fun saveEntry() {
+    override suspend fun saveEntry(unlock: Boolean) {
         if (wizard.invoice.isValid) {
             wizard.invoice.commit()
-            wizard.invoice.uID.value = save(getInvoiceFromInvoiceProperty(wizard.invoice.item))
+            wizard.invoice.uID.value = save(getInvoiceFromInvoiceProperty(wizard.invoice.item), unlock = unlock)
             wizard.isComplete = false
         }
     }

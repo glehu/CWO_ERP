@@ -44,7 +44,8 @@ interface IModule {
         entry: IEntry,
         raf: RandomAccessFile? = null,
         indexWriteToDisk: Boolean = true,
-        userName: String = activeUser.username
+        userName: String = activeUser.username,
+        unlock: Boolean = true
     ): Int {
         var uID = -1
         if (!isClientGlobal) {
@@ -78,7 +79,7 @@ interface IModule {
             /**
              * Unlock the entry
              */
-            getIndexManager()!!.setEntryLock(uID, false)
+            if (unlock) getIndexManager()!!.setEntryLock(uID, false)
         } else {
             coroutineScope {
                 launch {

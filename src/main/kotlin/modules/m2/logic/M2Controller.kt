@@ -37,10 +37,10 @@ class M2Controller : IController, Controller() {
         find<MG2ContactFinder>().openModal()
     }
 
-    override suspend fun saveEntry() {
+    override suspend fun saveEntry(unlock: Boolean) {
         if (wizard.contact.isValid) {
             wizard.contact.commit()
-            wizard.contact.uID.value = save(getContactFromProperty(wizard.contact.item))
+            wizard.contact.uID.value = save(getContactFromProperty(wizard.contact.item), unlock = unlock)
             wizard.isComplete = false
         }
     }

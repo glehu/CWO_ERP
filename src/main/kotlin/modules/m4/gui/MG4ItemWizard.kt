@@ -193,7 +193,7 @@ class NewM4ItemStorageData : Fragment("Stock") {
                             this@tableview.refresh()
                             this@tableview.requestLayout()
                             runBlocking {
-                                M4Controller().saveEntry()
+                                M4Controller().saveEntry(unlock = false)
                             }
                         }
                     }

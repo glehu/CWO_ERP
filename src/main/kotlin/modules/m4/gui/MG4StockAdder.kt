@@ -13,7 +13,7 @@ import tornadofx.*
 @InternalAPI
 class MG4StockAdder : Fragment("Add Stock") {
     private val item: M4ItemModel by inject()
-    var storage = getStoragePropertyFromStorage(M4Storage(0, "default"))
+    private var storage = getStoragePropertyFromStorage(M4Storage(0, "default"))
     private var storageNumber = SimpleIntegerProperty(storage.number)
     private var storageDescription = SimpleStringProperty(storage.description)
     private var storageStock = SimpleIntegerProperty(0)

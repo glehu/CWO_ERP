@@ -17,7 +17,7 @@ data class M4Item(
     var ean = ""
     var manufacturerCode = ""
     var imagePath = ""
-    var imageBase64String = ""
+    private var imageBase64String = ""
 
     /**
      * Various product info can be added to the item by providing a json string of its details.

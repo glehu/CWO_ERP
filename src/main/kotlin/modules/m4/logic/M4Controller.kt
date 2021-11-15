@@ -44,10 +44,13 @@ class M4Controller : IController, Controller() {
         wizard.isComplete = false
     }
 
-    override suspend fun saveEntry() {
+    override suspend fun saveEntry(unlock: Boolean) {
         if (wizard.item.isValid) {
             wizard.item.commit()
-            wizard.item.uID.value = save(getM4ItemFromItemProperty(wizard.item.item))
+            wizard.item.uID.value = save(
+                entry = getM4ItemFromItemProperty(wizard.item.item),
+                unlock = unlock
+            )
             wizard.isComplete = false
         }
     }
