@@ -1,13 +1,15 @@
 package modules.m4.logic
 
 import api.logic.getCWOClient
-import api.misc.json.UPPriceCategoryJson
+import api.misc.json.ListDeltaJson
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.util.*
 import javafx.collections.ObservableList
+import javafx.scene.paint.Color
+import javafx.scene.paint.Paint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -23,6 +25,7 @@ import modules.mx.cliMode
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
 import tornadofx.Controller
+import tornadofx.MultiValue
 import tornadofx.observableListOf
 import java.io.File
 import kotlin.collections.component1
@@ -52,9 +55,9 @@ class M4StorageManager : IModule, Controller() {
                 launch {
                     getCWOClient().post("${getApiUrl()}savestorage") {
                         contentType(ContentType.Application.Json)
-                        body = UPPriceCategoryJson(
-                            catNew = Json.encodeToString(storageNew),
-                            catOld = Json.encodeToString(storageOld)
+                        body = ListDeltaJson(
+                            listEntryNew = Json.encodeToString(storageNew),
+                            listEntryOld = Json.encodeToString(storageOld)
                         )
                     }
                 }
@@ -73,9 +76,9 @@ class M4StorageManager : IModule, Controller() {
                 launch {
                     getCWOClient().post("${getApiUrl()}deletestorage") {
                         contentType(ContentType.Application.Json)
-                        body = UPPriceCategoryJson(
-                            catNew = Json.encodeToString(storage),
-                            catOld = ""
+                        body = ListDeltaJson(
+                            listEntryNew = Json.encodeToString(storage),
+                            listEntryOld = ""
                         )
                     }
                 }
@@ -149,7 +152,10 @@ class M4StorageManager : IModule, Controller() {
         return storageNumber
     }
 
-    fun addCategory(categories: M4Storages) =
+    fun getLockedCellColor(isLocked: Boolean): MultiValue<Paint> =
+        if (isLocked) MultiValue(arrayOf(Color.RED)) else MultiValue(arrayOf(Color.GREEN))
+
+    fun addStorage(categories: M4Storages) =
         showCategory(M4Storage(getNumber(categories), ""), categories)
 
     fun getStorages(categories: M4Storages): ObservableList<M4Storage> {

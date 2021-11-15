@@ -94,6 +94,7 @@ fun getM4ItemPropertyFromItem(item: M4Item): M4ItemProperty {
     for ((_, storageString) in item.stock) {
         val storage = Json.decodeFromString<M4Storage>(storageString)
         itemProperty.storagesProperty[storage.number].stock = storage.stock
+        itemProperty.storagesProperty[storage.number].individualLock = storage.individualLock
     }
     return itemProperty
 }

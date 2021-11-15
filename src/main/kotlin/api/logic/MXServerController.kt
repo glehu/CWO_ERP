@@ -157,35 +157,35 @@ class MXServerController {
         }
 
         @InternalAPI
-        fun updatePriceCategories(categoryJson: UPPriceCategoryJson): Boolean {
+        fun updatePriceCategories(categoryJson: ListDeltaJson): Boolean {
             M4PriceManager().updateCategory(
-                categoryNew = Json.decodeFromString(categoryJson.catNew),
-                categoryOld = Json.decodeFromString(categoryJson.catOld)
+                categoryNew = Json.decodeFromString(categoryJson.listEntryNew),
+                categoryOld = Json.decodeFromString(categoryJson.listEntryOld)
             )
             return true
         }
 
         @InternalAPI
-        fun deletePriceCategory(categoryJson: UPPriceCategoryJson): Boolean {
+        fun deletePriceCategory(categoryJson: ListDeltaJson): Boolean {
             M4PriceManager().deleteCategory(
-                category = Json.decodeFromString(categoryJson.catNew),
+                category = Json.decodeFromString(categoryJson.listEntryNew),
             )
             return true
         }
 
         @InternalAPI
-        fun updateStorages(categoryJson: UPPriceCategoryJson): Boolean {
+        fun updateStorages(categoryJson: ListDeltaJson): Boolean {
             M4StorageManager().funUpdateStorage(
-                storageNew = Json.decodeFromString(categoryJson.catNew),
-                storageOld = Json.decodeFromString(categoryJson.catOld)
+                storageNew = Json.decodeFromString(categoryJson.listEntryNew),
+                storageOld = Json.decodeFromString(categoryJson.listEntryOld)
             )
             return true
         }
 
         @InternalAPI
-        fun deleteStorage(categoryJson: UPPriceCategoryJson): Boolean {
+        fun deleteStorage(categoryJson: ListDeltaJson): Boolean {
             M4StorageManager().deleteStorage(
-                storage = Json.decodeFromString(categoryJson.catNew),
+                storage = Json.decodeFromString(categoryJson.listEntryNew),
             )
             return true
         }

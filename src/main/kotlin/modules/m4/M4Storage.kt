@@ -9,7 +9,11 @@ data class M4Storage(
     val number: Int,
     @SerialName("d")
     val description: String,
+    @SerialName("l")
+    var locked: Boolean = false
 ) {
     @SerialName("s")
     var stock: Int = 0
+    @SerialName("il")
+    var individualLock: Boolean = false
 }

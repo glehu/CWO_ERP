@@ -21,6 +21,11 @@ class MG4Storage(storage: M4Storage) : Fragment("Storage Locations") {
         fieldset {
             field("Number") { label(storageModel.number) }
             field("Description") { textfield(storageModel.description).required() }
+            field("Locked") {
+                checkbox("", storageModel.locked) {
+                    tooltip("If checked, locks all items' stock matched to this location from being sold.")
+                }
+            }
         }
         button("Save") {
             shortcut("Enter")

@@ -52,9 +52,9 @@ data class ValidationContainerJson(
 )
 
 @Serializable
-data class UPPriceCategoryJson(
-    val catNew: String,
-    val catOld: String
+data class ListDeltaJson(
+    val listEntryNew: String,
+    val listEntryOld: String
 )
 
 @Serializable

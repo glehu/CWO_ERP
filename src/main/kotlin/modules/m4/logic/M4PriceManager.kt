@@ -1,7 +1,7 @@
 package modules.m4.logic
 
 import api.logic.getCWOClient
-import api.misc.json.UPPriceCategoryJson
+import api.misc.json.ListDeltaJson
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.client.request.*
@@ -51,9 +51,9 @@ class M4PriceManager : IModule, Controller() {
                 launch {
                     getCWOClient().post("${getApiUrl()}savecategory") {
                         contentType(ContentType.Application.Json)
-                        body = UPPriceCategoryJson(
-                            catNew = Json.encodeToString(categoryNew),
-                            catOld = Json.encodeToString(categoryOld)
+                        body = ListDeltaJson(
+                            listEntryNew = Json.encodeToString(categoryNew),
+                            listEntryOld = Json.encodeToString(categoryOld)
                         )
                     }
                 }
@@ -72,9 +72,9 @@ class M4PriceManager : IModule, Controller() {
                 launch {
                     getCWOClient().post("${getApiUrl()}deletecategory") {
                         contentType(ContentType.Application.Json)
-                        body = UPPriceCategoryJson(
-                            catNew = Json.encodeToString(category),
-                            catOld = ""
+                        body = ListDeltaJson(
+                            listEntryNew = Json.encodeToString(category),
+                            listEntryOld = ""
                         )
                     }
                 }

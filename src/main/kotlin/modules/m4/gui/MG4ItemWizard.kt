@@ -8,6 +8,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.M4PriceCategory
 import modules.m4.M4Storage
 import modules.m4.Statistic
+import modules.m4.logic.M4StorageManager
 import modules.m4.misc.M4ItemModel
 import modules.mx.gui.MGXImageViewer
 import modules.mx.gui.userAlerts.MGXUserAlert
@@ -139,7 +140,7 @@ class NewM4ItemPricesData : Fragment("Prices") {
     private var table = tableview(item.priceCategories) {
         isEditable = true
         readonlyColumn("Number", M4PriceCategory::number).prefWidth = 100.0
-        readonlyColumn("User", M4PriceCategory::description).prefWidth = 250.0
+        readonlyColumn("Description", M4PriceCategory::description).prefWidth = 250.0
         column("Price", M4PriceCategory::grossPrice) {
             prefWidth = 100.0
             makeEditable()
@@ -170,12 +171,18 @@ class NewM4ItemPricesData : Fragment("Prices") {
 @ExperimentalSerializationApi
 class NewM4ItemStorageData : Fragment("Stock") {
     private val item: M4ItemModel by inject()
+    private val storageManager: M4StorageManager by inject()
     private var table = tableview(item.storages) {
         isEditable = true
         readonlyColumn("Number", M4Storage::number).prefWidth = 100.0
-        readonlyColumn("User", M4Storage::description).prefWidth = 250.0
+        readonlyColumn("Description", M4Storage::description).prefWidth = 250.0
+        column("Locked", M4Storage::locked)
+            .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
         column("Stock", M4Storage::stock) {
             prefWidth = 100.0
+            makeEditable()
+        }
+        column("Lock", M4Storage::individualLock) {
             makeEditable()
         }
         enableCellEditing()

@@ -19,6 +19,8 @@ class MG4StorageManager : View("M4 Storage Locations") {
     private val table = tableview(storagesList) {
         readonlyColumn("Number", M4Storage::number).prefWidth(100.0)
         readonlyColumn("Description", M4Storage::description).prefWidth(400.0)
+        readonlyColumn("Locked", M4Storage::locked)
+            .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
         onUserSelect(1) {
             if (it.number != 0) {
                 storageManager.showCategory(it, storages)
@@ -37,7 +39,7 @@ class MG4StorageManager : View("M4 Storage Locations") {
         right = vbox {
             button("Add Storage Location") {
                 action {
-                    storageManager.addCategory(storages)
+                    storageManager.addStorage(storages)
                 }
                 prefWidth = rightButtonsWidth
             }

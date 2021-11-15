@@ -280,13 +280,13 @@ class MXServer : IModule, Controller() {
 
     private fun Route.savePriceCategory() {
         post("m4/savecategory") {
-            call.respond(MXServerController.updatePriceCategories(call.receive() as UPPriceCategoryJson))
+            call.respond(MXServerController.updatePriceCategories(call.receive() as ListDeltaJson))
         }
     }
 
     private fun Route.deletePriceCategory() {
         post("m4/deletecategory") {
-            call.respond(MXServerController.deletePriceCategory(call.receive() as UPPriceCategoryJson))
+            call.respond(MXServerController.deletePriceCategory(call.receive() as ListDeltaJson))
         }
     }
 
@@ -308,13 +308,13 @@ class MXServer : IModule, Controller() {
 
     private fun Route.saveStorage() {
         post("m4/savestorage") {
-            call.respond(MXServerController.updateStorages(call.receive() as UPPriceCategoryJson))
+            call.respond(MXServerController.updateStorages(call.receive() as ListDeltaJson))
         }
     }
 
     private fun Route.deleteStorage() {
         post("m4/deletestorage") {
-            call.respond(MXServerController.deleteStorage(call.receive() as UPPriceCategoryJson))
+            call.respond(MXServerController.deleteStorage(call.receive() as ListDeltaJson))
         }
     }
 
