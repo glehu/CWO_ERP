@@ -4,10 +4,12 @@ import io.ktor.util.*
 import javafx.scene.image.Image
 import javafx.scene.paint.Color
 import javafx.stage.FileChooser
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.M4PriceCategory
 import modules.m4.M4Storage
 import modules.m4.Statistic
+import modules.m4.logic.M4Controller
 import modules.m4.logic.M4StorageManager
 import modules.m4.misc.M4ItemModel
 import modules.mx.gui.MGXImageViewer
@@ -176,12 +178,27 @@ class NewM4ItemStorageData : Fragment("Stock") {
         isEditable = true
         readonlyColumn("Number", M4Storage::number).prefWidth = 100.0
         readonlyColumn("Description", M4Storage::description).prefWidth = 250.0
-        column("Locked", M4Storage::locked)
+        readonlyColumn("Locked", M4Storage::locked)
             .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
-        column("Stock", M4Storage::stock) {
-            prefWidth = 100.0
-            makeEditable()
-        }
+        readonlyColumn("Stock", M4Storage::stock).prefWidth = 100.0
+        column("Add", M4Storage::locked)
+            .cellFormat {
+                graphic = hbox {
+                    button("+").action {
+                        val stockAdder = find<MG4StockAdder>()
+                        stockAdder.getStorageData(rowItem)
+                        stockAdder.openModal(block = true)
+                        if (stockAdder.userConfirmed && stockAdder.stockToAddAmount.value != 0) {
+                            rowItem.stock += stockAdder.stockToAddAmount.value
+                            this@tableview.refresh()
+                            this@tableview.requestLayout()
+                            runBlocking {
+                                M4Controller().saveEntry()
+                            }
+                        }
+                    }
+                }
+            }
         column("Lock", M4Storage::individualLock) {
             makeEditable()
         }
