@@ -36,6 +36,31 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
     override val threadIDCurrentProperty = SimpleIntegerProperty()
     private val m2Controller: M2Controller by inject()
     private val song: SongPropertyMainDataModel by inject()
+
+    @Suppress("UNCHECKED_CAST")
+    val table = tableview(entriesFound as ObservableList<M2Contact>) {
+        readonlyColumn("ID", M2Contact::uID).prefWidth(65.0)
+        readonlyColumn("Name", M2Contact::name).prefWidth(350.0)
+        readonlyColumn("F.Name", M2Contact::firstName).prefWidth(250.0)
+        readonlyColumn("City", M2Contact::city).prefWidth(200.0)
+        onUserSelect(1) {
+            if (song.uID.value == -2) {
+                //Data transfer
+                song.uID.value = it.uID
+                song.name.value = it.name
+                song.commit()
+                close()
+            } else {
+                if (!getEntryLock(it.uID)) {
+                    m2Controller.showEntry(it.uID)
+                    close()
+                } else {
+                    find<MGXLocked>().openModal()
+                }
+            }
+        }
+        isFocusTraversable = false
+    }
     override val root = borderpane {
         center = form {
             prefWidth = 1200.0
@@ -46,6 +71,8 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                             runAsync {
                                 threadIDCurrentProperty.value++
                                 searchForEntries(threadIDCurrentProperty.value)
+                                table.refresh()
+                                table.requestLayout()
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
@@ -61,30 +88,7 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                         tooltip("Selects the index file that will be searched in.")
                     }
                 }
-                @Suppress("UNCHECKED_CAST")
-                tableview(entriesFound as ObservableList<M2Contact>) {
-                    readonlyColumn("ID", M2Contact::uID).prefWidth(65.0)
-                    readonlyColumn("Name", M2Contact::name).prefWidth(350.0)
-                    readonlyColumn("F.Name", M2Contact::firstName).prefWidth(250.0)
-                    readonlyColumn("City", M2Contact::city).prefWidth(200.0)
-                    onUserSelect(1) {
-                        if (song.uID.value == -2) {
-                            //Data transfer
-                            song.uID.value = it.uID
-                            song.name.value = it.name
-                            song.commit()
-                            close()
-                        } else {
-                            if (!getEntryLock(it.uID)) {
-                                m2Controller.showEntry(it.uID)
-                                close()
-                            } else {
-                                find<MGXLocked>().openModal()
-                            }
-                        }
-                    }
-                    isFocusTraversable = false
-                }
+                add(table)
             }
         }
     }

@@ -64,6 +64,7 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                                 threadIDCurrentProperty.value++
                                 searchForEntries(threadIDCurrentProperty.value)
                                 table.refresh()
+                                table.requestLayout()
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")

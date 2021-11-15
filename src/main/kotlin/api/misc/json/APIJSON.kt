@@ -120,6 +120,7 @@ data class EMailJson(
 @Serializable
 data class M3Ini(
     var statusTexts: MutableMap<Int, String> = mutableMapOf(),
+    var todoStatuses: String = "0",
     var autoCommission: Boolean = true,
     var autoCreateContacts: Boolean = true,
     var autoSendEMailConfirmation: Boolean = true

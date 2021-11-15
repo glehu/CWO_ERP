@@ -35,6 +35,29 @@ class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
     override val threadIDCurrentProperty = SimpleIntegerProperty()
     private val m4Controller: M4Controller by inject()
     private val song: SongPropertyMainDataModel by inject()
+
+    @Suppress("UNCHECKED_CAST")
+    val table = tableview(entriesFound as ObservableList<M4Item>) {
+        readonlyColumn("ID", M4Item::uID).prefWidth(65.0)
+        readonlyColumn("Description", M4Item::description).prefWidth(500.0)
+        onUserSelect(1) {
+            if (song.uID.value == -2) {
+                //Data transfer
+                song.uID.value = it.uID
+                song.name.value = it.description
+                song.commit()
+                close()
+            } else {
+                if (!getEntryLock(it.uID)) {
+                    m4Controller.showEntry(it.uID)
+                    close()
+                } else {
+                    find<MGXLocked>().openModal()
+                }
+            }
+        }
+        isFocusTraversable = false
+    }
     override val root = borderpane {
         center = form {
             prefWidth = 1200.0
@@ -45,6 +68,8 @@ class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
                             runAsync {
                                 threadIDCurrentProperty.value++
                                 searchForEntries(threadIDCurrentProperty.value)
+                                table.refresh()
+                                table.requestLayout()
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
@@ -60,28 +85,7 @@ class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
                         tooltip("Selects the index file that will be searched in.")
                     }
                 }
-                @Suppress("UNCHECKED_CAST")
-                tableview(entriesFound as ObservableList<M4Item>) {
-                    readonlyColumn("ID", M4Item::uID).prefWidth(65.0)
-                    readonlyColumn("Description", M4Item::description).prefWidth(500.0)
-                    onUserSelect(1) {
-                        if (song.uID.value == -2) {
-                            //Data transfer
-                            song.uID.value = it.uID
-                            song.name.value = it.description
-                            song.commit()
-                            close()
-                        } else {
-                            if (!getEntryLock(it.uID)) {
-                                m4Controller.showEntry(it.uID)
-                                close()
-                            } else {
-                                find<MGXLocked>().openModal()
-                            }
-                        }
-                    }
-                    isFocusTraversable = false
-                }
+                add(table)
             }
         }
     }

@@ -150,12 +150,14 @@ class M3Controller : IController, Controller() {
     }
 
     fun showToDoInvoices() {
+        val iniVal = M3CLIController().getIni()
+        val todoStatuses = iniVal.todoStatuses
         val m3Finder = MG3InvoiceFinder()
         m3Finder.exactSearch.isSelected = true
         m3Finder.ixNr.value = M3Controller().getIndexUserSelection()[3]
         m3Finder.openModal()
         m3Finder.searchText.text = ""
-        m3Finder.searchText.text = "0"
+        m3Finder.searchText.text = "[$todoStatuses]"
         m3Finder.table.refresh()
         m3Finder.table.requestFocus()
     }

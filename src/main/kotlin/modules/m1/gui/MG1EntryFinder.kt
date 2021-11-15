@@ -68,6 +68,7 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                                     threadIDCurrentProperty.value++
                                     searchForEntries(threadIDCurrentProperty.value)
                                     table.refresh()
+                                    table.requestLayout()
                                 }
                             }
                             tooltip("Contains the search text that will be used to find an entry.")

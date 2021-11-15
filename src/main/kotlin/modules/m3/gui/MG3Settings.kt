@@ -5,6 +5,7 @@ import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
@@ -27,6 +28,7 @@ class MG3Settings : IModule, Fragment("M3 Settings") {
     private val iniVal = M3CLIController().getIni()
 
     private var statusTexts = observableListOf<Statistic>()
+    private val todoStatuses = SimpleStringProperty(iniVal.todoStatuses)
     private val autoCommission = SimpleBooleanProperty(iniVal.autoCommission)
     private val autoCreateContacts = SimpleBooleanProperty(iniVal.autoCreateContacts)
     private val autoSendEMailConfirmation = SimpleBooleanProperty(iniVal.autoSendEMailConfirmation)
@@ -56,6 +58,13 @@ class MG3Settings : IModule, Fragment("M3 Settings") {
                             }
                             enableCellEditing()
                             isFocusTraversable = false
+                        }
+                    }
+                    fieldset("To Do Quicksearch") {
+                        field("Statuses") {
+                            textfield(todoStatuses) {
+                                tooltip("Displays the To Do relevant statuses, seperated by a comma <,>.")
+                            }
                         }
                     }
                 }
@@ -103,6 +112,7 @@ class MG3Settings : IModule, Fragment("M3 Settings") {
                     Json.encodeToString(
                         M3Ini(
                             statusTexts = newMap,
+                            todoStatuses = todoStatuses.value,
                             autoCommission = autoCommission.value,
                             autoCreateContacts = autoCreateContacts.value,
                             autoSendEMailConfirmation = autoSendEMailConfirmation.value
