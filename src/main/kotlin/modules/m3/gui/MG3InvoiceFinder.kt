@@ -46,7 +46,6 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
         onUserSelect(1) {
             if (!getEntryLock(it.uID)) {
                 m3Controller.showEntry(it.uID)
-                searchText.text = ""
                 close()
             } else {
                 find<MGXLocked>().openModal()

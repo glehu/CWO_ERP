@@ -77,7 +77,6 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                         } else {
                             if (!getEntryLock(it.uID)) {
                                 m2Controller.showEntry(it.uID)
-                                searchText.text = ""
                                 close()
                             } else {
                                 find<MGXLocked>().openModal()

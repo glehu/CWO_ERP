@@ -48,7 +48,6 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
         onUserSelect(1) {
             if (!getEntryLock(it.uID)) {
                 m1Controller.showEntry(it.uID)
-                searchText.text = ""
                 close()
             } else {
                 find<MGXLocked>().openModal()

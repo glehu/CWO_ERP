@@ -74,7 +74,6 @@ class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
                         } else {
                             if (!getEntryLock(it.uID)) {
                                 m4Controller.showEntry(it.uID)
-                                searchText.text = ""
                                 close()
                             } else {
                                 find<MGXLocked>().openModal()
