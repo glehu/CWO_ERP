@@ -300,7 +300,7 @@ interface IModule {
     ): String {
         var iniTxt = ""
         if (!isClientGlobal) {
-            iniTxt = getSettingsFile(subSetting = subSetting).readText()
+            iniTxt = getSettingsFile(moduleShort = moduleShort, subSetting = subSetting).readText()
         } else {
             runBlocking {
                 launch {
