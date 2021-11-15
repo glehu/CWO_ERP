@@ -80,7 +80,7 @@ class M4PriceManager : IModule, Controller() {
                 }
             }
         }
-        tornadofx.find<MG4PriceManager>().refreshCategories()
+        if (!cliMode) tornadofx.find<MG4PriceManager>().refreshCategories()
     }
 
     fun getCategories(): M4PriceCategories {

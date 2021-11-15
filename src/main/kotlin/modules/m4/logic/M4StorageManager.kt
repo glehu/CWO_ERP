@@ -18,7 +18,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m4.M4Storage
 import modules.m4.M4Storages
-import modules.m4.gui.MG4PriceManager
 import modules.m4.gui.MG4Storage
 import modules.m4.gui.MG4StorageManager
 import modules.mx.cliMode
@@ -84,7 +83,7 @@ class M4StorageManager : IModule, Controller() {
                 }
             }
         }
-        tornadofx.find<MG4PriceManager>().refreshCategories()
+        if (!cliMode) tornadofx.find<MG4StorageManager>().refreshStorages()
     }
 
     fun getStorages(): M4Storages {
