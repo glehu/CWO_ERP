@@ -58,11 +58,6 @@ interface IModule {
                 byteSize = index.byteSize
             }
             entry.initialize()
-            log(
-                logType = MXLog.LogType.SYS,
-                text = "SAVE START uID ${entry.uID}",
-                moduleAlt = indexManager.module
-            )
             val (posDBXt, byteSizeXt) = CwODB.saveEntry(
                 entryBytes = encode(entry),
                 posDB = posDB,
