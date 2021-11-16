@@ -1,6 +1,7 @@
 package modules.mx.logic
 
 import api.logic.MXServer
+import api.logic.MXUsageTracker
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -34,6 +35,7 @@ fun main(args: Array<String>) {
     }
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 fun checkInstallation() {
     //Search for the .ini file to set up the software
@@ -85,9 +87,10 @@ fun startupRoutines() {
          */
         loadIndex()
         /**
-         * Start the embedded server
+         * Start the embedded server and usage tracker
          */
         server = MXServer()
+        usageTracker = MXUsageTracker()
     }
     /**
      * Start a long-running coroutine task to do various stuff
@@ -95,6 +98,7 @@ fun startupRoutines() {
     taskJobGlobal = MXTicker.startTicker()
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 fun loadIndex(module: String = "") {
     if (module.isNotEmpty()) {

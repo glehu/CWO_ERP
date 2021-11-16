@@ -1,6 +1,5 @@
 package modules.m3.logic
 
-import api.logic.getUserClient
 import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
@@ -15,7 +14,6 @@ import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.m4.logic.M4PriceManager
-import modules.mx.activeUser
 import modules.mx.gui.userAlerts.MGXUserAlert
 import modules.mx.logic.MXLog
 import modules.mx.logic.roundTo
@@ -32,7 +30,6 @@ class M3Controller : IController, Controller() {
     }
 
     private val wizard = find<InvoiceConfiguratorWizard>()
-    val client = getUserClient(activeUser.username, activeUser.password)
 
     override fun searchEntry() {
         find<MG3InvoiceFinder>().openModal()

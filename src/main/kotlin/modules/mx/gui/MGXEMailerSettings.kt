@@ -3,6 +3,7 @@ package modules.mx.gui
 import api.misc.json.MGXEMailerIni
 import interfaces.IIndexManager
 import interfaces.IModule
+import io.ktor.util.*
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TabPane
@@ -13,6 +14,7 @@ import kotlinx.serialization.json.Json
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MGXEMailerSettings : IModule, Fragment("EMailer Settings") {
     override val moduleNameLong = "MGXEMailerSettings"

@@ -29,7 +29,7 @@ class MG1Overview : IOverview, View("M1 Discography") {
                 prefWidth = rightButtonsWidth
             }
             button("Save") {
-                action { runBlocking { m1Controller.saveEntry() } }
+                action { runBlocking { m1Controller.saveEntry(unlock = true) } }
                 tooltip("Saves the current song.")
                 prefWidth = rightButtonsWidth
             }

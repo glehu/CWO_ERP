@@ -2,6 +2,7 @@ package modules.mx.logic
 
 import interfaces.IIndexManager
 import interfaces.IModule
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.activeUser
 import modules.mx.getModulePath
@@ -15,6 +16,7 @@ class MXLog {
         INFO, WARNING, ERROR, COM, SYS
     }
 
+    @InternalAPI
     @ExperimentalSerializationApi
     companion object MXLog : IModule {
         override val moduleNameLong = "MXLog"

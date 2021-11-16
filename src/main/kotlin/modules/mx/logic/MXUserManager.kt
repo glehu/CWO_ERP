@@ -2,6 +2,7 @@ package modules.mx.logic
 
 import api.logic.getTokenClient
 import api.logic.getUserClient
+import api.misc.json.CWOAuthCallbackJson
 import api.misc.json.LoginResponseJson
 import api.misc.json.ValidationContainerJson
 import interfaces.IIndexManager
@@ -140,12 +141,16 @@ class MXUserManager : IModule, Controller() {
                             pepper = encryptKeccak("CWO_ERP LoginValidation")
                         )) {
                         activeUser = MXUser(username, password)
-                        activeUser.apiToken = loginResponse.token
+                        activeUser.apiToken = CWOAuthCallbackJson(
+                            accessToken = loginResponse.token,
+                            expiresInSeconds = (loginResponse.expiresInMs / 1000) - 5
+                        )
+                        activeUser.apiToken.initialize()
                         activeUser.canAccessM1 = loginResponse.accessM1
                         activeUser.canAccessM2 = loginResponse.accessM2
                         activeUser.canAccessM3 = loginResponse.accessM3
                         activeUser.canAccessM4 = loginResponse.accessM4
-                        val resp: String = getTokenClient().get("${getServerUrl()}hello")
+                        val resp: String = getTokenClient().get("${getServerUrl()}tokenremainingtime")
                         println(resp)
                     } else validResponse = false
                 }

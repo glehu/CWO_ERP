@@ -4,6 +4,7 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import db.CwODB
 import interfaces.IIndexManager
 import interfaces.IModule
+import io.ktor.util.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -16,6 +17,7 @@ import tornadofx.Controller
 import java.io.File
 import kotlin.system.measureTimeMillis
 
+@InternalAPI
 @ExperimentalSerializationApi
 class M2Import : IModule, Controller() {
     override val moduleNameLong = "M2Import"

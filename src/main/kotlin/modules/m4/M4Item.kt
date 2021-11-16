@@ -1,12 +1,14 @@
 package modules.m4
 
 import interfaces.IEntry
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import modules.mx.m4GlobalIndex
 import java.io.File
 import java.util.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 @Serializable
 data class M4Item(

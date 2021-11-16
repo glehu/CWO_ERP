@@ -1,6 +1,5 @@
 package modules.m1.logic
 
-import api.logic.getUserClient
 import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
@@ -11,7 +10,6 @@ import modules.m1.gui.MG1EntryFinder
 import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.misc.*
 import modules.m2.logic.M2Controller
-import modules.mx.activeUser
 import modules.mx.m1GlobalIndex
 import tornadofx.Controller
 import tornadofx.Scope
@@ -27,7 +25,6 @@ class M1Controller : IController, Controller() {
 
     private val m2Controller: M2Controller by inject()
     private val wizard = find<SongConfiguratorWizard>()
-    val client = getUserClient(activeUser.username, activeUser.password)
 
     override fun searchEntry() {
         find<MG1EntryFinder>().openModal()

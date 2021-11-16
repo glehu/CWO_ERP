@@ -3,6 +3,7 @@ package modules.m3.logic
 import db.Index
 import interfaces.IEntry
 import interfaces.IIndexManager
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m3.M3Invoice
@@ -10,6 +11,7 @@ import modules.mx.m3GlobalIndex
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
+@InternalAPI
 @ExperimentalSerializationApi
 class M3IndexManager : IIndexManager, Controller() {
     override val moduleNameLong = "Invoices"

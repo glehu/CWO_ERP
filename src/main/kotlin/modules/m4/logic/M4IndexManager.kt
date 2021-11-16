@@ -3,6 +3,7 @@ package modules.m4.logic
 import db.Index
 import interfaces.IEntry
 import interfaces.IIndexManager
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m4.M4Item
@@ -10,6 +11,7 @@ import modules.mx.m4GlobalIndex
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
+@InternalAPI
 @ExperimentalSerializationApi
 class M4IndexManager : IIndexManager, Controller() {
     override val moduleNameLong = "Inventory"

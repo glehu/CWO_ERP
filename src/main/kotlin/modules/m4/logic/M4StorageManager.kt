@@ -1,6 +1,6 @@
 package modules.m4.logic
 
-import api.logic.getUserClient
+import api.logic.getTokenClient
 import api.misc.json.ListDeltaJson
 import interfaces.IIndexManager
 import interfaces.IModule
@@ -52,7 +52,7 @@ class M4StorageManager : IModule, Controller() {
         } else {
             runBlocking {
                 launch {
-                    getUserClient().post("${getApiUrl()}savestorage") {
+                    getTokenClient().post("${getApiUrl()}savestorage") {
                         contentType(ContentType.Application.Json)
                         body = ListDeltaJson(
                             listEntryNew = Json.encodeToString(storageNew),
@@ -73,7 +73,7 @@ class M4StorageManager : IModule, Controller() {
         } else {
             runBlocking {
                 launch {
-                    getUserClient().post("${getApiUrl()}deletestorage") {
+                    getTokenClient().post("${getApiUrl()}deletestorage") {
                         contentType(ContentType.Application.Json)
                         body = ListDeltaJson(
                             listEntryNew = Json.encodeToString(storage),
@@ -95,7 +95,7 @@ class M4StorageManager : IModule, Controller() {
         } else {
             runBlocking {
                 launch {
-                    storages = getUserClient().get("${getApiUrl()}storages")
+                    storages = getTokenClient().get("${getApiUrl()}storages")
                 }
             }
         }
@@ -144,7 +144,7 @@ class M4StorageManager : IModule, Controller() {
         } else {
             runBlocking {
                 launch {
-                    storageNumber = getUserClient().get("${getApiUrl()}storagenumber")
+                    storageNumber = getTokenClient().get("${getApiUrl()}storagenumber")
                 }
             }
         }

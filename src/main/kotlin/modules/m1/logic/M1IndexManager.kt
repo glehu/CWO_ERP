@@ -4,6 +4,7 @@ import db.Index
 import interfaces.IEntry
 import interfaces.IIndexManager
 import interfaces.IModule
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m1.M1Song
@@ -11,6 +12,7 @@ import modules.mx.m1GlobalIndex
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
+@InternalAPI
 @ExperimentalSerializationApi
 class M1IndexManager : IModule, IIndexManager, Controller() {
     override val moduleNameLong = "Discography"

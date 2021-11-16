@@ -3,6 +3,7 @@ package modules.m2.logic
 import db.CwODB
 import interfaces.IIndexManager
 import interfaces.IModule
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.M2Contact
 import modules.mx.logic.MXLog
@@ -10,6 +11,7 @@ import modules.mx.m2GlobalIndex
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
+@InternalAPI
 @ExperimentalSerializationApi
 class M2Analytics : IModule, Controller() {
     override val moduleNameLong = "M2Analytics"

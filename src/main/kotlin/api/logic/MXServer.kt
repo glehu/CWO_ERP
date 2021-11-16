@@ -43,7 +43,7 @@ class MXServer : IModule, Controller() {
         return null
     }
 
-    val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
+    private val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
     private val userManager: MXUserManager by inject()
     lateinit var text: String
 
@@ -102,15 +102,8 @@ class MXServer : IModule, Controller() {
                     spotifyAPI.updateUserData()
                 }
             }
-            authenticate("auth-jwt") {
-                get("/hello") {
-                    val principal = call.principal<JWTPrincipal>()
-                    val username = principal!!.payload.getClaim("username").asString()
-                    val expiresAt = principal.expiresAt?.time?.minus(System.currentTimeMillis())
-                    call.respondText("Hello, $username! Token is expired at $expiresAt ms.")
-                }
-            }
             authenticate("auth-basic") {
+                register()
                 get("/login") {
                     log(
                         MXLog.LogType.COM,
@@ -159,9 +152,16 @@ class MXServer : IModule, Controller() {
                         call.respondRedirect("https://orochi.netlify.app/")
                     }
                 }
-                //----------------------------------v
-                //------------ CWO  API ------------|
-                //----------------------------------^
+                //------------------------------------------------------v
+                //------------ CWO API, now with JWT AUTH! -------------|
+                //------------------------------------------------------^
+            }
+            authenticate("auth-jwt") {
+                get("/tokenremainingtime") {
+                    val principal = call.principal<JWTPrincipal>()
+                    val expiresInMs = principal!!.expiresAt?.time?.minus(System.currentTimeMillis())
+                    call.respondText(expiresInMs.toString())
+                }
                 route("/api")
                 {
                     /**
@@ -203,7 +203,6 @@ class MXServer : IModule, Controller() {
                     /**
                      * Web Solution Endpoints
                      */
-                    register()
                     addWebshopOrder()
                     userTracking()
                 }
@@ -252,7 +251,7 @@ class MXServer : IModule, Controller() {
                     MXServerController.saveEntry(
                         entry = entryJson.entry,
                         indexManager = ix,
-                        username = call.principal<UserIdPrincipal>()?.name!!
+                        username = call.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
                     )
                 )
             }

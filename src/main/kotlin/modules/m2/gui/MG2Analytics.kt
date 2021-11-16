@@ -1,5 +1,6 @@
 package modules.m2.gui
 
+import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.chart.PieChart
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -8,6 +9,7 @@ import modules.mx.gui.MGXProgressbar
 import modules.mx.m2GlobalIndex
 import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MG2Analytics : Fragment("Analytics") {
     private val m2controller: M2Analytics by inject()

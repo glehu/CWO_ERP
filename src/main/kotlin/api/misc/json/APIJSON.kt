@@ -1,5 +1,7 @@
 package api.misc.json
 
+import interfaces.ITokenData
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -36,11 +38,28 @@ data class EntryJson(
 data class LoginResponseJson(
     val httpCode: Int,
     val token: String,
+    val expiresInMs: Int,
     val accessM1: Boolean,
     val accessM2: Boolean,
     val accessM3: Boolean,
     val accessM4: Boolean
 )
+
+@Serializable
+data class CWOAuthCallbackJson(
+    @SerialName("access_token")
+    override var accessToken: String = "?",
+    @SerialName("token_type")
+    override var tokenType: String = "?",
+    override var scope: String = "?",
+    @SerialName("expires_in")
+    override var expiresInSeconds: Int = 0,
+    @SerialName("refresh_token")
+    override var refreshToken: String = "",
+    //Automatic
+    override var generatedAtUnixTimestamp: Long = 0,
+    override var expireUnixTimestamp: Long = 0
+) : ITokenData
 
 /**
  * This validation container can be used to send or store data with its hash value.

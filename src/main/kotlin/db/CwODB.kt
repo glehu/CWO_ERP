@@ -1,6 +1,7 @@
 package db
 
 import interfaces.IIndexManager
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.getModulePath
 import modules.mx.maxSearchResultsGlobal
@@ -10,6 +11,7 @@ import java.io.RandomAccessFile
 
 @ExperimentalSerializationApi
 class CwODB {
+    @InternalAPI
     companion object CwODB : Controller() {
         /**
          * Used to save the ByteArray of an entry (achieved by serialization) and store it in the database.

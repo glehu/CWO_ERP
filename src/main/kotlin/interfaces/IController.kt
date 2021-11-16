@@ -1,7 +1,9 @@
 package interfaces
 
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 
+@InternalAPI
 @ExperimentalSerializationApi
 interface IController: IModule {
     fun searchEntry()

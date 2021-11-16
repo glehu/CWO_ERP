@@ -6,6 +6,7 @@
 
 package modules.m2.misc
 
+import io.ktor.util.*
 import javafx.beans.property.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
@@ -116,6 +117,7 @@ class ContactModel : ItemViewModel<ContactProperty>(ContactProperty()) {
     val moneyReceived = bind(ContactProperty::moneyReceivedProperty)
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 fun getContactPropertyFromContact(contact: M2Contact): ContactProperty {
     val contactProperty = ContactProperty()
@@ -177,6 +179,7 @@ fun getContactPropertyFromContact(contact: M2Contact): ContactProperty {
     return contactProperty
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 fun getContactFromProperty(contactProperty: ContactProperty): M2Contact {
     val contact = M2Contact(-1, contactProperty.name)

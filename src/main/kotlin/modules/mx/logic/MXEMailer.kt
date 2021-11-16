@@ -4,12 +4,14 @@ import com.sultanofcardio.models.Email
 import com.sultanofcardio.models.MailServer
 import interfaces.IIndexManager
 import interfaces.IModule
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import modules.mx.MXIni
 import modules.mx.getIniFile
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MXEMailer : IModule {
     override val moduleNameLong = "MXEMailer"

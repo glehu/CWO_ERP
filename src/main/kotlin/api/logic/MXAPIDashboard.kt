@@ -3,6 +3,7 @@ package api.logic
 import api.misc.json.UsageTrackerData
 import interfaces.IIndexManager
 import interfaces.IModule
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -13,6 +14,7 @@ import tornadofx.Controller
 import java.io.InputStream
 import java.time.LocalDate
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MXAPIDashboard : IModule, Controller() {
     override val moduleNameLong = "MXAPIDashboard"

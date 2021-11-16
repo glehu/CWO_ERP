@@ -1,5 +1,6 @@
 package modules.mx
 
+import api.misc.json.CWOAuthCallbackJson
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -28,10 +29,7 @@ data class MXUser(
     var online: Boolean = false
 
     @SerialName("bt")
-    var apiToken: String = ""
-
-    @SerialName("be")
-    var apiTokenExpire: Int = 0
+    var apiToken: CWOAuthCallbackJson = CWOAuthCallbackJson()
 
     @SerialName("ols")
     var onlineSince: String = "?"

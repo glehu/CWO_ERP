@@ -1,6 +1,7 @@
 package api.gui
 
 import api.logic.MXAPIDashboard
+import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.NumberAxis
@@ -10,6 +11,7 @@ import modules.mx.gui.MGXProgressbar
 import modules.mx.usageTracker
 import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MGXAPIDashboard : View("API Dashboard") {
     private val progressProperty = SimpleIntegerProperty()

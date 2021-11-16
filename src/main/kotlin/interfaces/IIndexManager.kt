@@ -3,6 +3,7 @@ package interfaces
 import db.CwODB
 import db.Index
 import db.IndexContent
+import io.ktor.util.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -25,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
 import kotlin.concurrent.thread
 
+@InternalAPI
 @ExperimentalSerializationApi
 interface IIndexManager : IModule {
     val indexList: MutableMap<Int, Index>

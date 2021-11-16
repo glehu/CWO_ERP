@@ -1,10 +1,11 @@
 package interfaces
 
-import api.logic.getUserClient
+import api.logic.getTokenClient
 import api.misc.json.*
 import db.CwODB
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.util.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -21,6 +22,7 @@ import modules.mx.protoBufGlobal
 import java.io.File
 import java.io.RandomAccessFile
 
+@InternalAPI
 @ExperimentalSerializationApi
 interface IModule {
     val moduleNameLong: String
@@ -83,7 +85,7 @@ interface IModule {
         } else {
             coroutineScope {
                 launch {
-                    uID = getUserClient().post("${getApiUrl()}saveentry") {
+                    uID = getTokenClient().post("${getApiUrl()}saveentry") {
                         contentType(ContentType.Application.Json)
                         body = EntryJson(entry.uID, encode(entry))
                     }
@@ -138,7 +140,7 @@ interface IModule {
             } else {
                 runBlocking {
                     launch {
-                        entryBytes = getUserClient().get("${getApiUrl()}entry/$uID?type=uid&lock=$lock")
+                        entryBytes = getTokenClient().get("${getApiUrl()}entry/$uID?type=uid&lock=$lock")
                     }
                 }
             }
@@ -218,7 +220,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    indexUserSelection = getUserClient().get("${getApiUrl()}indexselection")
+                    indexUserSelection = getTokenClient().get("${getApiUrl()}indexselection")
                 }
             }
         }
@@ -246,7 +248,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    locked = getUserClient().get("${getApiUrl()}/getentrylock/$uID")
+                    locked = getTokenClient().get("${getApiUrl()}/getentrylock/$uID")
                 }
             }
         }
@@ -275,7 +277,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    success = getUserClient().get("${getApiUrl()}setentrylock/$uID?type=$doLock")
+                    success = getTokenClient().get("${getApiUrl()}setentrylock/$uID?type=$doLock")
                 }
             }
         }
@@ -304,7 +306,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    iniTxt = getUserClient().post("${getServerUrl()}api/getsettingsfiletext") {
+                    iniTxt = getTokenClient().post("${getServerUrl()}api/getsettingsfiletext") {
                         contentType(ContentType.Application.Json)
                         this.body = SettingsRequestJson(moduleShort, subSetting)
                     }
@@ -347,7 +349,7 @@ interface IModule {
         } else {
             runBlocking {
                 launch {
-                    success = getUserClient().post("${getServerUrl()}api/sendemail") {
+                    success = getTokenClient().post("${getServerUrl()}api/sendemail") {
                         contentType(ContentType.Application.Json)
                         this.body = EMailJson(subject, body, recipient)
                     }

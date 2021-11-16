@@ -27,6 +27,7 @@ import java.io.File
 //********************** SERIALIZERS **+***********
 //*************************************************
 
+@InternalAPI
 @ExperimentalSerializationApi
 val serializersModuleGlobal = SerializersModule {
     polymorphic(IEntry::class) {
@@ -38,6 +39,7 @@ val serializersModuleGlobal = SerializersModule {
     }
 }
 
+@InternalAPI
 @ExperimentalSerializationApi
 val protoBufGlobal = ProtoBuf {
     serializersModule = serializersModuleGlobal
@@ -50,24 +52,28 @@ val protoBufGlobal = ProtoBuf {
 /**
  * The global index for songs
  */
+@InternalAPI
 @ExperimentalSerializationApi
 var m1GlobalIndex: M1IndexManager? = null
 
 /**
  * The global index for contacts
  */
+@InternalAPI
 @ExperimentalSerializationApi
 var m2GlobalIndex: M2IndexManager? = null
 
 /**
  * The global index for invoices
  */
+@InternalAPI
 @ExperimentalSerializationApi
 var m3GlobalIndex: M3IndexManager? = null
 
 /**
  * The global index for items
  */
+@InternalAPI
 @ExperimentalSerializationApi
 var m4GlobalIndex: M4IndexManager? = null
 
@@ -75,8 +81,9 @@ var m4GlobalIndex: M4IndexManager? = null
 //********************** TRACKER ******************
 //*************************************************
 
+@InternalAPI
 @ExperimentalSerializationApi
-val usageTracker = MXUsageTracker()
+lateinit var usageTracker: MXUsageTracker
 
 //*************************************************
 //********************** MISCELLANEOUS ************

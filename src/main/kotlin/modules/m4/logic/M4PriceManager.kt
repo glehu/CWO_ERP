@@ -1,6 +1,6 @@
 package modules.m4.logic
 
-import api.logic.getUserClient
+import api.logic.getTokenClient
 import api.misc.json.ListDeltaJson
 import interfaces.IIndexManager
 import interfaces.IModule
@@ -49,7 +49,7 @@ class M4PriceManager : IModule, Controller() {
         } else {
             runBlocking {
                 launch {
-                    getUserClient().post("${getApiUrl()}savecategory") {
+                    getTokenClient().post("${getApiUrl()}savecategory") {
                         contentType(ContentType.Application.Json)
                         body = ListDeltaJson(
                             listEntryNew = Json.encodeToString(categoryNew),
@@ -70,7 +70,7 @@ class M4PriceManager : IModule, Controller() {
         } else {
             runBlocking {
                 launch {
-                    getUserClient().post("${getApiUrl()}deletecategory") {
+                    getTokenClient().post("${getApiUrl()}deletecategory") {
                         contentType(ContentType.Application.Json)
                         body = ListDeltaJson(
                             listEntryNew = Json.encodeToString(category),
@@ -92,7 +92,7 @@ class M4PriceManager : IModule, Controller() {
         } else {
             runBlocking {
                 launch {
-                    priceCategories = getUserClient().get("${getApiUrl()}pricecategories")
+                    priceCategories = getTokenClient().get("${getApiUrl()}pricecategories")
                 }
             }
         }
@@ -141,7 +141,7 @@ class M4PriceManager : IModule, Controller() {
         } else {
             runBlocking {
                 launch {
-                    categoryNumber = getUserClient().get("${getApiUrl()}categorynumber")
+                    categoryNumber = getTokenClient().get("${getApiUrl()}categorynumber")
                 }
             }
         }

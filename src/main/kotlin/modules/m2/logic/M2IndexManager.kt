@@ -3,6 +3,7 @@ package modules.m2.logic
 import db.Index
 import interfaces.IEntry
 import interfaces.IIndexManager
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m2.M2Contact
@@ -10,6 +11,7 @@ import modules.mx.m2GlobalIndex
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
+@InternalAPI
 @ExperimentalSerializationApi
 class M2IndexManager : IIndexManager, Controller() {
     override val moduleNameLong = "Contacts"

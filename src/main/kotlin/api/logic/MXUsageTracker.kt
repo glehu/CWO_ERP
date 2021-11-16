@@ -4,6 +4,7 @@ import api.misc.json.UsageTrackerData
 import api.misc.json.UsageTrackerStats
 import io.ktor.application.*
 import io.ktor.request.*
+import io.ktor.util.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -16,6 +17,7 @@ import modules.mx.logic.MXTimestamp
 import java.io.File
 import java.util.concurrent.atomic.AtomicLong
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MXUsageTracker {
     var totalAPICalls: AtomicLong = AtomicLong(0)

@@ -164,7 +164,7 @@ class GSpotify : View("Spotify API") {
     fun showTokenData(tokenData: SpotifyAuthCallbackJson) {
         accessTokenProperty.value = tokenData.accessToken
         generatedAtUnixTimestampProperty.value = tokenData.generatedAtUnixTimestamp.toString()
-        expiresInProperty.value = tokenData.expiresIn
+        expiresInProperty.value = tokenData.expiresInSeconds
         expireUnixTimestampProperty.value = tokenData.expireUnixTimestamp.toString()
         refreshTokenProperty.value = tokenData.refreshToken
     }

@@ -6,7 +6,11 @@ import io.ktor.client.features.auth.*
 import io.ktor.client.features.auth.providers.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
+import io.ktor.util.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.activeUser
+import modules.mx.logic.MXTimestamp
+import modules.mx.logic.MXUserManager
 
 /**
  * If the software is being run in client mode it needs to communicate with the server to create and edit data.
@@ -33,7 +37,12 @@ fun getUserClient(username: String = activeUser.username, password: String = act
     }
 }
 
-fun getTokenClient(token: String = activeUser.apiToken): HttpClient {
+@ExperimentalSerializationApi
+@InternalAPI
+fun getTokenClient(token: String = activeUser.apiToken.accessToken): HttpClient {
+    if (activeUser.apiToken.expireUnixTimestamp <= MXTimestamp.getUnixTimestamp()) {
+        MXUserManager().login(activeUser.username, activeUser.password)
+    }
     return HttpClient(CIO) {
         install(JsonFeature) {
             serializer = KotlinxSerializer(kotlinx.serialization.json.Json {

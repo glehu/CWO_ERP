@@ -1,11 +1,13 @@
 package modules.m1
 
 import interfaces.IEntry
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import modules.mx.logic.getDefaultDate
 import modules.mx.m1GlobalIndex
 
+@InternalAPI
 @ExperimentalSerializationApi
 @Serializable
 data class M1Song(override var uID: Int, var name: String) : IEntry {

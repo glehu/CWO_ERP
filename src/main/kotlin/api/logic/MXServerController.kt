@@ -7,6 +7,7 @@ import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 import io.ktor.request.*
 import io.ktor.util.*
 import kotlinx.coroutines.sync.Mutex
@@ -83,7 +84,7 @@ class MXServerController {
                             indexManager.getBytes(
                                 uID = routePar.toInt(),
                                 lock = doLock,
-                                userName = appCall.principal<UserIdPrincipal>()?.name!!
+                                userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
                             )
                         }
                     }
@@ -116,7 +117,7 @@ class MXServerController {
             if (routePar != null && routePar.isNotEmpty()) {
                 return indexManager.getEntryLock(
                     uID = routePar.toInt(),
-                    userName = appCall.principal<UserIdPrincipal>()?.name!!
+                    userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
                 )
             }
             return false
@@ -130,7 +131,7 @@ class MXServerController {
                     indexManager.setEntryLock(
                         uID = routePar.toInt(),
                         doLock = queryPar.toBoolean(),
-                        userName = appCall.principal<UserIdPrincipal>()?.name!!
+                        userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
                     )
                 }
             } else false
@@ -140,17 +141,20 @@ class MXServerController {
         @InternalAPI
         fun generateLoginResponse(user: MXUser): ValidationContainerJson {
             val iniVal = Json.decodeFromString<MXIni>(getIniFile().readText())
-            val expiresAt = Date(System.currentTimeMillis() + 86400000)
+            val expiresInMs = (1 * 60 * 60 * 1000)
+            val expiresAt = Date(System.currentTimeMillis() + expiresInMs)
             val token = JWT.create()
                 .withAudience("http://localhost:8000/")
                 .withIssuer("http://localhost:8000/")
                 .withClaim("username", user.username)
                 .withExpiresAt(expiresAt)
                 .sign(Algorithm.HMAC256(iniVal.token))
+            log(MXLog.LogType.COM, "Token generated for ${user.username}", "/login")
             val loginResponse = Json.encodeToString(
                 LoginResponseJson(
                     httpCode = 200,
                     token = token,
+                    expiresInMs = expiresInMs,
                     accessM1 = user.canAccessM1,
                     accessM2 = user.canAccessM2,
                     accessM3 = user.canAccessM3,
@@ -230,7 +234,7 @@ class MXServerController {
                 /**
                  * Finalize the order and save it
                  */
-                val userName = appCall.principal<UserIdPrincipal>()?.name!!
+                val userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
                 M3CLIController().calculate(order)
                 order.date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
                 order.text = "Web Order"

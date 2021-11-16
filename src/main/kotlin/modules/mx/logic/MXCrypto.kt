@@ -1,5 +1,6 @@
 package modules.mx.logic
 
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.tokenGlobal
 import org.komputing.khash.keccak.KeccakParameter
@@ -38,6 +39,7 @@ fun decryptAES(input: String, token: String = tokenGlobal): String {
  * Used to encrypt an input string using the Keccak SHA3_256 algorithm.
  * @return the Base64 encoded Keccak SHA3_256 hashed input string.
  */
+@InternalAPI
 @ExperimentalSerializationApi
 fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String {
     val hashString = Base64.getEncoder()
@@ -54,6 +56,7 @@ fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String
  * to the provided Base64 encoded Keccak SHA3_256 hashed string.
  * @return true if the input matched the hash.
  */
+@InternalAPI
 @ExperimentalSerializationApi
 fun validateKeccak(
     input: String,

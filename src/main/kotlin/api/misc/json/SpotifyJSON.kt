@@ -12,7 +12,7 @@ data class SpotifyAuthCallbackJson(
     override var tokenType: String = "?",
     override var scope: String = "?",
     @SerialName("expires_in")
-    override var expiresIn: Int = 0,
+    override var expiresInSeconds: Int = 0,
     @SerialName("refresh_token")
     override var refreshToken: String = "",
     //Automatic

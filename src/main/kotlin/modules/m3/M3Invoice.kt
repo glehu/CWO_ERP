@@ -2,10 +2,12 @@ package modules.m3
 
 import interfaces.IEntry
 import interfaces.IInvoice
+import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import modules.mx.m3GlobalIndex
 
+@InternalAPI
 @ExperimentalSerializationApi
 @Serializable
 data class M3Invoice(override var uID: Int) : IEntry, IInvoice {

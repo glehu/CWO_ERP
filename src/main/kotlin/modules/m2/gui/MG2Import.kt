@@ -1,5 +1,6 @@
 package modules.m2.gui
 
+import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.Button
@@ -12,6 +13,7 @@ import modules.mx.gui.MGXProgressbar
 import tornadofx.*
 import java.io.File
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MG2Import : Fragment("Contact Data Import") {
     private val contactSchema: ContactModel = ContactModel()

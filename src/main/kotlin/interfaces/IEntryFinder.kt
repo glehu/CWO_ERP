@@ -1,9 +1,10 @@
 package interfaces
 
-import api.logic.getUserClient
+import api.logic.getTokenClient
 import api.misc.json.EntryBytesListJson
 import db.CwODB
 import io.ktor.client.request.*
+import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
@@ -17,6 +18,7 @@ import modules.mx.logic.MXLog
 import modules.mx.logic.indexFormat
 import kotlin.system.measureTimeMillis
 
+@InternalAPI
 @ExperimentalSerializationApi
 interface IEntryFinder : IModule {
     var searchText: TextField
@@ -52,8 +54,7 @@ interface IEntryFinder : IModule {
                             if (exactSearch.isSelected) {
                                 url += "&index=" + ixNr.value.substring(0, 1)
                             }
-                            val entryBytesListJson: EntryBytesListJson = getUserClient()
-                                .get(url)
+                            val entryBytesListJson: EntryBytesListJson = getTokenClient().get(url)
                             if (threadID == threadIDCurrentProperty.value) {
                                 this@IEntryFinder.entriesFound.clear()
                                 for (entryBytes: ByteArray in entryBytesListJson.resultsList) {

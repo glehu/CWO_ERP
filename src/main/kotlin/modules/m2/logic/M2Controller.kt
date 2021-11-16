@@ -1,6 +1,5 @@
 package modules.m2.logic
 
-import api.logic.getUserClient
 import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
@@ -14,7 +13,6 @@ import modules.m2.gui.MG2Import
 import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import modules.m2.misc.getContactPropertyFromContact
-import modules.mx.activeUser
 import modules.mx.gui.MGXEMailer
 import modules.mx.m2GlobalIndex
 import tornadofx.Controller
@@ -31,7 +29,6 @@ class M2Controller : IController, Controller() {
     }
 
     private val wizard = find<ContactConfiguratorWizard>()
-    val client = getUserClient(activeUser.username, activeUser.password)
 
     override fun searchEntry() {
         find<MG2ContactFinder>().openModal()

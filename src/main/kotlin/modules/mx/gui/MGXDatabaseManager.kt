@@ -2,6 +2,7 @@ package modules.mx.gui
 
 import db.CwODB
 import interfaces.IIndexManager
+import io.ktor.util.*
 import javafx.collections.ObservableList
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -13,6 +14,7 @@ import modules.mx.*
 import modules.mx.logic.MXLog
 import tornadofx.*
 
+@InternalAPI
 @ExperimentalSerializationApi
 class MGXDatabaseManager : View("Databases") {
     /**

@@ -3,6 +3,7 @@ package modules.m1.logic
 import db.CwODB
 import interfaces.IIndexManager
 import interfaces.IModule
+import io.ktor.util.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -15,6 +16,7 @@ import tornadofx.Controller
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 
+@InternalAPI
 @ExperimentalSerializationApi
 class M1Benchmark : IModule, Controller() {
     override val moduleNameLong = "M1Benchmark"

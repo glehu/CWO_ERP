@@ -1,6 +1,5 @@
 package modules.m4.logic
 
-import api.logic.getUserClient
 import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
@@ -12,7 +11,6 @@ import modules.m4.gui.MG4ItemFinder
 import modules.m4.misc.M4ItemProperty
 import modules.m4.misc.getM4ItemFromItemProperty
 import modules.m4.misc.getM4ItemPropertyFromItem
-import modules.mx.activeUser
 import modules.mx.m4GlobalIndex
 import tornadofx.Controller
 import tornadofx.Scope
@@ -27,7 +25,6 @@ class M4Controller : IController, Controller() {
     }
 
     private val wizard = find<M4ItemConfiguratorWizard>()
-    val client = getUserClient(activeUser.username, activeUser.password)
 
     override fun searchEntry() {
         find<MG4ItemFinder>().openModal()
