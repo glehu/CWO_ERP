@@ -37,12 +37,14 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
 
     @Suppress("UNCHECKED_CAST")
     val table = tableview(entriesFound as ObservableList<M3Invoice>) {
-        readonlyColumn("ID", M3Invoice::uID).prefWidth(65.0)
-        readonlyColumn("Seller", M3Invoice::seller).prefWidth(225.0)
-        readonlyColumn("Buyer", M3Invoice::buyer).prefWidth(225.0)
-        readonlyColumn("Price", M3Invoice::grossTotal).prefWidth(100.0)
-        readonlyColumn("Date", M3Invoice::date).prefWidth(100.0)
-        readonlyColumn("Text", M3Invoice::text).prefWidth(400.0)
+        readonlyColumn("ID", M3Invoice::uID)
+        readonlyColumn("Seller", M3Invoice::seller)
+        readonlyColumn("Buyer", M3Invoice::buyer)
+        readonlyColumn("Price", M3Invoice::grossTotal)
+        readonlyColumn("Date", M3Invoice::date)
+        readonlyColumn("Text", M3Invoice::text).remainingWidth()
+        readonlyColumn("Status", M3Invoice::status)
+        readonlyColumn("SText", M3Invoice::statusText)
         onUserSelect(1) {
             if (!getEntryLock(it.uID)) {
                 m3Controller.showEntry(it.uID)
@@ -51,6 +53,7 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                 find<MGXLocked>().openModal()
             }
         }
+        columnResizePolicy = SmartResize.POLICY
         isFocusTraversable = false
     }
     override val root = borderpane {
@@ -64,7 +67,7 @@ class MG3InvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                                 threadIDCurrentProperty.value++
                                 searchForEntries(threadIDCurrentProperty.value)
                                 table.refresh()
-                                table.requestLayout()
+                                table.requestResize()
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")

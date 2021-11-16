@@ -9,12 +9,14 @@ import modules.m2.logic.M2Controller
 import modules.m3.M3Invoice
 import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.MG3InvoiceFinder
+import modules.m3.gui.MG3InvoicePayer
 import modules.m3.gui.MG3Settings
 import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.m4.logic.M4PriceManager
 import modules.mx.gui.userAlerts.MGXUserAlert
+import modules.mx.logic.MXEMailer
 import modules.mx.logic.MXLog
 import modules.mx.logic.roundTo
 import modules.mx.m3GlobalIndex
@@ -90,19 +92,28 @@ class M3Controller : IController, Controller() {
                 contact.moneyReceived += wizard.invoice.item.paidNet
                 M2Controller().save(contact)
             }
-            wizard.invoice.item.status = 3
+            wizard.invoice.item.status = 9
             wizard.invoice.item.statusText = M3CLIController().getStatusText(wizard.invoice.item.status)
             wizard.invoice.item.finished = true
             saveEntry()
         }
     }
 
-    suspend fun setPaidInvoice() {
+    suspend fun payInvoice() {
         if (checkInvoice() && checkForSetPaid()) {
-            wizard.invoice.item.paidGross = wizard.invoice.item.grossTotal
-            wizard.invoice.item.status = 2
-            wizard.invoice.item.statusText = M3CLIController().getStatusText(wizard.invoice.item.status)
-            saveEntry()
+            val paymentScreen = find<MG3InvoicePayer>()
+            paymentScreen.openModal(block = true)
+            if (paymentScreen.userConfirmed) {
+                wizard.invoice.item.paidGross = wizard.invoice.item.grossTotal
+                wizard.invoice.item.paidNet = wizard.invoice.item.netTotal
+                if (wizard.invoice.item.paidGross == wizard.invoice.item.grossTotal) {
+                    wizard.invoice.item.status = 3
+                } else {
+                    wizard.invoice.item.status = 2
+                }
+                wizard.invoice.item.statusText = M3CLIController().getStatusText(wizard.invoice.item.status)
+                saveEntry()
+            }
         }
     }
 
@@ -173,5 +184,33 @@ class M3Controller : IController, Controller() {
             saveEntry()
             log(MXLog.LogType.INFO, "Invoice ${wizard.invoice.item.uID} cancelled.")
         }
+    }
+
+    suspend fun commissionInvoice() {
+        if (checkForCommission()) {
+            wizard.invoice.item.status = 1
+            wizard.invoice.item.statusText = M3CLIController().getStatusText(wizard.invoice.item.status)
+            saveEntry()
+            log(MXLog.LogType.INFO, "Invoice ${wizard.invoice.item.uID} commissioned.")
+            MXEMailer().sendEMail(
+                subject = "Web Shop Order #${wizard.invoice.item.uID}",
+                body = "Hey, we're confirming your order over ${wizard.invoice.item.grossTotal} Euro.\n" +
+                        "Order Number: #${wizard.invoice.item.uID}\n" +
+                        "Date: ${wizard.invoice.item.date}",
+                recipient = wizard.invoice.item.buyer
+            )
+        }
+    }
+
+    private fun checkForCommission(): Boolean {
+        var valid = false
+        if (checkInvoice()) {
+            if (wizard.invoice.item.status < 1) {
+                valid = true
+            } else {
+                MGXUserAlert("Invoice already commissioned.").openModal()
+            }
+        }
+        return valid
     }
 }

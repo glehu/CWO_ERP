@@ -108,6 +108,7 @@ class NewInvoiceItemData : Fragment("Items") {
     private val invoice: InvoiceModel by inject()
     private val m3Controller: M3Controller by inject()
     private val table = tableview(invoice.items) {
+        tooltip("Displays the invoices' positions.")
         isEditable = true
         column("Description", M3InvoicePosition::description) {
             makeEditable()
@@ -137,7 +138,7 @@ class NewInvoiceItemData : Fragment("Items") {
                 action {
                     invoice.items.value.remove(selectedItem)
                 }
-                tooltip("Removes the selected item from the invoice")
+                tooltip("Removes the selected item from the invoice.")
             }
         }
 

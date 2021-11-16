@@ -67,15 +67,21 @@ class MG3Overview : IOverview, View("M3 Invoices") {
             separator(Orientation.HORIZONTAL) {
                 paddingVertical = 15
             }
-            button("Paid") {
-                action { runBlocking { m3Controller.setPaidInvoice() } }
-                tooltip("Sets the invoice to fully paid.")
+            button("Commission") {
+                action { runBlocking { m3Controller.commissionInvoice() } }
+                tooltip("Commissions the invoice.")
+                prefWidth = rightButtonsWidth
+                style { unsafe("-fx-base", Color.DARKGREEN) }
+            }
+            button("Payment") {
+                action { runBlocking { m3Controller.payInvoice() } }
+                tooltip("Opens up the payment screen.")
                 prefWidth = rightButtonsWidth
                 style { unsafe("-fx-base", Color.DARKGREEN) }
             }
             button("Process") {
                 action { runBlocking { m3Controller.processInvoice() } }
-                tooltip("Processes the invoice.")
+                tooltip("Processes the invoice and finalizes it.")
                 prefWidth = rightButtonsWidth
                 style { unsafe("-fx-base", Color.DARKGREEN) }
             }
