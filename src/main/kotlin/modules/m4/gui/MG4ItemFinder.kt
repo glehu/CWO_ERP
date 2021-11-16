@@ -38,8 +38,8 @@ class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
 
     @Suppress("UNCHECKED_CAST")
     val table = tableview(entriesFound as ObservableList<M4Item>) {
-        readonlyColumn("ID", M4Item::uID).prefWidth(65.0)
-        readonlyColumn("Description", M4Item::description).prefWidth(500.0)
+        readonlyColumn("ID", M4Item::uID)
+        readonlyColumn("Description", M4Item::description).remainingWidth()
         onUserSelect(1) {
             if (song.uID.value == -2) {
                 //Data transfer
@@ -56,6 +56,7 @@ class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
                 }
             }
         }
+        columnResizePolicy = SmartResize.POLICY
         isFocusTraversable = false
     }
     override val root = borderpane {
@@ -69,7 +70,7 @@ class MG4ItemFinder : IEntryFinder, View("M3 Invoices") {
                                 threadIDCurrentProperty.value++
                                 searchForEntries(threadIDCurrentProperty.value)
                                 table.refresh()
-                                table.requestLayout()
+                                table.requestResize()
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")

@@ -39,12 +39,12 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
 
     @Suppress("UNCHECKED_CAST")
     val table = tableview(entriesFound as ObservableList<M1Song>) {
-        readonlyColumn("ID", M1Song::uID).prefWidth(65.0)
-        readonlyColumn("Name", M1Song::name).prefWidth(310.0)
-        readonlyColumn("Vocalist", M1Song::vocalist).prefWidth(200.0)
-        readonlyColumn("Producer", M1Song::producer).prefWidth(200.0)
-        readonlyColumn("Genre", M1Song::genre).prefWidth(100.0)
-        readonlyColumn("Type", M1Song::type).prefWidth(100.0)
+        readonlyColumn("ID", M1Song::uID)
+        readonlyColumn("Name", M1Song::name).remainingWidth()
+        readonlyColumn("Vocalist", M1Song::vocalist)
+        readonlyColumn("Producer", M1Song::producer)
+        readonlyColumn("Genre", M1Song::genre)
+        readonlyColumn("Type", M1Song::type)
         onUserSelect(1) {
             if (!getEntryLock(it.uID)) {
                 m1Controller.showEntry(it.uID)
@@ -53,6 +53,7 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                 find<MGXLocked>().openModal()
             }
         }
+        columnResizePolicy = SmartResize.POLICY
         isFocusTraversable = false
     }
     override val root = borderpane {
@@ -68,7 +69,7 @@ class MG1EntryFinder : IModule, IEntryFinder, View("M1 Discography") {
                                     threadIDCurrentProperty.value++
                                     searchForEntries(threadIDCurrentProperty.value)
                                     table.refresh()
-                                    table.requestLayout()
+                                    table.requestResize()
                                 }
                             }
                             tooltip("Contains the search text that will be used to find an entry.")

@@ -39,10 +39,11 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
 
     @Suppress("UNCHECKED_CAST")
     val table = tableview(entriesFound as ObservableList<M2Contact>) {
-        readonlyColumn("ID", M2Contact::uID).prefWidth(65.0)
-        readonlyColumn("Name", M2Contact::name).prefWidth(350.0)
-        readonlyColumn("F.Name", M2Contact::firstName).prefWidth(250.0)
-        readonlyColumn("City", M2Contact::city).prefWidth(200.0)
+        readonlyColumn("ID", M2Contact::uID)
+        readonlyColumn("Name", M2Contact::name).remainingWidth()
+        readonlyColumn("EMail", M2Contact::email)
+        readonlyColumn("F.Name", M2Contact::firstName)
+        readonlyColumn("City", M2Contact::city)
         onUserSelect(1) {
             if (song.uID.value == -2) {
                 //Data transfer
@@ -59,6 +60,7 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                 }
             }
         }
+        columnResizePolicy = SmartResize.POLICY
         isFocusTraversable = false
     }
     override val root = borderpane {
@@ -72,7 +74,7 @@ class MG2ContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                                 threadIDCurrentProperty.value++
                                 searchForEntries(threadIDCurrentProperty.value)
                                 table.refresh()
-                                table.requestLayout()
+                                table.requestResize()
                             }
                         }
                         tooltip("Contains the search text that will be used to find an entry.")
