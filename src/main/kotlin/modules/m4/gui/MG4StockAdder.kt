@@ -45,6 +45,6 @@ class MG4StockAdder : Fragment("Add Stock") {
         this.storage = getStoragePropertyFromStorage(storage)
         storageNumber.value = storage.number
         storageDescription.value = storage.description
-        storageStock.value = storage.stock
+        //storageStock.value = storage.stock
     }
 }

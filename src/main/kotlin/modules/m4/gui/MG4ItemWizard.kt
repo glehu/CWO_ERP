@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.M4PriceCategory
 import modules.m4.M4Storage
+import modules.m4.M4StorageUnit
 import modules.m4.Statistic
 import modules.m4.logic.M4Controller
 import modules.m4.logic.M4StorageManager
@@ -176,31 +177,41 @@ class NewM4ItemStorageData : Fragment("Stock") {
     private val storageManager: M4StorageManager by inject()
     private var table = tableview(item.storages) {
         isEditable = true
-        readonlyColumn("Number", M4Storage::number).prefWidth = 100.0
+        readonlyColumn("#", M4Storage::number)
         readonlyColumn("Description", M4Storage::description).prefWidth = 250.0
         readonlyColumn("Lock", M4Storage::locked).prefWidth(50.0)
             .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
-        readonlyColumn("Stock", M4Storage::stock).prefWidth = 100.0
-        column("Add", M4Storage::locked)
-            .cellFormat {
-                graphic = hbox {
-                    button("+").action {
-                        val stockAdder = find<MG4StockAdder>()
-                        stockAdder.getStorageData(rowItem)
-                        stockAdder.openModal(block = true)
-                        if (stockAdder.userConfirmed && stockAdder.stockToAddAmount.value != 0) {
-                            rowItem.stock += stockAdder.stockToAddAmount.value
-                            this@tableview.refresh()
-                            this@tableview.requestLayout()
-                            runBlocking {
-                                M4Controller().saveEntry(unlock = false)
+        rowExpander(expandOnDoubleClick = true) {
+            paddingLeft = expanderColumn.width
+            tableview(it.storageUnits.toObservable()) {
+                isEditable = true
+                readonlyColumn("#", M4StorageUnit::number)
+                readonlyColumn("Description", M4StorageUnit::description)
+                readonlyColumn("Stock", M4StorageUnit::stock)
+                column("Add", M4StorageUnit::locked)
+                    .cellFormat {
+                        graphic = hbox {
+                            button("+").action {
+                                val stockAdder = find<MG4StockAdder>()
+                                stockAdder.openModal(block = true)
+                                if (stockAdder.userConfirmed && stockAdder.stockToAddAmount.value != 0) {
+                                    rowItem.stock += stockAdder.stockToAddAmount.value
+                                    refresh()
+                                    requestLayout()
+                                    runBlocking {
+                                        M4Controller().saveEntry(unlock = false)
+                                    }
+                                }
                             }
                         }
                     }
+                column("Lock", M4StorageUnit::locked) {
+                    makeEditable()
                 }
+                enableCellEditing()
+                regainFocusAfterEdit()
+                isFocusTraversable = false
             }
-        column("Lock", M4Storage::individualLock) {
-            makeEditable()
         }
         enableCellEditing()
         regainFocusAfterEdit()

@@ -4,14 +4,14 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class M4Storage(
+class M4StorageUnit(
     @SerialName("n")
     val number: Int,
     @SerialName("d")
-    val description: String,
+    var description: String,
     @SerialName("l")
     var locked: Boolean = false
 ) {
-    @SerialName("su")
-    var storageUnits: List<M4StorageUnit> = listOf()
+    @SerialName("s")
+    var stock: Int = 0
 }

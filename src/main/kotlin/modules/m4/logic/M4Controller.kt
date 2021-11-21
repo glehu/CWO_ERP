@@ -36,6 +36,7 @@ class M4Controller : IController, Controller() {
             setEntryLock(wizard.item.uID.value, false)
         }
         wizard.item.priceCategories.value.clear()
+        wizard.item.storages.value.clear()
         wizard.item.item = M4ItemProperty()
         wizard.item.validate()
         wizard.isComplete = false
