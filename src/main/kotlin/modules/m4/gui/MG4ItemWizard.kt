@@ -182,7 +182,8 @@ class NewM4ItemStorageData : Fragment("Stock") {
         readonlyColumn("Lock", M4Storage::locked).prefWidth(50.0)
             .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
         rowExpander(expandOnDoubleClick = true) {
-            tableview(it.storageUnits.toObservable()) {
+            val storageTmp = it
+            tableview(storageTmp.storageUnits.toObservable()) {
                 readonlyColumn("#", M4StorageUnit::number)
                 readonlyColumn("Description", M4StorageUnit::description)
                 readonlyColumn("Stock", M4StorageUnit::stock)
@@ -191,6 +192,10 @@ class NewM4ItemStorageData : Fragment("Stock") {
                         graphic = hbox {
                             button("+").action {
                                 val stockAdder = find<MG4StockAdder>()
+                                stockAdder.getStorageData(
+                                    storage = storageTmp,
+                                    storageUnit = rowItem
+                                )
                                 stockAdder.openModal(block = true)
                                 if (stockAdder.userConfirmed && stockAdder.stockToAddAmount.value != 0) {
                                     rowItem.stock += stockAdder.stockToAddAmount.value

@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.M4Storage
+import modules.m4.M4StorageUnit
 import modules.m4.misc.M4ItemModel
 import modules.m4.misc.getStoragePropertyFromStorage
 import tornadofx.*
@@ -13,10 +14,12 @@ import tornadofx.*
 @InternalAPI
 class MG4StockAdder : Fragment("Add Stock") {
     private val item: M4ItemModel by inject()
-    private var storage = getStoragePropertyFromStorage(M4Storage(0, "default"))
+    private var storage = getStoragePropertyFromStorage(M4Storage(0, ""))
     private var storageNumber = SimpleIntegerProperty(storage.number)
     private var storageDescription = SimpleStringProperty(storage.description)
-    private var storageStock = SimpleIntegerProperty(0)
+    private var storageUnitNumber = SimpleIntegerProperty(0)
+    private var storageUnitDescription = SimpleStringProperty("")
+    private var storageUnitStock = SimpleIntegerProperty(0)
     val stockToAddAmount = SimpleIntegerProperty(0)
     var userConfirmed = false
     override val root = form {
@@ -24,10 +27,14 @@ class MG4StockAdder : Fragment("Add Stock") {
             field("uID") { label(item.uID) }
             field("Description") { label(item.description) }
         }
-        fieldset("Storage Location") {
+        fieldset("Storage") {
             field("Number") { label(storageNumber) }
             field("Description") { label(storageDescription) }
-            field("Current Stock") { label(storageStock) }
+        }
+        fieldset("Storage Unit") {
+            field("Number") { label(storageUnitNumber) }
+            field("Description") { label(storageUnitDescription) }
+            field("Current Stock") { label(storageUnitStock) }
         }
         fieldset("Add Stock") {
             field("Amount") { textfield(stockToAddAmount) }
@@ -41,10 +48,12 @@ class MG4StockAdder : Fragment("Add Stock") {
         }
     }
 
-    fun getStorageData(storage: M4Storage) {
+    fun getStorageData(storage: M4Storage, storageUnit: M4StorageUnit) {
         this.storage = getStoragePropertyFromStorage(storage)
         storageNumber.value = storage.number
         storageDescription.value = storage.description
-        //storageStock.value = storage.stock
+        storageUnitNumber.value = storageUnit.number
+        storageUnitDescription.value = storageUnit.description
+        storageUnitStock.value = storageUnit.stock
     }
 }
