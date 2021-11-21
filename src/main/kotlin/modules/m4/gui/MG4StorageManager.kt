@@ -14,12 +14,12 @@ class MG4StorageManager : View("M4 Storage Locations") {
     private val storageManager: M4StorageManager by inject()
 
     @ExperimentalSerializationApi
-    private val storages = storageManager.getStorages()
+    private var storages = storageManager.getStorages()
     private var storagesList = observableListOf<M4Storage>()
     private val table = tableview(storagesList) {
         readonlyColumn("Number", M4Storage::number).prefWidth(100.0)
         readonlyColumn("Description", M4Storage::description).prefWidth(400.0)
-        readonlyColumn("Locked", M4Storage::locked)
+        readonlyColumn("Lock", M4Storage::locked).prefWidth(50.0)
             .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
         onUserSelect(1) {
             if (it.number != 0) {
@@ -47,7 +47,8 @@ class MG4StorageManager : View("M4 Storage Locations") {
     }
 
     fun refreshStorages() {
-        storagesList = storageManager.getStorages(storageManager.getStorages())
+        storages = storageManager.getStorages()
+        storagesList = storageManager.getStorages(storages)
         table.items = storagesList
         table.refresh()
     }

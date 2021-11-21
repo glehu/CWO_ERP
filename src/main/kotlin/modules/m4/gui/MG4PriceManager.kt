@@ -14,7 +14,7 @@ class MG4PriceManager : View("M4 Price Categories") {
     private val categoryManager: M4PriceManager by inject()
 
     @ExperimentalSerializationApi
-    private val categories = categoryManager.getCategories()
+    private var categories = categoryManager.getCategories()
     private var priceCategories = observableListOf<M4PriceCategory>()
     private val table = tableview(priceCategories) {
         readonlyColumn("Number", M4PriceCategory::number).prefWidth(100.0)
@@ -46,7 +46,8 @@ class MG4PriceManager : View("M4 Price Categories") {
     }
 
     fun refreshCategories() {
-        priceCategories = categoryManager.getCategories(categoryManager.getCategories())
+        categories = categoryManager.getCategories()
+        priceCategories = categoryManager.getCategories(categories)
         table.items = priceCategories
         table.refresh()
     }

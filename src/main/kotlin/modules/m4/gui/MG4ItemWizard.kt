@@ -178,7 +178,7 @@ class NewM4ItemStorageData : Fragment("Stock") {
         isEditable = true
         readonlyColumn("Number", M4Storage::number).prefWidth = 100.0
         readonlyColumn("Description", M4Storage::description).prefWidth = 250.0
-        readonlyColumn("Locked", M4Storage::locked)
+        readonlyColumn("Lock", M4Storage::locked).prefWidth(50.0)
             .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
         readonlyColumn("Stock", M4Storage::stock).prefWidth = 100.0
         column("Add", M4Storage::locked)
