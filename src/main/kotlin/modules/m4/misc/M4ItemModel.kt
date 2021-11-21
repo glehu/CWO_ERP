@@ -91,9 +91,12 @@ fun getM4ItemPropertyFromItem(item: M4Item): M4ItemProperty {
     /**
      * Fill the storage locations' stock amount according to their number
      */
-    for ((number, storageString) in item.stock) {
+    for ((_, storageString) in item.stock) {
         val storage = Json.decodeFromString<M4Storage>(storageString)
-        itemProperty.storagesProperty[number] = storage
+        for (storageUnit in storage.storageUnits) {
+            itemProperty.storagesProperty[storage.number].storageUnits[storageUnit.number].stock = storageUnit.stock
+            itemProperty.storagesProperty[storage.number].storageUnits[storageUnit.number].locked = storageUnit.locked
+        }
     }
     return itemProperty
 }
@@ -116,7 +119,12 @@ fun getM4ItemFromItemProperty(itemProperty: M4ItemProperty): M4Item {
         item.prices[item.prices.size] = Json.encodeToString(price)
     }
     for (storage in itemProperty.storagesProperty) {
-        item.stock[item.stock.size] = Json.encodeToString(storage)
+        for ((index, storageUnit) in storage.storageUnits.withIndex()) {
+            if (storageUnit.stock == 0) {
+                storage.storageUnits.removeAt(index)
+            }
+        }
+        if (storage.storageUnits.isNotEmpty()) item.stock[item.stock.size] = Json.encodeToString(storage)
     }
     return item
 }

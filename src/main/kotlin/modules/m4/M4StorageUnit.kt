@@ -8,7 +8,7 @@ class M4StorageUnit(
     @SerialName("n")
     val number: Int,
     @SerialName("d")
-    var description: String,
+    var description: String = "",
     @SerialName("l")
     var locked: Boolean = false
 ) {

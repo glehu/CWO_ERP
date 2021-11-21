@@ -182,9 +182,7 @@ class NewM4ItemStorageData : Fragment("Stock") {
         readonlyColumn("Lock", M4Storage::locked).prefWidth(50.0)
             .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
         rowExpander(expandOnDoubleClick = true) {
-            paddingLeft = expanderColumn.width
             tableview(it.storageUnits.toObservable()) {
-                isEditable = true
                 readonlyColumn("#", M4StorageUnit::number)
                 readonlyColumn("Description", M4StorageUnit::description)
                 readonlyColumn("Stock", M4StorageUnit::stock)
@@ -208,9 +206,6 @@ class NewM4ItemStorageData : Fragment("Stock") {
                 column("Lock", M4StorageUnit::locked) {
                     makeEditable()
                 }
-                enableCellEditing()
-                regainFocusAfterEdit()
-                isFocusTraversable = false
             }
         }
         enableCellEditing()

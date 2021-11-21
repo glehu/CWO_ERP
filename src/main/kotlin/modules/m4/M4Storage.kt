@@ -8,10 +8,10 @@ data class M4Storage(
     @SerialName("n")
     val number: Int,
     @SerialName("d")
-    val description: String,
+    val description: String = "",
     @SerialName("l")
     var locked: Boolean = false
 ) {
     @SerialName("su")
-    var storageUnits: List<M4StorageUnit> = listOf()
+    var storageUnits: MutableList<M4StorageUnit> = mutableListOf()
 }
