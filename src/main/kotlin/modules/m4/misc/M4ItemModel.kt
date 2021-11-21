@@ -7,10 +7,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.m4.M4Item
-import modules.m4.M4PriceCategory
-import modules.m4.M4Storage
-import modules.m4.Statistic
+import modules.m4.*
 import modules.m4.logic.M4PriceManager
 import modules.m4.logic.M4StorageManager
 import tornadofx.ItemViewModel
@@ -119,11 +116,13 @@ fun getM4ItemFromItemProperty(itemProperty: M4ItemProperty): M4Item {
         item.prices[item.prices.size] = Json.encodeToString(price)
     }
     for (storage in itemProperty.storagesProperty) {
-        for ((index, storageUnit) in storage.storageUnits.withIndex()) {
-            if (storageUnit.stock == 0) {
-                storage.storageUnits.removeAt(index)
+        val storageUnits = mutableListOf<M4StorageUnit>()
+        for (storageUnit in storage.storageUnits) {
+            if (storageUnit.stock != 0) {
+                storageUnits.add(storageUnit)
             }
         }
+        storage.storageUnits = storageUnits
         if (storage.storageUnits.isNotEmpty()) item.stock[item.stock.size] = Json.encodeToString(storage)
     }
     return item

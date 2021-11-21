@@ -175,6 +175,7 @@ class NewM4ItemPricesData : Fragment("Prices") {
 class NewM4ItemStorageData : Fragment("Stock") {
     private val item: M4ItemModel by inject()
     private val storageManager: M4StorageManager by inject()
+    private var selectedStorage: M4Storage = M4Storage(0, "")
     private var storages = tableview(item.storages) {
         isEditable = true
         readonlyColumn("#", M4Storage::number)
@@ -183,6 +184,7 @@ class NewM4ItemStorageData : Fragment("Stock") {
             .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
         onUserSelect {
             storageUnitsList.clear()
+            selectedStorage = it
             for (sUnit in it.storageUnits) {
                 storageUnitsList.add(sUnit)
             }
@@ -204,7 +206,7 @@ class NewM4ItemStorageData : Fragment("Stock") {
                     button("+").action {
                         val stockAdder = find<MG4StockAdder>()
                         stockAdder.getStorageData(
-                            storage = M4Storage(0, ""),
+                            storage = selectedStorage,
                             storageUnit = rowItem
                         )
                         stockAdder.openModal(block = true)
@@ -229,9 +231,11 @@ class NewM4ItemStorageData : Fragment("Stock") {
     //----------------------------------^
     override val root = form {
         item.uID.addListener { _, _, _ ->
-            storages.refresh()
-            storageUnitsList.clear()
-            storageUnits.refresh()
+            if (item.uID.value == -1) {
+                storages.refresh()
+                storageUnitsList.clear()
+                storageUnits.refresh()
+            }
         }
         add(storages)
         add(storageUnits)
