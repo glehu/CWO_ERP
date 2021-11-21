@@ -175,59 +175,66 @@ class NewM4ItemPricesData : Fragment("Prices") {
 class NewM4ItemStorageData : Fragment("Stock") {
     private val item: M4ItemModel by inject()
     private val storageManager: M4StorageManager by inject()
-    private var table = tableview(item.storages) {
+    private var storages = tableview(item.storages) {
         isEditable = true
         readonlyColumn("#", M4Storage::number)
         readonlyColumn("Description", M4Storage::description).prefWidth = 250.0
         readonlyColumn("Lock", M4Storage::locked).prefWidth(50.0)
             .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
-        rowExpander(expandOnDoubleClick = false) {
-            val storageRowItem = it
-            tableview(storageRowItem.storageUnits.toObservable()) {
-                readonlyColumn("#", M4StorageUnit::number)
-                readonlyColumn("Description", M4StorageUnit::description)
-                readonlyColumn("Stock", M4StorageUnit::stock)
-                column("Add", M4StorageUnit::locked)
-                    .cellFormat {
-                        graphic = hbox {
-                            button("+").action {
-                                val stockAdder = find<MG4StockAdder>()
-                                stockAdder.getStorageData(
-                                    storage = storageRowItem,
-                                    storageUnit = rowItem
-                                )
-                                stockAdder.openModal(block = true)
-                                if (stockAdder.userConfirmed && stockAdder.stockToAddAmount.value != 0) {
-                                    rowItem.stock += stockAdder.stockToAddAmount.value
-                                    refresh()
-                                    requestLayout()
-                                    runBlocking {
-                                        M4Controller().saveEntry(unlock = false)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                column("Lock", M4StorageUnit::locked) {
-                    makeEditable()
-                }
+        onUserSelect {
+            storageUnitsList.clear()
+            for (sUnit in it.storageUnits) {
+                storageUnitsList.add(sUnit)
             }
+            storageUnits.refresh()
         }
         enableCellEditing()
         regainFocusAfterEdit()
         isFocusTraversable = false
     }
 
+    var storageUnitsList = observableListOf<M4StorageUnit>()
+    private var storageUnits = tableview(storageUnitsList) {
+        readonlyColumn("#", M4StorageUnit::number)
+        readonlyColumn("Description", M4StorageUnit::description)
+        readonlyColumn("Stock", M4StorageUnit::stock)
+        column("Add", M4StorageUnit::locked)
+            .cellFormat {
+                graphic = hbox {
+                    button("+").action {
+                        val stockAdder = find<MG4StockAdder>()
+                        stockAdder.getStorageData(
+                            storage = M4Storage(0, ""),
+                            storageUnit = rowItem
+                        )
+                        stockAdder.openModal(block = true)
+                        if (stockAdder.userConfirmed && stockAdder.stockToAddAmount.value != 0) {
+                            rowItem.stock += stockAdder.stockToAddAmount.value
+                            refresh()
+                            requestLayout()
+                            runBlocking {
+                                M4Controller().saveEntry(unlock = false)
+                            }
+                        }
+                    }
+                }
+            }
+        column("Lock", M4StorageUnit::locked) {
+            makeEditable()
+        }
+    }
+
     //----------------------------------v
     //----------- Main Data ------------|
     //----------------------------------^
     override val root = form {
-        fieldset {
-            item.uID.addListener { _, _, _ ->
-                table.refresh()
-            }
-            add(table)
+        item.uID.addListener { _, _, _ ->
+            storages.refresh()
+            storageUnitsList.clear()
+            storageUnits.refresh()
         }
+        add(storages)
+        add(storageUnits)
     }
 
     override fun onSave() {
