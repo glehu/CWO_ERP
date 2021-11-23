@@ -1,6 +1,5 @@
 package modules.m3.gui
 
-import api.misc.json.M3Ini
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
@@ -11,6 +10,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.logic.M3CLIController
+import modules.m3.misc.M3Ini
 import modules.m4.Statistic
 import modules.mx.m3GlobalIndex
 import modules.mx.rightButtonsWidth

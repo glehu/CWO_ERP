@@ -1,6 +1,5 @@
 package modules.mx.gui
 
-import api.misc.json.MGXEMailerIni
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
@@ -16,6 +15,7 @@ import modules.m2.M2Contact
 import modules.m2.logic.M2Controller
 import modules.m4.Statistic
 import modules.mx.m2GlobalIndex
+import modules.mx.misc.MGXEMailerIni
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 

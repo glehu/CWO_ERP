@@ -38,10 +38,9 @@ class MG4Overview : IOverview, View("M4 Inventory") {
                 tooltip("TBD")
                 prefWidth = rightButtonsWidth
             }
-            button("Rebuild indices") {
-                //TODO: Not yet implemented
-                isDisable = true
-                tooltip("Rebuilds all indices in case of faulty indices.")
+            button("Settings") {
+                action { runBlocking { m4Controller.showSettings() } }
+                tooltip("Opens the settings screen.")
                 prefWidth = rightButtonsWidth
             }
             button("Data Import") {

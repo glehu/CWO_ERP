@@ -8,6 +8,7 @@ import modules.m1.misc.SongPropertyMainDataModel
 import modules.m4.M4Item
 import modules.m4.gui.M4ItemConfiguratorWizard
 import modules.m4.gui.MG4ItemFinder
+import modules.m4.gui.MG4Settings
 import modules.m4.misc.M4ItemProperty
 import modules.m4.misc.getM4ItemFromItemProperty
 import modules.m4.misc.getM4ItemPropertyFromItem
@@ -79,5 +80,10 @@ class M4Controller : IController, Controller() {
             load(dataTransfer.uID.value) as M4Item
         } else M4Item(-1, "")
         return item
+    }
+
+    fun showSettings() {
+        val settings = find<MG4Settings>()
+        settings.openModal()
     }
 }

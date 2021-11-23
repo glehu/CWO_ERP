@@ -1,6 +1,5 @@
 package modules.mx.gui
 
-import api.misc.json.MGXEMailerIni
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
@@ -11,6 +10,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.mx.misc.MGXEMailerIni
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
