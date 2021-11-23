@@ -17,6 +17,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m4.M4Storage
+import modules.m4.M4StorageUnit
 import modules.m4.M4Storages
 import modules.m4.gui.MG4Storage
 import modules.m4.gui.MG4StorageManager
@@ -110,9 +111,10 @@ class M4StorageManager : IModule, Controller() {
 
     private fun initializeCategories(storageFile: File) {
         val mainStorage = M4Storage(0, "default")
-        storageFile.createNewFile()
+        mainStorage.storageUnits.add(M4StorageUnit(0, ""))
         val categories = M4Storages(CategoryType.MAIN)
         categories.storages[mainStorage.number] = mainStorage
+        storageFile.createNewFile()
         storageFile.writeText(Json.encodeToString(categories))
     }
 
