@@ -1,6 +1,7 @@
 package modules.m4.gui
 
 import io.ktor.util.*
+import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.image.Image
 import javafx.scene.paint.Color
 import javafx.stage.FileChooser
@@ -174,31 +175,40 @@ class NewM4ItemPricesData : Fragment("Prices") {
 @ExperimentalSerializationApi
 class NewM4ItemStorageData : Fragment("Stock") {
     private val item: M4ItemModel by inject()
+    private val lastItemUID = SimpleIntegerProperty(item.uID.value)
     private val storageManager: M4StorageManager by inject()
     private var selectedStorage: M4Storage = M4Storage(0, "")
-    private var storages = tableview(item.storages) {
+    private var storagesTable = tableview(item.storages) {
         isEditable = true
         readonlyColumn("#", M4Storage::number)
-        readonlyColumn("Description", M4Storage::description).prefWidth = 250.0
-        readonlyColumn("Lock", M4Storage::locked).prefWidth(50.0)
-            .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
+        readonlyColumn("Description", M4Storage::description).remainingWidth()
+        readonlyColumn("Lock", M4Storage::locked) {
+            cellFormat {
+                text = ""
+                style {
+                    backgroundColor = storageManager.getLockedCellColor(it)
+                }
+            }
+        }
         onUserSelect {
             storageUnitsList.clear()
             selectedStorage = it
             for (sUnit in it.storageUnits) {
                 storageUnitsList.add(sUnit)
             }
-            storageUnits.refresh()
+            storageUnitsTable.refresh()
+            storageUnitsTable.requestResize()
         }
         enableCellEditing()
         regainFocusAfterEdit()
+        columnResizePolicy = SmartResize.POLICY
         isFocusTraversable = false
     }
 
     var storageUnitsList = observableListOf<M4StorageUnit>()
-    private var storageUnits = tableview(storageUnitsList) {
+    private var storageUnitsTable = tableview(storageUnitsList) {
         readonlyColumn("#", M4StorageUnit::number)
-        readonlyColumn("Description", M4StorageUnit::description)
+        readonlyColumn("Description", M4StorageUnit::description).remainingWidth()
         readonlyColumn("Stock", M4StorageUnit::stock)
         column("Add", M4StorageUnit::locked)
             .cellFormat {
@@ -224,21 +234,30 @@ class NewM4ItemStorageData : Fragment("Stock") {
         column("Lock", M4StorageUnit::locked) {
             makeEditable()
         }
+        columnResizePolicy = SmartResize.POLICY
+        isFocusTraversable = false
     }
 
     //----------------------------------v
     //----------- Main Data ------------|
     //----------------------------------^
-    override val root = form {
+    override val root = borderpane {
         item.uID.addListener { _, _, _ ->
-            if (item.uID.value == -1) {
-                storages.refresh()
+            if (item.uID.value == -1 || item.uID.value != lastItemUID.value) {
+                storagesTable.refresh()
                 storageUnitsList.clear()
-                storageUnits.refresh()
+                storageUnitsTable.refresh()
+                lastItemUID.value = item.uID.value
             }
         }
-        add(storages)
-        add(storageUnits)
+        left = form {
+            add(storagesTable)
+            useMaxWidth = true
+            minWidth = 500.0
+        }
+        center = form {
+            add(storageUnitsTable)
+        }
     }
 
     override fun onSave() {
