@@ -318,5 +318,9 @@ class MXServerController {
             val sampleImg = File("$dataPath\\data\\img\\orochi_logo_red_500x500.png")
             return Base64.getEncoder().encodeToString(sampleImg.readBytes())
         }
+
+        fun getJWTUsername(appCall: ApplicationCall): String {
+            return appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
+        }
     }
 }

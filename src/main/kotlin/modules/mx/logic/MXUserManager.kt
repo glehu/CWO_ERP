@@ -67,6 +67,18 @@ class MXUserManager : IModule, Controller() {
         }
     }
 
+    fun checkModuleRight(username: String, module: String): Boolean {
+        val user = getCredentials().credentials[username]!!
+        when (module.uppercase()) {
+            "MX" -> return user.canAccessMX
+            "M1" -> return user.canAccessM1
+            "M2" -> return user.canAccessM2
+            "M3" -> return user.canAccessM3
+            "M4" -> return user.canAccessM4
+        }
+        return false
+    }
+
     fun updateUser(userNew: MXUser, userOriginal: MXUser, credentials: MXCredentials) {
         //Check if username changed
         if (userNew.username != userOriginal.username) {

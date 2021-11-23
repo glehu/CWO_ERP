@@ -225,7 +225,11 @@ class MXServer : IModule, Controller() {
     private fun Route.getIndexSelection(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
             get("${ix.module.lowercase()}/indexselection") {
-                call.respond(ix.getIndexUserSelection())
+                if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), ix.module)) {
+                    call.respond(HttpStatusCode.Forbidden)
+                } else {
+                    call.respond(ix.getIndexUserSelection())
+                }
             }
         }
     }
@@ -233,12 +237,16 @@ class MXServer : IModule, Controller() {
     private fun Route.getEntry(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
             get("${ix.module.lowercase()}/entry/{searchString}") {
-                call.respond(
-                    MXServerController.getEntry(
-                        appCall = call,
-                        indexManager = ix
+                if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), ix.module)) {
+                    call.respond(HttpStatusCode.Forbidden)
+                } else {
+                    call.respond(
+                        MXServerController.getEntry(
+                            appCall = call,
+                            indexManager = ix
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -246,14 +254,18 @@ class MXServer : IModule, Controller() {
     private fun Route.saveEntry(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
             post("${ix.module.lowercase()}/saveentry") {
-                val entryJson: EntryJson = call.receive()
-                call.respond(
-                    MXServerController.saveEntry(
-                        entry = entryJson.entry,
-                        indexManager = ix,
-                        username = call.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
+                if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), ix.module)) {
+                    call.respond(HttpStatusCode.Forbidden)
+                } else {
+                    val entryJson: EntryJson = call.receive()
+                    call.respond(
+                        MXServerController.saveEntry(
+                            entry = entryJson.entry,
+                            indexManager = ix,
+                            username = MXServerController.getJWTUsername(call)
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -261,12 +273,16 @@ class MXServer : IModule, Controller() {
     private fun Route.getEntryLock(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
             get("${ix.module.lowercase()}/getentrylock/{searchString}") {
-                call.respond(
-                    MXServerController.getEntryLock(
-                        appCall = call,
-                        indexManager = ix
+                if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), ix.module)) {
+                    call.respond(HttpStatusCode.Forbidden)
+                } else {
+                    call.respond(
+                        MXServerController.getEntryLock(
+                            appCall = call,
+                            indexManager = ix
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -274,85 +290,130 @@ class MXServer : IModule, Controller() {
     private fun Route.setEntryLock(vararg indexManager: IIndexManager) {
         for (ix in indexManager) {
             get("${ix.module.lowercase()}/setentrylock/{searchString}") {
-                call.respond(
-                    MXServerController.setEntryLock(
-                        appCall = call,
-                        indexManager = ix
+                if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), ix.module)) {
+                    call.respond(HttpStatusCode.Forbidden)
+                } else {
+                    call.respond(
+                        MXServerController.setEntryLock(
+                            appCall = call,
+                            indexManager = ix
+                        )
                     )
-                )
+                }
             }
         }
     }
 
     private fun Route.addWebshopOrder() {
         post("m3/neworder") {
-            call.respond(MXServerController.placeWebshopOrder(call))
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), "M3")) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(MXServerController.placeWebshopOrder(call))
+            }
         }
     }
 
     private fun Route.getPriceCategories() {
         get("m4/pricecategories") {
-            call.respond(
-                M4PriceManager().getCategories()
-            )
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), "M4")) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(
+                    M4PriceManager().getCategories()
+                )
+            }
         }
     }
 
     private fun Route.getPriceCategoryNumber() {
         get("m4/categorynumber") {
-            call.respond(
-                M4PriceManager().getNumber(M4PriceManager().getCategories())
-            )
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), "M4")) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(
+                    M4PriceManager().getNumber(M4PriceManager().getCategories())
+                )
+            }
         }
     }
 
     private fun Route.savePriceCategory() {
         post("m4/savecategory") {
-            call.respond(MXServerController.updatePriceCategories(call.receive() as ListDeltaJson))
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), "M4")) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(MXServerController.updatePriceCategories(call.receive() as ListDeltaJson))
+            }
         }
     }
 
     private fun Route.deletePriceCategory() {
         post("m4/deletecategory") {
-            call.respond(MXServerController.deletePriceCategory(call.receive() as ListDeltaJson))
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), "M4")) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(MXServerController.deletePriceCategory(call.receive() as ListDeltaJson))
+            }
         }
     }
 
     private fun Route.getStorages() {
         get("m4/storages") {
-            call.respond(
-                M4StorageManager().getStorages()
-            )
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), "M4")) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(
+                    M4StorageManager().getStorages()
+                )
+            }
         }
     }
 
     private fun Route.getStorageNumber() {
         get("m4/storagenumber") {
-            call.respond(
-                M4StorageManager().getNumber(M4StorageManager().getStorages())
-            )
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), "M4")) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(
+                    M4StorageManager().getNumber(M4StorageManager().getStorages())
+                )
+            }
         }
     }
 
     private fun Route.saveStorage() {
         post("m4/savestorage") {
-            call.respond(MXServerController.updateStorages(call.receive() as ListDeltaJson))
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), "M4")) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(MXServerController.updateStorages(call.receive() as ListDeltaJson))
+            }
         }
     }
 
     private fun Route.deleteStorage() {
         post("m4/deletestorage") {
-            call.respond(MXServerController.deleteStorage(call.receive() as ListDeltaJson))
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), "M4")) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(MXServerController.deleteStorage(call.receive() as ListDeltaJson))
+            }
         }
     }
 
     private fun Route.getItemImage() {
         get("m4/getimage/{itemUID}") {
-            call.respond(MXServerController.getItemImage())
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), "M4")) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(MXServerController.getItemImage())
+            }
         }
     }
 
     private fun Route.sendEMail() {
+        //TODO: Needs to check rights (currently there are no email rights)
         post("sendemail") {
             val body = call.receive<EMailJson>()
             sendEMail(body.subject, body.body, body.recipient)
@@ -363,12 +424,16 @@ class MXServer : IModule, Controller() {
     private fun Route.getSettingsFileText() {
         post("getsettingsfiletext") {
             val body: SettingsRequestJson = Json.decodeFromString(call.receive())
-            call.respond(
-                MXServerController.getSettingsFileText(
-                    moduleShort = body.module,
-                    subSetting = body.subSetting
+            if (!userManager.checkModuleRight(MXServerController.getJWTUsername(call), body.module)) {
+                call.respond(HttpStatusCode.Forbidden)
+            } else {
+                call.respond(
+                    MXServerController.getSettingsFileText(
+                        moduleShort = body.module,
+                        subSetting = body.subSetting
+                    )
                 )
-            )
+            }
         }
     }
 
