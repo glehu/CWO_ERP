@@ -56,4 +56,13 @@ class MG4StockAdder : Fragment("Add Stock") {
         storageUnitDescription.value = storageUnit.description
         storageUnitStock.value = storageUnit.stock
     }
+
+    /**
+     * Checks if the StockAdder's data are valid.
+     * Currently, only checks if the user confirmed and if the stock to add is not zero.
+     * @return true, if the stock can be added.
+     */
+    fun valid(): Boolean {
+        return userConfirmed && stockToAddAmount.value != 0
+    }
 }

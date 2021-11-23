@@ -220,13 +220,17 @@ class NewM4ItemStorageData : Fragment("Stock") {
                             storageUnit = rowItem
                         )
                         stockAdder.openModal(block = true)
-                        if (stockAdder.userConfirmed && stockAdder.stockToAddAmount.value != 0) {
+                        if (stockAdder.valid()) {
                             rowItem.stock += stockAdder.stockToAddAmount.value
                             refresh()
                             requestLayout()
                             runBlocking {
                                 M4Controller().saveEntry(unlock = false)
                             }
+                        } else {
+                            MGXUserAlert(
+                                "No stock has been added."
+                            ).openModal()
                         }
                     }
                 }
