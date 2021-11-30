@@ -152,6 +152,17 @@ class MXServer : IModule, Controller() {
                         call.respondRedirect("https://orochi.netlify.app/")
                     }
                 }
+                route("/mockingbird") {
+                    post {
+                        val text: String = call.receive()
+                        log(
+                            MXLog.LogType.COM,
+                            text,
+                            call.request.uri
+                        )
+                        call.respondText(text)
+                    }
+                }
                 //------------------------------------------------------v
                 //------------ CWO API, now with JWT AUTH! -------------|
                 //------------------------------------------------------^
