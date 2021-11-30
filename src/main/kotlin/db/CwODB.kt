@@ -2,6 +2,10 @@ package db
 
 import interfaces.IIndexManager
 import io.ktor.util.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.getModulePath
 import modules.mx.maxSearchResultsGlobal
@@ -113,12 +117,20 @@ class CwODB {
 
         private fun returnFromAllIndices(indexManager: IIndexManager, searchText: String): Map<Int, IndexContent> {
             val results = mutableMapOf<Int, IndexContent>()
-            for (ixNr in 1 until indexManager.indexList.size)
-                results.putAll(indexManager.indexList[ixNr]!!.indexMap.filterValues {
-                    it.content.contains(searchText.toRegex())
-                })
+            runBlocking {
+                searchInAllIndices(indexManager, searchText).collect { value -> results.putAll(value) }
+            }
             return results.toSortedMap(compareBy<Int> { it })
         }
+
+        private fun searchInAllIndices(indexManager: IIndexManager, searchText: String): Flow<Map<Int, IndexContent>> =
+            flow {
+                for (ixNr in 1 until indexManager.indexList.size) {
+                    emit(indexManager.indexList[ixNr]!!.indexMap.filterValues {
+                        it.content.contains(searchText.toRegex())
+                    })
+                }
+            }
 
         private fun isGetAll(searchText: String): Boolean {
             return searchText == "*"
