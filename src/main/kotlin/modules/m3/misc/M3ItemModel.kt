@@ -16,7 +16,7 @@ class M3ItemProperty {
     var uID by uIDProperty
     val priceProperty = SimpleDoubleProperty(0.0)
     var price by priceProperty
-    val amountProperty = SimpleIntegerProperty(1)
+    val amountProperty = SimpleDoubleProperty(1.0)
     var amount by amountProperty
     val userNameProperty = SimpleStringProperty("")
     var userName: String by userNameProperty

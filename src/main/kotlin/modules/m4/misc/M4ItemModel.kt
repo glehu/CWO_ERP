@@ -118,7 +118,7 @@ fun getM4ItemFromItemProperty(itemProperty: M4ItemProperty): M4Item {
     for (storage in itemProperty.storagesProperty) {
         val storageUnits = mutableListOf<M4StorageUnit>()
         for (storageUnit in storage.storageUnits) {
-            if (storageUnit.stock != 0) {
+            if (storageUnit.stock != 0.0) {
                 storageUnits.add(storageUnit)
             }
         }

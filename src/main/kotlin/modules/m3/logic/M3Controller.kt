@@ -97,12 +97,17 @@ class M3Controller : IController, Controller() {
             }
             //Stock Posting
             for (item in wizard.invoice.item.itemsProperty) {
-                if (item.stockPostingUID != -1) {
+                if (item.stockPostingUID == -1) {
                     val stockPosting =
-                        m4StockPostingGlobalIndex!!.get(item.stockPostingUID) as M4StockPosting
-                    stockPosting.dateBooked = MXTimestamp.now()
-                    stockPosting.status = 9
-                    stockPosting.isFinished = true
+                        M4StockPosting(
+                            uID = -1,
+                            itemUID = item.uID,
+                            storageUnitFromUID = -1,
+                            storageUnitToUID = -1,
+                            amount = item.amount,
+                            date = MXTimestamp.now()
+                        )
+                    stockPosting.book()
                     m4StockPostingGlobalIndex!!.save(stockPosting)
                 }
             }

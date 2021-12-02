@@ -2,7 +2,6 @@ package modules.m3.gui
 
 import io.ktor.util.*
 import javafx.scene.paint.Color
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -12,11 +11,8 @@ import modules.m3.M3InvoicePosition
 import modules.m3.logic.M3Controller
 import modules.m3.misc.InvoiceModel
 import modules.m4.M4PriceCategory
-import modules.m4.M4StockPosting
 import modules.m4.logic.M4Controller
 import modules.mx.activeUser
-import modules.mx.logic.MXTimestamp
-import modules.mx.m4StockPostingGlobalIndex
 import tornadofx.*
 
 @InternalAPI
@@ -189,18 +185,6 @@ class NewInvoiceItemData : Fragment("Items") {
                         itemPosition.grossPrice =
                             Json.decodeFromString<M4PriceCategory>(item.prices[priceCategory]!!).grossPrice
                         itemPosition.userName = activeUser.username
-                        //Create stock posting
-                        runBlocking {
-                            itemPosition.stockPostingUID = m4StockPostingGlobalIndex!!.save(
-                                M4StockPosting(
-                                    uID = -1,
-                                    itemUID = item.uID,
-                                    storageUnitFromUID = -1,
-                                    storageUnitToUID = -1,
-                                    date = MXTimestamp.now()
-                                )
-                            )
-                        }
                         invoice.items.value.add(itemPosition)
                         invoice.commit()
                         m3Controller.calculate(invoice.item)
@@ -208,12 +192,6 @@ class NewInvoiceItemData : Fragment("Items") {
                 }
                 button("Remove item") {
                     action {
-                        runBlocking {
-                            val stockPosting =
-                                m4StockPostingGlobalIndex!!.get(table.selectedItem!!.stockPostingUID) as M4StockPosting
-                            stockPosting.status = 8
-                            m4StockPostingGlobalIndex!!.save(stockPosting)
-                        }
                         invoice.items.value.remove(table.selectedItem)
                         m3Controller.calculate(invoice.item)
                     }

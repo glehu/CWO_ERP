@@ -21,7 +21,7 @@ data class M3InvoicePosition(
     var netPrice: Double = 0.0
 
     @SerialName("n")
-    var amount: Int = 1
+    var amount: Double = 1.0
 
     @SerialName("u")
     var userName: String = ""

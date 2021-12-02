@@ -7,15 +7,14 @@ import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m4.M4PriceCategory
-import modules.m4.M4Storage
-import modules.m4.M4StorageUnit
-import modules.m4.Statistic
+import modules.m4.*
 import modules.m4.logic.M4Controller
 import modules.m4.logic.M4StorageManager
 import modules.m4.misc.M4ItemModel
 import modules.mx.gui.MGXImageViewer
 import modules.mx.gui.userAlerts.MGXUserAlert
+import modules.mx.logic.MXTimestamp
+import modules.mx.m4StockPostingGlobalIndex
 import tornadofx.*
 
 @InternalAPI
@@ -222,9 +221,19 @@ class NewM4ItemStorageData : Fragment("Stock") {
                         stockAdder.openModal(block = true)
                         if (stockAdder.valid()) {
                             rowItem.stock += stockAdder.stockToAddAmount.value
+                            val stockPosting = M4StockPosting(
+                                uID = -1,
+                                itemUID = this@NewM4ItemStorageData.item.uID.value,
+                                storageUnitFromUID = -1,
+                                storageUnitToUID = stockAdder.storageUnitNumber.value,
+                                amount = stockAdder.stockToAddAmount.value,
+                                date = MXTimestamp.now()
+                            )
+                            stockPosting.book()
                             refresh()
                             requestLayout()
                             runBlocking {
+                                m4StockPostingGlobalIndex!!.save(stockPosting)
                                 M4Controller().saveEntry(unlock = false)
                             }
                         } else {

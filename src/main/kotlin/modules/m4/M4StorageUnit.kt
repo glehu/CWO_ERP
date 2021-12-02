@@ -13,5 +13,5 @@ class M4StorageUnit(
     var locked: Boolean = false
 ) {
     @SerialName("s")
-    var stock: Int = 0
+    var stock: Double = 0.0
 }

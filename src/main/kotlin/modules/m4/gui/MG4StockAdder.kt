@@ -1,6 +1,7 @@
 package modules.m4.gui
 
 import io.ktor.util.*
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -17,10 +18,10 @@ class MG4StockAdder : Fragment("Add Stock") {
     private var storage = getStoragePropertyFromStorage(M4Storage(0, ""))
     private var storageNumber = SimpleIntegerProperty(storage.number)
     private var storageDescription = SimpleStringProperty(storage.description)
-    private var storageUnitNumber = SimpleIntegerProperty(0)
+    var storageUnitNumber = SimpleIntegerProperty(0)
     private var storageUnitDescription = SimpleStringProperty("")
-    private var storageUnitStock = SimpleIntegerProperty(0)
-    val stockToAddAmount = SimpleIntegerProperty(0)
+    private var storageUnitStock = SimpleDoubleProperty(0.0)
+    val stockToAddAmount = SimpleDoubleProperty(0.0)
     var userConfirmed = false
     override val root = form {
         fieldset("Item Data") {
@@ -63,6 +64,6 @@ class MG4StockAdder : Fragment("Add Stock") {
      * @return true, if the stock can be added.
      */
     fun valid(): Boolean {
-        return userConfirmed && stockToAddAmount.value != 0
+        return userConfirmed && stockToAddAmount.value != 0.0
     }
 }
