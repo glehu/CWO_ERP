@@ -20,7 +20,6 @@ import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
 import modules.mx.logic.indexFormat
 import modules.mx.logic.roundTo
-import modules.mx.m3GlobalIndex
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
@@ -66,11 +65,6 @@ interface IIndexManager : IModule {
         val uID = lastUID.getAndIncrement()
         thread {
             setLastUniqueID(lastUID)
-            log(
-                logType = MXLog.LogType.SYS,
-                text = "UID $uID generated",
-                moduleAlt = m3GlobalIndex!!.module
-            )
         }
         return uID
     }

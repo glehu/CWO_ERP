@@ -14,12 +14,15 @@ import modules.m3.gui.MG3Settings
 import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
+import modules.m4.M4StockPosting
 import modules.m4.logic.M4PriceManager
 import modules.mx.gui.userAlerts.MGXUserAlert
 import modules.mx.logic.MXEMailer
 import modules.mx.logic.MXLog
+import modules.mx.logic.MXTimestamp
 import modules.mx.logic.roundTo
 import modules.mx.m3GlobalIndex
+import modules.mx.m4StockPostingGlobalIndex
 import tornadofx.Controller
 
 @InternalAPI
@@ -91,6 +94,17 @@ class M3Controller : IController, Controller() {
                 contact = M2Controller().get(wizard.invoice.item.sellerUID) as M2Contact
                 contact.moneyReceived += wizard.invoice.item.paidNet
                 M2Controller().save(contact)
+            }
+            //Stock Posting
+            for (item in wizard.invoice.item.itemsProperty) {
+                if (item.stockPostingUID != -1) {
+                    val stockPosting =
+                        m4StockPostingGlobalIndex!!.get(item.stockPostingUID) as M4StockPosting
+                    stockPosting.dateBooked = MXTimestamp.now()
+                    stockPosting.status = 9
+                    stockPosting.isFinished = true
+                    m4StockPostingGlobalIndex!!.save(stockPosting)
+                }
             }
             wizard.invoice.item.status = 9
             wizard.invoice.item.statusText = M3CLIController().getStatusText(wizard.invoice.item.status)

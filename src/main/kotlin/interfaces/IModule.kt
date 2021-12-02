@@ -70,11 +70,6 @@ interface IModule {
             )
             val posDBX: Long = posDBXt
             val byteSizeX: Int = byteSizeXt
-            log(
-                logType = MXLog.LogType.SYS,
-                text = "SAVE END uID ${entry.uID}",
-                moduleAlt = indexManager.module
-            )
             indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, userName)
             if (raf == null) CwODB.closeRandomFileAccess(rafLocal)
             uID = entry.uID

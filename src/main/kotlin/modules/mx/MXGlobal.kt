@@ -20,7 +20,9 @@ import modules.m3.M3Invoice
 import modules.m3.M3InvoicePosition
 import modules.m3.logic.M3IndexManager
 import modules.m4.M4Item
+import modules.m4.M4StockPosting
 import modules.m4.logic.M4IndexManager
+import modules.m4.logic.M4StockPostingIndexManager
 import java.io.File
 
 //*************************************************
@@ -36,6 +38,7 @@ val serializersModuleGlobal = SerializersModule {
         subclass(M3Invoice::class, serializer())
         subclass(M3InvoicePosition::class, serializer())
         subclass(M4Item::class, serializer())
+        subclass(M4StockPosting::class, serializer())
     }
 }
 
@@ -76,6 +79,13 @@ var m3GlobalIndex: M3IndexManager? = null
 @InternalAPI
 @ExperimentalSerializationApi
 var m4GlobalIndex: M4IndexManager? = null
+
+/**
+ * The global index for storage posting
+ */
+@InternalAPI
+@ExperimentalSerializationApi
+var m4StockPostingGlobalIndex: M4StockPostingIndexManager? = null
 
 //*************************************************
 //********************** TRACKER ******************

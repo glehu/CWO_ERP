@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 data class M3InvoicePosition(
     @SerialName("i")
     override var uID: Int,
+
     @SerialName("d")
     var description: String
 ) : IEntry {
@@ -19,11 +20,14 @@ data class M3InvoicePosition(
     @SerialName("np")
     var netPrice: Double = 0.0
 
-    @SerialName("a")
+    @SerialName("n")
     var amount: Int = 1
 
     @SerialName("u")
     var userName: String = ""
+
+    @SerialName("p")
+    var stockPostingUID: Int = -1
 
     override fun initialize() {
     }

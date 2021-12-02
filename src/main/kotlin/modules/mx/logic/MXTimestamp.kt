@@ -18,5 +18,12 @@ class MXTimestamp {
         fun getLocalHour(hour: String): String = getLocalHour(hour.toInt()).toString()
         fun getUTCTimestampFromUnix(unixLong: Long): String =
             java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.ofEpochSecond(unixLong))
+
+        /**
+         * @return the UTC timestamp of the current time.
+         */
+        fun now(): String {
+            return getUTCTimestampFromUnix(getUnixTimestamp())
+        }
     }
 }
