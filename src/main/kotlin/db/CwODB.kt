@@ -3,7 +3,6 @@ package db
 import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
@@ -119,7 +118,7 @@ class CwODB {
         private fun returnFromAllIndices(indexManager: IIndexManager, searchText: String): Map<Int, IndexContent> {
             val results = mutableMapOf<Int, IndexContent>()
             runBlocking {
-                searchInAllIndices(indexManager, searchText).buffer().collect { value -> results.putAll(value) }
+                searchInAllIndices(indexManager, searchText).collect { value -> results.putAll(value) }
             }
             return results.toSortedMap(compareBy<Int> { it })
         }
