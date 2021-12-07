@@ -152,7 +152,11 @@ class MGXLog(title: String) : Fragment(title) {
                     counter++
                     val msgT = LogMsg(
                         id = counter,
-                        tstamp = tstampRgx.find(it)?.value?.dropLast(1) ?: "",
+                        tstamp = MXTimestamp.getLocalTimestamp(
+                            MXTimestamp.convUnixHexToUnixTimestamp(
+                                tstampRgx.find(it)?.value?.dropLast(1)!!
+                            )
+                        ),
                         type = typeRgx.find(it)?.value?.drop(2)?.dropLast(1) ?: "",
                         caller = callerRgx.find(it)?.value?.drop(2)?.dropLast(1) ?: "",
                         msg = msgRgx.find(it)?.value?.drop(2) ?: "",

@@ -7,8 +7,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
-import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestampFromUnix
-import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestamp
 import java.io.File
 
 class MXLog {
@@ -46,7 +44,7 @@ class MXLog {
                 val logText = "<t:$type;u:${activeUser.username};c:$caller$apiEndpointTxt:> $text\n"
                 print(logText)
                 if (write) {
-                    getLogFile(module).appendText("${getUTCTimestampFromUnix(getUnixTimestamp())}$logText")
+                    getLogFile(module).appendText("${MXTimestamp.getUnixTimestampHex()}$logText")
                 }
             }
         }

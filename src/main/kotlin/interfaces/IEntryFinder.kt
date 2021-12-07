@@ -39,9 +39,15 @@ interface IEntryFinder : IModule {
                     indexManager = getIndexManager()!!,
                 ) { _, bytes ->
                     if (threadID == threadIDCurrentProperty.value) {
-                        if (entriesFound == 0) this.entriesFound.clear()
-                        this.entriesFound.add(decode(bytes))
-                        entriesFound++
+                        if (entriesFound == 0) {
+                            this.entriesFound.clear()
+                        }
+                        try {
+                            this.entriesFound.add(decode(bytes))
+                            entriesFound++
+                        } catch (e: Exception) {
+                            println("IXLOOK-ERR-${e.message}")
+                        }
                     }
                 }
             } else {
@@ -71,7 +77,7 @@ interface IEntryFinder : IModule {
             if (entriesFound == 0) {
                 this.entriesFound.clear()
             } else {
-                log(MXLog.LogType.INFO, "$entriesFound entries loaded (in $timeInMillis ms)")
+                log(MXLog.LogType.INFO, "$entriesFound results (total $timeInMillis ms)")
             }
         }
     }

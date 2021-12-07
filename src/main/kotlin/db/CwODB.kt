@@ -82,25 +82,38 @@ class CwODB {
             var entryBytes: ByteArray
             if (getDatabaseFile(module).isFile) {
                 val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
-                val filteredMap: Map<Int, IndexContent> = if (!isGetAll(searchText)) {
-                    if (exactSearch) {
-                        /**
-                         * Searches in the provided index
-                         */
-                        indexManager.indexList[ixNr]!!.indexMap.filterValues {
-                            it.content.contains(searchText.toRegex())
-                        }
-                    } else {
+                val filteredMap: Map<Int, IndexContent>
+                if (!isGetAll(searchText)) {
+                    if (!exactSearch) {
                         /**
                          * Searches in all available indices
                          */
-                        returnFromAllIndices(indexManager, searchText)
+                        returnFromAllIndices(indexManager, searchText) { indexResult ->
+                            for (uID in indexResult.keys) {
+                                val baseIndex = indexManager.getBaseIndex(uID)
+                                entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
+                                counter++
+                                /**
+                                 * Callback
+                                 */
+                                updateProgress(uID, entryBytes)
+                                if (maxSearchResults > -1 && counter >= maxSearchResults) break
+                            }
+                        }
+                        return
+                    } else {
+                        /**
+                         * Searches in the provided index
+                         */
+                        filteredMap = indexManager.indexList[ixNr]!!.indexMap.filterValues {
+                            it.content.contains(searchText.toRegex())
+                        }
                     }
                 } else {
                     /**
                      * No search text -> Show all entries
                      */
-                    indexManager.indexList[0]!!.indexMap
+                    filteredMap = indexManager.indexList[0]!!.indexMap
                 }
                 for (uID in filteredMap.keys) {
                     val baseIndex = indexManager.getBaseIndex(uID)
@@ -115,12 +128,16 @@ class CwODB {
             }
         }
 
-        private fun returnFromAllIndices(indexManager: IIndexManager, searchText: String): Map<Int, IndexContent> {
-            val results = mutableMapOf<Int, IndexContent>()
+        private fun returnFromAllIndices(
+            indexManager: IIndexManager,
+            searchText: String,
+            updateProgress: (Map<Int, IndexContent>) -> Unit
+        ) {
             runBlocking {
-                searchInAllIndices(indexManager, searchText).collect { value -> results.putAll(value) }
+                searchInAllIndices(indexManager, searchText).collect { indexResult ->
+                    updateProgress(indexResult)
+                }
             }
-            return results.toSortedMap(compareBy<Int> { it })
         }
 
         private fun searchInAllIndices(indexManager: IIndexManager, searchText: String): Flow<Map<Int, IndexContent>> =
