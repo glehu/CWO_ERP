@@ -142,11 +142,13 @@ class MXServer : IModule, Controller() {
                         find<MGXDashboard>().activeUsers.refresh()
                     }
                 }
+                /*
                 route("/") {
                     get {
                         call.respondFile(File("$dataPath\\data\\web\\home.html"))
                     }
                 }
+                 */
                 route("/web") {
                     get {
                         call.respondRedirect("https://orochi.netlify.app/")
