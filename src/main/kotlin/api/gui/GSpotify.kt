@@ -12,8 +12,8 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.scene.paint.Color
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m1.logic.M1Import
-import modules.mx.gui.MGXProgressbar
+import modules.m1.logic.DiscographyImport
+import modules.mx.gui.GProgressbar
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet.Companion.fieldsetBorder
 import tornadofx.*
@@ -95,7 +95,7 @@ class GSpotify : View("Spotify API") {
                                         var entriesAdded = 0
                                         for (albumList: SpotifyAlbumListJson in albumListJson) {
                                             runBlocking {
-                                                M1Import().importSpotifyAlbumList(albumList, entriesAdded) {
+                                                DiscographyImport().importSpotifyAlbumList(albumList, entriesAdded) {
                                                     entriesAdded = it.first
                                                     updateMessage(it.second + "$entriesAdded")
                                                 }
@@ -107,7 +107,7 @@ class GSpotify : View("Spotify API") {
                             style { unsafe("-fx-base", Color.DARKGREEN) }
                             prefWidth = rightButtonsWidth + 50
                         }
-                        add<MGXProgressbar>()
+                        add<GProgressbar>()
                     }
                 }
             }

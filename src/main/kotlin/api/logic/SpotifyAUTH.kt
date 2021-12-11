@@ -17,9 +17,9 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.getClientSecretFile
-import modules.mx.logic.MXAPI
-import modules.mx.logic.MXAPI.Companion.getAPITokenFile
-import modules.mx.logic.MXLog
+import modules.mx.logic.API
+import modules.mx.logic.API.Companion.getAPITokenFile
+import modules.mx.logic.Log
 import modules.mx.logic.MXTimestamp
 import modules.mx.m1GlobalIndex
 import tornadofx.find
@@ -62,7 +62,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
 
     override fun getAccessTokenFromAuthCode(authCode: String): ITokenData {
         lateinit var tokenData: SpotifyAuthCallbackJson
-        val client = getAuthClient(MXAPI.Companion.AuthType.NONE)
+        val client = getAuthClient(API.Companion.AuthType.NONE)
         runBlocking {
             launch {
                 tokenData = client.post("https://accounts.spotify.com/api/token") {
@@ -74,7 +74,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
                         append("client_secret", clientSecret)
                     })
                 }
-                log(MXLog.LogType.COM, "Spotify access token obtained")
+                log(Log.LogType.COM, "Spotify access token obtained")
                 client.close()
                 saveTokenData(tokenData)
             }
@@ -102,7 +102,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
     override fun refreshAccessToken() {
         var tokenDataNew: SpotifyAuthCallbackJson
         val tokenData = getAccessAndRefreshTokenFromDisk()
-        val client = getAuthClient(MXAPI.Companion.AuthType.NONE)
+        val client = getAuthClient(API.Companion.AuthType.NONE)
         runBlocking {
             launch {
                 tokenDataNew = client.post("https://accounts.spotify.com/api/token") {
@@ -113,7 +113,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
                         append("client_secret", clientSecret)
                     })
                 }
-                log(MXLog.LogType.COM, "Spotify access token refreshed")
+                log(Log.LogType.COM, "Spotify access token refreshed")
                 client.close()
                 tokenData.accessToken = tokenDataNew.accessToken
                 saveTokenData(tokenData)

@@ -16,8 +16,8 @@ import kotlinx.serialization.json.Json
 import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
-import modules.mx.logic.MXEMailer
-import modules.mx.logic.MXLog
+import modules.mx.logic.EMailer
+import modules.mx.logic.Log
 import modules.mx.protoBufGlobal
 import java.io.File
 import java.io.RandomAccessFile
@@ -225,8 +225,8 @@ interface IModule {
     /**
      * Displays text on the console and writes it to the module's log file.
      */
-    fun log(logType: MXLog.LogType, text: String, apiEndpoint: String = "", moduleAlt: String? = null) {
-        MXLog.log(
+    fun log(logType: Log.LogType, text: String, apiEndpoint: String = "", moduleAlt: String? = null) {
+        Log.log(
             module = moduleAlt ?: module,
             type = logType,
             text = text,
@@ -339,7 +339,7 @@ interface IModule {
     ): Boolean {
         var success = false
         if (!isClientGlobal) {
-            MXEMailer().sendEMailOverMailServer(subject, body, recipient)
+            EMailer().sendEMailOverMailServer(subject, body, recipient)
             success = true
         } else {
             runBlocking {

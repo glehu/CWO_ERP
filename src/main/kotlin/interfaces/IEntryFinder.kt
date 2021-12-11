@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.isClientGlobal
-import modules.mx.logic.MXLog
+import modules.mx.logic.Log
 import modules.mx.logic.indexFormat
 import kotlin.system.measureTimeMillis
 
@@ -53,6 +53,20 @@ interface IEntryFinder : IModule {
             } else {
                 if (searchText.text.isNotEmpty()) {
                     runBlocking {
+                        /*
+                        val response: HttpStatusCode = getTokenClient().get("${getApiUrl()}openrawsocket/entrylookup")
+                        if (response == HttpStatusCode.Created) {
+                            val socket =
+                                aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
+                                    .connect(InetSocketAddress("127.0.0.1", 2324))
+                            val input = socket.openReadChannel()
+                            val output = socket.openWriteChannel(autoFlush = true)
+                            output.writeStringUtf8("${indexFormat(searchText.text)}\r\n")
+                            while(!socket.isClosed) {
+                                //input.read
+                            }
+                        }
+                         */
                         launch {
                             var url = getApiUrl() +
                                     "entry/${indexFormat(searchText.text)}" +
@@ -77,7 +91,7 @@ interface IEntryFinder : IModule {
             if (entriesFound == 0) {
                 this.entriesFound.clear()
             } else {
-                log(MXLog.LogType.INFO, "$entriesFound results (total $timeInMillis ms)")
+                log(Log.LogType.INFO, "$entriesFound results (total $timeInMillis ms)")
             }
         }
     }

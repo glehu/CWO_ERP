@@ -19,7 +19,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.*
-import modules.mx.gui.MGXUser
+import modules.mx.gui.GUser
 import tornadofx.Controller
 import tornadofx.MultiValue
 import tornadofx.observableListOf
@@ -79,7 +79,7 @@ class MXUserManager : IModule, Controller() {
         return false
     }
 
-    fun updateUser(userNew: MXUser, userOriginal: MXUser, credentials: MXCredentials) {
+    fun updateUser(userNew: User, userOriginal: User, credentials: Credentials) {
         //Check if username changed
         if (userNew.username != userOriginal.username) {
             //Username changed => Recreate user entry in map since keys are constant
@@ -89,7 +89,7 @@ class MXUserManager : IModule, Controller() {
         writeCredentials(credentials)
     }
 
-    fun deleteUser(user: MXUser, credentials: MXCredentials) {
+    fun deleteUser(user: User, credentials: Credentials) {
         credentials.credentials.remove(user.username)
         writeCredentials(credentials)
     }
@@ -103,15 +103,15 @@ class MXUserManager : IModule, Controller() {
         writeCredentials(credentials)
     }
 
-    fun getCredentials(): MXCredentials {
+    fun getCredentials(): Credentials {
         val credentialsFile = getCredentialsFile()
         if (!credentialsFile.isFile) initializeCredentials(credentialsFile)
         return Json.decodeFromString(credentialsFile.readText())
     }
 
-    private fun writeCredentials(credentials: MXCredentials) {
+    private fun writeCredentials(credentials: Credentials) {
         getCredentialsFile().writeText(json(true).encodeToString(credentials))
-        log(MXLog.LogType.INFO, "Credentials updated")
+        log(Log.LogType.INFO, "Credentials updated")
     }
 
     private fun getCredentialsFile() = File("${getModulePath(module)}\\credentials.dat")
@@ -119,7 +119,7 @@ class MXUserManager : IModule, Controller() {
     private fun compareCredentials(
         username: String,
         password: String,
-        credentials: MXCredentials,
+        credentials: Credentials,
         doLog: Boolean
     ): Boolean {
         var successful = false
@@ -127,9 +127,9 @@ class MXUserManager : IModule, Controller() {
         if (user != null && user.password == encryptAES(password)) {
             successful = true
             if (activeUser.username.isEmpty()) activeUser = user
-            if (doLog) log(MXLog.LogType.INFO, "User \"$username\" login successful")
+            if (doLog) log(Log.LogType.INFO, "User \"$username\" login successful")
         } else {
-            if (doLog) log(MXLog.LogType.WARNING, "User \"$username\" login failed: wrong credentials")
+            if (doLog) log(Log.LogType.WARNING, "User \"$username\" login failed: wrong credentials")
         }
         return successful
     }
@@ -152,7 +152,7 @@ class MXUserManager : IModule, Controller() {
                             salt = encryptKeccak(username),
                             pepper = encryptKeccak("CWO_ERP LoginValidation")
                         )) {
-                        activeUser = MXUser(username, password)
+                        activeUser = User(username, password)
                         activeUser.apiToken = CWOAuthCallbackJson(
                             accessToken = loginResponse.token,
                             expiresInSeconds = (loginResponse.expiresInMs / 1000) - 5
@@ -172,11 +172,11 @@ class MXUserManager : IModule, Controller() {
     }
 
     private fun initializeCredentials(credentialsFile: File) {
-        val user = MXUser("admin", encryptAES("admin"))
+        val user = User("admin", encryptAES("admin"))
         //startupRoutines()
         credentialsFile.createNewFile()
         user.canAccessMX = true
-        val credentials = MXCredentials(CredentialsType.MAIN)
+        val credentials = Credentials(CredentialsType.MAIN)
         credentials.credentials[user.username] = user
         credentialsFile.writeText(Json.encodeToString(credentials))
     }
@@ -188,8 +188,8 @@ class MXUserManager : IModule, Controller() {
     fun getRightsCellColor(hasRight: Boolean): MultiValue<Paint> =
         if (hasRight) MultiValue(arrayOf(Color.GREEN)) else MultiValue(arrayOf(Color.RED))
 
-    fun addUser(credentials: MXCredentials, users: ObservableList<MXUser>) =
-        showUser(MXUser("", ""), credentials, users)
+    fun addUser(credentials: Credentials, users: ObservableList<User>) =
+        showUser(User("", ""), credentials, users)
 
     /**
      * Retrieves all users and puts them in an observable list.
@@ -197,10 +197,10 @@ class MXUserManager : IModule, Controller() {
      * @return an observable list of users.
      */
     fun getUsersObservableList(
-        users: ObservableList<MXUser>,
-        credentials: MXCredentials,
+        users: ObservableList<User>,
+        credentials: Credentials,
         onlineOnly: Boolean = false
-    ): ObservableList<MXUser> {
+    ): ObservableList<User> {
         users.clear()
         for ((_, user) in credentials.credentials) {
             if (!onlineOnly || (onlineOnly && user.online)) {
@@ -210,14 +210,14 @@ class MXUserManager : IModule, Controller() {
         return users
     }
 
-    fun showUser(user: MXUser, credentials: MXCredentials, users: ObservableList<MXUser>) {
-        MGXUser(user, credentials).openModal(block = true)
+    fun showUser(user: User, credentials: Credentials, users: ObservableList<User>) {
+        GUser(user, credentials).openModal(block = true)
         getUsersObservableList(users, credentials)
     }
 
-    fun getActiveUsers(): ObservableList<MXUser> {
+    fun getActiveUsers(): ObservableList<User> {
         return getUsersObservableList(
-            users = observableListOf(MXUser("", "")),
+            users = observableListOf(User("", "")),
             credentials = getCredentials(),
             onlineOnly = true
         )

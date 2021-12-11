@@ -10,10 +10,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.mx.MXLastChange
+import modules.mx.LastChange
 import modules.mx.activeUser
 import modules.mx.getModulePath
-import modules.mx.logic.MXLog
+import modules.mx.logic.Log
 import modules.mx.logic.MXTimestamp.MXTimestamp.convUnixHexToUnixTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
 import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
@@ -71,7 +71,7 @@ interface IIndexManager : IModule {
 
     fun setLastChangeData(uID: Int, userName: String) {
         lastChangeDateHex = getUnixTimestampHex()
-        val lastChange = MXLastChange(uID, lastChangeDateHex, userName)
+        val lastChange = LastChange(uID, lastChangeDateHex, userName)
         setLastChangeValues(lastChange)
         getLastChangeDates()
     }
@@ -182,7 +182,7 @@ interface IIndexManager : IModule {
      * @return an instance of Index to be used in IndexManagers
      */
     fun getIndex(ixNr: Int): Index {
-        log(MXLog.LogType.SYS, "Deserializing index $ixNr for $module...")
+        log(Log.LogType.SYS, "Deserializing index $ixNr for $module...")
         checkIndexFile(module, ixNr)
         return Json.decodeFromString(getIndexFile(ixNr).readText())
     }
@@ -205,7 +205,7 @@ interface IIndexManager : IModule {
     /**
      * Writes the last change date hex values to the disk
      */
-    fun setLastChangeValues(lastChange: MXLastChange) {
+    fun setLastChangeValues(lastChange: LastChange) {
         getLastChangeDateHexFile().writeText(Json.encodeToString(lastChange))
     }
 
@@ -226,12 +226,12 @@ interface IIndexManager : IModule {
     /**
      * @return the last change data
      */
-    fun getLastChange(module: String): MXLastChange {
+    fun getLastChange(module: String): LastChange {
         val lastChangeFile = getLastChangeDateHexFile()
-        val lastChange: MXLastChange
+        val lastChange: LastChange
         if (!lastChangeFile.isFile) {
             lastChangeFile.createNewFile()
-            lastChange = MXLastChange(
+            lastChange = LastChange(
                 -1, getUnixTimestampHex(), activeUser.username
             )
             setLastChangeValues(lastChange)

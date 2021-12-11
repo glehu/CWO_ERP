@@ -6,7 +6,7 @@ import io.ktor.client.features.auth.*
 import io.ktor.client.features.auth.providers.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
-import modules.mx.logic.MXAPI
+import modules.mx.logic.API
 
 interface IAPIAUTH : IAPI {
     override val apiName: String
@@ -23,7 +23,7 @@ interface IAPIAUTH : IAPI {
     fun getAccessTokenFromAuthCode(authCode: String): ITokenData
 
     fun saveTokenData(tokenData: ITokenData) {
-        val tokenFile = MXAPI.getAPITokenFile(apiName)
+        val tokenFile = API.getAPITokenFile(apiName)
         tokenData.initialize()
         val sJson = serializeTokenData(tokenData)
         tokenFile.writeText(sJson)
@@ -33,7 +33,7 @@ interface IAPIAUTH : IAPI {
 
     fun refreshAccessToken()
 
-    fun getAuthClient(authType: MXAPI.Companion.AuthType): HttpClient {
+    fun getAuthClient(authType: API.Companion.AuthType): HttpClient {
         return HttpClient(CIO) {
             install(JsonFeature) {
                 serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
@@ -41,16 +41,16 @@ interface IAPIAUTH : IAPI {
                     ignoreUnknownKeys = true
                 })
             }
-            if (authType != MXAPI.Companion.AuthType.NONE) {
+            if (authType != API.Companion.AuthType.NONE) {
                 install(Auth) {
-                    if (authType == MXAPI.Companion.AuthType.TOKEN) {
+                    if (authType == API.Companion.AuthType.TOKEN) {
                         val tokenData = getAccessAndRefreshTokenFromDisk(checkExpired = true)
                         bearer {
                             loadTokens {
                                 BearerTokens(tokenData.accessToken, tokenData.refreshToken)
                             }
                         }
-                    } else if (authType == MXAPI.Companion.AuthType.BASIC) {
+                    } else if (authType == API.Companion.AuthType.BASIC) {
                         basic {
                             credentials {
                                 BasicAuthCredentials(username = clientID, password = clientSecret)

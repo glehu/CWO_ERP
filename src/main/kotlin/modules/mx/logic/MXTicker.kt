@@ -6,9 +6,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m4.gui.MG4PriceManager
-import modules.m4.gui.MG4StorageManager
-import modules.mx.gui.MGXDatabaseManager
+import modules.m4.gui.GItemPriceManager
+import modules.m4.gui.GItemStorageManager
+import modules.mx.gui.GDatabaseManager
 import modules.mx.isClientGlobal
 import tornadofx.find
 
@@ -30,13 +30,13 @@ class MXTicker {
                     /**
                      * #### Client Ticker Actions: ####
                      */
-                    find<MG4PriceManager>().refreshCategories()
-                    find<MG4StorageManager>().refreshStorages()
+                    find<GItemPriceManager>().refreshCategories()
+                    find<GItemStorageManager>().refreshStorages()
                 } else {
                     /**
                      * #### Server Ticker Actions: ####
                      */
-                    find<MGXDatabaseManager>().refreshStats()
+                    find<GDatabaseManager>().refreshStats()
                 }
                 /**
                  * #### General Ticker Actions: ####
