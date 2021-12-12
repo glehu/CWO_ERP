@@ -6,8 +6,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m4.gui.GItemPriceManager
-import modules.m4.gui.GItemStorageManager
 import modules.mx.gui.GDatabaseManager
 import modules.mx.isClientGlobal
 import tornadofx.find
@@ -30,8 +28,6 @@ class Ticker {
                     /**
                      * #### Client Ticker Actions: ####
                      */
-                    find<GItemPriceManager>().refreshCategories()
-                    find<GItemStorageManager>().refreshStorages()
                 } else {
                     /**
                      * #### Server Ticker Actions: ####

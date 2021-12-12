@@ -10,7 +10,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.misc.getGenreList
 import modules.mx.logic.Log
-import modules.mx.logic.getRandomString
 import modules.mx.m1GlobalIndex
 import tornadofx.Controller
 import kotlin.random.Random
@@ -30,10 +29,10 @@ class DiscographyBenchmark : IModule, Controller() {
         val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
         val timeInMillis = measureTimeMillis {
             for (i in 1..amount) {
-                val song = Song(-1, getRandomString(10L))
+                val song = Song(-1, getRandomGenre())
                 //Fill it with data
-                song.vocalist = getRandomString(10L)
-                song.producer = getRandomString(10L)
+                song.vocalist = song.name.drop(2)
+                song.producer = song.name.dropLast(2)
                 song.genre = getRandomGenre()
                 song.releaseDate = "01.01.1000"
                 save(
@@ -41,7 +40,7 @@ class DiscographyBenchmark : IModule, Controller() {
                     raf = raf,
                     indexWriteToDisk = false,
                 )
-                if (i % 5000 == 0) {
+                if (i % 10_000 == 0) {
                     log(Log.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
                     coroutineScope { launch { m1GlobalIndex!!.writeIndexData() } }
                 }

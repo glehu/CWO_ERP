@@ -42,13 +42,11 @@ fun decryptAES(input: String, token: String = tokenGlobal): String {
 @InternalAPI
 @ExperimentalSerializationApi
 fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String {
-    val hashString = Base64.getEncoder()
+    return Base64.getEncoder()
         .encodeToString(
             "$pepper$input$salt"
                 .digestKeccak(parameter = KeccakParameter.SHA3_512)
         )
-    Log.log("MX", Log.LogType.INFO, hashString, "MXCrypto")
-    return hashString
 }
 
 /**
