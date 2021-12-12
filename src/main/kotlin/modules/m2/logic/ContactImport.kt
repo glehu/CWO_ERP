@@ -60,7 +60,7 @@ class ContactImport : IModule, Controller() {
                         }
                     }
                     updateProgress(Pair(counter, "Importing data..."))
-                    if (counter % 5000 == 0) {
+                    if (counter % 10_000 == 0) {
                         log(Log.LogType.INFO, "Data Insertion uID ${contact.uID}")
                         runBlocking { launch { m2GlobalIndex!!.writeIndexData() } }
                     }
