@@ -1,21 +1,25 @@
 package interfaces
 
-import api.logic.getTokenClient
-import api.misc.json.EntryBytesListJson
+import api.misc.json.EntryJson
 import db.CwODB
-import io.ktor.client.request.*
+import io.ktor.network.selector.*
+import io.ktor.network.sockets.*
 import io.ktor.util.*
+import io.ktor.utils.io.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import modules.mx.isClientGlobal
 import modules.mx.logic.Log
 import modules.mx.logic.indexFormat
+import java.net.InetSocketAddress
 import kotlin.system.measureTimeMillis
 
 @InternalAPI
@@ -28,7 +32,9 @@ interface IEntryFinder : IModule {
     val ixNrList: ObservableList<String>
     val threadIDCurrentProperty: SimpleIntegerProperty
 
-    fun searchForEntries(threadID: Int) {
+    fun searchForEntries(
+        threadID: Int,
+    ) {
         var entriesFound = 0
         val timeInMillis = measureTimeMillis {
             if (!isClientGlobal) {
@@ -46,40 +52,43 @@ interface IEntryFinder : IModule {
                             this.entriesFound.add(decode(bytes))
                             entriesFound++
                         } catch (e: Exception) {
-                            println("IXLOOK-ERR-${e.message}")
+                            log(Log.LogType.ERROR, "IXLOOK-ERR-${e.message}")
                         }
                     }
                 }
             } else {
+                /**
+                 * ########## RAW SOCKET TCP DATA TRANSFER ##########
+                 */
                 if (searchText.text.isNotEmpty()) {
                     runBlocking {
-                        /*
-                        val response: HttpStatusCode = getTokenClient().get("${getApiUrl()}openrawsocket/entrylookup")
-                        if (response == HttpStatusCode.Created) {
-                            val socket =
-                                aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
-                                    .connect(InetSocketAddress("127.0.0.1", 2324))
-                            val input = socket.openReadChannel()
-                            val output = socket.openWriteChannel(autoFlush = true)
-                            output.writeStringUtf8("${indexFormat(searchText.text)}\r\n")
-                            while(!socket.isClosed) {
-                                //input.read
-                            }
-                        }
-                         */
-                        launch {
-                            var url = getApiUrl() +
-                                    "entry/${indexFormat(searchText.text)}" +
-                                    "?type=name"
-                            if (exactSearch.isSelected) {
-                                url += "&index=" + ixNr.value.substring(0, 1)
-                            }
-                            val entryBytesListJson: EntryBytesListJson = getTokenClient().get(url)
+                        val socket =
+                            aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
+                                .connect(InetSocketAddress("127.0.0.1", 2323))
+                        val sockIn = socket.openReadChannel()
+                        val sockOut = socket.openWriteChannel(autoFlush = true)
+                        val exact = if (exactSearch.isSelected) {
+                            "SPECIFIC"
+                        } else "ALL"
+                        sockOut.writeStringUtf8(
+                            "IXS $module ${ixNr.value.substring(0, 1)} $exact NAME ${indexFormat(searchText.text)}\r\n"
+                        )
+                        val response = sockIn.readUTF8Line(Int.MAX_VALUE)
+                        if (response == "RESULTS") {
                             if (threadID == threadIDCurrentProperty.value) {
                                 this@IEntryFinder.entriesFound.clear()
-                                for (entryBytes: ByteArray in entryBytesListJson.resultsList) {
-                                    entriesFound++
-                                    this@IEntryFinder.entriesFound.add(decode(entryBytes))
+                                var done = false
+                                while (!done) {
+                                    val inputLine = sockIn.readUTF8Line(Int.MAX_VALUE)
+                                    if (inputLine != "DONE") {
+                                        try {
+                                            val entryJson = Json.decodeFromString<EntryJson>(inputLine!!)
+                                            entriesFound++
+                                            this@IEntryFinder.entriesFound.add(decode(entryJson.entry))
+                                        } catch (e: Exception) {
+                                            println("IXLOOK-ERR-${e.message}")
+                                        }
+                                    } else done = true
                                 }
                             }
                         }

@@ -136,7 +136,11 @@ fun exitMain() {
         }
         if (telnetServerJobGlobal != null && telnetServerJobGlobal!!.isActive) {
             Log.log(Log.LogType.INFO, "Shutting down telnet server...")
-            telnetServer.server.close()
+            try {
+                telnetServer.server.close()
+            } catch (e: Exception) {
+                println(e.message)
+            }
             telnetServer.server.dispose()
             telnetServerJobGlobal!!.cancel()
         }

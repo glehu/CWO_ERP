@@ -1,6 +1,7 @@
 package modules.mx.logic
 
 import api.logic.Server
+import api.logic.TelnetServer
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
@@ -73,6 +74,7 @@ class CLI : IModule {
             }
         }
         server = Server()
+        telnetServer = TelnetServer()
     }
 
     private fun cliShow(args: List<String>) {
@@ -133,9 +135,8 @@ class CLI : IModule {
             log(Log.LogType.ERROR, "Not enough arguments.")
         } else {
             when (args[1]) {
-                "server" -> {
-                    server = Server()
-                }
+                "server" -> server = Server()
+                "telnet" -> telnetServer = TelnetServer()
             }
         }
     }
@@ -185,7 +186,8 @@ class CLI : IModule {
         val start =
             "start [argument] -> starts [argument]"
         val startDetail = "$start\n" +
-                "\tserver -> starts the server"
+                "\tserver -> starts the server\n" +
+                "\ttelnet -> starts the telnet server"
 
         val show =
             "show [argument] -> shows info about [argument]"
@@ -196,7 +198,7 @@ class CLI : IModule {
                 "\tusers {flag} -> shows a list of users\n" +
                 "\t\t-active -> shows all active users"
         val qs =
-            "qs -> quick start. loads the indices and starts the server."
+            "qs -> quick start. loads the indices and starts the servers."
         //****************************************************
         val helpText = when (args[1]) {
             "help" -> help

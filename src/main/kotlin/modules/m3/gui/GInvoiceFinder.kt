@@ -4,19 +4,25 @@ import interfaces.IEntry
 import interfaces.IEntryFinder
 import interfaces.IIndexManager
 import interfaces.IModule
+import io.ktor.network.selector.*
+import io.ktor.network.sockets.*
 import io.ktor.util.*
+import io.ktor.utils.io.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.Invoice
 import modules.m3.logic.InvoiceController
 import modules.mx.gui.userAlerts.GAlertLocked
 import modules.mx.m3GlobalIndex
 import tornadofx.*
+import java.net.InetSocketAddress
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -63,7 +69,7 @@ class GInvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
                 field("Search") {
                     searchText = textfield {
                         textProperty().addListener { _, _, _ ->
-                            runAsync {
+                            runBlocking {
                                 threadIDCurrentProperty.value++
                                 searchForEntries(threadIDCurrentProperty.value)
                                 table.refresh()

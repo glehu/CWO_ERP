@@ -13,6 +13,7 @@ import javafx.collections.FXCollections.observableArrayList
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.logic.DiscographyController
@@ -66,10 +67,12 @@ class GDiscographyFinder : IModule, IEntryFinder, View("M1 Discography") {
                         searchText = textfield {
                             textProperty().addListener { _, _, _ ->
                                 runAsync {
-                                    threadIDCurrentProperty.value++
-                                    searchForEntries(threadIDCurrentProperty.value)
-                                    table.refresh()
-                                    table.requestResize()
+                                    runBlocking {
+                                        threadIDCurrentProperty.value++
+                                        searchForEntries(threadIDCurrentProperty.value)
+                                        table.refresh()
+                                        table.requestResize()
+                                    }
                                 }
                             }
                             tooltip("Contains the search text that will be used to find an entry.")

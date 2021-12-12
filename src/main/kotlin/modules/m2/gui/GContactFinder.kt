@@ -11,6 +11,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
@@ -70,7 +71,7 @@ class GContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
                 field("Search") {
                     searchText = textfield {
                         textProperty().addListener { _, _, _ ->
-                            runAsync {
+                            runBlocking {
                                 threadIDCurrentProperty.value++
                                 searchForEntries(threadIDCurrentProperty.value)
                                 table.refresh()
