@@ -13,7 +13,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.getModulePath
 import modules.mx.logic.Log
-import modules.mx.logic.MXTimestamp
+import modules.mx.logic.Timestamp
 import java.io.File
 import java.util.concurrent.atomic.AtomicLong
 
@@ -28,7 +28,7 @@ class UsageTracker {
     }
 
     suspend fun writeUsageTrackingData(appCall: ApplicationCall) {
-        val data = MXTimestamp.getUTCTimestampFromUnix(MXTimestamp.getUnixTimestamp()) +
+        val data = Timestamp.getUTCTimestampFromUnix(Timestamp.getUnixTimestamp()) +
                 "<${Json.encodeToString(appCall.receive<UsageTrackerData>())}>\n"
         mutex.withLock { getUsageLogFile().appendText(data) }
         mutex.withLock { writeUsageStats() }

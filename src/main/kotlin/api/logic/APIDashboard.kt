@@ -8,7 +8,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import modules.mx.logic.Log
-import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalHour
+import modules.mx.logic.Timestamp.Timestamp.getLocalHour
 import modules.mx.usageTracker
 import tornadofx.Controller
 import java.io.InputStream

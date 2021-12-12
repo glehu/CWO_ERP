@@ -2,8 +2,8 @@ package modules.mx.logic
 
 import modules.mx.differenceFromUTC
 
-class MXTimestamp {
-    companion object MXTimestamp {
+class Timestamp {
+    companion object Timestamp {
         //Timestamp generation
         fun getUnixTimestamp() = (System.currentTimeMillis() / 1000)
         fun getUnixTimestampHex() = getUnixTimestamp().toString(16)

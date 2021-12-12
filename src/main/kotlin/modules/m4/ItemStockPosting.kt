@@ -4,7 +4,7 @@ import interfaces.IEntry
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import modules.mx.logic.MXTimestamp
+import modules.mx.logic.Timestamp
 import modules.mx.logic.getDefaultDate
 import modules.mx.m4StockPostingGlobalIndex
 
@@ -29,13 +29,13 @@ data class ItemStockPosting(
             !in 0..9 -> status = 0
             9 -> {
                 if (!isFinished) isFinished = true
-                if (dateBooked.isEmpty()) dateBooked = MXTimestamp.now()
+                if (dateBooked.isEmpty()) dateBooked = Timestamp.now()
             }
         }
     }
 
     fun book() {
-        dateBooked = MXTimestamp.now()
+        dateBooked = Timestamp.now()
         status = 9
         isFinished = true
     }

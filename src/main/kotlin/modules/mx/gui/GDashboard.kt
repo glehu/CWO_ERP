@@ -3,13 +3,13 @@ package modules.mx.gui
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.User
-import modules.mx.logic.MXUserManager
+import modules.mx.logic.UserManager
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
 class GDashboard : View("Dashboard") {
-    private val userManager: MXUserManager by inject()
+    private val userManager: UserManager by inject()
     private val dbManager = find<GDatabaseManager>()
     val activeUsers = tableview(userManager.getActiveUsers()) {
         readonlyColumn("Username", User::username).prefWidth(175.0)

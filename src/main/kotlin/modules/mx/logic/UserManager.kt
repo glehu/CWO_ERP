@@ -32,7 +32,7 @@ import kotlin.collections.set
 
 @InternalAPI
 @ExperimentalSerializationApi
-class MXUserManager : IModule, Controller() {
+class UserManager : IModule, Controller() {
     override val moduleNameLong = "MXUserManager"
     override val module = "MX"
     override fun getIndexManager(): IIndexManager? {

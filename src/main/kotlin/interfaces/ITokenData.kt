@@ -1,6 +1,6 @@
 package interfaces
 
-import modules.mx.logic.MXTimestamp
+import modules.mx.logic.Timestamp
 
 interface ITokenData {
     var accessToken: String
@@ -12,7 +12,7 @@ interface ITokenData {
     var expireUnixTimestamp: Long
 
     fun initialize() {
-        generatedAtUnixTimestamp = MXTimestamp.getUnixTimestamp()
+        generatedAtUnixTimestamp = Timestamp.getUnixTimestamp()
         expireUnixTimestamp = generatedAtUnixTimestamp + expiresInSeconds
     }
 }

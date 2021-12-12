@@ -291,7 +291,7 @@ class ServerController {
 
         suspend fun registerUser(appCall: ApplicationCall): RegistrationResponse {
             val registrationPayload = appCall.receive<RegistrationPayload>()
-            val userManager = MXUserManager()
+            val userManager = UserManager()
             var exists = false
             var success = true
             var message = ""

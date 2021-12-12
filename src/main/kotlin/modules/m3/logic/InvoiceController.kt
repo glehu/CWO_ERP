@@ -19,7 +19,7 @@ import modules.m4.logic.ItemPriceManager
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.logic.EMailer
 import modules.mx.logic.Log
-import modules.mx.logic.MXTimestamp
+import modules.mx.logic.Timestamp
 import modules.mx.logic.roundTo
 import modules.mx.m3GlobalIndex
 import modules.mx.m4StockPostingGlobalIndex
@@ -105,7 +105,7 @@ class InvoiceController : IController, Controller() {
                             storageUnitFromUID = -1,
                             storageUnitToUID = -1,
                             amount = item.amount,
-                            date = MXTimestamp.now()
+                            date = Timestamp.now()
                         )
                     stockPosting.book()
                     m4StockPostingGlobalIndex!!.save(stockPosting)

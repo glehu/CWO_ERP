@@ -33,7 +33,7 @@ import modules.m4.logic.ItemStorageManager
 import modules.mx.*
 import modules.mx.gui.GDashboard
 import modules.mx.logic.Log
-import modules.mx.logic.MXUserManager
+import modules.mx.logic.UserManager
 import tornadofx.Controller
 import java.io.File
 import java.net.InetSocketAddress
@@ -49,7 +49,7 @@ class Server : IModule, Controller() {
     }
 
     private val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
-    private val userManager: MXUserManager by inject()
+    private val userManager: UserManager by inject()
     lateinit var text: String
 
     val serverEngine = embeddedServer(Netty, port = 8000) {
@@ -116,7 +116,7 @@ class Server : IModule, Controller() {
                         "User ${call.principal<UserIdPrincipal>()?.name} login",
                         call.request.uri
                     )
-                    val userManager = MXUserManager()
+                    val userManager = UserManager()
                     userManager.setUserOnlineStatus(
                         username = call.principal<UserIdPrincipal>()?.name!!,
                         online = true
@@ -134,7 +134,7 @@ class Server : IModule, Controller() {
                     }
                 }
                 get("/logout") {
-                    MXUserManager().setUserOnlineStatus(
+                    UserManager().setUserOnlineStatus(
                         username = call.principal<UserIdPrincipal>()?.name!!,
                         online = false
                     )

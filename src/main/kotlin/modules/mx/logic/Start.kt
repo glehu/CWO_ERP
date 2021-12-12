@@ -1,6 +1,7 @@
 package modules.mx.logic
 
 import api.logic.Server
+import api.logic.TelnetServer
 import api.logic.UsageTracker
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -93,12 +94,13 @@ fun startupRoutines() {
          * Start the embedded server and usage tracker
          */
         server = Server()
+        telnetServer = TelnetServer()
         usageTracker = UsageTracker()
     }
     /**
      * Start a long-running coroutine task to do various stuff
      */
-    taskJobGlobal = MXTicker.startTicker()
+    taskJobGlobal = Ticker.startTicker()
 }
 
 @InternalAPI
@@ -125,12 +127,18 @@ fun loadIndex(module: String = "") {
 @ExperimentalSerializationApi
 @InternalAPI
 fun exitMain() {
-    MXUserManager().logout(activeUser.username, activeUser.password)
+    UserManager().logout(activeUser.username, activeUser.password)
     if (!isClientGlobal) {
         if (serverJobGlobal != null && serverJobGlobal!!.isActive) {
             Log.log(Log.LogType.INFO, "Shutting down server...")
             server.serverEngine.stop(100L, 100L)
             serverJobGlobal!!.cancel()
+        }
+        if (telnetServerJobGlobal != null && telnetServerJobGlobal!!.isActive) {
+            Log.log(Log.LogType.INFO, "Shutting down telnet server...")
+            telnetServer.server.close()
+            telnetServer.server.dispose()
+            telnetServerJobGlobal!!.cancel()
         }
     }
     if (taskJobGlobal != null && taskJobGlobal!!.isActive) {

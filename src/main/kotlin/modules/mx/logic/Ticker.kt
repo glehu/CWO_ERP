@@ -18,7 +18,7 @@ import tornadofx.find
  * Every set amount of seconds, an operation is executed, to retrieve necessary data from the server.
  * Other useful functions that need to be executed regularly can be put here, too.
  */
-class MXTicker {
+class Ticker {
     @DelicateCoroutinesApi
     @ExperimentalSerializationApi
     @InternalAPI

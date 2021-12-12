@@ -53,7 +53,7 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
 @ExperimentalSerializationApi
 class MXGLogin : Fragment("CWO ERP") {
     private val loginUser = MXUserModel(getUserPropertyFromUser(User("", "")))
-    private val userManager: MXUserManager by inject()
+    private val userManager: UserManager by inject()
     override val root = borderpane {
         top = menubar {
             menu("Menu") {

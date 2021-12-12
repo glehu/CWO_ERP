@@ -101,7 +101,7 @@ class CLI : IModule {
                     cliPrint(header, data)
                 }
                 "users" -> {
-                    val userManager = MXUserManager()
+                    val userManager = UserManager()
                     val users: ObservableList<User> = if (args.size > 2 && args[2] == "-active") {
                         userManager.getActiveUsers()
                     } else {
@@ -236,7 +236,7 @@ class CLI : IModule {
                 print("CWO:> Password: ")
                 password = System.console().readPassword().concatToString()
             }
-            loggedIn = MXUserManager().login(username, password, doLog = true)
+            loggedIn = UserManager().login(username, password, doLog = true)
         }
         return loggedIn
     }

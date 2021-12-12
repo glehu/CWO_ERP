@@ -8,7 +8,7 @@ import javafx.collections.ObservableList
 import javafx.geometry.Orientation
 import javafx.scene.control.TextField
 import modules.mx.gui.userAlerts.GAlert
-import modules.mx.logic.MXTimestamp
+import modules.mx.logic.Timestamp
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 import java.io.File
@@ -99,7 +99,7 @@ class GLog(title: String) : Fragment(title) {
 
     private fun saveLog() {
         val directory = chooseDirectory("Choose directory for the CSV file to be saved in:")
-        val timestamp = MXTimestamp.getUTCTimestamp(MXTimestamp.getUnixTimestamp()).replace(':', '-')
+        val timestamp = Timestamp.getUTCTimestamp(Timestamp.getUnixTimestamp()).replace(':', '-')
         val file = File(
             directory!!.path +
                     "\\$timestamp-$title-log.csv"
@@ -152,8 +152,8 @@ class GLog(title: String) : Fragment(title) {
                     counter++
                     val msgT = LogMsg(
                         id = counter,
-                        tstamp = MXTimestamp.getLocalTimestamp(
-                            MXTimestamp.convUnixHexToUnixTimestamp(
+                        tstamp = Timestamp.getLocalTimestamp(
+                            Timestamp.convUnixHexToUnixTimestamp(
                                 tstampRgx.find(it)?.value?.dropLast(1)!!
                             )
                         ),

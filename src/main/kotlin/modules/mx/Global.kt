@@ -1,6 +1,7 @@
 package modules.mx
 
 import api.logic.Server
+import api.logic.TelnetServer
 import api.logic.UsageTracker
 import interfaces.IEntry
 import io.ktor.util.*
@@ -134,7 +135,14 @@ var differenceFromUTC: Int = 0
 @InternalAPI
 @ExperimentalSerializationApi
 lateinit var server: Server
+
+@DelicateCoroutinesApi
+@ExperimentalSerializationApi
+@InternalAPI
+lateinit var telnetServer: TelnetServer
+
 var serverJobGlobal: Job? = null
+var telnetServerJobGlobal: Job? = null
 var isClientGlobal: Boolean = false
 var serverIPAddressGlobal: String = "?"
 

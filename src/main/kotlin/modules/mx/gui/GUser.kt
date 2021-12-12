@@ -5,7 +5,7 @@ import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.Credentials
 import modules.mx.User
-import modules.mx.logic.MXUserManager
+import modules.mx.logic.UserManager
 import modules.mx.logic.decryptAES
 import modules.mx.logic.encryptAES
 import modules.mx.misc.MXUserModel
@@ -17,7 +17,7 @@ import tornadofx.*
 @ExperimentalSerializationApi
 @InternalAPI
 class GUser(user: User, credentials: Credentials) : Fragment("User") {
-    private val userManager: MXUserManager by inject()
+    private val userManager: UserManager by inject()
     private val userModel = MXUserModel(getUserPropertyFromUser(user))
     private val originalUser = user.copy()
     override val root = form {

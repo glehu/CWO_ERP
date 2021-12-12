@@ -14,10 +14,10 @@ import modules.mx.LastChange
 import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.logic.Log
-import modules.mx.logic.MXTimestamp.MXTimestamp.convUnixHexToUnixTimestamp
-import modules.mx.logic.MXTimestamp.MXTimestamp.getLocalTimestamp
-import modules.mx.logic.MXTimestamp.MXTimestamp.getUTCTimestamp
-import modules.mx.logic.MXTimestamp.MXTimestamp.getUnixTimestampHex
+import modules.mx.logic.Timestamp.Timestamp.convUnixHexToUnixTimestamp
+import modules.mx.logic.Timestamp.Timestamp.getLocalTimestamp
+import modules.mx.logic.Timestamp.Timestamp.getUTCTimestamp
+import modules.mx.logic.Timestamp.Timestamp.getUnixTimestampHex
 import modules.mx.logic.indexFormat
 import modules.mx.logic.roundTo
 import java.io.File

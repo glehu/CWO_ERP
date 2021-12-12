@@ -5,14 +5,14 @@ import javafx.collections.ObservableList
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.User
 import modules.mx.logic.Log
-import modules.mx.logic.MXUserManager
+import modules.mx.logic.UserManager
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
 class GUserManager : View("User Management") {
-    private val userManager: MXUserManager by inject()
+    private val userManager: UserManager by inject()
 
     @ExperimentalSerializationApi
     private var users: ObservableList<User> = observableListOf(User("", ""))

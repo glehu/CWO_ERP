@@ -20,7 +20,7 @@ import modules.mx.getClientSecretFile
 import modules.mx.logic.API
 import modules.mx.logic.API.Companion.getAPITokenFile
 import modules.mx.logic.Log
-import modules.mx.logic.MXTimestamp
+import modules.mx.logic.Timestamp
 import modules.mx.m1GlobalIndex
 import tornadofx.find
 import java.net.URLEncoder
@@ -89,7 +89,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
         if (fileContent.isNotEmpty()) {
             tokenData = Json.decodeFromString(tokenFile.readText())
             if (checkExpired) {
-                if (tokenData.expireUnixTimestamp <= MXTimestamp.getUnixTimestamp()) {
+                if (tokenData.expireUnixTimestamp <= Timestamp.getUnixTimestamp()) {
                     refreshAccessToken()
                     tokenData = Json.decodeFromString(tokenFile.readText())
                     find<GSpotify>().showTokenData(getAccessAndRefreshTokenFromDisk() as SpotifyAuthCallbackJson)

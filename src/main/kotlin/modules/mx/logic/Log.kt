@@ -44,7 +44,7 @@ class Log {
                 val logText = "<t:$type;u:${activeUser.username};c:$caller$apiEndpointTxt:> $text\n"
                 print(logText)
                 if (write) {
-                    getLogFile(module).appendText("${MXTimestamp.getUnixTimestampHex()}$logText")
+                    getLogFile(module).appendText("${Timestamp.getUnixTimestampHex()}$logText")
                 }
             }
         }
