@@ -6,7 +6,10 @@ import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.network.sockets.*
 import io.ktor.util.*
+import io.ktor.util.network.*
 import io.ktor.utils.io.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -30,25 +33,41 @@ class RawSocketChannel(
 
     private var connected = true
     private var lastMessage = Timestamp.getUnixTimestamp()
+    private var remoteAddress: NetworkAddress? = null
 
     private lateinit var inputChannel: ByteReadChannel
     private lateinit var outputChannel: ByteWriteChannel
 
     fun startSession() = runBlocking {
-        launch {
-            inputChannel = socket.openReadChannel()
-            outputChannel = socket.openWriteChannel(autoFlush = true)
-            log(
-                logType = Log.LogType.COM,
-                text = "TELNET OPEN ${socket.remoteAddress}",
-                apiEndpoint = "telnet ${socket.localAddress}"
-            )
-            while (connected) {
-                //Wait for message
-                val input = inputChannel.readUTF8Line(Int.MAX_VALUE)
-                lastMessage = Timestamp.getUnixTimestamp()
-                //Process message
-                handleInput(input)
+        sessionGuard(
+            launch {
+                inputChannel = socket.openReadChannel()
+                remoteAddress = socket.remoteAddress
+                outputChannel = socket.openWriteChannel(autoFlush = true)
+                outputChannel.writeStringUtf8("HEY\r\n")
+                log(
+                    logType = Log.LogType.SYS,
+                    text = "RAW SOCKET $remoteAddress"
+                )
+                while (connected) {
+                    //Wait for message
+                    val input = inputChannel.readUTF8Line()
+                    lastMessage = Timestamp.getUnixTimestamp()
+                    //Process message
+                    handleInput(input)
+                }
+            }
+        )
+    }
+
+    private suspend fun sessionGuard(job: Job) {
+        var run = true
+        while (run) {
+            delay(5000)
+            if ((Timestamp.getUnixTimestamp() - lastMessage) >= 20) {
+                endSession("Disconnected due to inactivity.")
+                run = false
+                job.cancel()
             }
         }
     }
@@ -59,9 +78,11 @@ class RawSocketChannel(
         }
         log(
             logType = Log.LogType.SYS,
-            text = "TELNET CLOSE REASON $reason"
+            text = "TELNET CLOSE $remoteAddress REASON $reason"
         )
         connected = false
+        inputChannel.cancel()
+        outputChannel.close()
         socket.dispose()
     }
 
@@ -75,7 +96,7 @@ class RawSocketChannel(
         when (getActionType(args)) {
             Action.ECHO -> echo(args)
             Action.INDEXSEARCH -> indexSearch(args)
-            Action.DISCONNECT -> endSession("Bye! (User Disconnected)")
+            Action.DISCONNECT -> endSession("BYE")
             else -> return
         }
     }

@@ -18,6 +18,7 @@ import modules.mx.gui.CWOMainGUI
 import modules.mx.gui.showPreferences
 import tornadofx.launch
 import java.io.File
+import java.io.IOException
 
 @DelicateCoroutinesApi
 @InternalAPI
@@ -138,10 +139,9 @@ fun exitMain() {
             Log.log(Log.LogType.INFO, "Shutting down telnet server...")
             try {
                 telnetServer.server.close()
-            } catch (e: Exception) {
+            } catch (e: IOException) {
                 println(e.message)
             }
-            telnetServer.server.dispose()
             telnetServerJobGlobal!!.cancel()
         }
     }
