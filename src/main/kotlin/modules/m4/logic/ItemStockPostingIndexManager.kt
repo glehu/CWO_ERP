@@ -8,17 +8,17 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m4.Item
 import modules.m4.ItemStockPosting
-import modules.mx.m4StockPostingGlobalIndex
+import modules.mx.itemStockPostingIndexManager
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
 @InternalAPI
 @ExperimentalSerializationApi
 class ItemStockPostingIndexManager : IIndexManager, Controller() {
-    override val moduleNameLong = "StockPosting"
+    override val moduleNameLong = "ItemStockPostingIndexManager"
     override val module = "M4SP"
     override fun getIndexManager(): IIndexManager {
-        return m4StockPostingGlobalIndex!!
+        return itemStockPostingIndexManager!!
     }
 
     override var lastChangeDateHex: String = ""

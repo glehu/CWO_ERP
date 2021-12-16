@@ -7,10 +7,10 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
 import modules.m2.logic.ContactController
 import modules.m3.Invoice
-import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.gui.GInvoiceFinder
 import modules.m3.gui.GInvoicePayer
 import modules.m3.gui.GInvoiceSettings
+import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
@@ -21,17 +21,17 @@ import modules.mx.logic.EMailer
 import modules.mx.logic.Log
 import modules.mx.logic.Timestamp
 import modules.mx.logic.roundTo
-import modules.mx.m3GlobalIndex
-import modules.mx.m4StockPostingGlobalIndex
+import modules.mx.invoiceIndexManager
+import modules.mx.itemStockPostingIndexManager
 import tornadofx.Controller
 
 @InternalAPI
 @ExperimentalSerializationApi
 class InvoiceController : IController, Controller() {
-    override val moduleNameLong = "M3Controller"
+    override val moduleNameLong = "InvoiceController"
     override val module = "M3"
     override fun getIndexManager(): IIndexManager {
-        return m3GlobalIndex!!
+        return invoiceIndexManager!!
     }
 
     private val wizard = find<InvoiceConfiguratorWizard>()
@@ -108,7 +108,7 @@ class InvoiceController : IController, Controller() {
                             date = Timestamp.now()
                         )
                     stockPosting.book()
-                    m4StockPostingGlobalIndex!!.save(stockPosting)
+                    itemStockPostingIndexManager!!.save(stockPosting)
                 }
             }
             wizard.invoice.item.status = 9

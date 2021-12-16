@@ -17,7 +17,7 @@ import java.time.LocalDate
 @InternalAPI
 @ExperimentalSerializationApi
 class APIDashboard : IModule, Controller() {
-    override val moduleNameLong = "MXAPIDashboard"
+    override val moduleNameLong = "APIDashboard"
     override val module = "MX"
     override fun getIndexManager(): IIndexManager? {
         return null

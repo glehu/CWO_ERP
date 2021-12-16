@@ -2,24 +2,24 @@ package modules.m3.gui
 
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m3.misc.M3ItemModel
+import modules.m3.misc.InvoiceItemModel
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
 class ItemConfiguratorWizard : Wizard("Add new item") {
-    val item: M3ItemModel by inject()
+    val item: InvoiceItemModel by inject()
 
     init {
         enableStepLinks = true
-        add(NewItemMainData::class)
+        add(InvoiceItemMainData::class)
     }
 }
 
 @InternalAPI
 @ExperimentalSerializationApi
-class NewItemMainData : Fragment("Main") {
-    private val item: M3ItemModel by inject()
+class InvoiceItemMainData : Fragment("Main") {
+    private val item: InvoiceItemModel by inject()
 
     //----------------------------------v
     //----------- Main Data ------------|

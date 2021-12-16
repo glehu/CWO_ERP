@@ -14,7 +14,7 @@ import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GInvoiceOverview : IOverview, View("M3 Invoices") {
+class GInvoiceOverview : IOverview, View("Invoices") {
     private val invoiceController: InvoiceController by inject()
     override val root = borderpane {
         right = vbox {
@@ -102,17 +102,17 @@ class GInvoiceOverview : IOverview, View("M3 Invoices") {
                     }
                     addClass(Stylesheet.fieldsetBorder)
                     fieldset("Main Data") {
-                        add(NewInvoiceMainData::class)
+                        add(InvoiceMainData::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
                     fieldset {
-                        add(NewInvoiceItemData::class)
+                        add(InvoiceItemData::class)
                         addClass(Stylesheet.fieldsetBorder)
                         hgrow = Priority.ALWAYS
                     }
                 }
                 fieldset {
-                    add(NewInvoiceNotes::class)
+                    add(InvoiceNotesData::class)
                     addClass(Stylesheet.fieldsetBorder)
                     hgrow = Priority.ALWAYS
                 }

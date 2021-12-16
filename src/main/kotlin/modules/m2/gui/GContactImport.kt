@@ -15,7 +15,7 @@ import java.io.File
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GContactImport : Fragment("Contact Data Import") {
+class GContactImport : Fragment("Contact Import") {
     private val contactSchema: ContactModel = ContactModel()
     private val m2controller: ContactImport by inject()
     private val progressProperty = SimpleIntegerProperty()

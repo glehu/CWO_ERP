@@ -6,12 +6,12 @@ import javafx.scene.chart.PieChart
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.DiscographyAnalytics
 import modules.mx.gui.GProgressbar
-import modules.mx.m1GlobalIndex
+import modules.mx.discographyIndexManager
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GDiscographyAnalytics : Fragment("Analytics") {
+class GDiscographyAnalytics : Fragment("Discography Analytics") {
     private val m1controller: DiscographyAnalytics by inject()
     private val progressProperty = SimpleIntegerProperty()
     private var progressN by progressProperty
@@ -22,7 +22,7 @@ class GDiscographyAnalytics : Fragment("Analytics") {
             button("Genre Distribution") {
                 prefWidth = 200.0
                 action {
-                    maxEntries = m1GlobalIndex!!.getLastUniqueID().toInt()
+                    maxEntries = discographyIndexManager!!.getLastUniqueID().toInt()
                     runAsync {
                         val genreDist =
                             m1controller.getDistributionChartData(DiscographyAnalytics.DistType.GENRE) {
@@ -37,7 +37,7 @@ class GDiscographyAnalytics : Fragment("Analytics") {
             button("Type Distribution") {
                 prefWidth = 200.0
                 action {
-                    maxEntries = m1GlobalIndex!!.getLastUniqueID().toInt()
+                    maxEntries = discographyIndexManager!!.getLastUniqueID().toInt()
                     runAsync {
                         val genreDist =
                             m1controller.getDistributionChartData(DiscographyAnalytics.DistType.TYPE) {

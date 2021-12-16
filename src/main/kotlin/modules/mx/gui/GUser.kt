@@ -8,7 +8,7 @@ import modules.mx.User
 import modules.mx.logic.UserManager
 import modules.mx.logic.decryptAES
 import modules.mx.logic.encryptAES
-import modules.mx.misc.MXUserModel
+import modules.mx.misc.UserModel
 import modules.mx.misc.getUserFromUserProperty
 import modules.mx.misc.getUserPropertyFromUser
 import modules.mx.rightButtonsWidth
@@ -18,7 +18,7 @@ import tornadofx.*
 @InternalAPI
 class GUser(user: User, credentials: Credentials) : Fragment("User") {
     private val userManager: UserManager by inject()
-    private val userModel = MXUserModel(getUserPropertyFromUser(user))
+    private val userModel = UserModel(getUserPropertyFromUser(user))
     private val originalUser = user.copy()
     override val root = form {
         userModel.password.value = decryptAES(userModel.password.value)
@@ -28,11 +28,11 @@ class GUser(user: User, credentials: Credentials) : Fragment("User") {
         }
         fieldset("Rights (Attention! Changes to rights are active only after a restart!)") {
             fieldset("Access to...") {
-                field("MX") { checkbox("", userModel.canAccessMX) }
-                field("M1Songs") { checkbox("", userModel.canAccessM1) }
-                field("M2Contacts") { checkbox("", userModel.canAccessM2) }
-                field("M3Invoice") { checkbox("", userModel.canAccessM3) }
-                field("M4Inventory") { checkbox("", userModel.canAccessM4) }
+                field("Management") { checkbox("", userModel.canAccessManagement) }
+                field("Discography") { checkbox("", userModel.canAccessDiscography) }
+                field("Contacts") { checkbox("", userModel.canAccessContacts) }
+                field("Invoices") { checkbox("", userModel.canAccessInvoices) }
+                field("Inventory") { checkbox("", userModel.canAccessInventory) }
             }
         }
         button("Save") {

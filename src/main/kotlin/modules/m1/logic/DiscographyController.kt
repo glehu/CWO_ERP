@@ -10,17 +10,17 @@ import modules.m1.gui.GDiscographyFinder
 import modules.m1.gui.SongConfiguratorWizard
 import modules.m1.misc.*
 import modules.m2.logic.ContactController
-import modules.mx.m1GlobalIndex
+import modules.mx.discographyIndexManager
 import tornadofx.Controller
 import tornadofx.Scope
 
 @InternalAPI
 @ExperimentalSerializationApi
 class DiscographyController : IController, Controller() {
-    override val moduleNameLong = "M1Controller"
+    override val moduleNameLong = "DiscographyController"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex!!
+        return discographyIndexManager!!
     }
 
     private val contactController: ContactController by inject()

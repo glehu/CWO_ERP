@@ -14,7 +14,7 @@ import modules.m2.misc.ContactProperty
 import modules.m2.misc.getContactFromProperty
 import modules.m2.misc.getContactPropertyFromContact
 import modules.mx.gui.GEMailer
-import modules.mx.m2GlobalIndex
+import modules.mx.contactIndexManager
 import tornadofx.Controller
 import tornadofx.Scope
 import tornadofx.find
@@ -22,10 +22,10 @@ import tornadofx.find
 @InternalAPI
 @ExperimentalSerializationApi
 class ContactController : IController, Controller() {
-    override val moduleNameLong = "M2Controller"
+    override val moduleNameLong = "ContactController"
     override val module = "M2"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex!!
+        return contactIndexManager!!
     }
 
     private val wizard = find<ContactConfiguratorWizard>()

@@ -54,9 +54,7 @@ interface IEntryFinder : IModule {
                 exactSearch = entryFinder.exactSearch.isSelected,
                 indexManager = getIndexManager()!!,
             ) { _, bytes ->
-                if (entriesFound == 0) {
-                    this.entriesFound.clear()
-                }
+                if (entriesFound == 0) this.entriesFound.clear()
                 try {
                     this.entriesFound.add(decode(bytes))
                     entriesFound++
@@ -65,9 +63,7 @@ interface IEntryFinder : IModule {
                 }
             }
         } else {
-            /**
-             * ########## RAW SOCKET TCP DATA TRANSFER ##########
-             */
+            // ########## RAW SOCKET TCP DATA TRANSFER ##########
             runBlocking {
                 val socket =
                     aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()

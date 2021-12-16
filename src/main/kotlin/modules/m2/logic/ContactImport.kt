@@ -12,7 +12,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
 import modules.m2.misc.ContactModel
 import modules.mx.logic.Log
-import modules.mx.m2GlobalIndex
+import modules.mx.contactIndexManager
 import tornadofx.Controller
 import java.io.File
 import kotlin.system.measureTimeMillis
@@ -20,10 +20,10 @@ import kotlin.system.measureTimeMillis
 @InternalAPI
 @ExperimentalSerializationApi
 class ContactImport : IModule, Controller() {
-    override val moduleNameLong = "M2Import"
+    override val moduleNameLong = "ContactImport"
     override val module = "M2"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex!!
+        return contactIndexManager!!
     }
 
     suspend fun importData(
@@ -62,12 +62,12 @@ class ContactImport : IModule, Controller() {
                     updateProgress(Pair(counter, "Importing data..."))
                     if (counter % 10_000 == 0) {
                         log(Log.LogType.INFO, "Data Insertion uID ${contact.uID}")
-                        runBlocking { launch { m2GlobalIndex!!.writeIndexData() } }
+                        runBlocking { launch { contactIndexManager!!.writeIndexData() } }
                     }
                 }
             }
-            log(Log.LogType.INFO, "Data Insertion uID ${m2GlobalIndex!!.getLastUniqueID()}")
-            coroutineScope { launch { m2GlobalIndex!!.writeIndexData() } }
+            log(Log.LogType.INFO, "Data Insertion uID ${contactIndexManager!!.getLastUniqueID()}")
+            coroutineScope { launch { contactIndexManager!!.writeIndexData() } }
         }
         CwODB.closeRandomFileAccess(raf)
         log(Log.LogType.INFO, "Data Import end (${timeInMillis / 1000} sec)")

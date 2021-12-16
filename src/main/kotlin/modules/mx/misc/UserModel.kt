@@ -7,7 +7,7 @@ import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue
 
-class MXUserModelProperty {
+class UserModelProperty {
     //Credentials
     val usernameProperty = SimpleStringProperty("")
     var username: String by usernameProperty
@@ -15,46 +15,46 @@ class MXUserModelProperty {
     var password: String by passwordProperty
 
     //Rights... Access to modules
-    val canAccessMXProperty = SimpleBooleanProperty(false)
-    var canAccessMX by canAccessMXProperty
-    val canAccessM1Property = SimpleBooleanProperty(true)
-    var canAccessM1 by canAccessM1Property
-    val canAccessM2Property = SimpleBooleanProperty(true)
-    var canAccessM2 by canAccessM2Property
-    val canAccessM3Property = SimpleBooleanProperty(true)
-    var canAccessM3 by canAccessM3Property
-    val canAccessM4Property = SimpleBooleanProperty(true)
-    var canAccessM4 by canAccessM4Property
+    val canAccessManagementProperty = SimpleBooleanProperty(false)
+    var canAccessManagement by canAccessManagementProperty
+    val canAccessDiscographyProperty = SimpleBooleanProperty(true)
+    var canAccessDiscography by canAccessDiscographyProperty
+    val canAccessContactsProperty = SimpleBooleanProperty(true)
+    var canAccessContacts by canAccessContactsProperty
+    val canAccessInvoicesProperty = SimpleBooleanProperty(true)
+    var canAccessInvoices by canAccessInvoicesProperty
+    val canAccessInventoryProperty = SimpleBooleanProperty(true)
+    var canAccessInventory by canAccessInventoryProperty
 }
 
-class MXUserModel(user: MXUserModelProperty) : ItemViewModel<MXUserModelProperty>(user) {
-    val username = bind(MXUserModelProperty::usernameProperty)
-    val password = bind(MXUserModelProperty::passwordProperty)
-    val canAccessMX = bind(MXUserModelProperty::canAccessMXProperty)
-    val canAccessM1 = bind(MXUserModelProperty::canAccessM1Property)
-    val canAccessM2 = bind(MXUserModelProperty::canAccessM2Property)
-    val canAccessM3 = bind(MXUserModelProperty::canAccessM3Property)
-    val canAccessM4 = bind(MXUserModelProperty::canAccessM4Property)
+class UserModel(user: UserModelProperty) : ItemViewModel<UserModelProperty>(user) {
+    val username = bind(UserModelProperty::usernameProperty)
+    val password = bind(UserModelProperty::passwordProperty)
+    val canAccessManagement = bind(UserModelProperty::canAccessManagementProperty)
+    val canAccessDiscography = bind(UserModelProperty::canAccessDiscographyProperty)
+    val canAccessContacts = bind(UserModelProperty::canAccessContactsProperty)
+    val canAccessInvoices = bind(UserModelProperty::canAccessInvoicesProperty)
+    val canAccessInventory = bind(UserModelProperty::canAccessInventoryProperty)
 }
 
-fun getUserPropertyFromUser(user: User): MXUserModelProperty {
-    val userProperty = MXUserModelProperty()
+fun getUserPropertyFromUser(user: User): UserModelProperty {
+    val userProperty = UserModelProperty()
     userProperty.username = user.username
     userProperty.password = user.password
-    userProperty.canAccessMX = user.canAccessMX
-    userProperty.canAccessM1 = user.canAccessM1
-    userProperty.canAccessM2 = user.canAccessM2
-    userProperty.canAccessM3 = user.canAccessM3
-    userProperty.canAccessM4 = user.canAccessM4
+    userProperty.canAccessManagement = user.canAccessManagement
+    userProperty.canAccessDiscography = user.canAccessDiscography
+    userProperty.canAccessContacts = user.canAccessContacts
+    userProperty.canAccessInvoices = user.canAccessInvoices
+    userProperty.canAccessInventory = user.canAccessInventory
     return userProperty
 }
 
-fun getUserFromUserProperty(userProperty: MXUserModelProperty): User {
+fun getUserFromUserProperty(userProperty: UserModelProperty): User {
     val user = User(userProperty.username, userProperty.password)
-    user.canAccessMX = userProperty.canAccessMX
-    user.canAccessM1 = userProperty.canAccessM1
-    user.canAccessM2 = userProperty.canAccessM2
-    user.canAccessM3 = userProperty.canAccessM3
-    user.canAccessM4 = userProperty.canAccessM4
+    user.canAccessManagement = userProperty.canAccessManagement
+    user.canAccessDiscography = userProperty.canAccessDiscography
+    user.canAccessContacts = userProperty.canAccessContacts
+    user.canAccessInvoices = userProperty.canAccessInvoices
+    user.canAccessInventory = userProperty.canAccessInventory
     return user
 }

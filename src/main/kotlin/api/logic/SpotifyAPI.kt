@@ -9,9 +9,9 @@ import io.ktor.util.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.mx.logic.API
+import modules.mx.logic.APIFileManager
 import modules.mx.logic.Log
-import modules.mx.m1GlobalIndex
+import modules.mx.discographyIndexManager
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -19,7 +19,7 @@ class SpotifyAPI : IModule, IAPI {
     override val moduleNameLong = "SpotifyAPI"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex!!
+        return discographyIndexManager!!
     }
 
     val controller = SpotifyController()
@@ -28,7 +28,7 @@ class SpotifyAPI : IModule, IAPI {
 
     fun getAccountData(): SpotifyUserProfileJson {
         lateinit var userData: SpotifyUserProfileJson
-        val client = auth.getAuthClient(API.Companion.AuthType.TOKEN)
+        val client = auth.getAuthClient(APIFileManager.Companion.AuthType.TOKEN)
         runBlocking {
             launch {
                 userData = client.get("https://api.spotify.com/v1/me")
@@ -46,7 +46,7 @@ class SpotifyAPI : IModule, IAPI {
         var finished = false
         var url = "https://api.spotify.com/v1/artists/$artistSpotifyID/albums?limit=50"
         if (artistSpotifyID.isNotEmpty()) {
-            val client = auth.getAuthClient(API.Companion.AuthType.TOKEN)
+            val client = auth.getAuthClient(APIFileManager.Companion.AuthType.TOKEN)
             runBlocking {
                 launch {
                     while (!finished) {
@@ -68,7 +68,7 @@ class SpotifyAPI : IModule, IAPI {
 
     fun getArtist(artistSpotifyID: String): SpotifyArtistJson {
         lateinit var artistData: SpotifyArtistJson
-        val client = auth.getAuthClient(API.Companion.AuthType.TOKEN)
+        val client = auth.getAuthClient(APIFileManager.Companion.AuthType.TOKEN)
         runBlocking {
             launch {
                 artistData = client.get("https://api.spotify.com/v1/artists/$artistSpotifyID")
@@ -86,7 +86,7 @@ class SpotifyAPI : IModule, IAPI {
             separatedIDs.append(id)
             if (counter != spotifyIDs.size) separatedIDs.append(",")
         }
-        val client = auth.getAuthClient(API.Companion.AuthType.TOKEN)
+        val client = auth.getAuthClient(APIFileManager.Companion.AuthType.TOKEN)
         runBlocking {
             launch {
                 artistDataList = client.get("https://api.spotify.com/v1/artists/${separatedIDs}")
@@ -103,7 +103,7 @@ class SpotifyAPI : IModule, IAPI {
         var finished = false
         var url = "https://api.spotify.com/v1/albums/$albumSpotifyID/tracks?limit=50"
         if (albumSpotifyID.isNotEmpty()) {
-            val client = auth.getAuthClient(API.Companion.AuthType.TOKEN)
+            val client = auth.getAuthClient(APIFileManager.Companion.AuthType.TOKEN)
             runBlocking {
                 launch {
                     while (!finished) {

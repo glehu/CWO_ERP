@@ -12,7 +12,7 @@ import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GItemOverview : IOverview, View("M4 Inventory") {
+class GItemOverview : IOverview, View("Inventory") {
     private val itemController: ItemController by inject()
     override val root = borderpane {
         right = vbox {
@@ -61,20 +61,20 @@ class GItemOverview : IOverview, View("M4 Inventory") {
                     }
                     addClass(Stylesheet.fieldsetBorder)
                     fieldset("Main Data") {
-                        add(NewM4ItemMainData::class)
+                        add(ItemMainData::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
                     fieldset("Prices") {
-                        add(NewM4ItemPricesData::class)
+                        add(ItemPricesData::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
                     fieldset("Statistics") {
-                        add(NewM4ItemStatistics::class)
+                        add(ItemStatistics::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
                 }
                 fieldset("Stock") {
-                    add(NewM4ItemStorageData::class)
+                    add(ItemStorageData::class)
                     addClass(Stylesheet.fieldsetBorder)
                 }
             }

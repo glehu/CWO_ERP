@@ -15,7 +15,7 @@ import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GContactOverview : IOverview, View("M2 Contacts") {
+class GContactOverview : IOverview, View("Contacts") {
     private val contactController: ContactController by inject()
     override val root = borderpane {
         right = vbox {
@@ -74,20 +74,20 @@ class GContactOverview : IOverview, View("M2 Contacts") {
                     }
                     addClass(Stylesheet.fieldsetBorder)
                     fieldset("Main Data") {
-                        add(NewContactMainData::class)
+                        add(ContactMainData::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
                     fieldset("Financial Data") {
-                        add(NewContactFinancialData::class)
+                        add(ContactFinancialData::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
                     vbox(10) {
                         fieldset("Profession Data") {
-                            add(NewContactProfessionData::class)
+                            add(ContactProfessionData::class)
                             addClass(Stylesheet.fieldsetBorder)
                         }
                         fieldset("Misc Data") {
-                            add(NewContactMiscData::class)
+                            add(ContactMiscData::class)
                             addClass(Stylesheet.fieldsetBorder)
                             style {
                                 vgrow = Priority.ALWAYS
@@ -95,7 +95,7 @@ class GContactOverview : IOverview, View("M2 Contacts") {
                         }
                     }
                     fieldset("Statistics Data") {
-                        add(NewContactStatistics::class)
+                        add(ContactStatistics::class)
                         addClass(Stylesheet.fieldsetBorder)
                     }
                 }

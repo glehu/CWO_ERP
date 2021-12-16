@@ -31,7 +31,7 @@ import kotlin.collections.set
 @InternalAPI
 @ExperimentalSerializationApi
 class ItemPriceManager : IModule, Controller() {
-    override val moduleNameLong = "M4PriceManager"
+    override val moduleNameLong = "ItemPriceManager"
     override val module = "M4"
     override fun getIndexManager(): IIndexManager? {
         return null

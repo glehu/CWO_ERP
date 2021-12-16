@@ -10,7 +10,7 @@ import tornadofx.getValue
 import tornadofx.observableListOf
 import tornadofx.setValue
 
-class M4StorageProperty {
+class ItemStorageProperty {
     //Credentials
     val numberProperty = SimpleIntegerProperty(-1)
     var number: Int by numberProperty
@@ -21,15 +21,15 @@ class M4StorageProperty {
     val storageUnitsProperty = observableListOf<ItemStorageUnit>()
 }
 
-class M4StorageModel(category: M4StorageProperty) : ItemViewModel<M4StorageProperty>(category) {
-    val number = bind(M4StorageProperty::numberProperty)
-    val description = bind(M4StorageProperty::descriptionProperty)
-    val locked = bind(M4StorageProperty::lockedProperty)
-    val storageUnits = bind(M4StorageProperty::storageUnitsProperty)
+class ItemStorageModel(category: ItemStorageProperty) : ItemViewModel<ItemStorageProperty>(category) {
+    val number = bind(ItemStorageProperty::numberProperty)
+    val description = bind(ItemStorageProperty::descriptionProperty)
+    val locked = bind(ItemStorageProperty::lockedProperty)
+    val storageUnits = bind(ItemStorageProperty::storageUnitsProperty)
 }
 
-fun getStoragePropertyFromStorage(storage: ItemStorage): M4StorageProperty {
-    val storageProperty = M4StorageProperty()
+fun getStoragePropertyFromStorage(storage: ItemStorage): ItemStorageProperty {
+    val storageProperty = ItemStorageProperty()
     storageProperty.number = storage.number
     storageProperty.description = storage.description
     storageProperty.locked = storage.locked
@@ -42,7 +42,7 @@ fun getStoragePropertyFromStorage(storage: ItemStorage): M4StorageProperty {
     return storageProperty
 }
 
-fun getStorageFromStorageProperty(storageProperty: M4StorageProperty): ItemStorage {
+fun getStorageFromStorageProperty(storageProperty: ItemStorageProperty): ItemStorage {
     val storage = ItemStorage(storageProperty.number, storageProperty.description, storageProperty.locked)
     for (storageUnit in storageProperty.storageUnitsProperty) {
         storage.storageUnits += storageUnit

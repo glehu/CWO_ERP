@@ -6,26 +6,26 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m4.Item
-import modules.m4.gui.M4ItemConfiguratorWizard
 import modules.m4.gui.GItemFinder
 import modules.m4.gui.GItemSettings
-import modules.m4.misc.M4ItemProperty
-import modules.m4.misc.getM4ItemFromItemProperty
-import modules.m4.misc.getM4ItemPropertyFromItem
-import modules.mx.m4GlobalIndex
+import modules.m4.gui.ItemConfiguratorWizard
+import modules.m4.misc.ItemProperty
+import modules.m4.misc.getItemFromItemProperty
+import modules.m4.misc.getItemPropertyFromItem
+import modules.mx.itemIndexManager
 import tornadofx.Controller
 import tornadofx.Scope
 
 @InternalAPI
 @ExperimentalSerializationApi
 class ItemController : IController, Controller() {
-    override val moduleNameLong = "M4Controller"
+    override val moduleNameLong = "ItemController"
     override val module = "M4"
     override fun getIndexManager(): IIndexManager {
-        return m4GlobalIndex!!
+        return itemIndexManager!!
     }
 
-    private val wizard = find<M4ItemConfiguratorWizard>()
+    private val wizard = find<ItemConfiguratorWizard>()
 
     override fun searchEntry() {
         find<GItemFinder>().openModal()
@@ -38,7 +38,7 @@ class ItemController : IController, Controller() {
         }
         wizard.item.priceCategories.value.clear()
         wizard.item.storages.value.clear()
-        wizard.item.item = M4ItemProperty()
+        wizard.item.item = ItemProperty()
         wizard.item.validate()
         wizard.isComplete = false
     }
@@ -47,7 +47,7 @@ class ItemController : IController, Controller() {
         if (wizard.item.isValid) {
             wizard.item.commit()
             wizard.item.uID.value = save(
-                entry = getM4ItemFromItemProperty(wizard.item.item),
+                entry = getItemFromItemProperty(wizard.item.item),
                 unlock = unlock
             )
             wizard.isComplete = false
@@ -56,17 +56,17 @@ class ItemController : IController, Controller() {
 
     override fun showEntry(uID: Int) {
         val entry = get(uID) as Item
-        wizard.item.item = getM4ItemPropertyFromItem(entry)
+        wizard.item.item = getItemPropertyFromItem(entry)
     }
 
     fun createAndReturnItem(): Item {
         val item = Item(-1, "")
-        val wizard = M4ItemConfiguratorWizard()
+        val wizard = ItemConfiguratorWizard()
         wizard.showHeader = false
         wizard.showSteps = false
-        wizard.item.item = getM4ItemPropertyFromItem(item)
+        wizard.item.item = getItemPropertyFromItem(item)
         wizard.openModal(block = true)
-        return getM4ItemFromItemProperty(wizard.item.item)
+        return getItemFromItemProperty(wizard.item.item)
     }
 
     fun selectAndReturnItem(): Item {

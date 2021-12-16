@@ -10,7 +10,7 @@ import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GItemStorageManager : View("M4 Storage Locations") {
+class GItemStorageManager : View("Item Storage Locations") {
     private val storageManager: ItemStorageManager by inject()
 
     @ExperimentalSerializationApi

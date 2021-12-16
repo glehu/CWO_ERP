@@ -23,7 +23,7 @@ import java.net.InetSocketAddress
 @ExperimentalSerializationApi
 @InternalAPI
 class TelnetServer : IModule {
-    override val moduleNameLong = "Server"
+    override val moduleNameLong = "TelnetServer"
     override val module = "MX"
     override fun getIndexManager(): IIndexManager? {
         return null

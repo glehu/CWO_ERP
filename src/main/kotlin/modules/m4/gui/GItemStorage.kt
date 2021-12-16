@@ -6,7 +6,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.ItemStorage
 import modules.m4.ItemStorageUnit
 import modules.m4.logic.ItemStorageManager
-import modules.m4.misc.M4StorageModel
+import modules.m4.misc.ItemStorageModel
 import modules.m4.misc.getStorageFromStorageProperty
 import modules.m4.misc.getStoragePropertyFromStorage
 import modules.mx.rightButtonsWidth
@@ -16,7 +16,7 @@ import tornadofx.*
 @InternalAPI
 class GItemStorage(storage: ItemStorage) : Fragment("Storage Locations") {
     private val storageManager: ItemStorageManager by inject()
-    private val storageModel = M4StorageModel(getStoragePropertyFromStorage(storage))
+    private val storageModel = ItemStorageModel(getStoragePropertyFromStorage(storage))
     private val originalStorageProperty = storage.copy()
     private val storageUnitsTable = tableview(storageModel.storageUnits) {
         isEditable = true

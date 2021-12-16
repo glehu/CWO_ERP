@@ -6,7 +6,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import modules.mx.logic.Timestamp
 import modules.mx.logic.getDefaultDate
-import modules.mx.m4StockPostingGlobalIndex
+import modules.mx.itemStockPostingIndexManager
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -24,7 +24,7 @@ data class ItemStockPosting(
     var isFinished: Boolean = false
 
     override fun initialize() {
-        if (uID == -1) uID = m4StockPostingGlobalIndex!!.getUID()
+        if (uID == -1) uID = itemStockPostingIndexManager!!.getUID()
         when (status) {
             !in 0..9 -> status = 0
             9 -> {
@@ -36,7 +36,7 @@ data class ItemStockPosting(
 
     fun book() {
         dateBooked = Timestamp.now()
-        status = 9
+        status = 8
         isFinished = true
     }
 }

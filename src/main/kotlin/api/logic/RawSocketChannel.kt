@@ -106,11 +106,11 @@ class RawSocketChannel(
         // IXS <MODULE> <IX_NR> <ALL/SPECIFIC> <NAME/UID> <SEARCH_TEXT>
         log(logType = Log.LogType.COM, text = args.toString(), apiEndpoint = "telnet ixs")
         val indexManager = when (args[1]) {
-            "M1" -> m1GlobalIndex!!
-            "M2" -> m2GlobalIndex!!
-            "M3" -> m3GlobalIndex!!
-            "M4" -> m4GlobalIndex!!
-            "M4SP" -> m4StockPostingGlobalIndex!!
+            "M1" -> discographyIndexManager!!
+            "M2" -> contactIndexManager!!
+            "M3" -> invoiceIndexManager!!
+            "M4" -> itemIndexManager!!
+            "M4SP" -> itemStockPostingIndexManager!!
             else -> return
         }
         if (args[4] == "NAME") {

@@ -20,23 +20,17 @@ class Ticker {
     @DelicateCoroutinesApi
     @ExperimentalSerializationApi
     @InternalAPI
-    companion object MXTask {
+    companion object TickerTask {
         fun startTicker() = GlobalScope.launch {
             do {
                 delay(5000L)
                 if (isClientGlobal) {
-                    /**
-                     * #### Client Ticker Actions: ####
-                     */
+                    // #### Client Ticker Actions: ####
                 } else {
-                    /**
-                     * #### Server Ticker Actions: ####
-                     */
+                    // #### Server Ticker Actions: ####
                     find<GDatabaseManager>().refreshStats()
                 }
-                /**
-                 * #### General Ticker Actions: ####
-                 */
+                // #### General Ticker Actions: ####
             } while (true)
         }
     }

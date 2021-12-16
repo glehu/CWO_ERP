@@ -14,15 +14,15 @@ import kotlinx.serialization.json.Json
 import modules.m2.Contact
 import modules.m2.logic.ContactController
 import modules.m4.Statistic
-import modules.mx.m2GlobalIndex
-import modules.mx.misc.MGXEMailerIni
+import modules.mx.contactIndexManager
+import modules.mx.misc.EMailerIni
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
 @ExperimentalSerializationApi
 @InternalAPI
 class GEMailer : IModule, View("EMailer") {
-    override val moduleNameLong = "MGXEMailer"
+    override val moduleNameLong = "EMailer"
     override val module = "MX"
     override fun getIndexManager(): IIndexManager? {
         return null
@@ -93,7 +93,7 @@ class GEMailer : IModule, View("EMailer") {
                                 statistic.sValue = (statistic.nValue).toString()
                                 contact!!.statistics["EMails Sent"] = Json.encodeToString(statistic)
                                 runBlocking {
-                                    m2GlobalIndex!!.save(contact as Contact)
+                                    contactIndexManager!!.save(contact as Contact)
                                 }
                             }
                         }
@@ -129,9 +129,9 @@ class GEMailer : IModule, View("EMailer") {
         find<GEMailerSettings>().openModal()
     }
 
-    private fun getIni(): MGXEMailerIni {
+    private fun getIni(): EMailerIni {
         val iniTxt = getSettingsFileText(subSetting = "MGXEMailer")
-        return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else MGXEMailerIni()
+        return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else EMailerIni()
     }
 
     private fun getBodyText(): String {

@@ -58,35 +58,35 @@ val protoBufGlobal = ProtoBuf {
  */
 @InternalAPI
 @ExperimentalSerializationApi
-var m1GlobalIndex: DiscographyIndexManager? = null
+var discographyIndexManager: DiscographyIndexManager? = null
 
 /**
  * The global index for contacts
  */
 @InternalAPI
 @ExperimentalSerializationApi
-var m2GlobalIndex: ContactIndexManager? = null
+var contactIndexManager: ContactIndexManager? = null
 
 /**
  * The global index for invoices
  */
 @InternalAPI
 @ExperimentalSerializationApi
-var m3GlobalIndex: InvoiceIndexManager? = null
+var invoiceIndexManager: InvoiceIndexManager? = null
 
 /**
  * The global index for items
  */
 @InternalAPI
 @ExperimentalSerializationApi
-var m4GlobalIndex: ItemIndexManager? = null
+var itemIndexManager: ItemIndexManager? = null
 
 /**
  * The global index for storage posting
  */
 @InternalAPI
 @ExperimentalSerializationApi
-var m4StockPostingGlobalIndex: ItemStockPostingIndexManager? = null
+var itemStockPostingIndexManager: ItemStockPostingIndexManager? = null
 
 //*************************************************
 //********************** TRACKER ******************

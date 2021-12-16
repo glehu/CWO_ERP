@@ -33,7 +33,7 @@ import kotlin.collections.set
 @InternalAPI
 @ExperimentalSerializationApi
 class UserManager : IModule, Controller() {
-    override val moduleNameLong = "MXUserManager"
+    override val moduleNameLong = "UserManager"
     override val module = "MX"
     override fun getIndexManager(): IIndexManager? {
         return null
@@ -70,11 +70,11 @@ class UserManager : IModule, Controller() {
     fun checkModuleRight(username: String, module: String): Boolean {
         val user = getCredentials().credentials[username]!!
         when (module.uppercase()) {
-            "MX" -> return user.canAccessMX
-            "M1" -> return user.canAccessM1
-            "M2" -> return user.canAccessM2
-            "M3" -> return user.canAccessM3
-            "M4" -> return user.canAccessM4
+            "MX" -> return user.canAccessManagement
+            "M1" -> return user.canAccessDiscography
+            "M2" -> return user.canAccessContacts
+            "M3" -> return user.canAccessInvoices
+            "M4" -> return user.canAccessInventory
         }
         return false
     }
@@ -158,10 +158,10 @@ class UserManager : IModule, Controller() {
                             expiresInSeconds = (loginResponse.expiresInMs / 1000) - 5
                         )
                         activeUser.apiToken.initialize()
-                        activeUser.canAccessM1 = loginResponse.accessM1
-                        activeUser.canAccessM2 = loginResponse.accessM2
-                        activeUser.canAccessM3 = loginResponse.accessM3
-                        activeUser.canAccessM4 = loginResponse.accessM4
+                        activeUser.canAccessDiscography = loginResponse.accessM1
+                        activeUser.canAccessContacts = loginResponse.accessM2
+                        activeUser.canAccessInvoices = loginResponse.accessM3
+                        activeUser.canAccessInventory = loginResponse.accessM4
                         val resp: String = getTokenClient().get("${getServerUrl()}tokenremainingtime")
                         println(resp)
                     } else validResponse = false
@@ -175,7 +175,7 @@ class UserManager : IModule, Controller() {
         val user = User("admin", encryptAES("admin"))
         //startupRoutines()
         credentialsFile.createNewFile()
-        user.canAccessMX = true
+        user.canAccessManagement = true
         val credentials = Credentials(CredentialsType.MAIN)
         credentials.credentials[user.username] = user
         credentialsFile.writeText(Json.encodeToString(credentials))

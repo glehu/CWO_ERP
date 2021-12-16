@@ -3,7 +3,7 @@ package modules.m3.misc
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class M3Ini(
+data class InvoiceIni(
     var statusTexts: MutableMap<Int, String> = mutableMapOf(),
     var todoStatuses: String = "0",
     var autoCommission: Boolean = true,

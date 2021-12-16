@@ -9,7 +9,7 @@ import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue
 
-class M3ItemProperty {
+class InvoiceItemProperty {
     val descriptionProperty = SimpleStringProperty()
     var description: String by descriptionProperty
     val uIDProperty = SimpleIntegerProperty(-1)
@@ -23,17 +23,17 @@ class M3ItemProperty {
 
 }
 
-class M3ItemModel : ItemViewModel<M3ItemProperty>() {
-    val description = bind(M3ItemProperty::descriptionProperty)
-    val uID = bind(M3ItemProperty::uIDProperty)
-    val price = bind(M3ItemProperty::priceProperty)
-    val amount = bind(M3ItemProperty::amountProperty)
-    val userName = bind(M3ItemProperty::userNameProperty)
+class InvoiceItemModel : ItemViewModel<InvoiceItemProperty>() {
+    val description = bind(InvoiceItemProperty::descriptionProperty)
+    val uID = bind(InvoiceItemProperty::uIDProperty)
+    val price = bind(InvoiceItemProperty::priceProperty)
+    val amount = bind(InvoiceItemProperty::amountProperty)
+    val userName = bind(InvoiceItemProperty::userNameProperty)
 }
 
 @ExperimentalSerializationApi
-fun getItemPropertyFromItem(item: InvoicePosition): M3ItemProperty {
-    val itemProperty = M3ItemProperty()
+fun getItemPropertyFromItem(item: InvoicePosition): InvoiceItemProperty {
+    val itemProperty = InvoiceItemProperty()
     itemProperty.description = item.description
     itemProperty.price = item.grossPrice
     itemProperty.amount = item.amount
@@ -43,7 +43,7 @@ fun getItemPropertyFromItem(item: InvoicePosition): M3ItemProperty {
 }
 
 @ExperimentalSerializationApi
-fun getItemFromItemProperty(itemProperty: M3ItemProperty): InvoicePosition {
+fun getItemFromItemProperty(itemProperty: InvoiceItemProperty): InvoicePosition {
     val item = InvoicePosition(-1, "")
     item.description = itemProperty.description
     item.grossPrice = itemProperty.price

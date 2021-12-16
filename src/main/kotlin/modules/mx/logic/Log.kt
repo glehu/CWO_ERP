@@ -17,7 +17,7 @@ class Log {
     @InternalAPI
     @ExperimentalSerializationApi
     companion object MXLog : IModule {
-        override val moduleNameLong = "MXLog"
+        override val moduleNameLong = "Log"
         override val module = "MX"
         override fun getIndexManager(): IIndexManager? {
             return null

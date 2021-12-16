@@ -35,7 +35,7 @@ import kotlin.collections.set
 @InternalAPI
 @ExperimentalSerializationApi
 class ItemStorageManager : IModule, Controller() {
-    override val moduleNameLong = "M4StorageManager"
+    override val moduleNameLong = "ItemStorageManager"
     override val module = "M4"
     override fun getIndexManager(): IIndexManager? {
         return null

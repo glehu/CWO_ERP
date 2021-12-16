@@ -22,15 +22,15 @@ class InvoiceConfiguratorWizard : Wizard("Add new invoice") {
 
     init {
         enableStepLinks = true
-        add(NewInvoiceMainData::class)
-        add(NewInvoiceItemData::class)
-        add(NewInvoiceNotes::class)
+        add(InvoiceMainData::class)
+        add(InvoiceItemData::class)
+        add(InvoiceNotesData::class)
     }
 }
 
 @InternalAPI
 @ExperimentalSerializationApi
-class NewInvoiceMainData : Fragment("Main") {
+class InvoiceMainData : Fragment("Main") {
     private val invoice: InvoiceModel by inject()
     private val contactController: ContactController by inject()
 
@@ -104,7 +104,7 @@ class NewInvoiceMainData : Fragment("Main") {
 
 @InternalAPI
 @ExperimentalSerializationApi
-class NewInvoiceItemData : Fragment("Items") {
+class InvoiceItemData : Fragment("Items") {
     private val invoice: InvoiceModel by inject()
     private val invoiceController: InvoiceController by inject()
     private val table = tableview(invoice.items) {
@@ -209,7 +209,7 @@ class NewInvoiceItemData : Fragment("Items") {
 
 @InternalAPI
 @ExperimentalSerializationApi
-class NewInvoiceNotes : Fragment("Notes") {
+class InvoiceNotesData : Fragment("Notes") {
     private val invoice: InvoiceModel by inject()
 
     //----------------------------------v

@@ -7,22 +7,19 @@ import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.m4.logic.ItemCLIController
-import modules.m4.misc.M4Ini
-import modules.mx.m3GlobalIndex
+import modules.m4.misc.ItemIni
+import modules.mx.invoiceIndexManager
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GItemSettings : IModule, Fragment("M4 Settings") {
-    override val moduleNameLong = "MG4Settings"
+class GItemSettings : IModule, Fragment("Inventory Settings") {
+    override val moduleNameLong = "ItemSettings"
     override val module = "M4"
     override fun getIndexManager(): IIndexManager {
-        return m3GlobalIndex!!
+        return invoiceIndexManager!!
     }
-
-    private val iniVal = ItemCLIController().getIni()
 
     override val root = borderpane {
         prefWidth = 800.0
@@ -55,7 +52,7 @@ class GItemSettings : IModule, Fragment("M4 Settings") {
             }.action {
                 getSettingsFile().writeText(
                     Json.encodeToString(
-                        M4Ini()
+                        ItemIni()
                     )
                 )
                 close()

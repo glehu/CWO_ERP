@@ -10,7 +10,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.misc.getGenreList
 import modules.mx.logic.Log
-import modules.mx.m1GlobalIndex
+import modules.mx.discographyIndexManager
 import tornadofx.Controller
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
@@ -18,10 +18,10 @@ import kotlin.system.measureTimeMillis
 @InternalAPI
 @ExperimentalSerializationApi
 class DiscographyBenchmark : IModule, Controller() {
-    override val moduleNameLong = "M1Benchmark"
+    override val moduleNameLong = "DiscographyBenchmark"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex!!
+        return discographyIndexManager!!
     }
 
     suspend fun insertRandomEntries(amount: Int) {
@@ -42,7 +42,7 @@ class DiscographyBenchmark : IModule, Controller() {
                 )
                 if (i % 10_000 == 0) {
                     log(Log.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
-                    coroutineScope { launch { m1GlobalIndex!!.writeIndexData() } }
+                    coroutineScope { launch { discographyIndexManager!!.writeIndexData() } }
                 }
             }
         }

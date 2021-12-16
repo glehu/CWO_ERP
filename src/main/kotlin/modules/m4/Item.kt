@@ -4,7 +4,7 @@ import interfaces.IEntry
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import modules.mx.m4GlobalIndex
+import modules.mx.itemIndexManager
 import java.io.File
 import java.util.*
 
@@ -42,7 +42,7 @@ data class Item(
     var stock: MutableMap<Int, String> = mutableMapOf()
 
     override fun initialize() {
-        if (uID == -1) uID = m4GlobalIndex!!.getUID()
+        if (uID == -1) uID = itemIndexManager!!.getUID()
         if (imagePath != "?") {
             imageBase64String = Base64.getEncoder().encodeToString(File(imagePath).readBytes())
         }

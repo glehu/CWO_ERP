@@ -17,15 +17,15 @@ class ContactConfiguratorWizard : Wizard("Add new contact") {
     init {
         enableStepLinks = true
         showHeader = false
-        add(NewContactMainData::class)
-        add(NewContactFinancialData::class)
-        add(NewContactProfessionData::class)
-        add(NewContactMiscData::class)
-        add(NewContactStatistics::class)
+        add(ContactMainData::class)
+        add(ContactFinancialData::class)
+        add(ContactProfessionData::class)
+        add(ContactMiscData::class)
+        add(ContactStatistics::class)
     }
 }
 
-class NewContactMainData : Fragment("Main Data") {
+class ContactMainData : Fragment("Main Data") {
     private val contact: ContactModel by inject()
 
     //----------------------------------v
@@ -57,7 +57,7 @@ class NewContactMainData : Fragment("Main Data") {
 
 @ExperimentalSerializationApi
 @InternalAPI
-class NewContactFinancialData : Fragment("Financial Data") {
+class ContactFinancialData : Fragment("Financial Data") {
     private val contact: ContactModel by inject()
 
     //----------------------------------v
@@ -108,7 +108,7 @@ class NewContactFinancialData : Fragment("Financial Data") {
     }
 }
 
-class NewContactProfessionData : Fragment("Profession Data") {
+class ContactProfessionData : Fragment("Profession Data") {
     private val contact: ContactModel by inject()
 
     //----------------------------------v
@@ -129,7 +129,7 @@ class NewContactProfessionData : Fragment("Profession Data") {
     }
 }
 
-class NewContactMiscData : Fragment("Misc Data") {
+class ContactMiscData : Fragment("Misc Data") {
     private val contact: ContactModel by inject()
 
     //----------------------------------v
@@ -148,7 +148,7 @@ class NewContactMiscData : Fragment("Misc Data") {
 
 @ExperimentalSerializationApi
 @InternalAPI
-class NewContactStatistics : Fragment("Statistics") {
+class ContactStatistics : Fragment("Statistics") {
     private val contact: ContactModel by inject()
     private var table = tableview(contact.statistics) {
         isEditable = true

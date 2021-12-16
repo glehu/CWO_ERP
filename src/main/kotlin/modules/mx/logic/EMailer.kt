@@ -14,7 +14,7 @@ import modules.mx.getIniFile
 @InternalAPI
 @ExperimentalSerializationApi
 class EMailer : IModule {
-    override val moduleNameLong = "MXEMailer"
+    override val moduleNameLong = "EMailer"
     override val module = "MX"
     override fun getIndexManager(): IIndexManager? {
         return null

@@ -10,7 +10,7 @@ import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GItemPriceManager : View("M4 Price Categories") {
+class GItemPriceManager : View("Item Price Categories") {
     private val categoryManager: ItemPriceManager by inject()
 
     @ExperimentalSerializationApi

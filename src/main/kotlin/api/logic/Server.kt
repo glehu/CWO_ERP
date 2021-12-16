@@ -183,19 +183,19 @@ class Server : IModule, Controller() {
                      * General Endpoints
                      */
                     getIndexSelection(
-                        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
+                        discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!
                     )
                     getEntry(
-                        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
+                        discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!
                     )
                     saveEntry(
-                        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
+                        discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!
                     )
                     getEntryLock(
-                        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
+                        discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!
                     )
                     setEntryLock(
-                        m1GlobalIndex!!, m2GlobalIndex!!, m3GlobalIndex!!, m4GlobalIndex!!
+                        discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!
                     )
                     sendEMail()
                     getSettingsFileText()

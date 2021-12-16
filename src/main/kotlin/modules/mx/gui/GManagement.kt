@@ -10,7 +10,7 @@ import tornadofx.tabpane
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GManagement : View("MX Management") {
+class GManagement : View("Management") {
     override val root = tabpane {
         tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 

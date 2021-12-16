@@ -28,20 +28,20 @@ class GDatabaseManager : View("Databases") {
      */
     private fun updateDatabases() {
         indexManagers.clear()
-        m1GlobalIndex = DiscographyIndexManager()
-        m2GlobalIndex = ContactIndexManager()
-        m3GlobalIndex = InvoiceIndexManager()
-        m4GlobalIndex = ItemIndexManager()
-        m4StockPostingGlobalIndex = ItemStockPostingIndexManager()
-        indexManagers.addAll(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex, m4StockPostingGlobalIndex)
+        discographyIndexManager = DiscographyIndexManager()
+        contactIndexManager = ContactIndexManager()
+        invoiceIndexManager = InvoiceIndexManager()
+        itemIndexManager = ItemIndexManager()
+        itemStockPostingIndexManager = ItemStockPostingIndexManager()
+        indexManagers.addAll(discographyIndexManager, contactIndexManager, invoiceIndexManager, itemIndexManager, itemStockPostingIndexManager)
     }
 
     init {
-        if (m1GlobalIndex != null) indexManagers.add(m1GlobalIndex!!)
-        if (m2GlobalIndex != null) indexManagers.add(m2GlobalIndex!!)
-        if (m3GlobalIndex != null) indexManagers.add(m3GlobalIndex!!)
-        if (m4GlobalIndex != null) indexManagers.add(m4GlobalIndex!!)
-        if (m4StockPostingGlobalIndex != null) indexManagers.add(m4StockPostingGlobalIndex!!)
+        if (discographyIndexManager != null) indexManagers.add(discographyIndexManager!!)
+        if (contactIndexManager != null) indexManagers.add(contactIndexManager!!)
+        if (invoiceIndexManager != null) indexManagers.add(invoiceIndexManager!!)
+        if (itemIndexManager != null) indexManagers.add(itemIndexManager!!)
+        if (itemStockPostingIndexManager != null) indexManagers.add(itemStockPostingIndexManager!!)
     }
 
     val table = tableview(indexManagers) {

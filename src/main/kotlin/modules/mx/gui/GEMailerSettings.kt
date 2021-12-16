@@ -10,14 +10,14 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.mx.misc.MGXEMailerIni
+import modules.mx.misc.EMailerIni
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
 class GEMailerSettings : IModule, Fragment("EMailer Settings") {
-    override val moduleNameLong = "MGXEMailerSettings"
+    override val moduleNameLong = "EMailerSettings"
     override val module = "MX"
     override fun getIndexManager(): IIndexManager? {
         return null
@@ -25,10 +25,10 @@ class GEMailerSettings : IModule, Fragment("EMailer Settings") {
 
     private val iniVal = getIni()
 
-    private fun getIni(): MGXEMailerIni {
+    private fun getIni(): EMailerIni {
         val iniFile = getSettingsFile(subSetting = "MGXEMailer")
         val iniTxt = iniFile.readText()
-        return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else MGXEMailerIni()
+        return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else EMailerIni()
     }
 
     private val defaultFooterProperty = SimpleStringProperty(iniVal.defaultFooter)
@@ -70,7 +70,7 @@ class GEMailerSettings : IModule, Fragment("EMailer Settings") {
             }.action {
                 getSettingsFile(subSetting = "MGXEMailer").writeText(
                     Json.encodeToString(
-                        MGXEMailerIni(
+                        EMailerIni(
                             defaultFooter = defaultFooterProperty.value,
                             writeStatistics = writeStatistics.value
                         )

@@ -37,7 +37,7 @@ class ServerController {
     @InternalAPI
     @ExperimentalSerializationApi
     companion object Server : IModule {
-        override val moduleNameLong = "MXServerController"
+        override val moduleNameLong = "ServerController"
         override val module = "MX"
         override fun getIndexManager(): IIndexManager? {
             return null
@@ -155,10 +155,10 @@ class ServerController {
                     httpCode = 200,
                     token = token,
                     expiresInMs = expiresInMs,
-                    accessM1 = user.canAccessM1,
-                    accessM2 = user.canAccessM2,
-                    accessM3 = user.canAccessM3,
-                    accessM4 = user.canAccessM4
+                    accessM1 = user.canAccessDiscography,
+                    accessM2 = user.canAccessContacts,
+                    accessM3 = user.canAccessInvoices,
+                    accessM4 = user.canAccessInventory
                 )
             )
             return ValidationContainerJson(
@@ -219,7 +219,7 @@ class ServerController {
             val body = appCall.receive<WebshopOrder>()
             if (body.itemUIDs.size != -1) {
                 for (i in 0 until body.itemUIDs.size) {
-                    val item = m4GlobalIndex!!.get(body.itemUIDs[i]) as Item
+                    val item = itemIndexManager!!.get(body.itemUIDs[i]) as Item
                     if (item.uID != -1) {
                         /**
                          * Item position
@@ -242,7 +242,7 @@ class ServerController {
                 order.status = if (m3IniVal.autoCommission) 1 else 0
                 order.statusText = InvoiceCLIController().getStatusText(order.status)
                 //Check if the customer is an existing contact, if not, create it
-                val contactsMatched = m2GlobalIndex!!.getEntryBytesListJson(
+                val contactsMatched = contactIndexManager!!.getEntryBytesListJson(
                     searchText = userName,
                     ixNr = 1,
                     exactSearch = false
@@ -252,28 +252,28 @@ class ServerController {
                     contact.email = userName
                     contact.moneySent = order.netTotal
                     mutex.withLock {
-                        order.buyerUID = m2GlobalIndex!!.save(contact)
+                        order.buyerUID = contactIndexManager!!.save(contact)
                     }
                 } else {
-                    val contact = m2GlobalIndex!!.decode(contactsMatched.resultsList[0]) as Contact
+                    val contact = contactIndexManager!!.decode(contactsMatched.resultsList[0]) as Contact
                     order.buyerUID = contact.uID
                     if (contact.email.isEmpty() || contact.email == "?") contact.email = userName
                     contact.moneySent = order.netTotal
                     mutex.withLock {
-                        m2GlobalIndex!!.save(contact)
+                        contactIndexManager!!.save(contact)
                     }
                 }
                 order.seller = "<Self>"
                 if (m3IniVal.autoSendEMailConfirmation) order.emailConfirmationSent = true
                 mutex.withLock {
-                    m3GlobalIndex!!.save(entry = order, userName = userName)
+                    invoiceIndexManager!!.save(entry = order, userName = userName)
                 }
                 mutex.withLock {
                     log(
                         logType = Log.LogType.COM,
                         text = "web shop order #${order.uID} from ${order.buyer}",
                         apiEndpoint = appCall.request.uri,
-                        moduleAlt = m3GlobalIndex!!.module
+                        moduleAlt = invoiceIndexManager!!.module
                     )
                 }
             }

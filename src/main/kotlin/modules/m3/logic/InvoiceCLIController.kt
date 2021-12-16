@@ -9,18 +9,18 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.Invoice
 import modules.m3.InvoicePosition
-import modules.m3.misc.M3Ini
+import modules.m3.misc.InvoiceIni
 import modules.m4.logic.ItemPriceManager
 import modules.mx.logic.roundTo
-import modules.mx.m3GlobalIndex
+import modules.mx.invoiceIndexManager
 
 @ExperimentalSerializationApi
 @InternalAPI
 class InvoiceCLIController : IModule {
-    override val moduleNameLong = "M3CLIController"
+    override val moduleNameLong = "InvoiceCLIController"
     override val module = "M3"
     override fun getIndexManager(): IIndexManager {
-        return m3GlobalIndex!!
+        return invoiceIndexManager!!
     }
 
     fun calculate(invoice: Invoice) {
@@ -32,23 +32,18 @@ class InvoiceCLIController : IModule {
         invoice.netTotal = 0.0
         for (item in invoice.items) {
             itemPosition = Json.decodeFromString(item.value)
-            /**
-             * Invoice specific calculation
-             */
+            //Invoice specific calculation
             invoice.grossTotal += (itemPosition.grossPrice * itemPosition.amount)
-
-            /**
-             * Line specific calculation
-             */
+            //Line specific calculation
             itemPosition.netPrice = (itemPosition.grossPrice / (1 + (vat / 100))).roundTo(2)
             invoice.items[pos] = Json.encodeToString(itemPosition)
             pos++
         }
     }
 
-    fun getIni(): M3Ini {
+    fun getIni(): InvoiceIni {
         val iniTxt = getSettingsFileText()
-        return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else M3Ini()
+        return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else InvoiceIni()
     }
 
     fun getStatusText(status: Int): String {

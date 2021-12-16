@@ -10,19 +10,19 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.logic.InvoiceCLIController
-import modules.m3.misc.M3Ini
+import modules.m3.misc.InvoiceIni
 import modules.m4.Statistic
-import modules.mx.m3GlobalIndex
+import modules.mx.invoiceIndexManager
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GInvoiceSettings : IModule, Fragment("M3 Settings") {
-    override val moduleNameLong = "MG3Settings"
+class GInvoiceSettings : IModule, Fragment("Invoice Settings") {
+    override val moduleNameLong = "InvoiceSettings"
     override val module = "M3"
     override fun getIndexManager(): IIndexManager {
-        return m3GlobalIndex!!
+        return invoiceIndexManager!!
     }
 
     private val iniVal = InvoiceCLIController().getIni()
@@ -110,7 +110,7 @@ class GInvoiceSettings : IModule, Fragment("M3 Settings") {
                 }
                 getSettingsFile().writeText(
                     Json.encodeToString(
-                        M3Ini(
+                        InvoiceIni(
                             statusTexts = newMap,
                             todoStatuses = todoStatuses.value,
                             autoCommission = autoCommission.value,

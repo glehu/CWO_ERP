@@ -19,15 +19,15 @@ class GUserManager : View("User Management") {
     private val table = tableview(users) {
         readonlyColumn("Username", User::username).prefWidth(200.0)
         readonlyColumn("Password (encrypted)", User::password)
-        readonlyColumn("MX", User::canAccessMX)
+        readonlyColumn("Management", User::canAccessManagement)
             .cellFormat { text = ""; style { backgroundColor = userManager.getRightsCellColor(it) } }
-        readonlyColumn("M1", User::canAccessM1)
+        readonlyColumn("Discography", User::canAccessDiscography)
             .cellFormat { text = ""; style { backgroundColor = userManager.getRightsCellColor(it) } }
-        readonlyColumn("M2", User::canAccessM2)
+        readonlyColumn("Contacts", User::canAccessContacts)
             .cellFormat { text = ""; style { backgroundColor = userManager.getRightsCellColor(it) } }
-        readonlyColumn("M3", User::canAccessM3)
+        readonlyColumn("Invoices", User::canAccessInvoices)
             .cellFormat { text = ""; style { backgroundColor = userManager.getRightsCellColor(it) } }
-        readonlyColumn("M4", User::canAccessM4)
+        readonlyColumn("Inventory", User::canAccessInventory)
             .cellFormat { text = ""; style { backgroundColor = userManager.getRightsCellColor(it) } }
         onUserSelect(1) {
             userManager.showUser(it, userManager.getCredentials(), users)

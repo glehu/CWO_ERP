@@ -17,11 +17,11 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.getClientSecretFile
-import modules.mx.logic.API
-import modules.mx.logic.API.Companion.getAPITokenFile
+import modules.mx.logic.APIFileManager
+import modules.mx.logic.APIFileManager.Companion.getAPITokenFile
 import modules.mx.logic.Log
 import modules.mx.logic.Timestamp
-import modules.mx.m1GlobalIndex
+import modules.mx.discographyIndexManager
 import tornadofx.find
 import java.net.URLEncoder
 
@@ -31,7 +31,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
     override val moduleNameLong = "SpotifyAUTH"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex!!
+        return discographyIndexManager!!
     }
 
     override val apiName = "spotify"
@@ -62,7 +62,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
 
     override fun getAccessTokenFromAuthCode(authCode: String): ITokenData {
         lateinit var tokenData: SpotifyAuthCallbackJson
-        val client = getAuthClient(API.Companion.AuthType.NONE)
+        val client = getAuthClient(APIFileManager.Companion.AuthType.NONE)
         runBlocking {
             launch {
                 tokenData = client.post("https://accounts.spotify.com/api/token") {
@@ -102,7 +102,7 @@ class SpotifyAUTH : IModule, IAPIAUTH {
     override fun refreshAccessToken() {
         var tokenDataNew: SpotifyAuthCallbackJson
         val tokenData = getAccessAndRefreshTokenFromDisk()
-        val client = getAuthClient(API.Companion.AuthType.NONE)
+        val client = getAuthClient(APIFileManager.Companion.AuthType.NONE)
         runBlocking {
             launch {
                 tokenDataNew = client.post("https://accounts.spotify.com/api/token") {

@@ -18,16 +18,16 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.logic.DiscographyController
 import modules.mx.gui.userAlerts.GAlertLocked
-import modules.mx.m1GlobalIndex
+import modules.mx.discographyIndexManager
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GDiscographyFinder : IModule, IEntryFinder, View("M1 Discography") {
-    override val moduleNameLong = "MG1EntryFinder"
+class GDiscographyFinder : IModule, IEntryFinder, View("Discography Finder") {
+    override val moduleNameLong = "DiscographyFinder"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex!!
+        return discographyIndexManager!!
     }
 
     override var searchText: TextField by singleAssign()

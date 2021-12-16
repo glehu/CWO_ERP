@@ -7,17 +7,17 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
 import modules.mx.logic.Log
-import modules.mx.m2GlobalIndex
+import modules.mx.contactIndexManager
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
 @InternalAPI
 @ExperimentalSerializationApi
 class ContactAnalytics : IModule, Controller() {
-    override val moduleNameLong = "M2Analytics"
+    override val moduleNameLong = "ContactAnalytics"
     override val module = "M2"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex!!
+        return contactIndexManager!!
     }
 
     fun getChartDataOnCityDistribution(

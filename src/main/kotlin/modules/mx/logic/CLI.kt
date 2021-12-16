@@ -84,7 +84,7 @@ class CLI : IModule {
             when (args[1]) {
                 "dbstats" -> {
                     val header = arrayOf("DB", "Desc", "#", "DB KiB", "IX KiB", "Date", "User")
-                    val ix = observableListOf(m1GlobalIndex, m2GlobalIndex, m3GlobalIndex, m4GlobalIndex)
+                    val ix = observableListOf(discographyIndexManager, contactIndexManager, invoiceIndexManager, itemIndexManager)
                     val data = d2Array(ix.size, header.size)
                     for (i in 0 until ix.size) {
                         if (ix[i] != null) {
@@ -117,10 +117,10 @@ class CLI : IModule {
                     val data = d2Array(users.size, header.size)
                     for (i in 0 until users.size) {
                         data[i][0] = users[i].username
-                        data[i][1] = users[i].canAccessM1.toString()
-                        data[i][2] = users[i].canAccessM2.toString()
-                        data[i][3] = users[i].canAccessM3.toString()
-                        data[i][4] = users[i].canAccessM4.toString()
+                        data[i][1] = users[i].canAccessDiscography.toString()
+                        data[i][2] = users[i].canAccessContacts.toString()
+                        data[i][3] = users[i].canAccessInvoices.toString()
+                        data[i][4] = users[i].canAccessInventory.toString()
                         data[i][5] = users[i].onlineSince
                     }
                     cliPrint(header, data)

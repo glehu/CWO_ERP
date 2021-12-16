@@ -25,14 +25,10 @@ import java.io.IOException
 @ExperimentalSerializationApi
 fun main(args: Array<String>) {
     if (args.isEmpty() || args[0] == "gui") {
-        /**
-         * GUI
-         */
+        // GUI
         launch<CWOMainGUI>()
     } else if (args[0] == "cli" || args[0] == "cmd") {
-        /**
-         * Command Line Interpreter
-         */
+        // Command Line Interpreter
         cliMode = true
         CLI().runCLI()
     }
@@ -100,9 +96,7 @@ fun startupRoutines(modeOffline: Boolean, modeSafety: Boolean) {
             usageTracker = UsageTracker()
         }
     }
-    /**
-     * Start a long-running coroutine task to do various stuff
-     */
+    // Start a long-running coroutine task to do various stuff
     taskJobGlobal = Ticker.startTicker()
 }
 
@@ -111,18 +105,18 @@ fun startupRoutines(modeOffline: Boolean, modeSafety: Boolean) {
 fun loadIndex(module: String = "") {
     if (module.isNotEmpty()) {
         when (module) {
-            "m1" -> m1GlobalIndex = DiscographyIndexManager()
-            "m2" -> m2GlobalIndex = ContactIndexManager()
-            "m3" -> m3GlobalIndex = InvoiceIndexManager()
-            "m4" -> m4GlobalIndex = ItemIndexManager()
-            "m4sp" -> m4StockPostingGlobalIndex = ItemStockPostingIndexManager()
+            "m1" -> discographyIndexManager = DiscographyIndexManager()
+            "m2" -> contactIndexManager = ContactIndexManager()
+            "m3" -> invoiceIndexManager = InvoiceIndexManager()
+            "m4" -> itemIndexManager = ItemIndexManager()
+            "m4sp" -> itemStockPostingIndexManager = ItemStockPostingIndexManager()
         }
     } else {
-        m1GlobalIndex = DiscographyIndexManager()
-        m2GlobalIndex = ContactIndexManager()
-        m3GlobalIndex = InvoiceIndexManager()
-        m4GlobalIndex = ItemIndexManager()
-        m4StockPostingGlobalIndex = ItemStockPostingIndexManager()
+        discographyIndexManager = DiscographyIndexManager()
+        contactIndexManager = ContactIndexManager()
+        invoiceIndexManager = InvoiceIndexManager()
+        itemIndexManager = ItemIndexManager()
+        itemStockPostingIndexManager = ItemStockPostingIndexManager()
     }
 }
 

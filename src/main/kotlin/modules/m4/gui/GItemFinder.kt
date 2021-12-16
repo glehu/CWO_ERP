@@ -16,16 +16,16 @@ import modules.m1.misc.SongPropertyMainDataModel
 import modules.m4.Item
 import modules.m4.logic.ItemController
 import modules.mx.gui.userAlerts.GAlertLocked
-import modules.mx.m4GlobalIndex
+import modules.mx.itemIndexManager
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GItemFinder : IEntryFinder, View("M3 Invoices") {
-    override val moduleNameLong = "MG4ItemFinder"
+class GItemFinder : IEntryFinder, View("Item Finder") {
+    override val moduleNameLong = "ItemFinder"
     override val module = "M4"
     override fun getIndexManager(): IIndexManager {
-        return m4GlobalIndex!!
+        return itemIndexManager!!
     }
 
     override var searchText: TextField by singleAssign()

@@ -17,7 +17,7 @@ import tornadofx.setValue
 
 @InternalAPI
 @ExperimentalSerializationApi
-class M4ItemProperty {
+class ItemProperty {
     val uIDProperty = SimpleIntegerProperty(-1)
     var uID: Int by uIDProperty
     val descriptionProperty = SimpleStringProperty()
@@ -39,23 +39,23 @@ class M4ItemProperty {
 
 @InternalAPI
 @ExperimentalSerializationApi
-class M4ItemModel : ItemViewModel<M4ItemProperty>() {
-    val uID = bind(M4ItemProperty::uIDProperty)
-    val description = bind(M4ItemProperty::descriptionProperty)
-    val articleNumber = bind(M4ItemProperty::articleNumberProperty)
-    val ean = bind(M4ItemProperty::eanProperty)
-    val manufacturerNr = bind(M4ItemProperty::manufacturerCodeProperty)
-    val imagePath = bind(M4ItemProperty::imagePathProperty)
-    val productInfoJson = bind(M4ItemProperty::productInfoJsonProperty)
-    val statistics = bind(M4ItemProperty::statisticsProperty)
-    val priceCategories = bind(M4ItemProperty::priceCategoriesProperty)
-    val storages = bind(M4ItemProperty::storagesProperty)
+class ItemModel : ItemViewModel<ItemProperty>() {
+    val uID = bind(ItemProperty::uIDProperty)
+    val description = bind(ItemProperty::descriptionProperty)
+    val articleNumber = bind(ItemProperty::articleNumberProperty)
+    val ean = bind(ItemProperty::eanProperty)
+    val manufacturerNr = bind(ItemProperty::manufacturerCodeProperty)
+    val imagePath = bind(ItemProperty::imagePathProperty)
+    val productInfoJson = bind(ItemProperty::productInfoJsonProperty)
+    val statistics = bind(ItemProperty::statisticsProperty)
+    val priceCategories = bind(ItemProperty::priceCategoriesProperty)
+    val storages = bind(ItemProperty::storagesProperty)
 }
 
 @InternalAPI
 @ExperimentalSerializationApi
-fun getM4ItemPropertyFromItem(item: Item): M4ItemProperty {
-    val itemProperty = M4ItemProperty()
+fun getItemPropertyFromItem(item: Item): ItemProperty {
+    val itemProperty = ItemProperty()
     itemProperty.uID = item.uID
     itemProperty.description = item.description
     itemProperty.articleNumber = item.articleNumber
@@ -63,31 +63,21 @@ fun getM4ItemPropertyFromItem(item: Item): M4ItemProperty {
     itemProperty.manufacturerCode = item.manufacturerCode
     itemProperty.imagePath = item.imagePath
     itemProperty.productInfoJson = item.productInfoJson
-    /**
-     * Get the current price categories, so we are working with the latest data
-     */
+    // Get the current price categories, so we are working with the latest data
     itemProperty.priceCategoriesProperty = ItemPriceManager().getCategories(ItemPriceManager().getCategories())
-    /**
-     * Get the current storage locations, so we are working with the latest data
-     */
+    // Get the current storage locations, so we are working with the latest data
     itemProperty.storagesProperty = ItemStorageManager().getStorages(ItemStorageManager().getStorages())
-    /**
-     * Fill the item's statistics
-     */
+    // Fill the item's statistics
     for ((_, statisticString) in item.statistics) {
         val statistic = Json.decodeFromString<Statistic>(statisticString)
         itemProperty.statisticsProperty.add(statistic)
     }
-    /**
-     * Fill the price categories' prices according to their number
-     */
+    // Fill the price categories' prices according to their number
     for ((_, priceCategoryString) in item.prices) {
         val priceCategory = Json.decodeFromString<ItemPriceCategory>(priceCategoryString)
         itemProperty.priceCategoriesProperty[priceCategory.number].grossPrice = priceCategory.grossPrice
     }
-    /**
-     * Fill the storage locations' stock amount according to their number
-     */
+    // Fill the storage locations' stock amount according to their number
     for ((_, storageString) in item.stock) {
         val storage = Json.decodeFromString<ItemStorage>(storageString)
         for (storageUnit in storage.storageUnits) {
@@ -100,7 +90,7 @@ fun getM4ItemPropertyFromItem(item: Item): M4ItemProperty {
 
 @InternalAPI
 @ExperimentalSerializationApi
-fun getM4ItemFromItemProperty(itemProperty: M4ItemProperty): Item {
+fun getItemFromItemProperty(itemProperty: ItemProperty): Item {
     val item = Item(-1, "")
     item.uID = itemProperty.uID
     item.description = itemProperty.description

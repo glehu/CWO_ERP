@@ -5,7 +5,7 @@ import interfaces.IInvoice
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import modules.mx.m3GlobalIndex
+import modules.mx.invoiceIndexManager
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -59,7 +59,7 @@ data class Invoice(override var uID: Int) : IEntry, IInvoice {
     private var isIncome: Boolean = false
 
     override fun initialize() {
-        if (uID == -1) uID = m3GlobalIndex!!.getUID()
+        if (uID == -1) uID = invoiceIndexManager!!.getUID()
         if (grossTotal > 0) isIncome = true
     }
 }

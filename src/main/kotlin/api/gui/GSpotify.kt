@@ -157,8 +157,7 @@ class GSpotify : View("Spotify API") {
     }
 
     fun updateUserData() {
-        val userData = sAPI.getAccountData()
-        showUserData(userData)
+        showUserData(sAPI.getAccountData())
     }
 
     fun showTokenData(tokenData: SpotifyAuthCallbackJson) {

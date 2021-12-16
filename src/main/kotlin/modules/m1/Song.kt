@@ -5,7 +5,7 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import modules.mx.logic.getDefaultDate
-import modules.mx.m1GlobalIndex
+import modules.mx.discographyIndexManager
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -126,6 +126,6 @@ data class Song(override var uID: Int, var name: String) : IEntry {
     var spotifyID: String = "?"
 
     override fun initialize() {
-        if (uID == -1) uID = m1GlobalIndex!!.getUID()
+        if (uID == -1) uID = discographyIndexManager!!.getUID()
     }
 }

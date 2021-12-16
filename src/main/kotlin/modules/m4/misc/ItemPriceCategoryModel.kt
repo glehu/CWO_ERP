@@ -8,7 +8,7 @@ import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.setValue
 
-class M4PriceCategoryProperty {
+class ItemPriceCategoryProperty {
     //Credentials
     val numberProperty = SimpleIntegerProperty(-1)
     var number: Int by numberProperty
@@ -18,20 +18,20 @@ class M4PriceCategoryProperty {
     var vatPercent: Double by vatPercentProperty
 }
 
-class M4PriceCategoryModel(category: M4PriceCategoryProperty) : ItemViewModel<M4PriceCategoryProperty>(category) {
-    val number = bind(M4PriceCategoryProperty::numberProperty)
-    val description = bind(M4PriceCategoryProperty::descriptionProperty)
-    val vatPercent = bind(M4PriceCategoryProperty::vatPercentProperty)
+class M4PriceCategoryModel(category: ItemPriceCategoryProperty) : ItemViewModel<ItemPriceCategoryProperty>(category) {
+    val number = bind(ItemPriceCategoryProperty::numberProperty)
+    val description = bind(ItemPriceCategoryProperty::descriptionProperty)
+    val vatPercent = bind(ItemPriceCategoryProperty::vatPercentProperty)
 }
 
-fun getPriceCategoryPropertyFromCategory(category: ItemPriceCategory): M4PriceCategoryProperty {
-    val categoryProperty = M4PriceCategoryProperty()
+fun getPriceCategoryPropertyFromCategory(category: ItemPriceCategory): ItemPriceCategoryProperty {
+    val categoryProperty = ItemPriceCategoryProperty()
     categoryProperty.number = category.number
     categoryProperty.description = category.description
     categoryProperty.vatPercent = category.vatPercent
     return categoryProperty
 }
 
-fun getPriceCategoryFromCategoryProperty(categoryProperty: M4PriceCategoryProperty): ItemPriceCategory {
+fun getPriceCategoryFromCategoryProperty(categoryProperty: ItemPriceCategoryProperty): ItemPriceCategory {
     return ItemPriceCategory(categoryProperty.number, categoryProperty.description, categoryProperty.vatPercent)
 }

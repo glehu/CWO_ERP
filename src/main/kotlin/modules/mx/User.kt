@@ -11,19 +11,19 @@ data class User(
 ) {
     //Rights
     @SerialName("rMX")
-    var canAccessMX: Boolean = false
+    var canAccessManagement: Boolean = false
 
     @SerialName("rM1")
-    var canAccessM1: Boolean = true
+    var canAccessDiscography: Boolean = true
 
     @SerialName("rM2")
-    var canAccessM2: Boolean = true
+    var canAccessContacts: Boolean = true
 
     @SerialName("rM3")
-    var canAccessM3: Boolean = true
+    var canAccessInvoices: Boolean = true
 
     @SerialName("rM4")
-    var canAccessM4: Boolean = true
+    var canAccessInventory: Boolean = true
 
     @SerialName("ol")
     var online: Boolean = false

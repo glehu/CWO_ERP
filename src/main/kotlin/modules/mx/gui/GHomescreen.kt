@@ -21,7 +21,7 @@ import modules.m4.gui.GItemStorageManager
 import modules.mx.*
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.logic.*
-import modules.mx.misc.MXUserModel
+import modules.mx.misc.UserModel
 import modules.mx.misc.getUserPropertyFromUser
 import styling.Stylesheet
 import tornadofx.*
@@ -54,7 +54,7 @@ class CWOMainGUI : IModule, App(GLogin::class, Stylesheet::class) {
 @InternalAPI
 @ExperimentalSerializationApi
 class GLogin : Fragment("CWO ERP") {
-    private val loginUser = MXUserModel(getUserPropertyFromUser(User("", "")))
+    private val loginUser = UserModel(getUserPropertyFromUser(User("", "")))
     private val modeOffline = SimpleBooleanProperty(false)
     private val modeSafety = SimpleBooleanProperty(false)
     private val userManager: UserManager by inject()
@@ -201,15 +201,15 @@ class GHomescreen : View(titleGlobal) {
         center = tabpane {
             tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
-            if (activeUser.canAccessM1) tab<GDiscographyOverview>()
-            if (activeUser.canAccessM2) tab<GContactOverview>()
-            if (activeUser.canAccessM3) tab<GInvoiceOverview>()
-            if (activeUser.canAccessM4) {
+            if (activeUser.canAccessDiscography) tab<GDiscographyOverview>()
+            if (activeUser.canAccessContacts) tab<GContactOverview>()
+            if (activeUser.canAccessInvoices) tab<GInvoiceOverview>()
+            if (activeUser.canAccessInventory) {
                 tab<GItemOverview>()
                 tab<GItemPriceManager>()
                 tab<GItemStorageManager>()
             }
-            if (activeUser.canAccessMX) {
+            if (activeUser.canAccessManagement) {
                 //Only server can do this
                 if (!isClientGlobal) tab<GManagement>()
             }
@@ -217,11 +217,11 @@ class GHomescreen : View(titleGlobal) {
         bottom = hbox(20) {
             if (serverJobGlobal == null) label("SERVER OFF")
             if (telnetServerJobGlobal == null) label("TELNET OFF")
-            if (m1GlobalIndex == null) label("M1 OFF")
-            if (m2GlobalIndex == null) label("M2 OFF")
-            if (m3GlobalIndex == null) label("M3 OFF")
-            if (m4GlobalIndex == null) label("M4 OFF")
-            if (m4StockPostingGlobalIndex == null) label("M4SP OFF")
+            if (discographyIndexManager == null) label("M1 OFF")
+            if (contactIndexManager == null) label("M2 OFF")
+            if (invoiceIndexManager == null) label("M3 OFF")
+            if (itemIndexManager == null) label("M4 OFF")
+            if (itemStockPostingIndexManager == null) label("M4SP OFF")
             style {
                 unsafe("-fx-background-color", Color.web("#373e43", 1.0))
             }

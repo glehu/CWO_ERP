@@ -8,17 +8,17 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m1.Song
-import modules.mx.m1GlobalIndex
+import modules.mx.discographyIndexManager
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
 @InternalAPI
 @ExperimentalSerializationApi
 class DiscographyIndexManager : IModule, IIndexManager, Controller() {
-    override val moduleNameLong = "Discography"
+    override val moduleNameLong = "DiscographyIndexManager"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex!!
+        return discographyIndexManager!!
     }
 
     override var lastChangeDateHex: String = ""

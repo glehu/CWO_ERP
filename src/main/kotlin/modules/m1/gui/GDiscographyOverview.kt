@@ -14,7 +14,7 @@ import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GDiscographyOverview : IOverview, View("M1 Discography") {
+class GDiscographyOverview : IOverview, View("Discography") {
     private val discographyController: DiscographyController by inject()
     override val root = borderpane {
         right = vbox {

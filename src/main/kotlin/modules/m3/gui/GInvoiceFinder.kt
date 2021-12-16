@@ -16,16 +16,16 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.Invoice
 import modules.m3.logic.InvoiceController
 import modules.mx.gui.userAlerts.GAlertLocked
-import modules.mx.m3GlobalIndex
+import modules.mx.invoiceIndexManager
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GInvoiceFinder : IModule, IEntryFinder, View("M3 Invoices") {
-    override val moduleNameLong = "MG3InvoiceFinder"
+class GInvoiceFinder : IModule, IEntryFinder, View("Invoice Finder") {
+    override val moduleNameLong = "InvoiceFinder"
     override val module = "M3"
     override fun getIndexManager(): IIndexManager {
-        return m3GlobalIndex!!
+        return invoiceIndexManager!!
     }
 
     override var searchText: TextField by singleAssign()

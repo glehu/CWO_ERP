@@ -10,32 +10,32 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.*
 import modules.m4.logic.ItemController
 import modules.m4.logic.ItemStorageManager
-import modules.m4.misc.M4ItemModel
+import modules.m4.misc.ItemModel
 import modules.mx.gui.GImageViewer
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.logic.Timestamp
-import modules.mx.m4StockPostingGlobalIndex
+import modules.mx.itemStockPostingIndexManager
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class M4ItemConfiguratorWizard : Wizard("Add new item") {
-    val item: M4ItemModel by inject()
+class ItemConfiguratorWizard : Wizard("Add new item") {
+    val item: ItemModel by inject()
 
     init {
         enableStepLinks = true
         showHeader = false
-        add(NewM4ItemMainData::class)
-        add(NewM4ItemStatistics::class)
-        add(NewM4ItemPricesData::class)
-        add(NewM4ItemStorageData::class)
+        add(ItemMainData::class)
+        add(ItemStatistics::class)
+        add(ItemPricesData::class)
+        add(ItemStorageData::class)
     }
 }
 
 @InternalAPI
 @ExperimentalSerializationApi
-class NewM4ItemMainData : Fragment("Main") {
-    private val item: M4ItemModel by inject()
+class ItemMainData : Fragment("Main") {
+    private val item: ItemModel by inject()
 
     //----------------------------------v
     //----------- Main Data ------------|
@@ -85,8 +85,8 @@ class NewM4ItemMainData : Fragment("Main") {
 
 @ExperimentalSerializationApi
 @InternalAPI
-class NewM4ItemStatistics : Fragment("Statistics") {
-    private val item: M4ItemModel by inject()
+class ItemStatistics : Fragment("Statistics") {
+    private val item: ItemModel by inject()
     private var table = tableview(item.statistics) {
         isEditable = true
         column("Description", Statistic::description) {
@@ -138,8 +138,8 @@ class NewM4ItemStatistics : Fragment("Statistics") {
 
 @InternalAPI
 @ExperimentalSerializationApi
-class NewM4ItemPricesData : Fragment("Prices") {
-    private val item: M4ItemModel by inject()
+class ItemPricesData : Fragment("Prices") {
+    private val item: ItemModel by inject()
     private var table = tableview(item.priceCategories) {
         isEditable = true
         readonlyColumn("Number", ItemPriceCategory::number).prefWidth = 100.0
@@ -172,8 +172,8 @@ class NewM4ItemPricesData : Fragment("Prices") {
 
 @InternalAPI
 @ExperimentalSerializationApi
-class NewM4ItemStorageData : Fragment("Stock") {
-    private val item: M4ItemModel by inject()
+class ItemStorageData : Fragment("Stock") {
+    private val item: ItemModel by inject()
     private val lastItemUID = SimpleIntegerProperty(item.uID.value)
     private val storageManager: ItemStorageManager by inject()
     private var selectedStorage: ItemStorage = ItemStorage(0, "")
@@ -223,7 +223,7 @@ class NewM4ItemStorageData : Fragment("Stock") {
                             rowItem.stock += stockAdder.stockToAddAmount.value
                             val stockPosting = ItemStockPosting(
                                 uID = -1,
-                                itemUID = this@NewM4ItemStorageData.item.uID.value,
+                                itemUID = this@ItemStorageData.item.uID.value,
                                 storageUnitFromUID = -1,
                                 storageUnitToUID = stockAdder.storageUnitNumber.value,
                                 amount = stockAdder.stockToAddAmount.value,
@@ -233,7 +233,7 @@ class NewM4ItemStorageData : Fragment("Stock") {
                             refresh()
                             requestLayout()
                             runBlocking {
-                                m4StockPostingGlobalIndex!!.save(stockPosting)
+                                itemStockPostingIndexManager!!.save(stockPosting)
                                 ItemController().saveEntry(unlock = false)
                             }
                         } else {

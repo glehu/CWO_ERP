@@ -3,7 +3,7 @@ package modules.mx.logic
 import modules.mx.getModulePath
 import java.io.File
 
-class API {
+class APIFileManager {
     companion object {
         enum class AuthType {
             BASIC, TOKEN, NONE

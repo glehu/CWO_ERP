@@ -7,17 +7,17 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.mx.logic.Log
-import modules.mx.m1GlobalIndex
+import modules.mx.discographyIndexManager
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
 @InternalAPI
 @ExperimentalSerializationApi
 class DiscographyAnalytics : IModule, Controller() {
-    override val moduleNameLong = "M1Analytics"
+    override val moduleNameLong = "DiscographyAnalytics"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex!!
+        return discographyIndexManager!!
     }
 
     enum class DistType {
@@ -39,7 +39,7 @@ class DiscographyAnalytics : IModule, Controller() {
                 ixNr = 0,
                 exactSearch = false,
                 maxSearchResults = -1,
-                indexManager = m1GlobalIndex!!
+                indexManager = discographyIndexManager!!
             )
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping data..."))

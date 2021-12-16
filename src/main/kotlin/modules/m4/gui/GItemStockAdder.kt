@@ -7,14 +7,14 @@ import javafx.beans.property.SimpleStringProperty
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.ItemStorage
 import modules.m4.ItemStorageUnit
-import modules.m4.misc.M4ItemModel
+import modules.m4.misc.ItemModel
 import modules.m4.misc.getStoragePropertyFromStorage
 import tornadofx.*
 
 @ExperimentalSerializationApi
 @InternalAPI
 class GItemStockAdder : Fragment("Add Stock") {
-    private val item: M4ItemModel by inject()
+    private val item: ItemModel by inject()
     private var storage = getStoragePropertyFromStorage(ItemStorage(0, ""))
     private var storageNumber = SimpleIntegerProperty(storage.number)
     private var storageDescription = SimpleStringProperty(storage.description)

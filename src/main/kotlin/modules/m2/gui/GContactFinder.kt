@@ -17,16 +17,16 @@ import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
 import modules.m2.logic.ContactController
 import modules.mx.gui.userAlerts.GAlertLocked
-import modules.mx.m2GlobalIndex
+import modules.mx.contactIndexManager
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GContactFinder : IModule, IEntryFinder, View("M2 Contacts") {
-    override val moduleNameLong = "MG2ContactFinder"
+class GContactFinder : IModule, IEntryFinder, View("Contact Finder") {
+    override val moduleNameLong = "ContactFinder"
     override val module = "M2"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex!!
+        return contactIndexManager!!
     }
 
     override var searchText: TextField by singleAssign()

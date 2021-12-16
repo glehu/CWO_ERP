@@ -7,17 +7,17 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m2.Contact
-import modules.mx.m2GlobalIndex
+import modules.mx.contactIndexManager
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
 @InternalAPI
 @ExperimentalSerializationApi
 class ContactIndexManager : IIndexManager, Controller() {
-    override val moduleNameLong = "Contacts"
+    override val moduleNameLong = "ContactIndexManager"
     override val module = "M2"
     override fun getIndexManager(): IIndexManager {
-        return m2GlobalIndex!!
+        return contactIndexManager!!
     }
 
     override var lastChangeDateHex: String = ""

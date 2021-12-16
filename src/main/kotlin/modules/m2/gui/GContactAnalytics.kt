@@ -6,12 +6,12 @@ import javafx.scene.chart.PieChart
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.ContactAnalytics
 import modules.mx.gui.GProgressbar
-import modules.mx.m2GlobalIndex
+import modules.mx.contactIndexManager
 import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GContactAnalytics : Fragment("Analytics") {
+class GContactAnalytics : Fragment("Contact Analytics") {
     private val m2controller: ContactAnalytics by inject()
     private val progressProperty = SimpleIntegerProperty()
     private var progressN by progressProperty
@@ -35,9 +35,9 @@ class GContactAnalytics : Fragment("Analytics") {
             button("City distribution") {
                 prefWidth = 200.0
                 action {
-                    maxEntries = m2GlobalIndex!!.getLastUniqueID().toInt()
+                    maxEntries = contactIndexManager!!.getLastUniqueID().toInt()
                     runAsync {
-                        val cityDist = m2controller.getChartDataOnCityDistribution(m2GlobalIndex!!, numberOfCities)
+                        val cityDist = m2controller.getChartDataOnCityDistribution(contactIndexManager!!, numberOfCities)
                         {
                             progressN = it.first
                             updateProgress(it.first.toDouble(), maxEntries.toDouble())

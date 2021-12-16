@@ -3,7 +3,7 @@ package modules.mx.misc
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MGXEMailerIni(
+data class EMailerIni(
     var defaultFooter: String = "",
     var writeStatistics: Boolean = true
 )

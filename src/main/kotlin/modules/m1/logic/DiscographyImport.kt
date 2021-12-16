@@ -15,8 +15,8 @@ import modules.m2.Contact
 import modules.mx.logic.Log
 import modules.mx.logic.getDefaultDate
 import modules.mx.logic.indexFormat
-import modules.mx.m1GlobalIndex
-import modules.mx.m2GlobalIndex
+import modules.mx.discographyIndexManager
+import modules.mx.contactIndexManager
 import tornadofx.Controller
 import java.io.RandomAccessFile
 import java.time.LocalDate
@@ -25,10 +25,10 @@ import kotlin.system.measureTimeMillis
 @ExperimentalSerializationApi
 @InternalAPI
 class DiscographyImport : IModule, Controller() {
-    override val moduleNameLong = "M1Import"
+    override val moduleNameLong = "DiscographyImport"
     override val module = "M1"
     override fun getIndexManager(): IIndexManager {
-        return m1GlobalIndex!!
+        return discographyIndexManager!!
     }
 
     @ExperimentalSerializationApi
@@ -57,8 +57,8 @@ class DiscographyImport : IModule, Controller() {
             }
         }
         coroutineScope {
-            launch { m1GlobalIndex!!.writeIndexData() }
-            launch { m2GlobalIndex!!.writeIndexData() }
+            launch { discographyIndexManager!!.writeIndexData() }
+            launch { contactIndexManager!!.writeIndexData() }
         }
         CwODB.closeRandomFileAccess(raf)
         CwODB.closeRandomFileAccess(m2raf)
@@ -81,7 +81,7 @@ class DiscographyImport : IModule, Controller() {
         for (track: SpotifyTrackJson in trackList.tracks) {
             counter++
             //New album or existing album
-            val filteredMap = m1GlobalIndex!!.indexList[5]!!.indexMap.filterValues {
+            val filteredMap = discographyIndexManager!!.indexList[5]!!.indexMap.filterValues {
                 it.content.contains(track.id)
             }
             if (filteredMap.isEmpty()) {
@@ -126,7 +126,7 @@ class DiscographyImport : IModule, Controller() {
         var releaseDate: String = getDefaultDate()
 
         //New album or existing album
-        val filteredMap = m1GlobalIndex!!.indexList[5]!!.indexMap.filterValues {
+        val filteredMap = discographyIndexManager!!.indexList[5]!!.indexMap.filterValues {
             it.content.contains(indexFormat(album.id).uppercase())
         }
         song = if (filteredMap.isEmpty()) {
@@ -177,20 +177,20 @@ class DiscographyImport : IModule, Controller() {
         var artistUID: Int
         var filteredMap: Map<Int, IndexContent>
         for ((artistCounter, artist: SpotifyArtistJson) in artists.withIndex()) {
-            filteredMap = m2GlobalIndex!!.indexList[3]!!.indexMap.filterValues {
+            filteredMap = contactIndexManager!!.indexList[3]!!.indexMap.filterValues {
                 it.content.contains(indexFormat(artist.id).uppercase())
             }
             if (filteredMap.isEmpty()) {
                 contact = Contact(-1, artist.name)
                 contact.spotifyID = artist.id
                 contact.birthdate = getDefaultDate()
-                artistUID = m2GlobalIndex!!.save(
+                artistUID = contactIndexManager!!.save(
                     entry = contact,
                     raf = m2raf,
                     indexWriteToDisk = false,
                 )
             } else {
-                contact = m2GlobalIndex!!.get(filteredMap.keys.first()) as Contact
+                contact = contactIndexManager!!.get(filteredMap.keys.first()) as Contact
                 artistUID = contact.uID
             }
             when (artistCounter) {
