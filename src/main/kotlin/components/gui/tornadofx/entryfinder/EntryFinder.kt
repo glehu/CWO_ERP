@@ -10,10 +10,9 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TableView
 import javafx.scene.control.TextField
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import modules.mx.logic.Log
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -35,45 +34,49 @@ class EntryFinder(
     override val ixNrList: ObservableList<String> = observableArrayList(origin.getIndexUserSelection())
     override val table: TableView<IEntry> = TableView<IEntry>()
 
-    private var job: Job = Job()
+    private var lookupJob: Job = Job()
 
     val searchMask = borderpane {
         center = form {
             prefWidth = 1200.0
             fieldset {
-                fieldset {
-                    field("Search") {
-                        searchText = textfield {
-                            textProperty().addListener { _, _, _ ->
-                                job.cancel()
-                                runAsync {
-                                    runBlocking {
-                                        job = launch {
-                                            origin.searchForEntries(
-                                                entryFinder = this@EntryFinder
-                                            )
-                                            origin.table.refresh()
-                                            origin.table.requestResize()
-                                        }
-                                    }
-                                }
-                            }
-                            tooltip("Contains the search text that will be used to find an entry.")
-                        }
-                        exactSearch = checkbox("Exact Search") {
-                            tooltip("If checked, a literal search will be done.")
-                        }
+                field("Search (Enter)") {
+                    searchText = textfield {
+                        //textProperty().addListener { _, _, _ -> startLookup() }       DISABLED UNTIL THREADSAFE
+                        action { startLookup() }
+                        tooltip("Contains the search text that will be used to find an entry.")
                     }
-                    fieldset("Index")
-                    {
-                        ixNr.value = ixNrList[0]
-                        combobox(ixNr, ixNrList) {
-                            tooltip("Selects the index file that will be searched in.")
-                        }
+                    exactSearch = checkbox("Exact Search") {
+                        tooltip("If checked, a literal search will be done.")
+                    }
+                }
+                fieldset("Index")
+                {
+                    ixNr.value = ixNrList[0]
+                    combobox(ixNr, ixNrList) {
+                        tooltip("Selects the index file that will be searched in.")
                     }
                 }
             }
         }
     }
+
+    fun startLookup() {
+        runAsync {
+            runBlocking {
+                try {
+                    lookupJob.cancelAndJoin()
+                    lookupJob = launch {
+                        origin.searchForEntries(entryFinder = this@EntryFinder)
+                        origin.table.refresh()
+                        origin.table.requestResize()
+                    }
+                } catch (e: CancellationException) {
+                    log(Log.LogType.ERROR, e.message ?: "LOOKUP ERR")
+                }
+            }
+        }
+    }
+
     override val root = searchMask
 }

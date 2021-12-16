@@ -40,7 +40,11 @@ interface IEntryFinder : IModule {
     ) {
         var entriesFound = 0
         if (entryFinder.searchText.text.isEmpty()) {
-            this@IEntryFinder.entriesFound.clear()
+            try {
+                this@IEntryFinder.entriesFound.clear()
+            } catch (e: Exception) {
+                log(Log.LogType.ERROR, e.message ?: "CLEAR ERR")
+            }
             return
         }
         if (!isClientGlobal) {
