@@ -10,6 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import modules.mx.Ini
+import modules.mx.getIniFile
 import modules.mx.logic.Log
 import modules.mx.telnetServerJobGlobal
 import java.net.InetSocketAddress
@@ -25,14 +29,20 @@ class TelnetServer : IModule {
         return null
     }
 
-    val server =
-        aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
-            .bind(InetSocketAddress("127.0.0.1", 2323))
+    private val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
+
+    val telnetServer =
+        aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind(
+            localAddress = InetSocketAddress(
+                iniVal.telnetServerIPAddress.substringBefore(':'),
+                iniVal.telnetServerIPAddress.substringAfter(':').toInt()
+            )
+        )
 
     init {
         log(
             logType = Log.LogType.SYS,
-            text = "TELNET SERVE ${server.localAddress}"
+            text = "TELNET SERVE ${telnetServer.localAddress}"
         )
         telnetServerJobGlobal = GlobalScope.launch {
             while (true) {
@@ -40,7 +50,7 @@ class TelnetServer : IModule {
                     logType = Log.LogType.INFO,
                     text = "TELNET READY"
                 )
-                val socket = server.accept()
+                val socket = telnetServer.accept()
                 launch {
                     log(
                         logType = Log.LogType.COM,

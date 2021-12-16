@@ -11,8 +11,6 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.network.selector.*
-import io.ktor.network.sockets.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -20,9 +18,7 @@ import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
-import io.ktor.utils.io.*
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -36,7 +32,6 @@ import modules.mx.logic.Log
 import modules.mx.logic.UserManager
 import tornadofx.Controller
 import java.io.File
-import java.net.InetSocketAddress
 
 @DelicateCoroutinesApi
 @InternalAPI
@@ -52,7 +47,11 @@ class Server : IModule, Controller() {
     private val userManager: UserManager by inject()
     lateinit var text: String
 
-    val serverEngine = embeddedServer(Netty, port = 8000) {
+    val serverEngine = embeddedServer(
+        factory = Netty,
+        host = iniVal.serverIPAddress.substringBefore(':'),
+        port = iniVal.serverIPAddress.substringAfter(':').toInt()
+    ) {
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
@@ -107,7 +106,6 @@ class Server : IModule, Controller() {
                     spotifyAPI.updateUserData()
                 }
             }
-            openRawSocketEcho()
             authenticate("auth-basic") {
                 register()
                 get("/login") {
@@ -450,44 +448,6 @@ class Server : IModule, Controller() {
                         subSetting = body.subSetting
                     )
                 )
-            }
-        }
-    }
-
-    private fun Route.openRawSocketEcho() {
-        get("openrawsocket/echo") {
-            val server =
-                aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
-                    .bind(InetSocketAddress("127.0.0.1", 2323))
-            log(Log.LogType.COM, "TELNET OPEN ${server.localAddress}", call.request.uri)
-            call.respond(HttpStatusCode.OK)
-            while (true) {
-                val socket = server.accept()
-                launch {
-                    log(
-                        logType = Log.LogType.COM,
-                        text = "TELNET CONNECT ${socket.remoteAddress}",
-                        apiEndpoint = "telnet ${server.localAddress}"
-                    )
-                    val input = socket.openReadChannel()
-                    val output = socket.openWriteChannel(autoFlush = true)
-                    output.writeStringUtf8("--- Connection Established --- CwODB API ---\r\n")
-                    while (true) {
-                        val line = input.readUTF8Line(9999)
-                        if (line == "bye") {
-                            output.close()
-                            server.dispose()
-                            log(
-                                logType = Log.LogType.COM,
-                                text = "TELNET CLOSE ${server.localAddress}",
-                                apiEndpoint = "telnet ${server.localAddress} bye"
-                            )
-                        } else {
-                            output.writeStringUtf8(":echo> $line\r\n")
-                        }
-                    }
-                }
-                break
             }
         }
     }

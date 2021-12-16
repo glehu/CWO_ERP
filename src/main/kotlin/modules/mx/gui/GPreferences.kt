@@ -13,21 +13,24 @@ import modules.mx.logic.readAndSetIniValues
 import tornadofx.*
 
 @ExperimentalSerializationApi
-class MGXPreferences : View("Preferences") {
+class GPreferences : View("Preferences") {
     private val encryptionKeyProperty = SimpleStringProperty(getRandomString(16, true))
     private val dataPathProperty = SimpleStringProperty(System.getProperty("user.dir"))
     private val maxSearchResultsProperty = SimpleIntegerProperty(2_000)
     private val differenceFromUTCProperty = SimpleIntegerProperty(0)
     private val isClientProperty = SimpleStringProperty("false")
     private val serverIPAddressProperty = SimpleStringProperty("?")
+    private val telnetServerIPAddressProperty = SimpleStringProperty("?")
     private val emailUsernameProperty = SimpleStringProperty("?")
     private val emailPasswordProperty = SimpleStringProperty("?")
     private val emailHostProperty = SimpleStringProperty("?")
     private val emailPortProperty = SimpleStringProperty("?")
     private val emailAddressProperty = SimpleStringProperty("?")
+
     private val jsonSerializer = Json {
         prettyPrint = true
     }
+
     override val root = form {
         setPrefSize(600.0, 200.0)
         val iniFile = getIniFile()
@@ -43,6 +46,7 @@ class MGXPreferences : View("Preferences") {
                         differenceFromUTC = differenceFromUTCProperty.value,
                         isClient = isClientProperty.value.toBoolean(),
                         serverIPAddress = serverIPAddressProperty.value,
+                        telnetServerIPAddress = telnetServerIPAddressProperty.value,
                         emailUsername = emailUsernameProperty.value,
                         emailPassword = emailPasswordProperty.value,
                         emailHost = emailHostProperty.value,
@@ -60,6 +64,7 @@ class MGXPreferences : View("Preferences") {
             differenceFromUTCProperty.value = iniVal.differenceFromUTC
             isClientProperty.value = iniVal.isClient.toString()
             serverIPAddressProperty.value = iniVal.serverIPAddress
+            telnetServerIPAddressProperty.value = iniVal.telnetServerIPAddress
             emailUsernameProperty.value = iniVal.emailUsername
             emailPasswordProperty.value = iniVal.emailPassword
             emailHostProperty.value = iniVal.emailHost
@@ -93,6 +98,9 @@ class MGXPreferences : View("Preferences") {
                 field("Server IP Address") {
                     textfield(serverIPAddressProperty) { prefWidth = 200.0 }
                 }
+                field("Telnet Server IP Address") {
+                    textfield(telnetServerIPAddressProperty) { prefWidth = 200.0 }
+                }
                 field("SMTP Username") {
                     textfield(emailUsernameProperty) { prefWidth = 200.0 }
                 }
@@ -120,6 +128,7 @@ class MGXPreferences : View("Preferences") {
                                 differenceFromUTC = differenceFromUTCProperty.value,
                                 isClient = isClientProperty.value.toBoolean(),
                                 serverIPAddress = serverIPAddressProperty.value,
+                                telnetServerIPAddress = telnetServerIPAddressProperty.value,
                                 emailUsername = emailUsernameProperty.value,
                                 emailPassword = emailPasswordProperty.value,
                                 emailHost = emailHostProperty.value,
@@ -137,4 +146,4 @@ class MGXPreferences : View("Preferences") {
 }
 
 @ExperimentalSerializationApi
-fun showPreferences() = FX.find<MGXPreferences>().openModal(block = true)
+fun showPreferences() = find<GPreferences>().openModal(block = true)

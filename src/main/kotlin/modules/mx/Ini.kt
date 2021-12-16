@@ -11,6 +11,7 @@ data class Ini(
     @SerialName("Difference from UTC in Hours") var differenceFromUTC: Int,
     @SerialName("Client") var isClient: Boolean,
     @SerialName("Server IP Address") var serverIPAddress: String,
+    @SerialName("Telnet Server IP Address") var telnetServerIPAddress: String,
     @SerialName("SMTP Username") var emailUsername: String,
     @SerialName("SMTP Password") var emailPassword: String,
     @SerialName("SMTP Host") var emailHost: String,

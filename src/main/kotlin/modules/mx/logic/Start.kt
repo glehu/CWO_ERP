@@ -43,7 +43,11 @@ fun main(args: Array<String>) {
 fun checkInstallation() {
     //Search for the .ini file to set up the software
     if (!getIniFile().isFile) {
-        showPreferences()
+        if (!cliMode) {
+            showPreferences()
+        } else {
+            //TODO
+        }
     } else readAndSetIniValues()
     if (!isClientGlobal) {
         //Check if all data paths and files exist
@@ -138,7 +142,7 @@ fun exitMain() {
         if (telnetServerJobGlobal != null && telnetServerJobGlobal!!.isActive) {
             Log.log(Log.LogType.INFO, "Shutting down telnet server...")
             try {
-                telnetServer.server.close()
+                telnetServer.telnetServer.close()
             } catch (e: IOException) {
                 println(e.message)
             }
