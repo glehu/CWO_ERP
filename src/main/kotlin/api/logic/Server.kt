@@ -227,7 +227,7 @@ class Server : IModule, Controller() {
 
     private fun Route.userTracking() {
         post("utr") {
-            call.respond(usageTracker.writeUsageTrackingData(call))
+            call.respond(usageTracker!!.writeUsageTrackingData(call))
         }
     }
 

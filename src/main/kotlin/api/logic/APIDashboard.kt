@@ -77,7 +77,7 @@ class APIDashboard : IModule, Controller() {
     }
 
     private fun getInputStream(): InputStream {
-        return usageTracker.getUsageLogFile().inputStream()
+        return usageTracker!!.getUsageLogFile().inputStream()
     }
 
     fun getWebUsageToday(

@@ -3,8 +3,10 @@ package modules.mx.gui
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.geometry.Pos
 import javafx.scene.control.TabPane
+import javafx.scene.paint.Color
 import javafx.stage.Stage
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -27,7 +29,7 @@ import tornadofx.*
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
-class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
+class CWOMainGUI : IModule, App(GLogin::class, Stylesheet::class) {
     override val moduleNameLong = "CWO ERP"
     override val module = "MX"
     override fun getIndexManager(): IIndexManager? {
@@ -51,8 +53,10 @@ class CWOMainGUI : IModule, App(MXGLogin::class, Stylesheet::class) {
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
-class MXGLogin : Fragment("CWO ERP") {
+class GLogin : Fragment("CWO ERP") {
     private val loginUser = MXUserModel(getUserPropertyFromUser(User("", "")))
+    private val modeOffline = SimpleBooleanProperty(false)
+    private val modeSafety = SimpleBooleanProperty(false)
     private val userManager: UserManager by inject()
     override val root = borderpane {
         top = menubar {
@@ -69,11 +73,42 @@ class MXGLogin : Fragment("CWO ERP") {
                     alignment = Pos.CENTER
                     addClass(Stylesheet.fieldsetBorder)
                     vbox {
-                        fieldset {
-                            field("Username") { textfield(loginUser.username).required() }
-                            field("Password") { passwordfield(loginUser.password).required() }
+                        hbox(50) {
+                            fieldset("Credentials") {
+                                field("Username") { textfield(loginUser.username).required() }
+                                field("Password") { passwordfield(loginUser.password).required() }
+                            }
+                            fieldset("Options") {
+                                field("Offline (F1)") {
+                                    shortcut("F1") {
+                                        if (modeSafety.value) {
+                                            modeOffline.value = !modeOffline.value
+                                        }
+                                    }
+                                    checkbox("", modeOffline) {
+                                        tooltip("Starts the software without its network components.")
+                                        action {
+                                            if (modeSafety.value) {
+                                                modeOffline.value = !modeOffline.value
+                                            }
+                                        }
+                                    }
+                                }
+                                field("Safety Mode (F2)") {
+                                    shortcut("F2") {
+                                        modeSafety.value = !modeSafety.value
+                                        modeOffline.value = modeSafety.value
+                                    }
+                                    checkbox("", modeSafety) {
+                                        tooltip("Starts the software in offline mode without loading the indices.")
+                                        action {
+                                            modeOffline.value = modeSafety.value
+                                        }
+                                    }
+                                }
+                            }
                         }
-                        button("Login") {
+                        button("Login (Enter)") {
                             enableWhen(loginUser.dirty)
                             shortcut("Enter")
                             action {
@@ -85,8 +120,8 @@ class MXGLogin : Fragment("CWO ERP") {
                                     }
                                 } ui {
                                     if (validResponse) {
-                                        startupRoutines()
-                                        replaceWith<MXGUserInterface>()
+                                        startupRoutines(modeOffline.value, modeSafety.value)
+                                        replaceWith<GHomescreen>()
                                     } else {
                                         loginUser.password.value = ""
                                         if (isClientGlobal) {
@@ -113,7 +148,7 @@ class MXGLogin : Fragment("CWO ERP") {
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
-class MXGUserInterface : View(titleGlobal) {
+class GHomescreen : View(titleGlobal) {
     override val root = borderpane {
         top = menubar {
             menu("Menu") {
@@ -178,6 +213,19 @@ class MXGUserInterface : View(titleGlobal) {
                 //Only server can do this
                 if (!isClientGlobal) tab<GManagement>()
             }
+        }
+        bottom = hbox(20) {
+            if (serverJobGlobal == null) label("SERVER OFF")
+            if (telnetServerJobGlobal == null) label("TELNET OFF")
+            if (m1GlobalIndex == null) label("M1 OFF")
+            if (m2GlobalIndex == null) label("M2 OFF")
+            if (m3GlobalIndex == null) label("M3 OFF")
+            if (m4GlobalIndex == null) label("M4 OFF")
+            if (m4StockPostingGlobalIndex == null) label("M4SP OFF")
+            style {
+                unsafe("-fx-background-color", Color.web("#373e43", 1.0))
+            }
+            addClass(Stylesheet.fieldsetBorder)
         }
     }
 }

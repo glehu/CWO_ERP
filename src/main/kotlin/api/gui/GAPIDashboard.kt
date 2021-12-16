@@ -38,7 +38,8 @@ class GAPIDashboard : View("API Dashboard") {
     }
 
     fun getWebModuleUsageData() {
-        maxEntries = usageTracker.totalAPICalls.get()
+        if (usageTracker == null) return
+        maxEntries = usageTracker!!.totalAPICalls.get()
         runAsync {
             webModuleUsageWeek =
                 APIDashboard().getWebUsageDays(8) {

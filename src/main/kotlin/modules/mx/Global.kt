@@ -94,7 +94,7 @@ var m4StockPostingGlobalIndex: ItemStockPostingIndexManager? = null
 
 @InternalAPI
 @ExperimentalSerializationApi
-lateinit var usageTracker: UsageTracker
+var usageTracker: UsageTracker? = null
 
 //*************************************************
 //********************** MISCELLANEOUS ************

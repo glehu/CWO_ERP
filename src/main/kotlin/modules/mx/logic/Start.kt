@@ -89,18 +89,16 @@ fun readAndSetIniValues() {
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
-fun startupRoutines() {
+fun startupRoutines(modeOffline: Boolean, modeSafety: Boolean) {
     if (!isClientGlobal) {
-        /**
-         * Load index managers
-         */
-        loadIndex()
-        /**
-         * Start the embedded server and usage tracker
-         */
-        server = Server()
-        telnetServer = TelnetServer()
-        usageTracker = UsageTracker()
+        //Load index managers
+        if (!modeSafety) loadIndex()
+        //Start the embedded server and usage tracker
+        if (!modeOffline) {
+            server = Server()
+            telnetServer = TelnetServer()
+            usageTracker = UsageTracker()
+        }
     }
     /**
      * Start a long-running coroutine task to do various stuff
