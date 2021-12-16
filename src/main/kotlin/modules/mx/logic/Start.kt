@@ -132,6 +132,7 @@ fun loadIndex(module: String = "") {
 @ExperimentalSerializationApi
 @InternalAPI
 fun exitMain() {
+    if (activeUser.username.isEmpty()) return
     UserManager().logout(activeUser.username, activeUser.password)
     if (!isClientGlobal) {
         if (serverJobGlobal != null && serverJobGlobal!!.isActive) {
