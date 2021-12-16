@@ -81,7 +81,7 @@ class GLogin : Fragment("CWO ERP") {
                             fieldset("Options") {
                                 field("Offline (F1)") {
                                     shortcut("F1") {
-                                        if (modeSafety.value) {
+                                        if (!modeSafety.value) {
                                             modeOffline.value = !modeOffline.value
                                         }
                                     }
