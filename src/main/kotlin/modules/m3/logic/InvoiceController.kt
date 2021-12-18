@@ -181,7 +181,7 @@ class InvoiceController : IController, Controller() {
         val iniVal = InvoiceCLIController().getIni()
         val m3Finder = GInvoiceFinder()
         m3Finder.openModal()
-        m3Finder.modalSearch("[${iniVal.todoStatuses}]", 3)
+        m3Finder.modalSearch("[${iniVal.todoStatuses}]", 4)
     }
 
     fun showSettings() {
