@@ -1,6 +1,6 @@
 package modules.m2.gui
 
-import components.gui.tornadofx.entryfinder.EntryFinder
+import components.gui.tornadofx.entryfinder.EntryFinderSearchMask
 import interfaces.IEntry
 import interfaces.IEntryFinder
 import interfaces.IIndexManager
@@ -16,8 +16,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m2.Contact
 import modules.m2.logic.ContactController
-import modules.mx.gui.userAlerts.GAlertLocked
 import modules.mx.contactIndexManager
+import modules.mx.gui.userAlerts.GAlertLocked
 import tornadofx.*
 
 @InternalAPI
@@ -34,7 +34,8 @@ class GContactFinder : IModule, IEntryFinder, View("Contact Finder") {
     override var entriesFound: ObservableList<IEntry> = observableListOf()
     override var ixNr = SimpleStringProperty()
     override val ixNrList: ObservableList<String> = observableArrayList(getIndexUserSelection())
-    private val entryFinder = EntryFinder(origin = this, ixManager = getIndexManager())
+    override val entryFinderSearchMask: EntryFinderSearchMask =
+        EntryFinderSearchMask(origin = this, ixManager = getIndexManager())
 
     private val contactController: ContactController by inject()
     private val transfer: SongPropertyMainDataModel by inject()
@@ -67,7 +68,7 @@ class GContactFinder : IModule, IEntryFinder, View("Contact Finder") {
     } as TableView<IEntry>
 
     override val root = form {
-        add(entryFinder.searchMask)
+        add(entryFinderSearchMask.searchMask)
         add(table)
     }
 }

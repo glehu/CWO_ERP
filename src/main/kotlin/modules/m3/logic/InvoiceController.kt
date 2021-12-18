@@ -17,12 +17,12 @@ import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.m4.ItemStockPosting
 import modules.m4.logic.ItemPriceManager
 import modules.mx.gui.userAlerts.GAlert
+import modules.mx.invoiceIndexManager
+import modules.mx.itemStockPostingIndexManager
 import modules.mx.logic.EMailer
 import modules.mx.logic.Log
 import modules.mx.logic.Timestamp
 import modules.mx.logic.roundTo
-import modules.mx.invoiceIndexManager
-import modules.mx.itemStockPostingIndexManager
 import tornadofx.Controller
 
 @InternalAPI
@@ -179,15 +179,9 @@ class InvoiceController : IController, Controller() {
 
     fun showToDoInvoices() {
         val iniVal = InvoiceCLIController().getIni()
-        val todoStatuses = iniVal.todoStatuses
         val m3Finder = GInvoiceFinder()
-        m3Finder.exactSearch.isSelected = true
-        m3Finder.ixNr.value = InvoiceController().getIndexUserSelection()[3]
         m3Finder.openModal()
-        m3Finder.searchText.text = ""
-        m3Finder.searchText.text = "[$todoStatuses]"
-        m3Finder.table.refresh()
-        m3Finder.table.requestFocus()
+        m3Finder.modalSearch("[${iniVal.todoStatuses}]", 3)
     }
 
     fun showSettings() {

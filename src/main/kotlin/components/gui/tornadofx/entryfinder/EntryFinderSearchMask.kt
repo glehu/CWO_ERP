@@ -17,7 +17,7 @@ import tornadofx.*
 
 @ExperimentalSerializationApi
 @InternalAPI
-class EntryFinder(
+class EntryFinderSearchMask(
     val origin: IEntryFinder,
     val ixManager: IIndexManager
 ) : IEntryFinder, View() {
@@ -33,7 +33,9 @@ class EntryFinder(
     override var ixNr = SimpleStringProperty()
     override val ixNrList: ObservableList<String> = observableArrayList(origin.getIndexUserSelection())
     override val table: TableView<IEntry> = TableView<IEntry>()
+    override val entryFinderSearchMask: EntryFinderSearchMask = this
 
+    var showAll: CheckBox by singleAssign()
     private var lookupJob: Job = Job()
 
     val searchMask = borderpane {
@@ -48,6 +50,9 @@ class EntryFinder(
                     }
                     exactSearch = checkbox("Exact Search") {
                         tooltip("If checked, a literal search will be done.")
+                    }
+                    showAll = checkbox("Show all") {
+                        tooltip("If checked, shows all entries, overriding the max search results settings.")
                     }
                 }
                 fieldset("Index")
@@ -67,7 +72,7 @@ class EntryFinder(
                 try {
                     lookupJob.cancelAndJoin()
                     lookupJob = launch {
-                        origin.searchForEntries(entryFinder = this@EntryFinder)
+                        origin.searchForEntries(entryFinder = this@EntryFinderSearchMask)
                         origin.table.refresh()
                         origin.table.requestResize()
                     }

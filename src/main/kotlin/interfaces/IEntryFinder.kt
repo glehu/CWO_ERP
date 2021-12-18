@@ -1,6 +1,7 @@
 package interfaces
 
 import api.misc.json.EntryJson
+import components.gui.tornadofx.entryfinder.EntryFinderSearchMask
 import db.CwODB
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
@@ -20,6 +21,7 @@ import kotlinx.serialization.json.Json
 import modules.mx.isClientGlobal
 import modules.mx.logic.Log
 import modules.mx.logic.indexFormat
+import modules.mx.maxSearchResultsGlobal
 import java.net.InetSocketAddress
 
 @InternalAPI
@@ -31,12 +33,13 @@ interface IEntryFinder : IModule {
     var ixNr: SimpleStringProperty
     val ixNrList: ObservableList<String>
     val table: TableView<IEntry>
+    val entryFinderSearchMask: EntryFinderSearchMask
 
     fun searchForEntries(
         /**
          * References to the EntryFinder GUI instance carrying the search data.
          */
-        entryFinder: IEntryFinder
+        entryFinder: EntryFinderSearchMask
     ) {
         var entriesFound = 0
         if (entryFinder.searchText.text.isEmpty()) {
@@ -48,11 +51,15 @@ interface IEntryFinder : IModule {
             return
         }
         if (!isClientGlobal) {
+            val overrideMaxSearchResultsGlobal = if (entryFinder.showAll.isSelected) {
+                -1
+            } else maxSearchResultsGlobal
             CwODB.getEntriesFromSearchString(
                 searchText = indexFormat(entryFinder.searchText.text),
                 ixNr = entryFinder.ixNr.value.substring(0, 1).toInt(),
                 exactSearch = entryFinder.exactSearch.isSelected,
                 indexManager = getIndexManager()!!,
+                maxSearchResults = overrideMaxSearchResultsGlobal
             ) { _, bytes ->
                 if (entriesFound == 0) this.entriesFound.clear()
                 try {
@@ -112,5 +119,14 @@ interface IEntryFinder : IModule {
             }
         }
         if (entriesFound == 0) this@IEntryFinder.entriesFound.clear()
+    }
+
+    fun modalSearch(searchText: String, ixNr: Int? = null) {
+        if (ixNr != null && ixNr > 0) {
+            entryFinderSearchMask.exactSearch.isSelected = true
+            entryFinderSearchMask.ixNr.value = entryFinderSearchMask.ixNrList[ixNr-1]
+        }
+        entryFinderSearchMask.searchText.text = searchText
+        entryFinderSearchMask.startLookup()
     }
 }

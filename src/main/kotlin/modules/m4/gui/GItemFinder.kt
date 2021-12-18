@@ -1,6 +1,6 @@
 package modules.m4.gui
 
-import components.gui.tornadofx.entryfinder.EntryFinder
+import components.gui.tornadofx.entryfinder.EntryFinderSearchMask
 import interfaces.IEntry
 import interfaces.IEntryFinder
 import interfaces.IIndexManager
@@ -33,7 +33,8 @@ class GItemFinder : IEntryFinder, View("Item Finder") {
     override var entriesFound: ObservableList<IEntry> = observableListOf()
     override var ixNr = SimpleStringProperty()
     override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
-    private val entryFinder = EntryFinder(origin = this, ixManager = getIndexManager())
+    override val entryFinderSearchMask: EntryFinderSearchMask =
+        EntryFinderSearchMask(origin = this, ixManager = getIndexManager())
 
     private val itemController: ItemController by inject()
     private val transfer: SongPropertyMainDataModel by inject()
@@ -63,7 +64,7 @@ class GItemFinder : IEntryFinder, View("Item Finder") {
     } as TableView<IEntry>
 
     override val root = form {
-        add(entryFinder.searchMask)
+        add(entryFinderSearchMask.searchMask)
         add(table)
     }
 }

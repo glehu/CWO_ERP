@@ -5,7 +5,6 @@ import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.misc.ContactModel
 import modules.m3.gui.GInvoiceFinder
-import modules.m3.logic.InvoiceController
 import modules.m4.Statistic
 import tornadofx.*
 
@@ -72,11 +71,8 @@ class ContactFinancialData : Fragment("Financial Data") {
                         contextmenu {
                             item("Show invoices (as seller)").action {
                                 val m3Finder = GInvoiceFinder()
-                                m3Finder.exactSearch.isSelected = true
-                                m3Finder.ixNr.value = InvoiceController().getIndexUserSelection()[0]
                                 m3Finder.openModal()
-                                m3Finder.searchText.text = ""
-                                m3Finder.searchText.text = contact.name.value
+                                m3Finder.modalSearch("[${contact.name.value}]", 1)
                             }
                         }
                     }.isEditable = false
@@ -89,11 +85,8 @@ class ContactFinancialData : Fragment("Financial Data") {
                         contextmenu {
                             item("Show invoices (as buyer)").action {
                                 val m3Finder = GInvoiceFinder()
-                                m3Finder.exactSearch.isSelected = true
-                                m3Finder.ixNr.value = InvoiceController().getIndexUserSelection()[1]
                                 m3Finder.openModal()
-                                m3Finder.searchText.text = ""
-                                m3Finder.searchText.text = contact.name.value
+                                m3Finder.modalSearch("[${contact.name.value}]", 2)
                             }
                         }
                     }.isEditable = false

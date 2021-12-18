@@ -77,6 +77,11 @@ class SongMainData : Fragment("Main") {
                                 songMainData.vocalistUID.value = contact.uID
                                 songMainData.vocalist.value = contact.name
                             }
+                            item("Contact's Songs").action {
+                                val finder = GDiscographyFinder()
+                                finder.openModal()
+                                finder.modalSearch(songMainData.vocalist.value, 2)
+                            }
                         }
                     }
                 }
@@ -94,6 +99,11 @@ class SongMainData : Fragment("Main") {
                                 val contact = contactController.selectAndLoadContact()
                                 songMainData.producerUID.value = contact.uID
                                 songMainData.producer.value = contact.name
+                            }
+                            item("Contact's Songs").action {
+                                val finder = GDiscographyFinder()
+                                finder.openModal()
+                                finder.modalSearch(songMainData.producer.value, 3)
                             }
                         }
                     }

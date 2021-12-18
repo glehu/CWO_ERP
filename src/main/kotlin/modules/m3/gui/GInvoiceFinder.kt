@@ -1,6 +1,6 @@
 package modules.m3.gui
 
-import components.gui.tornadofx.entryfinder.EntryFinder
+import components.gui.tornadofx.entryfinder.EntryFinderSearchMask
 import interfaces.IEntry
 import interfaces.IEntryFinder
 import interfaces.IIndexManager
@@ -33,7 +33,8 @@ class GInvoiceFinder : IModule, IEntryFinder, View("Invoice Finder") {
     override var entriesFound: ObservableList<IEntry> = observableListOf()
     override var ixNr = SimpleStringProperty()
     override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
-    private val entryFinder = EntryFinder(origin = this, ixManager = getIndexManager())
+    override val entryFinderSearchMask: EntryFinderSearchMask =
+        EntryFinderSearchMask(origin = this, ixManager = getIndexManager())
 
     private val invoiceController: InvoiceController by inject()
 
@@ -60,7 +61,7 @@ class GInvoiceFinder : IModule, IEntryFinder, View("Invoice Finder") {
     } as TableView<IEntry>
 
     override val root = form {
-        add(entryFinder.searchMask)
+        add(entryFinderSearchMask.searchMask)
         add(table)
     }
 }

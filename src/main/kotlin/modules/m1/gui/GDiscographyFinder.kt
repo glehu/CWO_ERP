@@ -2,7 +2,7 @@
 
 package modules.m1.gui
 
-import components.gui.tornadofx.entryfinder.EntryFinder
+import components.gui.tornadofx.entryfinder.EntryFinderSearchMask
 import interfaces.IEntry
 import interfaces.IEntryFinder
 import interfaces.IIndexManager
@@ -17,8 +17,8 @@ import javafx.scene.control.TextField
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.logic.DiscographyController
-import modules.mx.gui.userAlerts.GAlertLocked
 import modules.mx.discographyIndexManager
+import modules.mx.gui.userAlerts.GAlertLocked
 import tornadofx.*
 
 @InternalAPI
@@ -35,7 +35,8 @@ class GDiscographyFinder : IModule, IEntryFinder, View("Discography Finder") {
     override var entriesFound: ObservableList<IEntry> = observableListOf()
     override var ixNr = SimpleStringProperty()
     override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
-    private val entryFinder = EntryFinder(origin = this, ixManager = getIndexManager())
+    override val entryFinderSearchMask: EntryFinderSearchMask =
+        EntryFinderSearchMask(origin = this, ixManager = getIndexManager())
 
     private val discographyController: DiscographyController by inject()
 
@@ -60,7 +61,7 @@ class GDiscographyFinder : IModule, IEntryFinder, View("Discography Finder") {
     } as TableView<IEntry>
 
     override val root = form {
-        add(entryFinder.searchMask)
+        add(entryFinderSearchMask.searchMask)
         add(table)
     }
 }
