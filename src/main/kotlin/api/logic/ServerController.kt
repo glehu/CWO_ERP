@@ -141,11 +141,12 @@ class ServerController {
         @InternalAPI
         fun generateLoginResponse(user: User): ValidationContainerJson {
             val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
+            //               Hours
             val expiresInMs = (1 * 60 * 60 * 1000)
             val expiresAt = Date(System.currentTimeMillis() + expiresInMs)
             val token = JWT.create()
-                .withAudience("http://localhost:8000/")
-                .withIssuer("http://localhost:8000/")
+                .withAudience("http://${iniVal.serverIPAddress}/")
+                .withIssuer("http://${iniVal.serverIPAddress}/")
                 .withClaim("username", user.username)
                 .withExpiresAt(expiresAt)
                 .sign(Algorithm.HMAC256(iniVal.token))

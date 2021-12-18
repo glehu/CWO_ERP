@@ -74,8 +74,8 @@ class Server : IModule, Controller() {
                 verifier(
                     JWT
                         .require(Algorithm.HMAC256(iniVal.token))
-                        .withAudience("http://localhost:8000/")
-                        .withIssuer("http://localhost:8000/")
+                        .withAudience("http://${iniVal.serverIPAddress}/")
+                        .withIssuer("http://${iniVal.serverIPAddress}/")
                         .build()
                 )
                 validate { credential ->
