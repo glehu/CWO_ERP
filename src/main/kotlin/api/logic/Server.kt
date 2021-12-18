@@ -183,19 +183,39 @@ class Server : IModule, Controller() {
                      * General Endpoints
                      */
                     getIndexSelection(
-                        discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!
+                        discographyIndexManager!!,
+                        contactIndexManager!!,
+                        invoiceIndexManager!!,
+                        itemIndexManager!!,
+                        itemStockPostingIndexManager!!
                     )
                     getEntry(
-                        discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!
+                        discographyIndexManager!!,
+                        contactIndexManager!!,
+                        invoiceIndexManager!!,
+                        itemIndexManager!!,
+                        itemStockPostingIndexManager!!
                     )
                     saveEntry(
-                        discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!
+                        discographyIndexManager!!,
+                        contactIndexManager!!,
+                        invoiceIndexManager!!,
+                        itemIndexManager!!,
+                        itemStockPostingIndexManager!!
                     )
                     getEntryLock(
-                        discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!
+                        discographyIndexManager!!,
+                        contactIndexManager!!,
+                        invoiceIndexManager!!,
+                        itemIndexManager!!,
+                        itemStockPostingIndexManager!!
                     )
                     setEntryLock(
-                        discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!
+                        discographyIndexManager!!,
+                        contactIndexManager!!,
+                        invoiceIndexManager!!,
+                        itemIndexManager!!,
+                        itemStockPostingIndexManager!!
                     )
                     sendEMail()
                     getSettingsFileText()
