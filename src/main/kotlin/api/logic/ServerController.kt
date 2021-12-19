@@ -323,5 +323,13 @@ class ServerController {
         fun getJWTUsername(appCall: ApplicationCall): String {
             return appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
         }
+
+        fun getOwnInvoices(appCall: ApplicationCall): Any {
+            return invoiceIndexManager!!.getEntryListJson(
+                searchText = getJWTUsername(appCall),
+                ixNr = 2,
+                exactSearch = true
+            )
+        }
     }
 }

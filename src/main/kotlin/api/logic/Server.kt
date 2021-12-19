@@ -221,6 +221,11 @@ class Server : IModule, Controller() {
                     getSettingsFileText()
 
                     /**
+                     * M3 Endpoints (Invoice)
+                     */
+                    getOwnInvoices()
+
+                    /**
                      * M4 Endpoints (Item)
                      */
                     getPriceCategories()
@@ -242,6 +247,12 @@ class Server : IModule, Controller() {
                     userTracking()
                 }
             }
+        }
+    }
+
+    private fun Route.getOwnInvoices() {
+        get("m3/owninvoices") {
+            call.respond(ServerController.getOwnInvoices(call))
         }
     }
 
