@@ -218,9 +218,9 @@ class ServerController {
              * The ordered item's UID
              */
             val body = appCall.receive<WebshopOrder>()
-            if (body.itemUIDs.size != -1) {
-                for (i in 0 until body.itemUIDs.size) {
-                    val item = itemIndexManager!!.get(body.itemUIDs[i]) as Item
+            if (body.cart.size != -1) {
+                for (i in 0 until body.cart.size) {
+                    val item = itemIndexManager!!.get(body.cart[i].uID) as Item
                     if (item.uID != -1) {
                         /**
                          * Item position
@@ -228,6 +228,7 @@ class ServerController {
                         val itemPosition = InvoicePosition(item.uID, item.description)
                         itemPosition.grossPrice = Json.decodeFromString<ItemPriceCategory>(item.prices[0]!!).grossPrice
                         itemPosition.userName = activeUser.username
+                        itemPosition.amount = body.cart[i].amount.toDouble()
                         order.items[i] = Json.encodeToString(itemPosition)
                     }
                 }

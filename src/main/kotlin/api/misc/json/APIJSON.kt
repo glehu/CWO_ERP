@@ -79,21 +79,34 @@ data class ListDeltaJson(
 
 @Serializable
 data class WebshopOrder(
-    val itemUIDs: Array<Int>,
+    val cart: Array<WebshopCartItem>,
     val customerNote: String = ""
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as WebshopOrder
-        if (!itemUIDs.contentEquals(other.itemUIDs)) return false
+        if (!cart.contentEquals(other.cart)) return false
+        if (customerNote != other.customerNote) return false
         return true
     }
 
     override fun hashCode(): Int {
-        return itemUIDs.contentHashCode()
+        var result = cart.contentHashCode()
+        result = 31 * result + customerNote.hashCode()
+        return result
     }
 }
+
+@Serializable
+data class WebshopCartItem(
+    val uID: Int,
+    val description: String,
+    val amount: Int,
+    val price: Double,
+    @SerialName("imageBase64String")
+    val imgBase64: String = ""
+)
 
 @Serializable
 data class RegistrationPayload(
