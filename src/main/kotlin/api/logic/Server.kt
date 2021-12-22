@@ -93,6 +93,11 @@ class Server : IModule, Controller() {
             header(HttpHeaders.Authorization)
         }
         routing {
+            route("/web") {
+                get {
+                    call.respondRedirect("https://orochi.netlify.app/")
+                }
+            }
             get("/authcallback/spotify") {
                 val code: String? = call.request.queryParameters["code"]
                 if (code != null) {
@@ -104,6 +109,17 @@ class Server : IModule, Controller() {
                         SpotifyAUTH().getAccessTokenFromAuthCode(code) as SpotifyAuthCallbackJson
                     )
                     spotifyAPI.updateUserData()
+                }
+            }
+            route("/mockingbird") {
+                post {
+                    val text: String = call.receive()
+                    log(
+                        Log.LogType.COM,
+                        text,
+                        call.request.uri
+                    )
+                    call.respondText(text)
                 }
             }
             authenticate("auth-basic") {
@@ -149,22 +165,6 @@ class Server : IModule, Controller() {
                 route("/") {
                     get {
                         call.respondFile(File("$dataPath\\data\\web\\home.html"))
-                    }
-                }
-                route("/web") {
-                    get {
-                        call.respondRedirect("https://orochi.netlify.app/")
-                    }
-                }
-                route("/mockingbird") {
-                    post {
-                        val text: String = call.receive()
-                        log(
-                            Log.LogType.COM,
-                            text,
-                            call.request.uri
-                        )
-                        call.respondText(text)
                     }
                 }
                 //------------------------------------------------------v
