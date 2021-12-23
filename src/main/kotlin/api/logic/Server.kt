@@ -93,22 +93,14 @@ class Server : IModule, Controller() {
             header(HttpHeaders.Authorization)
         }
         routing {
+            route("/") {
+                get {
+                    call.respondFile(File("$dataPath\\data\\web\\home.html"))
+                }
+            }
             route("/web") {
                 get {
                     call.respondRedirect("https://orochi.netlify.app/")
-                }
-            }
-            get("/authcallback/spotify") {
-                val code: String? = call.request.queryParameters["code"]
-                if (code != null) {
-                    call.respondFile(File("$dataPath\\data\\web\\spotifyCallback.html"))
-                    log(Log.LogType.COM, "Spotify Auth Callback received")
-                    val spotifyAPI = find<GSpotify>()
-                    spotifyAPI.authCodeProperty.value = code
-                    spotifyAPI.showTokenData(
-                        SpotifyAUTH().getAccessTokenFromAuthCode(code) as SpotifyAuthCallbackJson
-                    )
-                    spotifyAPI.updateUserData()
                 }
             }
             route("/mockingbird") {
@@ -122,61 +114,17 @@ class Server : IModule, Controller() {
                     call.respondText(text)
                 }
             }
+            spotifyAuthCallback()
             authenticate("auth-basic") {
                 register()
-                get("/login") {
-                    log(
-                        Log.LogType.COM,
-                        "User ${call.principal<UserIdPrincipal>()?.name} login",
-                        call.request.uri
-                    )
-                    val userManager = UserManager()
-                    userManager.setUserOnlineStatus(
-                        username = call.principal<UserIdPrincipal>()?.name!!,
-                        online = true
-                    )
-                    call.respond(
-                        ServerController.generateLoginResponse(
-                            userManager
-                                .getCredentials()
-                                .credentials[call.principal<UserIdPrincipal>()?.name]!!
-                        )
-                    )
-                    if (!cliMode) {
-                        find<GDashboard>().activeUsers.items = userManager.getActiveUsers()
-                        find<GDashboard>().activeUsers.refresh()
-                    }
-                }
-                get("/logout") {
-                    UserManager().setUserOnlineStatus(
-                        username = call.principal<UserIdPrincipal>()?.name!!,
-                        online = false
-                    )
-                    log(
-                        Log.LogType.COM,
-                        "User ${call.principal<UserIdPrincipal>()?.name} logout",
-                        call.request.uri
-                    )
-                    if (!cliMode) {
-                        find<GDashboard>().activeUsers.items = userManager.getActiveUsers()
-                        find<GDashboard>().activeUsers.refresh()
-                    }
-                }
-                route("/") {
-                    get {
-                        call.respondFile(File("$dataPath\\data\\web\\home.html"))
-                    }
-                }
+                login()
+                logout()
                 //------------------------------------------------------v
                 //------------ CWO API, now with JWT AUTH! -------------|
                 //------------------------------------------------------^
             }
             authenticate("auth-jwt") {
-                get("/tokenremainingtime") {
-                    val principal = call.principal<JWTPrincipal>()
-                    val expiresInMs = principal!!.expiresAt?.time?.minus(System.currentTimeMillis())
-                    call.respondText(expiresInMs.toString())
-                }
+                tokenRemainingTime()
                 route("/api")
                 {
                     /**
@@ -247,6 +195,74 @@ class Server : IModule, Controller() {
                     userTracking()
                 }
             }
+        }
+    }
+
+    private fun Route.logout() {
+        get("/logout") {
+            UserManager().setUserOnlineStatus(
+                username = call.principal<UserIdPrincipal>()?.name!!,
+                online = false
+            )
+            log(
+                Log.LogType.COM,
+                "User ${call.principal<UserIdPrincipal>()?.name} logout",
+                call.request.uri
+            )
+            if (!cliMode) {
+                find<GDashboard>().activeUsers.items = userManager.getActiveUsers()
+                find<GDashboard>().activeUsers.refresh()
+            }
+        }
+    }
+
+    private fun Route.login() {
+        get("/login") {
+            log(
+                Log.LogType.COM,
+                "User ${call.principal<UserIdPrincipal>()?.name} login",
+                call.request.uri
+            )
+            val userManager = UserManager()
+            userManager.setUserOnlineStatus(
+                username = call.principal<UserIdPrincipal>()?.name!!,
+                online = true
+            )
+            call.respond(
+                ServerController.generateLoginResponse(
+                    userManager
+                        .getCredentials()
+                        .credentials[call.principal<UserIdPrincipal>()?.name]!!
+                )
+            )
+            if (!cliMode) {
+                find<GDashboard>().activeUsers.items = userManager.getActiveUsers()
+                find<GDashboard>().activeUsers.refresh()
+            }
+        }
+    }
+
+    private fun Route.spotifyAuthCallback() {
+        get("/authcallback/spotify") {
+            val code: String? = call.request.queryParameters["code"]
+            if (code != null) {
+                call.respondFile(File("$dataPath\\data\\web\\spotifyCallback.html"))
+                log(Log.LogType.COM, "Spotify Auth Callback received")
+                val spotifyAPI = find<GSpotify>()
+                spotifyAPI.authCodeProperty.value = code
+                spotifyAPI.showTokenData(
+                    SpotifyAUTH().getAccessTokenFromAuthCode(code) as SpotifyAuthCallbackJson
+                )
+                spotifyAPI.updateUserData()
+            }
+        }
+    }
+
+    private fun Route.tokenRemainingTime() {
+        get("/tokenremainingtime") {
+            val principal = call.principal<JWTPrincipal>()
+            val expiresInMs = principal!!.expiresAt?.time?.minus(System.currentTimeMillis())
+            call.respondText(expiresInMs.toString())
         }
     }
 
