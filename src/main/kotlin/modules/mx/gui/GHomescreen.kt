@@ -78,31 +78,33 @@ class GLogin : Fragment("CWO ERP") {
                                 field("Username") { textfield(loginUser.username).required() }
                                 field("Password") { passwordfield(loginUser.password).required() }
                             }
-                            fieldset("Options") {
-                                field("Offline (F1)") {
-                                    shortcut("F1") {
-                                        if (!modeSafety.value) {
-                                            modeOffline.value = !modeOffline.value
-                                        }
-                                    }
-                                    checkbox("", modeOffline) {
-                                        tooltip("Starts the software without its network components.")
-                                        action {
-                                            if (modeSafety.value) {
+                            if (!isClientGlobal) {
+                                fieldset("Options") {
+                                    field("Offline (F1)") {
+                                        shortcut("F1") {
+                                            if (!modeSafety.value) {
                                                 modeOffline.value = !modeOffline.value
                                             }
                                         }
+                                        checkbox("", modeOffline) {
+                                            tooltip("Starts the software without its network components.")
+                                            action {
+                                                if (modeSafety.value) {
+                                                    modeOffline.value = !modeOffline.value
+                                                }
+                                            }
+                                        }
                                     }
-                                }
-                                field("Safety Mode (F2)") {
-                                    shortcut("F2") {
-                                        modeSafety.value = !modeSafety.value
-                                        modeOffline.value = modeSafety.value
-                                    }
-                                    checkbox("", modeSafety) {
-                                        tooltip("Starts the software in offline mode without loading the indices.")
-                                        action {
+                                    field("Safety Mode (F2)") {
+                                        shortcut("F2") {
+                                            modeSafety.value = !modeSafety.value
                                             modeOffline.value = modeSafety.value
+                                        }
+                                        checkbox("", modeSafety) {
+                                            tooltip("Starts the software in offline mode without loading the indices.")
+                                            action {
+                                                modeOffline.value = modeSafety.value
+                                            }
                                         }
                                     }
                                 }
@@ -215,13 +217,15 @@ class GHomescreen : View(titleGlobal) {
             }
         }
         bottom = hbox(20) {
-            if (serverJobGlobal == null) label("SERVER OFF")
-            if (telnetServerJobGlobal == null) label("TELNET OFF")
-            if (discographyIndexManager == null) label("M1 OFF")
-            if (contactIndexManager == null) label("M2 OFF")
-            if (invoiceIndexManager == null) label("M3 OFF")
-            if (itemIndexManager == null) label("M4 OFF")
-            if (itemStockPostingIndexManager == null) label("M4SP OFF")
+            if (!isClientGlobal) {
+                if (serverJobGlobal == null) label("SERVER OFF")
+                if (telnetServerJobGlobal == null) label("TELNET OFF")
+                if (discographyIndexManager == null) label("M1 OFF")
+                if (contactIndexManager == null) label("M2 OFF")
+                if (invoiceIndexManager == null) label("M3 OFF")
+                if (itemIndexManager == null) label("M4 OFF")
+                if (itemStockPostingIndexManager == null) label("M4SP OFF")
+            }
             style {
                 unsafe("-fx-background-color", Color.web("#373e43", 1.0))
             }
