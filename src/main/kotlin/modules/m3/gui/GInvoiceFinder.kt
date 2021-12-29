@@ -34,7 +34,7 @@ class GInvoiceFinder : IModule, IEntryFinder, View("Invoice Finder") {
     override var ixNr = SimpleStringProperty()
     override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
     override val entryFinderSearchMask: EntryFinderSearchMask =
-        EntryFinderSearchMask(origin = this, ixManager = getIndexManager())
+        EntryFinderSearchMask(origin = this, ixManager = tryGetIndexManager())
 
     private val invoiceController: InvoiceController by inject()
 

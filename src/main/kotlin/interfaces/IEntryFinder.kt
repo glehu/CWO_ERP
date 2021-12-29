@@ -18,6 +18,8 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import modules.mx.Ini
+import modules.mx.getIniFile
 import modules.mx.isClientGlobal
 import modules.mx.logic.Log
 import modules.mx.logic.indexFormat
@@ -51,9 +53,8 @@ interface IEntryFinder : IModule {
             return
         }
         if (!isClientGlobal) {
-            val overrideMaxSearchResultsGlobal = if (entryFinder.showAll.isSelected) {
-                -1
-            } else maxSearchResultsGlobal
+            val overrideMaxSearchResultsGlobal =
+                if (entryFinder.showAll.isSelected) -1 else maxSearchResultsGlobal
             CwODB.getEntriesFromSearchString(
                 searchText = indexFormat(entryFinder.searchText.text),
                 ixNr = entryFinder.ixNr.value.substring(0, 1).toInt(),
@@ -72,9 +73,14 @@ interface IEntryFinder : IModule {
         } else {
             // ########## RAW SOCKET TCP DATA TRANSFER ##########
             runBlocking {
+                val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
                 val socket =
-                    aSocket(ActorSelectorManager(Dispatchers.IO)).tcp()
-                        .connect(InetSocketAddress("127.0.0.1", 2323))
+                    aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().connect(
+                        InetSocketAddress(
+                            iniVal.telnetServerIPAddress.substringBefore(':'),
+                            iniVal.telnetServerIPAddress.substringAfter(':').toInt()
+                        )
+                    )
                 val sockIn = socket.openReadChannel()
                 val sockOut = socket.openWriteChannel(autoFlush = true)
                 val exact = if (entryFinder.exactSearch.isSelected) {
@@ -82,7 +88,7 @@ interface IEntryFinder : IModule {
                 } else "ALL"
                 sockOut.writeStringUtf8(
                     "IXS $module ${
-                        ixNr.value.substring(0, 1)
+                        entryFinder.ixNr.value.substring(0, 1)
                     } $exact NAME ${indexFormat(entryFinder.searchText.text)}\r\n"
                 )
                 var response: String? = ""
@@ -124,9 +130,17 @@ interface IEntryFinder : IModule {
     fun modalSearch(searchText: String, ixNr: Int? = null) {
         if (ixNr != null && ixNr > 0) {
             entryFinderSearchMask.exactSearch.isSelected = true
-            entryFinderSearchMask.ixNr.value = entryFinderSearchMask.ixNrList[ixNr-1]
+            entryFinderSearchMask.ixNr.value = entryFinderSearchMask.ixNrList[ixNr - 1]
         }
         entryFinderSearchMask.searchText.text = searchText
         entryFinderSearchMask.startLookup()
+    }
+
+    /**
+     * Tries to retrieve an index manager
+     * @return the index manager if the software's instance is in server mode. Returns null if it's in client mode.
+     */
+    fun tryGetIndexManager(): IIndexManager? {
+        return if (!isClientGlobal) getIndexManager() else null
     }
 }

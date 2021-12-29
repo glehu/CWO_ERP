@@ -35,7 +35,7 @@ class GContactFinder : IModule, IEntryFinder, View("Contact Finder") {
     override var ixNr = SimpleStringProperty()
     override val ixNrList: ObservableList<String> = observableArrayList(getIndexUserSelection())
     override val entryFinderSearchMask: EntryFinderSearchMask =
-        EntryFinderSearchMask(origin = this, ixManager = getIndexManager())
+        EntryFinderSearchMask(origin = this, ixManager = tryGetIndexManager())
 
     private val contactController: ContactController by inject()
     private val transfer: SongPropertyMainDataModel by inject()

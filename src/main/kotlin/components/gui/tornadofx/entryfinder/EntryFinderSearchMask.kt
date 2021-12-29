@@ -19,11 +19,11 @@ import tornadofx.*
 @InternalAPI
 class EntryFinderSearchMask(
     val origin: IEntryFinder,
-    val ixManager: IIndexManager
+    val ixManager: IIndexManager?
 ) : IEntryFinder, View() {
     override val moduleNameLong = origin.moduleNameLong
     override val module = origin.module
-    override fun getIndexManager(): IIndexManager {
+    override fun getIndexManager(): IIndexManager? {
         return ixManager
     }
 
