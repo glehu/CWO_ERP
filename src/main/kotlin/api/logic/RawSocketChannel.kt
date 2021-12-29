@@ -102,8 +102,8 @@ class RawSocketChannel(
     }
 
     private fun indexSearch(args: List<String>) {
-        // 0    1        2       3              4          5
-        // IXS <MODULE> <IX_NR> <ALL/SPECIFIC> <NAME/UID> <SEARCH_TEXT>
+        // 0    1        2       3                     4          5
+        // IXS <MODULE> <IX_NR> <ALL(FULL)/SPE(FULL)> <NAME/UID> <SEARCH_TEXT>
         log(logType = Log.LogType.COM, text = args.toString(), apiEndpoint = "telnet ixs")
         val indexManager = when (args[1]) {
             "M1" -> discographyIndexManager!!
@@ -115,10 +115,13 @@ class RawSocketChannel(
         }
         if (args[4] == "NAME") {
             var first = true
+            val maxSearchResultsOverride =
+                if ((args[3].length == 7) && (args[3].substring(3, 7) == "FULL")) -1 else maxSearchResultsGlobal
             CwODB.getEntriesFromSearchString(
                 searchText = indexFormat(args[5]),
                 ixNr = args[2].toInt(),
-                exactSearch = (args[3] == "SPECIFIC"),
+                exactSearch = (args[3].substring(0, 3) == "SPE"),
+                maxSearchResults = maxSearchResultsOverride,
                 indexManager = indexManager
             ) { _, bytes ->
                 try {

@@ -53,14 +53,12 @@ interface IEntryFinder : IModule {
             return
         }
         if (!isClientGlobal) {
-            val overrideMaxSearchResultsGlobal =
-                if (entryFinder.showAll.isSelected) -1 else maxSearchResultsGlobal
             CwODB.getEntriesFromSearchString(
                 searchText = indexFormat(entryFinder.searchText.text),
                 ixNr = entryFinder.ixNr.value.substring(0, 1).toInt(),
                 exactSearch = entryFinder.exactSearch.isSelected,
                 indexManager = getIndexManager()!!,
-                maxSearchResults = overrideMaxSearchResultsGlobal
+                maxSearchResults = if (entryFinder.showAll.isSelected) -1 else maxSearchResultsGlobal
             ) { _, bytes ->
                 if (entriesFound == 0) this.entriesFound.clear()
                 try {
@@ -83,9 +81,10 @@ interface IEntryFinder : IModule {
                     )
                 val sockIn = socket.openReadChannel()
                 val sockOut = socket.openWriteChannel(autoFlush = true)
-                val exact = if (entryFinder.exactSearch.isSelected) {
-                    "SPECIFIC"
+                var exact = if (entryFinder.exactSearch.isSelected) {
+                    "SPE"
                 } else "ALL"
+                if (entryFinder.showAll.isSelected) exact += "FULL"
                 sockOut.writeStringUtf8(
                     "IXS $module ${
                         entryFinder.ixNr.value.substring(0, 1)
