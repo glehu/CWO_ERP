@@ -190,7 +190,6 @@ class CwODB {
                 randAccessFile.readFully(entry)
             } catch (e: java.io.EOFException) {
                 println(e.message)
-            } finally {
                 entry = ByteArray(0)
             }
             return entry
