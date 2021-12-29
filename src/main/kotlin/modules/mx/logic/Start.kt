@@ -29,7 +29,6 @@ fun main(args: Array<String>) {
         launch<CWOMainGUI>()
     } else if (args[0] == "cli" || args[0] == "cmd") {
         // Command Line Interpreter
-        cliMode = true
         CLI().runCLI()
     }
 }
@@ -47,20 +46,35 @@ fun checkInstallation() {
     } else readAndSetIniValues()
     if (!isClientGlobal) {
         //Check if all data paths and files exist
-        if (!File(getModulePath("MX")).isDirectory) File(getModulePath("MX")).mkdirs()
-        if (!File(getModulePath("M1")).isDirectory) File(getModulePath("M1")).mkdirs()
-        if (!File(getModulePath("M2")).isDirectory) File(getModulePath("M2")).mkdirs()
-        if (!File(getModulePath("M3")).isDirectory) File(getModulePath("M3")).mkdirs()
-        if (!File(getModulePath("M4")).isDirectory) File(getModulePath("M4")).mkdirs()
-        if (!File(getModulePath("M4SP")).isDirectory) File(getModulePath("M4SP")).mkdirs()
+        checkModules()
         //Check if all log paths and files exist
-        Log.checkLogFile("MX", true)
-        Log.checkLogFile("M1", true)
-        Log.checkLogFile("M2", true)
-        Log.checkLogFile("M3", true)
-        Log.checkLogFile("M4", true)
-        Log.checkLogFile("M4SP", true)
+        checkLogFiles()
     }
+}
+
+@ExperimentalSerializationApi
+@InternalAPI
+fun checkLogFiles() {
+    Log.checkLogFile("MX", true)
+    Log.checkLogFile("M1", true)
+    Log.checkLogFile("M2", true)
+    Log.checkLogFile("M3", true)
+    Log.checkLogFile("M4", true)
+    Log.checkLogFile("M4SP", true)
+}
+
+fun checkModules() {
+    checkModuleDir("MX")
+    checkModuleDir("M1")
+    checkModuleDir("M2")
+    checkModuleDir("M3")
+    checkModuleDir("M4")
+    checkModuleDir("M4SP")
+}
+
+fun checkModuleDir(module: String) {
+    if (module.isEmpty()) return
+    if (!File(getModulePath(module)).isDirectory) File(getModulePath(module)).mkdirs()
 }
 
 @ExperimentalSerializationApi

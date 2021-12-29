@@ -36,14 +36,11 @@ class CLI : IModule {
      * Runs the software without GUI in command line interpretation mode.
      */
     fun runCLI() {
-        /**
-         * Get config
-         */
+        cliMode = true
+        //Get config
         log(Log.LogType.INFO, "Checking .ini file...")
         checkInstallation()
-        /**
-         * Check if user is logged in
-         */
+        //Check if user is logged in
         val login: Boolean = if (activeUser.username.isEmpty()) {
             cliLogin()
         } else true
