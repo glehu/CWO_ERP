@@ -124,7 +124,7 @@ interface IModule {
         var entryBytes: ByteArray = byteArrayOf()
         if (uID != -1) {
             if (!isClientGlobal) {
-                entryBytes = CwODB.getEntryFromUniqueID(
+                entryBytes = CwODB.getEntryByteArrayFromUID(
                     uID = uID,
                     indexManager = getIndexManager()!!
                 )

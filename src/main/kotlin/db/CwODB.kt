@@ -3,7 +3,6 @@ package db
 import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -34,25 +33,19 @@ class CwODB {
             var posDBNew: Long
             val indexError = false
             synchronized(this) {
-                /**
-                 * If the byteSize of the new entry is greater than the old one we have to attach the new entry at the end
-                 */
+                //If the byteSize of the new entry is greater than the old one we have to attach the new entry at the end
                 posDBNew = if (!canOverride) {
                     getDatabaseFile(module).length()
                 } else {
-                    /**
-                     * Old entry can be overridden since the byteSize is less or equal to the old one
-                     */
+                    //Old entry can be overridden since the byteSize is less or equal to the old one
                     posDB
                 }
                 if (!indexError) {
-                    /**
-                     * Save the serialized entry to the determined destination file
-                     */
+                    //Save the serialized entry to the determined destination file
                     writeDBEntry(entryBytes, posDBNew, raf)
-                    /**
-                     * If we saved a preexisting entry we have to delete the old entry
-                     * ...if the new byteSize is greater than the old one
+                    /*
+                     If we saved a preexisting entry we have to delete the old entry
+                     ...if the new byteSize is greater than the old one
                      */
                     if (posDB > -1L && !canOverride) {
                         val emptyEntry = ByteArray(byteSize)
@@ -85,43 +78,35 @@ class CwODB {
                 val filteredMap: Map<Int, IndexContent>
                 if (!isGetAll(searchText)) {
                     if (!exactSearch) {
-                        /**
-                         * Searches in all available indices
-                         */
+                        //Searches in all available indices
                         returnFromAllIndices(indexManager, searchText) { indexResult ->
                             for (uID in indexResult.keys) {
                                 val baseIndex = indexManager.getBaseIndex(uID)
                                 entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
+                                if (entryBytes.isEmpty()) continue
                                 counter++
-                                /**
-                                 * Callback
-                                 */
+                                //Callback
                                 updateProgress(uID, entryBytes)
                                 if (maxSearchResults > -1 && counter >= maxSearchResults) break
                             }
                         }
                         return
                     } else {
-                        /**
-                         * Searches in the provided index
-                         */
+                        //Searches in the provided index
                         filteredMap = indexManager.indexList[ixNr]!!.indexMap.filterValues {
                             it.content.contains(searchText.toRegex())
                         }
                     }
                 } else {
-                    /**
-                     * No search text -> Show all entries
-                     */
+                    //No search text -> Show all entries
                     filteredMap = indexManager.indexList[0]!!.indexMap
                 }
                 for (uID in filteredMap.keys) {
                     val baseIndex = indexManager.getBaseIndex(uID)
                     entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
+                    if (entryBytes.isEmpty()) continue
                     counter++
-                    /**
-                     * Callback
-                     */
+                    //Callback
                     updateProgress(uID, entryBytes)
                     if (maxSearchResults > -1 && counter >= maxSearchResults) break
                 }
@@ -158,7 +143,7 @@ class CwODB {
          * Used to retrieve a single entry with the provided unique identifier.
          * @return the ByteArray of the entry
          */
-        fun getEntryFromUniqueID(uID: Int, indexManager: IIndexManager): ByteArray {
+        fun getEntryByteArrayFromUID(uID: Int, indexManager: IIndexManager): ByteArray {
             lateinit var entryBytes: ByteArray
             if (getDatabaseFile(indexManager.module).isFile) {
                 val raf: RandomAccessFile = openRandomFileAccess(indexManager.module, RafMode.READ)
@@ -199,9 +184,15 @@ class CwODB {
          * @return ByteArray of Google ProtoBuf serialized entry.
          */
         private fun readDBEntry(posInDatabase: Long, byteSize: Int, randAccessFile: RandomAccessFile): ByteArray {
-            val entry = ByteArray(byteSize)
-            if (posInDatabase > 0) randAccessFile.seek(posInDatabase)
-            randAccessFile.readFully(entry)
+            var entry = ByteArray(byteSize)
+            try {
+                if (posInDatabase > 0) randAccessFile.seek(posInDatabase)
+                randAccessFile.readFully(entry)
+            } catch (e: java.io.EOFException) {
+                println(e.message)
+            } finally {
+                entry = ByteArray(0)
+            }
             return entry
         }
 
