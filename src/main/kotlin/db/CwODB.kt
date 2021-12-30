@@ -191,6 +191,9 @@ class CwODB {
             } catch (e: java.io.EOFException) {
                 println(e.message)
                 entry = ByteArray(0)
+            } catch (e: java.io.IOException) {
+                println(e.message)
+                entry = ByteArray(0)
             }
             return entry
         }
