@@ -18,7 +18,7 @@ class CwODB {
     companion object CwODB : Controller() {
         /**
          * Used to save the ByteArray of an entry (achieved by serialization) and store it in the database.
-         * @return the position in the database and the byte size of the stored entry
+         * @return the position in the database and byte size of the stored entry.
          */
         fun saveEntry(
             entryBytes: ByteArray,
@@ -60,7 +60,7 @@ class CwODB {
 
         /**
          * Used to search for entries in the database with the provided search string and the index number.
-         * @return ByteArray of matched entry as callback for all matched entries.
+         * @return the ByteArray of each matched entry as a callback for all matched entries.
          */
         fun getEntriesFromSearchString(
             searchText: String,
@@ -113,6 +113,9 @@ class CwODB {
             }
         }
 
+        /**
+         * @return the index results for a search text from all available indices.
+         */
         private fun returnFromAllIndices(
             indexManager: IIndexManager,
             searchText: String,
@@ -125,6 +128,10 @@ class CwODB {
             }
         }
 
+        /**
+         * Used to search in all indices by starting an index search flow for each index manager.
+         * @return the flow of an index manager's index search.
+         */
         private fun searchInAllIndices(indexManager: IIndexManager, searchText: String): Flow<Map<Int, IndexContent>> =
             flow {
                 for (ixNr in 1 until indexManager.indexList.size) {
@@ -135,6 +142,10 @@ class CwODB {
                 }
             }
 
+        /**
+         * Used to determine if a text search needs to be done or if all entries can be retrieved.
+         * @return true if all entries will be retrieved and false if there will be a text search.
+         */
         private fun isGetAll(searchText: String): Boolean {
             return searchText == "*"
         }
