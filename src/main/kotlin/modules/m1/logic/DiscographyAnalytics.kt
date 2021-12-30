@@ -6,8 +6,8 @@ import interfaces.IModule
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
-import modules.mx.logic.Log
 import modules.mx.discographyIndexManager
+import modules.mx.logic.Log
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
@@ -35,7 +35,7 @@ class DiscographyAnalytics : IModule, Controller() {
         log(Log.LogType.INFO, "Distribution analysis start")
         val timeInMS = measureTimeMillis {
             CwODB.getEntriesFromSearchString(
-                searchText = "",
+                searchText = "*",
                 ixNr = 0,
                 exactSearch = false,
                 maxSearchResults = -1,
@@ -43,17 +43,24 @@ class DiscographyAnalytics : IModule, Controller() {
             )
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping data..."))
-                val song = decode(entryBytes) as Song
-                if (song.uID != -1) {
-                    songCount++
-                    distTypeData = when (distType) {
-                        DistType.GENRE -> song.genre
-                        DistType.TYPE -> song.type
-                    }
-                    if (map.containsKey(distTypeData)) {
-                        map[distTypeData] = map[distTypeData]!! + 1.0
-                    } else {
-                        map[distTypeData] = 1.0
+                val song: Song? = try {
+                    decode(entryBytes) as Song
+                } catch (e: Exception) {
+                    println(e.message)
+                    null
+                }
+                if (song != null) {
+                    if (song.uID != -1) {
+                        songCount++
+                        distTypeData = when (distType) {
+                            DistType.GENRE -> song.genre
+                            DistType.TYPE -> song.type
+                        }
+                        if (map.containsKey(distTypeData)) {
+                            map[distTypeData] = map[distTypeData]!! + 1.0
+                        } else {
+                            map[distTypeData] = 1.0
+                        }
                     }
                 }
             }

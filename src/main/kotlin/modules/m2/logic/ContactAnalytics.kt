@@ -6,8 +6,8 @@ import interfaces.IModule
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
-import modules.mx.logic.Log
 import modules.mx.contactIndexManager
+import modules.mx.logic.Log
 import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
@@ -42,13 +42,20 @@ class ContactAnalytics : IModule, Controller() {
             )                       // shout out blkghst
             { uID, entryBytes ->
                 updateProgress(Pair(uID, "Mapping city data..."))
-                val contact: Contact = decode(entryBytes) as Contact
-                if (contact.uID != -1) {
-                    city = contact.city.uppercase()
-                    contactCount += 1.0
-                    if (tempMap.containsKey(city)) {
-                        tempMap[city] = tempMap[city]!! + 1.0
-                    } else tempMap[city] = 1.0
+                val contact: Contact? = try {
+                    decode(entryBytes) as Contact
+                } catch (e: Exception) {
+                    println(e.message)
+                    null
+                }
+                if (contact != null) {
+                    if (contact.uID != -1) {
+                        city = contact.city.uppercase()
+                        contactCount += 1.0
+                        if (tempMap.containsKey(city)) {
+                            tempMap[city] = tempMap[city]!! + 1.0
+                        } else tempMap[city] = 1.0
+                    }
                 }
             }
             if (amount != -1) {

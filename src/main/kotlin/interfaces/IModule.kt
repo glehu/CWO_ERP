@@ -144,19 +144,29 @@ interface IModule {
     }
 
     /**
-     * @return the encoded entry as a byte array.
+     * Used to encode an IEntry into a [ByteArray]
+     * @return the encoded entry as a [ByteArray].
      */
     fun encode(entry: IEntry): ByteArray {
         return protoBufGlobal.encodeToByteArray(entry)
     }
 
     /**
+     * Used to decode an IEntry from a [ByteArray]
      * @return the decoded entry.
+     * @throws Exception
      */
     fun decode(entryBytes: ByteArray): IEntry {
-        return protoBufGlobal.decodeFromByteArray(entryBytes)
+        try {
+            return protoBufGlobal.decodeFromByteArray(entryBytes)
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
+    /**
+     * @return [EntryBytesListJson]
+     */
     fun getEntryBytesListJson(
         searchText: String,
         ixNr: Int,
@@ -177,6 +187,9 @@ interface IModule {
         return resultsListJson
     }
 
+    /**
+     * @return [EntryListJson]
+     */
     fun getEntryListJson(
         searchText: String,
         ixNr: Int,
@@ -205,7 +218,7 @@ interface IModule {
     }
 
     /**
-     * @return a list of indices the user can search in.
+     * @return a list of indices [ArrayList]<[String]> the user can search in.
      */
     @ExperimentalSerializationApi
     fun getIndexUserSelection(): ArrayList<String> {
