@@ -96,10 +96,10 @@ class InvoiceController : IController, Controller() {
                         itemUID = item.uID,
                         storageUnitFromUID = -1,
                         storageUnitToUID = -1,
-                        amount = item.amount
+                        amount = item.amount * -1
                     )
                     stockPosting.book()
-                    itemStockPostingIndexManager!!.save(stockPosting)
+                    item.stockPostingUID = itemStockPostingIndexManager!!.save(stockPosting)
                 }
             }
             wizard.invoice.item.status = 9
