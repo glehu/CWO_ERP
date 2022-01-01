@@ -21,7 +21,6 @@ import modules.mx.invoiceIndexManager
 import modules.mx.itemStockPostingIndexManager
 import modules.mx.logic.EMailer
 import modules.mx.logic.Log
-import modules.mx.logic.Timestamp
 import modules.mx.logic.roundTo
 import tornadofx.Controller
 
@@ -103,8 +102,7 @@ class InvoiceController : IController, Controller() {
                         itemUID = item.uID,
                         storageUnitFromUID = -1,
                         storageUnitToUID = -1,
-                        amount = item.amount,
-                        date = Timestamp.now()
+                        amount = item.amount
                     )
                     stockPosting.book()
                     itemStockPostingIndexManager!!.save(stockPosting)

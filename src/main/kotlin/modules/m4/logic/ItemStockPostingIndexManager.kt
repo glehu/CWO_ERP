@@ -73,7 +73,7 @@ class ItemStockPostingIndexManager : IIndexManager, Controller() {
             Pair(1, entry.itemUID.toString()),
             Pair(2, entry.storageUnitFromUID.toString()),
             Pair(3, entry.storageUnitToUID.toString()),
-            Pair(4, entry.date),
+            Pair(4, entry.dateBooked),
             Pair(5, entry.status.toString())
         )
     }
