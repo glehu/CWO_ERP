@@ -13,7 +13,6 @@ import modules.m4.logic.ItemStorageManager
 import modules.m4.misc.ItemModel
 import modules.mx.gui.GImageViewer
 import modules.mx.gui.userAlerts.GAlert
-import modules.mx.logic.Timestamp
 import modules.mx.itemStockPostingIndexManager
 import tornadofx.*
 
@@ -226,8 +225,7 @@ class ItemStorageData : Fragment("Stock") {
                                 itemUID = this@ItemStorageData.item.uID.value,
                                 storageUnitFromUID = -1,
                                 storageUnitToUID = stockAdder.storageUnitNumber.value,
-                                amount = stockAdder.stockToAddAmount.value,
-                                date = Timestamp.now()
+                                amount = stockAdder.stockToAddAmount.value
                             )
                             stockPosting.book()
                             refresh()

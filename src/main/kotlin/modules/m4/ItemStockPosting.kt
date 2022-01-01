@@ -4,9 +4,8 @@ import interfaces.IEntry
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
-import modules.mx.logic.Timestamp
-import modules.mx.logic.getDefaultDate
 import modules.mx.itemStockPostingIndexManager
+import modules.mx.logic.Timestamp
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -17,7 +16,7 @@ data class ItemStockPosting(
     val storageUnitFromUID: Int,
     val storageUnitToUID: Int,
     val amount: Double,
-    val date: String = getDefaultDate()
+    val note: String = ""
 ) : IEntry {
     var status: Int = 0
     var dateBooked: String = ""
@@ -27,9 +26,9 @@ data class ItemStockPosting(
         if (uID == -1) uID = itemStockPostingIndexManager!!.getUID()
         when (status) {
             !in 0..9 -> status = 0
-            9 -> {
-                if (!isFinished) isFinished = true
+            8 -> {
                 if (dateBooked.isEmpty()) dateBooked = Timestamp.now()
+                if (!isFinished) isFinished = true
             }
         }
     }

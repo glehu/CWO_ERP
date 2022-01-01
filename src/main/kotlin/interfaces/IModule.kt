@@ -73,9 +73,7 @@ interface IModule {
             indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, userName)
             if (raf == null) CwODB.closeRandomFileAccess(rafLocal)
             uID = entry.uID
-            /**
-             * Unlock the entry
-             */
+            //Unlock the entry
             if (unlock) getIndexManager()!!.setEntryLock(uID, false)
         } else {
             coroutineScope {
@@ -128,9 +126,7 @@ interface IModule {
                     uID = uID,
                     indexManager = getIndexManager()!!
                 )
-                /**
-                 * Lock the entry (if: GET)
-                 */
+                //Lock the entry (if: GET)
                 getIndexManager()!!.setEntryLock(uID, lock, userName)
             } else {
                 runBlocking {
@@ -274,9 +270,7 @@ interface IModule {
                     success = true
                 }
             } else {
-                /**
-                 * If the entry is locked by the user that is trying to unlock -> unlock
-                 */
+                //If the entry is locked by the user that is trying to unlock -> unlock
                 if (indexManager.getBaseIndex(uID).content == userName) {
                     indexManager.getBaseIndex(uID).content = "?"
                     success = true

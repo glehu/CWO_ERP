@@ -108,9 +108,7 @@ fun getItemFromItemProperty(itemProperty: ItemProperty): Item {
     for (storage in itemProperty.storagesProperty) {
         val storageUnits = mutableListOf<ItemStorageUnit>()
         for (storageUnit in storage.storageUnits) {
-            if (storageUnit.stock != 0.0) {
-                storageUnits.add(storageUnit)
-            }
+            storageUnits.add(storageUnit)
         }
         storage.storageUnits = storageUnits
         if (storage.storageUnits.isNotEmpty()) item.stock[item.stock.size] = Json.encodeToString(storage)
