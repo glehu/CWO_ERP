@@ -21,7 +21,6 @@ import modules.mx.invoiceIndexManager
 import modules.mx.itemStockPostingIndexManager
 import modules.mx.logic.EMailer
 import modules.mx.logic.Log
-import modules.mx.logic.roundTo
 import tornadofx.Controller
 
 @InternalAPI
@@ -65,18 +64,13 @@ class InvoiceController : IController, Controller() {
     fun calculate(invoice: InvoiceProperty) {
         var pos = 0
         val categories = ItemPriceManager().getCategories()
-        val vat = (categories.priceCategories[invoice.priceCategory]?.vatPercent) ?: 0.0
+        val vatPercent = (categories.priceCategories[invoice.priceCategory]?.vatPercent) ?: 0.0
         invoice.grossTotal = 0.0
         for (item in invoice.itemsProperty) {
-            /**
-             * Invoice specific calculation
-             */
+            //Invoice specific calculation
             invoice.grossTotal += (item.grossPrice * item.amount)
-
-            /**
-             * Line specific calculation
-             */
-            invoice.itemsProperty[pos].netPrice = (item.grossPrice / (1 + (vat / 100))).roundTo(2)
+            //Line specific calculation
+            invoice.itemsProperty[pos].netPrice = InvoiceCLIController().getNetFromGross(item.grossPrice, vatPercent)
             pos++
         }
     }

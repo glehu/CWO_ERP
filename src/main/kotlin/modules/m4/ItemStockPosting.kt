@@ -26,7 +26,7 @@ data class ItemStockPosting(
         if (uID == -1) uID = itemStockPostingIndexManager!!.getUID()
         when (status) {
             !in 0..9 -> status = 0
-            8 -> {
+            9 -> {
                 if (dateBooked.isEmpty()) dateBooked = Timestamp.now()
                 if (!isFinished) isFinished = true
             }
@@ -35,7 +35,7 @@ data class ItemStockPosting(
 
     fun book() {
         dateBooked = Timestamp.now()
-        status = 8
+        status = 9
         isFinished = true
     }
 }
