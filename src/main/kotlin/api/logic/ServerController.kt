@@ -218,66 +218,65 @@ class ServerController {
              * The ordered item's UID
              */
             val body = appCall.receive<WebshopOrder>()
-            if (body.cart.size != -1) {
-                for (i in 0 until body.cart.size) {
-                    val item = itemIndexManager!!.get(body.cart[i].uID) as Item
-                    if (item.uID != -1) {
-                        /**
-                         * Item position
-                         */
-                        val itemPosition = InvoicePosition(item.uID, item.description)
-                        itemPosition.grossPrice = Json.decodeFromString<ItemPriceCategory>(item.prices[0]!!).grossPrice
-                        itemPosition.userName = activeUser.username
-                        itemPosition.amount = body.cart[i].amount.toDouble()
-                        order.items[i] = Json.encodeToString(itemPosition)
-                    }
+            if (body.cart.isEmpty()) return -1
+            for (i in 0 until body.cart.size) {
+                val item = itemIndexManager!!.get(body.cart[i].uID) as Item
+                if (item.uID != -1) {
+                    /**
+                     * Item position
+                     */
+                    val itemPosition = InvoicePosition(item.uID, item.description)
+                    itemPosition.grossPrice = Json.decodeFromString<ItemPriceCategory>(item.prices[0]!!).grossPrice
+                    itemPosition.userName = activeUser.username
+                    itemPosition.amount = body.cart[i].amount.toDouble()
+                    order.items[i] = Json.encodeToString(itemPosition)
                 }
-                order.customerNote = body.customerNote
-                /**
-                 * Finalize the order and save it
-                 */
-                val userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
-                InvoiceCLIController().calculate(order)
-                order.date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-                order.text = "Web Order"
-                order.buyer = userName
-                order.status = if (m3IniVal.autoCommission) 1 else 0
-                order.statusText = InvoiceCLIController().getStatusText(order.status)
-                //Check if the customer is an existing contact, if not, create it
-                val contactsMatched = contactIndexManager!!.getEntryBytesListJson(
-                    searchText = userName,
-                    ixNr = 1,
-                    exactSearch = false
+            }
+            order.customerNote = body.customerNote
+            /**
+             * Finalize the order and save it
+             */
+            val userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
+            InvoiceCLIController().calculate(order)
+            order.date = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+            order.text = "Web Order"
+            order.buyer = userName
+            order.status = if (m3IniVal.autoCommission) 1 else 0
+            order.statusText = InvoiceCLIController().getStatusText(order.status)
+            //Check if the customer is an existing contact, if not, create it
+            val contactsMatched = contactIndexManager!!.getEntryBytesListJson(
+                searchText = userName,
+                ixNr = 1,
+                exactSearch = false
+            )
+            if (contactsMatched.resultsList.isEmpty() && m3IniVal.autoCreateContacts) {
+                val contact = Contact(-1, userName)
+                contact.email = userName
+                contact.moneySent = order.netTotal
+                mutex.withLock {
+                    order.buyerUID = contactIndexManager!!.save(contact)
+                }
+            } else {
+                val contact = contactIndexManager!!.decode(contactsMatched.resultsList[0]) as Contact
+                order.buyerUID = contact.uID
+                if (contact.email.isEmpty() || contact.email == "?") contact.email = userName
+                contact.moneySent = order.netTotal
+                mutex.withLock {
+                    contactIndexManager!!.save(contact)
+                }
+            }
+            order.seller = "<Self>"
+            if (m3IniVal.autoSendEMailConfirmation) order.emailConfirmationSent = true
+            mutex.withLock {
+                invoiceIndexManager!!.save(entry = order, userName = userName)
+            }
+            mutex.withLock {
+                log(
+                    logType = Log.LogType.COM,
+                    text = "web shop order #${order.uID} from ${order.buyer}",
+                    apiEndpoint = appCall.request.uri,
+                    moduleAlt = invoiceIndexManager!!.module
                 )
-                if (contactsMatched.resultsList.isEmpty() && m3IniVal.autoCreateContacts) {
-                    val contact = Contact(-1, userName)
-                    contact.email = userName
-                    contact.moneySent = order.netTotal
-                    mutex.withLock {
-                        order.buyerUID = contactIndexManager!!.save(contact)
-                    }
-                } else {
-                    val contact = contactIndexManager!!.decode(contactsMatched.resultsList[0]) as Contact
-                    order.buyerUID = contact.uID
-                    if (contact.email.isEmpty() || contact.email == "?") contact.email = userName
-                    contact.moneySent = order.netTotal
-                    mutex.withLock {
-                        contactIndexManager!!.save(contact)
-                    }
-                }
-                order.seller = "<Self>"
-                if (m3IniVal.autoSendEMailConfirmation) order.emailConfirmationSent = true
-                mutex.withLock {
-                    invoiceIndexManager!!.save(entry = order, userName = userName)
-                }
-                mutex.withLock {
-                    log(
-                        logType = Log.LogType.COM,
-                        text = "web shop order #${order.uID} from ${order.buyer}",
-                        apiEndpoint = appCall.request.uri,
-                        moduleAlt = invoiceIndexManager!!.module
-                    )
-                }
             }
             if (m3IniVal.autoSendEMailConfirmation) {
                 EMailer().sendEMail(

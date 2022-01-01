@@ -11,8 +11,8 @@ import modules.m3.Invoice
 import modules.m3.InvoicePosition
 import modules.m3.misc.InvoiceIni
 import modules.m4.logic.ItemPriceManager
-import modules.mx.logic.roundTo
 import modules.mx.invoiceIndexManager
+import modules.mx.logic.roundTo
 
 @ExperimentalSerializationApi
 @InternalAPI
@@ -35,7 +35,7 @@ class InvoiceCLIController : IModule {
             //Invoice specific calculation
             invoice.grossTotal += (itemPosition.grossPrice * itemPosition.amount)
             //Line specific calculation
-            itemPosition.netPrice = (itemPosition.grossPrice / (1 + (vat / 100))).roundTo(2)
+            itemPosition.netPrice = getNetFromGross(itemPosition.grossPrice, vat)
             invoice.items[pos] = Json.encodeToString(itemPosition)
             pos++
         }
@@ -48,5 +48,13 @@ class InvoiceCLIController : IModule {
 
     fun getStatusText(status: Int): String {
         return getIni().statusTexts[status] ?: "?"
+    }
+
+    fun getNetFromGross(gross: Double, vat: Double): Double {
+        return (gross / (1 + (vat / 100))).roundTo(2)
+    }
+
+    fun getGrossFromNet(net: Double, vat: Double): Double {
+        return net + (net * vat)
     }
 }

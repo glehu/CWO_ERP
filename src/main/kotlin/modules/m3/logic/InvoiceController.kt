@@ -98,15 +98,14 @@ class InvoiceController : IController, Controller() {
             //Stock Posting
             for (item in wizard.invoice.item.itemsProperty) {
                 if (item.stockPostingUID == -1) {
-                    val stockPosting =
-                        ItemStockPosting(
-                            uID = -1,
-                            itemUID = item.uID,
-                            storageUnitFromUID = -1,
-                            storageUnitToUID = -1,
-                            amount = item.amount,
-                            date = Timestamp.now()
-                        )
+                    val stockPosting = ItemStockPosting(
+                        uID = -1,
+                        itemUID = item.uID,
+                        storageUnitFromUID = -1,
+                        storageUnitToUID = -1,
+                        amount = item.amount,
+                        date = Timestamp.now()
+                    )
                     stockPosting.book()
                     itemStockPostingIndexManager!!.save(stockPosting)
                 }
@@ -121,10 +120,12 @@ class InvoiceController : IController, Controller() {
     suspend fun payInvoice() {
         if (checkInvoice() && checkForSetPaid()) {
             val paymentScreen = find<GInvoicePayer>()
+            paymentScreen.setAmountToPay(wizard.invoice.item.grossTotal)
             paymentScreen.openModal(block = true)
             if (paymentScreen.userConfirmed) {
-                wizard.invoice.item.paidGross = wizard.invoice.item.grossTotal
-                wizard.invoice.item.paidNet = wizard.invoice.item.netTotal
+                wizard.invoice.item.paidGross = paymentScreen.paidAmount.value
+                wizard.invoice.item.paidNet = InvoiceCLIController()
+                    .getNetFromGross(wizard.invoice.item.netTotal, 0.19)
                 if (wizard.invoice.item.paidGross == wizard.invoice.item.grossTotal) {
                     wizard.invoice.item.status = 3
                 } else {
@@ -170,8 +171,7 @@ class InvoiceController : IController, Controller() {
             }
         } else {
             GAlert(
-                "Please fill out the invoice completely.\n\n" +
-                        "Missing fields are marked red."
+                "Please fill out the invoice completely.\n\n" + "Missing fields are marked red."
             ).openModal()
         }
         return valid
@@ -207,9 +207,7 @@ class InvoiceController : IController, Controller() {
             log(Log.LogType.INFO, "Invoice ${wizard.invoice.item.uID} commissioned.")
             EMailer().sendEMail(
                 subject = "Web Shop Order #${wizard.invoice.item.uID}",
-                body = "Hey, we're confirming your order over ${wizard.invoice.item.grossTotal} Euro.\n" +
-                        "Order Number: #${wizard.invoice.item.uID}\n" +
-                        "Date: ${wizard.invoice.item.date}",
+                body = "Hey, we're confirming your order over ${wizard.invoice.item.grossTotal} Euro.\n" + "Order Number: #${wizard.invoice.item.uID}\n" + "Date: ${wizard.invoice.item.date}",
                 recipient = wizard.invoice.item.buyer
             )
         }
