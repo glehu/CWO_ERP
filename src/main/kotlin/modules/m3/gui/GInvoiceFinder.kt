@@ -43,7 +43,7 @@ class GInvoiceFinder : IModule, IEntryFinder, View("Invoice Finder") {
         readonlyColumn("ID", Invoice::uID)
         readonlyColumn("Seller", Invoice::seller)
         readonlyColumn("Buyer", Invoice::buyer)
-        readonlyColumn("Price", Invoice::grossTotal)
+        readonlyColumn("Total", Invoice::grossTotal)
         readonlyColumn("Date", Invoice::date)
         readonlyColumn("Text", Invoice::text).remainingWidth()
         readonlyColumn("Status", Invoice::status)
