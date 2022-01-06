@@ -27,14 +27,14 @@ data class ItemStockPosting(
         when (status) {
             !in 0..9 -> status = 0
             9 -> {
-                if (dateBooked.isEmpty()) dateBooked = Timestamp.now()
+                if (dateBooked.isEmpty()) dateBooked = Timestamp.getUnixTimestampHex()
                 if (!isFinished) isFinished = true
             }
         }
     }
 
     fun book() {
-        dateBooked = Timestamp.now()
+        dateBooked = Timestamp.getUnixTimestampHex()
         status = 9
         isFinished = true
     }
