@@ -18,9 +18,9 @@ class GItemStockAdder : Fragment("Add Stock") {
     private var storage = getStoragePropertyFromStorage(ItemStorage(0, ""))
     private var storageNumber = SimpleIntegerProperty(storage.number)
     private var storageDescription = SimpleStringProperty(storage.description)
-    var storageUnitNumber = SimpleIntegerProperty(0)
     private var storageUnitDescription = SimpleStringProperty("")
     private var storageUnitStock = SimpleDoubleProperty(0.0)
+    var storageUnitNumber = SimpleIntegerProperty(0)
     val stockToAddAmount = SimpleDoubleProperty(0.0)
     var userConfirmed = false
     override val root = form {
