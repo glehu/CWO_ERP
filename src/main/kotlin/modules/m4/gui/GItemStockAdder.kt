@@ -9,6 +9,7 @@ import modules.m4.ItemStorage
 import modules.m4.ItemStorageUnit
 import modules.m4.misc.ItemModel
 import modules.m4.misc.getStoragePropertyFromStorage
+import modules.mx.rightButtonsWidth
 import tornadofx.*
 
 @ExperimentalSerializationApi
@@ -38,11 +39,15 @@ class GItemStockAdder : Fragment("Add Stock") {
             field("Description") { label(storageUnitDescription) }
             field("Current Stock") { label(storageUnitStock) }
         }
-        fieldset("Note") {
-            textarea(note)
-        }
         fieldset("Add Stock") {
-            field("Amount") { textfield(stockToAddAmount) }
+            field("Amount") {
+                textfield(stockToAddAmount)
+            }
+        }
+        fieldset("Note") {
+            textarea(note) {
+                prefHeight(100.0)
+            }
         }
         button("Add (Enter)") {
             shortcut("Enter")
@@ -50,6 +55,7 @@ class GItemStockAdder : Fragment("Add Stock") {
                 userConfirmed = true
                 close()
             }
+            prefWidth = rightButtonsWidth
         }
     }
 
