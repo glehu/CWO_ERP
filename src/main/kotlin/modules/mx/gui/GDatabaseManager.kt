@@ -12,6 +12,7 @@ import modules.m3.logic.InvoiceIndexManager
 import modules.m4.logic.ItemIndexManager
 import modules.m4.logic.ItemStockPostingIndexManager
 import modules.mx.*
+import modules.mx.gui.userAlerts.GAlert
 import modules.mx.logic.Log
 import tornadofx.*
 
@@ -66,7 +67,13 @@ class GDatabaseManager : View("Databases") {
             vbox {
                 button("Update Databases") {
                     action {
-                        updateDatabases()
+                        val prompt = GAlert(
+                            "This action will reload all indices from the disk. Continue?", true
+                        )
+                        prompt.openModal(block = true)
+                        if (prompt.confirmed.value) {
+                            updateDatabases()
+                        }
                     }
                     prefWidth = rightButtonsWidth
                 }
@@ -74,19 +81,25 @@ class GDatabaseManager : View("Databases") {
                     val ixModule = indexManager.module.uppercase()
                     button("Reset $ixModule") {
                         action {
-                            CwODB.resetModuleDatabase(ixModule)
-                            indexManager.setLastChangeData(-1, activeUser.username)
-                            updateDatabases()
-                            indexManager.log(
-                                logType = Log.LogType.INFO,
-                                text = "Database $ixModule reset",
-                                moduleAlt = ixModule
+                            val prompt = GAlert(
+                                "This action will fully reset the module. Continue?", true
                             )
-                            indexManager.log(
-                                logType = Log.LogType.INFO,
-                                text = "Database $ixModule reset",
-                                moduleAlt = "MX"
-                            )
+                            prompt.openModal(block = true)
+                            if (prompt.confirmed.value) {
+                                CwODB.resetModuleDatabase(ixModule)
+                                indexManager.setLastChangeData(-1, activeUser.username)
+                                updateDatabases()
+                                indexManager.log(
+                                    logType = Log.LogType.INFO,
+                                    text = "Database $ixModule reset",
+                                    moduleAlt = ixModule
+                                )
+                                indexManager.log(
+                                    logType = Log.LogType.INFO,
+                                    text = "Database $ixModule reset",
+                                    moduleAlt = "MX"
+                                )
+                            }
                         }
                         prefWidth = rightButtonsWidth
                         style { unsafe("-fx-base", Color.DARKRED) }

@@ -179,14 +179,16 @@ class GHomescreen : View(titleGlobal) {
                         }
                     }
                     separator()
-                    item("Clear Logfiles").action { Log.deleteLogFiles() }
+                    item("Clear Logfiles").action {
+                        Log.deleteLogFiles(true)
+                    }
                     menu("Delete Logfile") {
-                        item("Discography").action { Log.deleteLogFile("M1") }
-                        item("Contacts").action { Log.deleteLogFile("M2") }
-                        item("Invoices").action { Log.deleteLogFile("M3") }
-                        item("Items").action { Log.deleteLogFile("M4") }
-                        item("Item Stock Postings").action { Log.deleteLogFile("M4SP") }
-                        item("Management").action { Log.deleteLogFile("MX") }
+                        item("Discography").action { Log.deleteLogFile("M1", true) }
+                        item("Contacts").action { Log.deleteLogFile("M2", true) }
+                        item("Invoices").action { Log.deleteLogFile("M3", true) }
+                        item("Items").action { Log.deleteLogFile("M4", true) }
+                        item("Item Stock Postings").action { Log.deleteLogFile("M4SP", true) }
+                        item("Management").action { Log.deleteLogFile("MX", true) }
                     }
                 }
             }

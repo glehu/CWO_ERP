@@ -8,6 +8,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.LogMessage
 import modules.mx.getModulePath
+import modules.mx.gui.userAlerts.GAlert
 import modules.mx.isClientGlobal
 import java.io.File
 
@@ -49,9 +50,9 @@ class Log {
                         caller,
                         apiEndpoint
                     )
-                )
+                ) + "\n"
                 print(logMessageSerialized)
-                if (write) getLogFile(module).appendText(logMessageSerialized + "\n")
+                if (write) getLogFile(module).appendText(logMessageSerialized)
             }
         }
 
@@ -81,8 +82,15 @@ class Log {
         /**
          * Deletes a single log file of a provided module.
          */
-        fun deleteLogFile(module: String) {
+        fun deleteLogFile(module: String, askConfirm: Boolean = false) {
             if (checkLogFile(module, false)) {
+                if (askConfirm) {
+                    val prompt = GAlert(
+                        "This action will erase the log files for $module. Continue?", true
+                    )
+                    prompt.openModal(block = true)
+                    if (!prompt.confirmed.value) return
+                }
                 getLogFile(module).delete()
                 log(LogType.INFO, "Log file cleared: $module")
                 checkLogFile(module, createIfMissing = true, log = false)
@@ -92,12 +100,19 @@ class Log {
         /**
          * Deletes all log files across all modules.
          */
-        fun deleteLogFiles() {
-            deleteLogFile("MX")
+        fun deleteLogFiles(askConfirm: Boolean = false) {
+            if (askConfirm) {
+                val prompt = GAlert(
+                    "This action will erase all existing log files. Continue?", true
+                )
+                prompt.openModal(block = true)
+                if (!prompt.confirmed.value) return
+            }
             for (moduleNr in 1..99) {
                 deleteLogFile("M$moduleNr")
             }
             deleteLogFile("M4SP")
+            deleteLogFile("MX")
         }
     }
 }

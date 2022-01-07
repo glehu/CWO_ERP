@@ -183,11 +183,17 @@ class InvoiceController : IController, Controller() {
 
     suspend fun cancelInvoice() {
         if (checkInvoice()) {
-            wizard.invoice.item.status = 8
-            wizard.invoice.item.statusText = InvoiceCLIController().getStatusText(wizard.invoice.item.status)
-            wizard.invoice.item.finished = true
-            saveEntry()
-            log(Log.LogType.INFO, "Invoice ${wizard.invoice.item.uID} cancelled.")
+            val prompt = GAlert(
+                "This action will cancel the invoice. Continue?", true
+            )
+            prompt.openModal(block = true)
+            if (prompt.confirmed.value) {
+                wizard.invoice.item.status = 8
+                wizard.invoice.item.statusText = InvoiceCLIController().getStatusText(wizard.invoice.item.status)
+                wizard.invoice.item.finished = true
+                saveEntry()
+                log(Log.LogType.INFO, "Invoice ${wizard.invoice.item.uID} cancelled.")
+            }
         }
     }
 
