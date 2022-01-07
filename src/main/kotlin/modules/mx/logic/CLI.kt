@@ -80,8 +80,13 @@ class CLI : IModule {
         } else {
             when (args[1]) {
                 "dbstats" -> {
-                    val header = arrayOf("DB", "Desc", "#", "DB KiB", "IX KiB", "Date", "User")
-                    val ix = observableListOf(discographyIndexManager, contactIndexManager, invoiceIndexManager, itemIndexManager)
+                    val header = arrayOf("DB", "Desc", "#", "DB MiB", "IX MiB", "Date", "User")
+                    val ix = observableListOf(
+                        discographyIndexManager,
+                        contactIndexManager,
+                        invoiceIndexManager,
+                        itemIndexManager
+                    )
                     val data = d2Array(ix.size, header.size)
                     for (i in 0 until ix.size) {
                         if (ix[i] != null) {
