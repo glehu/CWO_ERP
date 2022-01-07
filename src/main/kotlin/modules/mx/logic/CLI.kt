@@ -88,8 +88,8 @@ class CLI : IModule {
                             data[i][0] = ix[i]!!.module
                             data[i][1] = ix[i]!!.moduleNameLong
                             data[i][2] = ix[i]!!.getLastUniqueID().toString()
-                            data[i][3] = ix[i]!!.dbSizeKiByte.toString()
-                            data[i][4] = ix[i]!!.ixSizeKiByte.toString()
+                            data[i][3] = ix[i]!!.dbSizeMiByte.toString()
+                            data[i][4] = ix[i]!!.ixSizeMiByte.toString()
                             data[i][5] = ix[i]!!.lastChangeDateUTC
                             data[i][6] = ix[i]!!.lastChangeUser
                         } else {

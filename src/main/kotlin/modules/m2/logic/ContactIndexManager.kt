@@ -25,8 +25,8 @@ class ContactIndexManager : IIndexManager, Controller() {
     override var lastChangeDateLocal: String = ""
     override var lastChangeUser: String = ""
 
-    override var dbSizeKiByte: Double = 0.0
-    override var ixSizeKiByte: Double = 0.0
+    override var dbSizeMiByte: Double = 0.0
+    override var ixSizeMiByte: Double = 0.0
 
     //*************************************************
     //********************** Global Data **************

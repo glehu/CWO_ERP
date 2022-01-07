@@ -54,8 +54,8 @@ class GDatabaseManager : View("Databases") {
         readonlyColumn("Database", IIndexManager::module).prefWidth(80.0)
         readonlyColumn("Description", IIndexManager::moduleNameLong).prefWidth(150.0)
         readonlyColumn("# Entries", IIndexManager::lastUID).prefWidth(125.0)
-        readonlyColumn("DB Size (KiB)", IIndexManager::dbSizeKiByte).prefWidth(125.0)
-        readonlyColumn("Index Size (KiB)", IIndexManager::ixSizeKiByte).prefWidth(125.0)
+        readonlyColumn("DB Size (MiB)", IIndexManager::dbSizeMiByte).prefWidth(125.0)
+        readonlyColumn("Index Size (MiB)", IIndexManager::ixSizeMiByte).prefWidth(125.0)
         readonlyColumn("Last Change", IIndexManager::lastChangeDateLocal).prefWidth(175.0)
         readonlyColumn("by User", IIndexManager::lastChangeUser).prefWidth(175.0)
     }

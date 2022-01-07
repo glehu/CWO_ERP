@@ -34,8 +34,8 @@ interface IIndexManager : IModule {
     var lastChangeDateUTC: String
     var lastChangeDateLocal: String
     var lastChangeUser: String
-    var dbSizeKiByte: Double
-    var ixSizeKiByte: Double
+    var dbSizeMiByte: Double
+    var ixSizeMiByte: Double
 
     /**
      * This function needs to be called in the init{} block of the index manager.
@@ -49,13 +49,13 @@ interface IIndexManager : IModule {
     }
 
     fun getFileSizes() {
-        dbSizeKiByte = (CwODB.getDatabaseFile(module).length()).toDouble() / 1024.0
-        ixSizeKiByte = 0.0
+        dbSizeMiByte = ((CwODB.getDatabaseFile(module).length()).toDouble() / 1024.0) / 1024.0
+        ixSizeMiByte = 0.0
         for (index in indexList.entries) {
-            ixSizeKiByte += (getIndexFile(index.key).length()).toDouble() / 1024.0
+            ixSizeMiByte += ((getIndexFile(index.key).length()).toDouble() / 1024.0) / 1024.0
         }
-        dbSizeKiByte = dbSizeKiByte.roundTo(2)
-        ixSizeKiByte = ixSizeKiByte.roundTo(2)
+        dbSizeMiByte = dbSizeMiByte.roundTo(2)
+        ixSizeMiByte = ixSizeMiByte.roundTo(2)
     }
 
     /**
