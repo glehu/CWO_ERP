@@ -105,8 +105,7 @@ class GLog(title: String) : Fragment(title) {
         val directory = chooseDirectory("Choose directory for the CSV file to be saved in:")
         val timestamp = Timestamp.getUTCTimestamp(Timestamp.getUnixTimestamp()).replace(':', '-')
         val file = File(
-            directory!!.path +
-                    "\\$timestamp-$title-log.csv"
+            directory!!.path + "\\Log_$title$-$timestamp.csv"
         )
         file.createNewFile()
         val list = logDisplay.toList()
