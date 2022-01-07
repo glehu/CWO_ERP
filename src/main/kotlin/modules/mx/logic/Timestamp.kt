@@ -23,7 +23,7 @@ class Timestamp {
          * @return the UTC timestamp of the current time.
          */
         fun now(): String {
-            return getUTCTimestampFromUnix(getUnixTimestamp())
+            return getUTCTimestampFromUnix(getUnixTimestamp() + (differenceFromUTC * 3600))
         }
     }
 }

@@ -103,9 +103,9 @@ class GLog(title: String) : Fragment(title) {
 
     private fun saveLog() {
         val directory = chooseDirectory("Choose directory for the CSV file to be saved in:")
-        val timestamp = Timestamp.getUTCTimestamp(Timestamp.getUnixTimestamp()).replace(':', '-')
+        val timestamp = Timestamp.now().replace(':', '-')
         val file = File(
-            directory!!.path + "\\Log_$title$-$timestamp.csv"
+            directory!!.path + "\\Log_$title-$timestamp.csv"
         )
         file.createNewFile()
         val list = logDisplay.toList()
@@ -125,6 +125,7 @@ class GLog(title: String) : Fragment(title) {
                 writeRow(data)
             }
         }
+        GAlert("${file.name} saved successfully.").openModal()
     }
 
     private inline fun <reified T : Any> T.asMap(): Map<String, Any?> {
