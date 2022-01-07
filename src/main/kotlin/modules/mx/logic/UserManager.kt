@@ -74,7 +74,7 @@ class UserManager : IModule, Controller() {
             "M1" -> return user.canAccessDiscography
             "M2" -> return user.canAccessContacts
             "M3" -> return user.canAccessInvoices
-            "M4" -> return user.canAccessInventory
+            "M4", "M4SP" -> return user.canAccessInventory
         }
         return false
     }

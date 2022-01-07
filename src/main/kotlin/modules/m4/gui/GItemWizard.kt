@@ -9,10 +9,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.*
 import modules.m4.logic.ItemController
+import modules.m4.logic.ItemStockPostingController
 import modules.m4.logic.ItemStorageManager
 import modules.m4.misc.ItemModel
 import modules.mx.gui.GImageViewer
 import modules.mx.gui.userAlerts.GAlert
+import modules.mx.isClientGlobal
 import modules.mx.itemStockPostingIndexManager
 import modules.mx.logic.Log
 import tornadofx.*
@@ -233,14 +235,16 @@ class ItemStorageData : Fragment("Stock") {
                             note = stockAdder.note.value
                         )
                         stockPosting.book()
-                        itemStockPostingIndexManager!!.log(
-                            Log.LogType.INFO,
-                            "ITEM ${this@ItemStorageData.item.uID.value} ADDED ${stockAdder.stockToAddAmount.value}"
-                        )
+                        if (!isClientGlobal) {
+                            itemStockPostingIndexManager!!.log(
+                                Log.LogType.INFO,
+                                "ITEM ${this@ItemStorageData.item.uID.value} ADDED ${stockAdder.stockToAddAmount.value}"
+                            )
+                        }
                         refresh()
                         requestLayout()
                         runBlocking {
-                            itemStockPostingIndexManager!!.save(stockPosting)
+                            ItemStockPostingController().save(stockPosting)
                             ItemController().saveEntry(unlock = false)
                         }
                     }
