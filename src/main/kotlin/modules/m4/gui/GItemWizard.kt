@@ -14,6 +14,7 @@ import modules.m4.misc.ItemModel
 import modules.mx.gui.GImageViewer
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.itemStockPostingIndexManager
+import modules.mx.logic.Log
 import tornadofx.*
 
 @InternalAPI
@@ -208,40 +209,44 @@ class ItemStorageData : Fragment("Stock") {
         readonlyColumn("#", ItemStorageUnit::number)
         readonlyColumn("Description", ItemStorageUnit::description).remainingWidth()
         readonlyColumn("Stock", ItemStorageUnit::stock)
-        column("Add", ItemStorageUnit::locked)
-            .cellFormat {
-                graphic = hbox {
-                    button("+").action {
-                        val stockAdder = find<GItemStockAdder>()
-                        stockAdder.getStorageData(
-                            storage = selectedStorage,
-                            storageUnit = rowItem
+        column("Add", ItemStorageUnit::locked).cellFormat {
+            graphic = hbox {
+                button("+").action {
+                    val stockAdder = find<GItemStockAdder>()
+                    stockAdder.getStorageData(
+                        storage = selectedStorage,
+                        storageUnit = rowItem
+                    )
+                    stockAdder.openModal(block = true)
+                    if (!stockAdder.valid()) {
+                        GAlert(
+                            "No stock has been added."
+                        ).openModal()
+                    } else {
+                        rowItem.stock += stockAdder.stockToAddAmount.value
+                        val stockPosting = ItemStockPosting(
+                            uID = -1,
+                            itemUID = this@ItemStorageData.item.uID.value,
+                            storageUnitFromUID = -1,
+                            storageUnitToUID = stockAdder.storageUnitNumber.value,
+                            amount = stockAdder.stockToAddAmount.value,
+                            note = stockAdder.note.value
                         )
-                        stockAdder.openModal(block = true)
-                        if (stockAdder.valid()) {
-                            rowItem.stock += stockAdder.stockToAddAmount.value
-                            val stockPosting = ItemStockPosting(
-                                uID = -1,
-                                itemUID = this@ItemStorageData.item.uID.value,
-                                storageUnitFromUID = -1,
-                                storageUnitToUID = stockAdder.storageUnitNumber.value,
-                                amount = stockAdder.stockToAddAmount.value
-                            )
-                            stockPosting.book()
-                            refresh()
-                            requestLayout()
-                            runBlocking {
-                                itemStockPostingIndexManager!!.save(stockPosting)
-                                ItemController().saveEntry(unlock = false)
-                            }
-                        } else {
-                            GAlert(
-                                "No stock has been added."
-                            ).openModal()
+                        stockPosting.book()
+                        itemStockPostingIndexManager!!.log(
+                            Log.LogType.INFO,
+                            "ITEM ${this@ItemStorageData.item.uID.value} ADDED ${stockAdder.stockToAddAmount.value}"
+                        )
+                        refresh()
+                        requestLayout()
+                        runBlocking {
+                            itemStockPostingIndexManager!!.save(stockPosting)
+                            ItemController().saveEntry(unlock = false)
                         }
                     }
                 }
             }
+        }
         column("Lock", ItemStorageUnit::locked) {
             makeEditable()
         }

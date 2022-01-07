@@ -159,35 +159,39 @@ class GHomescreen : View(titleGlobal) {
             menu("Misc") {
                 menu("Log") {
                     menu("Show Logfile") {
-                        item("M1 Songs").action {
-                            GLog("M1 Songs").showLog(Log.getLogFile("M1"), ".*".toRegex())
+                        item("Discography").action {
+                            GLog("M1 Discography").showLog(Log.getLogFile("M1"), ".*".toRegex())
                         }
-                        item("M2 Contacts").action {
-                            GLog("M2 Contacts").showLog(Log.getLogFile("M2"), ".*".toRegex())
+                        item("Contacts").action {
+                            GLog("Contacts").showLog(Log.getLogFile("M2"), ".*".toRegex())
                         }
-                        item("M3 Invoice").action {
-                            GLog("M3 Invoice").showLog(Log.getLogFile("M3"), ".*".toRegex())
+                        item("Invoices").action {
+                            GLog("Invoices").showLog(Log.getLogFile("M3"), ".*".toRegex())
                         }
-                        item("M4 Item").action {
-                            GLog("M4 Item").showLog(Log.getLogFile("M4"), ".*".toRegex())
+                        item("Items").action {
+                            GLog("Items").showLog(Log.getLogFile("M4"), ".*".toRegex())
                         }
-                        item("MX").action {
-                            GLog("MX").showLog(Log.getLogFile("MX"), ".*".toRegex())
+                        item("Item Stock Postings").action {
+                            GLog("Item Stock Postings").showLog(Log.getLogFile("M4SP"), ".*".toRegex())
+                        }
+                        item("Management").action {
+                            GLog("Management").showLog(Log.getLogFile("MX"), ".*".toRegex())
                         }
                     }
                     separator()
                     item("Clear Logfiles").action { Log.deleteLogFiles() }
                     menu("Delete Logfile") {
-                        item("M1 Songs").action { Log.deleteLogFile("M1") }
-                        item("M2 Contacts").action { Log.deleteLogFile("M2") }
-                        item("M3 Invoice").action { Log.deleteLogFile("M3") }
-                        item("M4 Item").action { Log.deleteLogFile("M4") }
-                        item("MX").action { Log.deleteLogFile("MX") }
+                        item("Discography").action { Log.deleteLogFile("M1") }
+                        item("Contacts").action { Log.deleteLogFile("M2") }
+                        item("Invoices").action { Log.deleteLogFile("M3") }
+                        item("Items").action { Log.deleteLogFile("M4") }
+                        item("Item Stock Postings").action { Log.deleteLogFile("M4SP") }
+                        item("Management").action { Log.deleteLogFile("MX") }
                     }
                 }
             }
             menu("Dev-Tools") {
-                menu("Benchmark (M1)") {
+                menu("Benchmark (Discography)") {
                     item("Insert 10k random songs").action {
                         runBlocking { DiscographyBenchmark().insertRandomEntries(10_000) }
                     }

@@ -4,7 +4,9 @@ import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.mx.activeUser
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import modules.mx.LogMessage
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
 import java.io.File
@@ -38,14 +40,18 @@ class Log {
             apiEndpoint: String = ""
         ) {
             if (!isClientGlobal) {
-                val apiEndpointTxt = if (apiEndpoint.isNotEmpty()) {
-                    ";a:$apiEndpoint"
-                } else ""
-                val logText = "<t:$type;u:${activeUser.username};c:$caller$apiEndpointTxt:> $text\n"
-                print(logText)
-                if (write) {
-                    getLogFile(module).appendText("${Timestamp.getUnixTimestampHex()}$logText")
-                }
+                val logMessageSerialized = Json.encodeToString(
+                    LogMessage(
+                        Timestamp.getUnixTimestampHex(),
+                        module,
+                        type,
+                        text,
+                        caller,
+                        apiEndpoint
+                    )
+                )
+                print(logMessageSerialized)
+                if (write) getLogFile(module).appendText(logMessageSerialized + "\n")
             }
         }
 
@@ -91,6 +97,7 @@ class Log {
             for (moduleNr in 1..99) {
                 deleteLogFile("M$moduleNr")
             }
+            deleteLogFile("M4SP")
         }
     }
 }

@@ -121,17 +121,6 @@ data class RegistrationResponse(
 )
 
 @Serializable
-data class LogMsg(
-    var id: Int,
-    var tstamp: String = "",
-    var type: String = "",
-    var caller: String = "",
-    var msg: String,
-    var user: String = "",
-    var apiEndpoint: String = ""
-)
-
-@Serializable
 data class UsageTrackerStats(
     var totalAPICalls: Long
 )

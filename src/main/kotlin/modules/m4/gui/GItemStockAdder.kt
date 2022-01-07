@@ -20,8 +20,9 @@ class GItemStockAdder : Fragment("Add Stock") {
     private var storageDescription = SimpleStringProperty(storage.description)
     private var storageUnitDescription = SimpleStringProperty("")
     private var storageUnitStock = SimpleDoubleProperty(0.0)
-    var storageUnitNumber = SimpleIntegerProperty(0)
+    val storageUnitNumber = SimpleIntegerProperty(0)
     val stockToAddAmount = SimpleDoubleProperty(0.0)
+    val note = SimpleStringProperty("")
     var userConfirmed = false
     override val root = form {
         fieldset("Item Data") {
@@ -36,6 +37,9 @@ class GItemStockAdder : Fragment("Add Stock") {
             field("Number") { label(storageUnitNumber) }
             field("Description") { label(storageUnitDescription) }
             field("Current Stock") { label(storageUnitStock) }
+        }
+        fieldset("Note") {
+            textarea(note)
         }
         fieldset("Add Stock") {
             field("Amount") { textfield(stockToAddAmount) }

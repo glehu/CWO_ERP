@@ -1,12 +1,14 @@
 package modules.mx.gui
 
-import api.misc.json.LogMsg
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import javafx.geometry.Orientation
 import javafx.scene.control.TextField
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import modules.mx.LogMessage
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.logic.Timestamp
 import modules.mx.rightButtonsWidth
@@ -23,20 +25,22 @@ class GLog(title: String) : Fragment(title) {
      * The filter criteria for log lookups.
      */
     private lateinit var regex: Regex
-    private val logContent: ObservableList<LogMsg> = observableListOf()
-    private val logDisplay: ObservableList<LogMsg> = observableListOf()
+    private val logContent: ObservableList<LogMessage> = observableListOf()
+    private val logDisplay: ObservableList<LogMessage> = observableListOf()
     private val results = SimpleIntegerProperty(0)
     private val maxResults = SimpleIntegerProperty(0)
     private val resultsText = SimpleStringProperty("")
     private var searchText: TextField by singleAssign()
     private val table = tableview(logDisplay) {
-        readonlyColumn("ID", LogMsg::id)
-        readonlyColumn("TStamp", LogMsg::tstamp)
-        readonlyColumn("Type", LogMsg::type)
-        readonlyColumn("Caller", LogMsg::caller)
-        readonlyColumn("Text", LogMsg::msg).remainingWidth()
-        readonlyColumn("User", LogMsg::user)
-        readonlyColumn("Endpoint", LogMsg::apiEndpoint).minWidth(150.0)
+        readonlyColumn("TStamp", LogMessage::unixTimestamp)
+            .cellFormat {
+                text = Timestamp.getLocalTimestamp(Timestamp.convUnixHexToUnixTimestamp(rowItem.unixTimestamp))
+            }
+        readonlyColumn("Module", LogMessage::module)
+        readonlyColumn("Type", LogMessage::type)
+        readonlyColumn("Text", LogMessage::text).remainingWidth()
+        readonlyColumn("Caller", LogMessage::caller)
+        readonlyColumn("Endpoint", LogMessage::apiEndpoint).minWidth(150.0)
         columnResizePolicy = SmartResize.POLICY
     }
     override val root = borderpane {
@@ -140,29 +144,11 @@ class GLog(title: String) : Fragment(title) {
         if (logFile.isFile) {
             this.regex = regex
             val inputStream: InputStream = logFile.inputStream()
-            val tstampRgx = ".*<".toRegex()
-            val typeRgx = "t:[^;]*;".toRegex()
-            val callerRgx = "c:.*;".toRegex()
-            val msgRgx = ":>.*".toRegex()
-            val userRgx = "u:[^;]*;".toRegex()
-            val apiEndpointRgx = "a:.*:".toRegex()
             var counter = 0
             inputStream.bufferedReader().forEachLine {
                 if (it.uppercase().contains(regex)) {
                     counter++
-                    val msgT = LogMsg(
-                        id = counter,
-                        tstamp = Timestamp.getLocalTimestamp(
-                            Timestamp.convUnixHexToUnixTimestamp(
-                                tstampRgx.find(it)?.value?.dropLast(1)!!
-                            )
-                        ),
-                        type = typeRgx.find(it)?.value?.drop(2)?.dropLast(1) ?: "",
-                        caller = callerRgx.find(it)?.value?.drop(2)?.dropLast(1) ?: "",
-                        msg = msgRgx.find(it)?.value?.drop(2) ?: "",
-                        user = userRgx.find(it)?.value?.drop(2)?.dropLast(1) ?: "",
-                        apiEndpoint = apiEndpointRgx.find(it)?.value?.drop(2)?.dropLast(1) ?: ""
-                    )
+                    val msgT: LogMessage = Json.decodeFromString(it)
                     logContent.add(msgT)
                     logDisplay.add(msgT)
                     results += 1

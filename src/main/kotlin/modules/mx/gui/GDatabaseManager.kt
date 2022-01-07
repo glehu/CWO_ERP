@@ -33,7 +33,13 @@ class GDatabaseManager : View("Databases") {
         invoiceIndexManager = InvoiceIndexManager()
         itemIndexManager = ItemIndexManager()
         itemStockPostingIndexManager = ItemStockPostingIndexManager()
-        indexManagers.addAll(discographyIndexManager, contactIndexManager, invoiceIndexManager, itemIndexManager, itemStockPostingIndexManager)
+        indexManagers.addAll(
+            discographyIndexManager,
+            contactIndexManager,
+            invoiceIndexManager,
+            itemIndexManager,
+            itemStockPostingIndexManager
+        )
     }
 
     init {
@@ -63,20 +69,21 @@ class GDatabaseManager : View("Databases") {
                     }
                     prefWidth = rightButtonsWidth
                 }
-                for ((counter, indexManager) in indexManagers.withIndex()) {
-                    button("Reset M${counter + 1}") {
+                for (indexManager in indexManagers) {
+                    val ixModule = indexManager.module.uppercase()
+                    button("Reset $ixModule") {
                         action {
-                            CwODB.resetModuleDatabase("M${counter + 1}")
+                            CwODB.resetModuleDatabase(ixModule)
                             indexManager.setLastChangeData(-1, activeUser.username)
                             updateDatabases()
                             indexManager.log(
                                 logType = Log.LogType.INFO,
-                                text = "Database ${counter + 1} reset",
-                                moduleAlt = "M${counter + 1}"
+                                text = "Database $ixModule reset",
+                                moduleAlt = ixModule
                             )
                             indexManager.log(
                                 logType = Log.LogType.INFO,
-                                text = "Database ${counter + 1} reset",
+                                text = "Database $ixModule reset",
                                 moduleAlt = "MX"
                             )
                         }

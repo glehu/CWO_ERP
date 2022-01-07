@@ -18,9 +18,12 @@ data class ItemStockPosting(
     val amount: Double,
     val note: String = ""
 ) : IEntry {
+    private var isFinished: Boolean = false
     var status: Int = 0
+    /**
+     * Contains the Unix Hex Timestamp of the moment the stock posting was booked.
+     */
     var dateBooked: String = ""
-    var isFinished: Boolean = false
 
     override fun initialize() {
         if (uID == -1) uID = itemStockPostingIndexManager!!.getUID()
