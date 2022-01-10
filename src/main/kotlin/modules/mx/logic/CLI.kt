@@ -242,7 +242,7 @@ class CLI : IModule {
             }
             loggedIn = UserManager().login(username, password, doLog = true)
         }
-        return loggedIn
+        return true
     }
 
     /**
