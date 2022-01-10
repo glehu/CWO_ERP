@@ -99,7 +99,7 @@ class CLI : IModule {
             cliErrorNotEnoughArguments(args)
         } else {
             when (args[1]) {
-                "dbstats" -> {
+                "dbstat" -> {
                     val header = arrayOf("DB", "Desc", "#", "DB MiB", "IX MiB", "Date", "User")
                     val ix = observableListOf(
                         //M1
