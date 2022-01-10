@@ -37,7 +37,7 @@ class CLI : IModule {
         var terminated = !login
         var inputArgs: List<String>
         while (!terminated) {
-            terminal.print("\n${gray("${activeUser.username}:>")} ")
+            terminal.print("\n${magenta("${activeUser.username}:>")} ")
             //Wait for user input
             inputArgs = (readLine() ?: "").split(" ")
             terminated = cliHandleInput(inputArgs)
@@ -70,7 +70,7 @@ class CLI : IModule {
     private fun cliHandleInput(inputArgs: List<String>): Boolean {
         var terminated = false
         when (inputArgs[0]) {
-            "exit", "close", "terminate" -> terminated = true
+            "exit" -> terminated = true
             "chuser" -> {
                 activeUser = User("", "")
                 cliLogin()
@@ -95,7 +95,7 @@ class CLI : IModule {
     }
 
     private fun cliShow(args: List<String>) {
-        if (args.size < 2) {
+        if (args.size < 2 || args[1].isEmpty()) {
             cliErrorNotEnoughArguments(args)
         } else {
             when (args[1]) {
@@ -159,7 +159,7 @@ class CLI : IModule {
     }
 
     private fun cliStart(args: List<String>) {
-        if (args.size < 2) {
+        if (args.size < 2 || args[1].isEmpty()) {
             cliErrorNotEnoughArguments(args)
         } else {
             when (args[1]) {
@@ -185,7 +185,7 @@ class CLI : IModule {
     }
 
     private fun cliLoad(args: List<String>) {
-        if (args.size < 2) {
+        if (args.size < 2 || args[1].isEmpty()) {
             cliErrorNotEnoughArguments(args)
         } else {
             if (args[1] == "index") {
@@ -202,12 +202,12 @@ class CLI : IModule {
      * Shows useful information to the user.
      */
     private fun cliHelp(uArgs: List<String>) {
-        val args = if (uArgs.size < 2) {
+        val args = if (uArgs.size < 2 || uArgs[1].isEmpty()) {
             listOf(uArgs[0], "")
         } else uArgs
-        val help = "help {option} -> shows help"
+        val help = "help ${gray("{option}")} -> shows help"
         val exit =
-            "exit/close/terminate -> terminates the software and shuts down the server if it is running."
+            "exit -> terminates the software and shuts down the servers if they are running."
         //****************************************************
         //******************* HELP TEXTS *********************
         //****************************************************
@@ -215,25 +215,25 @@ class CLI : IModule {
             "chuser -> change the current user by forcing a login"
 
         val load =
-            "load [argument] -> loads [argument] into the system"
+            "load ${gray("[argument]")} -> loads ${gray("[argument]")} into the system"
         val loadDetail = "$load\n" +
-                "\tindex -> loads all available indices" +
-                "\tindex {module} -> loads a specific index (e.g. load index m1)"
+                "\tindex -> loads all available indices\n" +
+                "\tindex ${gray("{module}")} -> loads a specific index (e.g. load index m1)"
 
         val start =
-            "start [argument] -> starts [argument]"
+            "start ${gray("[argument]")} -> starts ${gray("[argument]")}"
         val startDetail = "$start\n" +
                 "\tserver -> starts the server\n" +
                 "\ttelnet -> starts the telnet server"
 
         val show =
-            "show [argument] -> shows info about [argument]"
+            "show ${gray("[argument]")} -> shows info about ${gray("[argument]")}"
         val showDetail = "$show\n" +
                 "\tconfig  -> shows the config data\n" +
                 "\tmodules -> shows all available modules\n" +
-                "\tdbstats -> shows database stats\n" +
-                "\tusers {flag} -> shows a list of users\n" +
-                "\t\t-active -> shows all active users"
+                "\tdbstat -> shows database statistics\n" +
+                "\tusers ${gray("{flag}")} -> shows a list of users\n" +
+                "\t\t${gray("-active")} -> shows all active users"
         val qs =
             "qs -> quick start. loads the indices and starts the servers."
         //****************************************************
@@ -253,7 +253,7 @@ class CLI : IModule {
                         "\n$qs"
             }
         }
-        println(helpText)
+        terminal.println(helpText)
     }
 
     /**
