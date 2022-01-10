@@ -2,6 +2,8 @@ package modules.mx.logic
 
 import api.logic.Server
 import api.logic.TelnetServer
+import com.github.ajalt.mordant.animation.progressAnimation
+import com.github.ajalt.mordant.rendering.TextColors.*
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
@@ -25,43 +27,61 @@ class CLI : IModule {
         return null
     }
 
-    //****************************************************
-    //******************* VARIABLES **********************
-    //****************************************************
-
-
-    //****************************************************
-
     /**
-     * Runs the software without GUI in command line interpretation mode.
+     * Runs the software without GUI in command line interpretation (CLI) mode.
      */
     fun runCLI() {
         cliMode = true
-        //Get config
-        log(Log.LogType.INFO, "Checking .ini file...")
-        checkInstallation()
-        //Check if user is logged in
-        val login: Boolean = if (activeUser.username.isEmpty()) {
-            cliLogin()
-        } else true
+        cliCheckIni()
+        val login: Boolean = if (activeUser.username.isEmpty()) cliLogin() else true
         var terminated = !login
         var inputArgs: List<String>
         while (!terminated) {
-            print("\n${activeUser.username}:> "); inputArgs = (readLine() ?: "").split(" ")
-            when (inputArgs[0]) {
-                "exit", "close", "terminate" -> terminated = true
-                "chuser" -> {
-                    activeUser = User("", "")
-                    cliLogin()
-                }
-                "help" -> cliHelp(inputArgs)
-                "start" -> cliStart(inputArgs)
-                "load" -> cliLoad(inputArgs)
-                "show" -> cliShow(inputArgs)
-                "qs" -> cliQuickStart()
-            }
+            terminal.print("\n${gray("${activeUser.username}:>")} ")
+            //Wait for user input
+            inputArgs = (readLine() ?: "").split(" ")
+            terminated = cliHandleInput(inputArgs)
         }
         cliExit()
+    }
+
+    private fun cliCheckIni() {
+        val progress = terminal.progressAnimation {
+            text("Checking .ini file...")
+            progressBar(pendingChar = "-", completeChar = "|")
+            percentage()
+            completed()
+        }
+        terminal.info.updateTerminalSize()
+        progress.start()
+        progress.updateTotal(1L); Thread.sleep(100)
+        //Perform action
+        checkInstallation()
+        progress.advance(1L); Thread.sleep(100)
+        Thread.sleep(100); progress.stop()
+        progress.clear()
+        terminal.println("\n${green("Success!")}")
+    }
+
+    /**
+     * Handles the user input.
+     * @return true if the software needs to terminate.
+     */
+    private fun cliHandleInput(inputArgs: List<String>): Boolean {
+        var terminated = false
+        when (inputArgs[0]) {
+            "exit", "close", "terminate" -> terminated = true
+            "chuser" -> {
+                activeUser = User("", "")
+                cliLogin()
+            }
+            "help" -> cliHelp(inputArgs)
+            "start" -> cliStart(inputArgs)
+            "load" -> cliLoad(inputArgs)
+            "show" -> cliShow(inputArgs)
+            "qs" -> cliQuickStart()
+        }
+        return terminated
     }
 
     private fun cliQuickStart() {
@@ -76,16 +96,22 @@ class CLI : IModule {
 
     private fun cliShow(args: List<String>) {
         if (args.size < 2) {
-            log(Log.LogType.ERROR, "Not enough arguments.")
+            cliErrorNotEnoughArguments(args)
         } else {
             when (args[1]) {
                 "dbstats" -> {
                     val header = arrayOf("DB", "Desc", "#", "DB MiB", "IX MiB", "Date", "User")
                     val ix = observableListOf(
+                        //M1
                         discographyIndexManager,
+                        //M2
                         contactIndexManager,
+                        //M3
                         invoiceIndexManager,
-                        itemIndexManager
+                        //M4
+                        itemIndexManager,
+                        //M4SP
+                        itemStockPostingIndexManager
                     )
                     val data = d2Array(ix.size, header.size)
                     for (i in 0 until ix.size) {
@@ -98,11 +124,11 @@ class CLI : IModule {
                             data[i][5] = ix[i]!!.lastChangeDateUTC
                             data[i][6] = ix[i]!!.lastChangeUser
                         } else {
-                            data[i][0] = "<M${i + 1}?>"
+                            data[i][0] = "<Module>"
                             data[i][1] = "<Not initialized>"
                         }
                     }
-                    cliPrint(header, data)
+                    cliPrintTable(header, data)
                 }
                 "users" -> {
                     val userManager = UserManager()
@@ -125,7 +151,7 @@ class CLI : IModule {
                         data[i][4] = users[i].canAccessInventory.toString()
                         data[i][5] = users[i].onlineSince
                     }
-                    cliPrint(header, data)
+                    cliPrintTable(header, data)
                 }
                 "config" -> print(getIniFile().readText())
             }
@@ -134,7 +160,7 @@ class CLI : IModule {
 
     private fun cliStart(args: List<String>) {
         if (args.size < 2) {
-            log(Log.LogType.ERROR, "Not enough arguments.")
+            cliErrorNotEnoughArguments(args)
         } else {
             when (args[1]) {
                 "server" -> server = Server()
@@ -143,15 +169,24 @@ class CLI : IModule {
         }
     }
 
+    private fun cliErrorNotEnoughArguments(args: List<String>) {
+        terminal.println(
+            red("ERROR: Not enough arguments! Type ${white("help ${args[0]}")} for a list of arguments.")
+        )
+    }
+
     private fun cliExit() {
         exitMain()
         log(Log.LogType.INFO, "System terminated by user.")
+        terminal.println(
+            "${gray("CWO:>")} ${green("System successfully terminated by user.")}"
+        )
         exitProcess(0)
     }
 
     private fun cliLoad(args: List<String>) {
         if (args.size < 2) {
-            log(Log.LogType.ERROR, "Not enough arguments.")
+            cliErrorNotEnoughArguments(args)
         } else {
             if (args[1] == "index") {
                 if (args.size < 3) {
@@ -230,14 +265,18 @@ class CLI : IModule {
         while (!loggedIn) {
             var username = ""
             var password = ""
-            log(Log.LogType.INFO, "Please log in by providing credentials.")
-            log(Log.LogType.WARNING, "Careful: the password will be invisible while entering it.")
+            terminal.println(
+                "${gray("CWO:>")} Please log in by providing credentials."
+            )
+            terminal.println(
+                "${gray("CWO:>")} ${red("Careful: the password will be invisible while entering it.")}"
+            )
             while (username.isEmpty()) {
-                print("CWO:> Username: ")
+                terminal.print("${gray("CWO:>")} Username: ")
                 username = readLine() ?: ""
             }
             while (password.isEmpty()) {
-                print("CWO:> Password: ")
+                print("${gray("CWO:>")} Password: ")
                 password = System.console().readPassword().concatToString()
             }
             loggedIn = UserManager().login(username, password, doLog = true)
@@ -248,11 +287,9 @@ class CLI : IModule {
     /**
      * Prints an ASCII table of the provided contents.
      */
-    private fun cliPrint(header: Array<String>, data: Array<Array<String>>) {
+    private fun cliPrintTable(header: Array<String>, data: Array<Array<String>>) {
         val boundaries = IntArray(header.size)
-        for (hd in header.indices) {
-            boundaries[hd] = header[hd].length + 2
-        }
+        for (hd in header.indices) boundaries[hd] = header[hd].length + 2
         for (col in data.indices) {
             for (row in 0 until data[col].size) {
                 if ((data[col][row].length + 2) > boundaries[row]) {

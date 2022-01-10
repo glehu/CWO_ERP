@@ -1,5 +1,8 @@
 package interfaces
 
+import com.github.ajalt.mordant.animation.ProgressAnimation
+import com.github.ajalt.mordant.animation.progressAnimation
+import com.github.ajalt.mordant.rendering.TextColors
 import db.CwODB
 import db.Index
 import db.IndexContent
@@ -13,13 +16,13 @@ import kotlinx.serialization.json.Json
 import modules.mx.LastChange
 import modules.mx.activeUser
 import modules.mx.getModulePath
-import modules.mx.logic.Log
 import modules.mx.logic.Timestamp.Timestamp.convUnixHexToUnixTimestamp
 import modules.mx.logic.Timestamp.Timestamp.getLocalTimestamp
 import modules.mx.logic.Timestamp.Timestamp.getUTCTimestamp
 import modules.mx.logic.Timestamp.Timestamp.getUnixTimestampHex
 import modules.mx.logic.indexFormat
 import modules.mx.logic.roundTo
+import modules.mx.terminal
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
@@ -41,10 +44,26 @@ interface IIndexManager : IModule {
      * This function needs to be called in the init{} block of the index manager.
      */
     fun initialize(vararg ixNumbers: Int) {
+        terminal.println("${TextColors.gray("CWO :>")} Initializing $moduleNameLong...")
         lastUID = updateLastUID()
         getLastChangeDates()
+        val progress = terminal.progressAnimation {
+            text("Retrieving indices...")
+            progressBar(pendingChar = "-", completeChar = "|")
+            percentage()
+            completed()
+        }
+        terminal.info.updateTerminalSize()
+        progress.start()
+        progress.updateTotal(ixNumbers.size.toLong() + 1L); Thread.sleep(100)
+        //Perform actions
         addIndex(0)
-        getIndicesFromArray(ixNumbers)
+        progress.advance(1L); Thread.sleep(100)
+        getIndicesFromArray(ixNumbers, progress)
+        //Stop progress animation
+        Thread.sleep(100); progress.stop()
+        progress.clear()
+        terminal.println("\n${TextColors.green("Success!")}")
         getFileSizes()
     }
 
@@ -172,9 +191,10 @@ interface IIndexManager : IModule {
         }
     }
 
-    fun getIndicesFromArray(ixNumbers: IntArray) {
+    fun getIndicesFromArray(ixNumbers: IntArray, progress: ProgressAnimation) {
         for (ixNr in ixNumbers) {
             addIndex(ixNr)
+            progress.advance(1L); Thread.sleep(100)
         }
     }
 
@@ -182,7 +202,6 @@ interface IIndexManager : IModule {
      * @return an instance of Index to be used in IndexManagers
      */
     fun getIndex(ixNr: Int): Index {
-        log(Log.LogType.SYS, "Deserializing index $ixNr for $module...")
         checkIndexFile(module, ixNr)
         return Json.decodeFromString(getIndexFile(ixNr).readText())
     }

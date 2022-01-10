@@ -25,6 +25,8 @@ import modules.m4.ItemStockPosting
 import modules.m4.logic.ItemIndexManager
 import modules.m4.logic.ItemStockPostingIndexManager
 import java.io.File
+import com.github.ajalt.mordant.rendering.AnsiLevel
+import com.github.ajalt.mordant.terminal.Terminal
 
 //*************************************************
 //********************** SERIALIZERS **+***********
@@ -150,3 +152,8 @@ var serverIPAddressGlobal: String = "?"
  * CLI mode
  */
 var cliMode = false
+
+/**
+ * Terminal supporting colors, animations etc.
+ */
+val terminal = Terminal(ansiLevel = AnsiLevel.TRUECOLOR)

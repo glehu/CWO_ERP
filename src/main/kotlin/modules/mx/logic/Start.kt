@@ -143,17 +143,21 @@ fun exitMain() {
     if (!isClientGlobal) {
         if (serverJobGlobal != null && serverJobGlobal!!.isActive) {
             Log.log(Log.LogType.INFO, "Shutting down server...")
-            server.serverEngine.stop(100L, 100L)
-            serverJobGlobal!!.cancel()
+            try {
+                server.serverEngine.stop(100L, 100L)
+            } catch (_: IOException) {
+            } finally {
+                serverJobGlobal!!.cancel()
+            }
         }
         if (telnetServerJobGlobal != null && telnetServerJobGlobal!!.isActive) {
             Log.log(Log.LogType.INFO, "Shutting down telnet server...")
             try {
                 telnetServer.telnetServer.close()
-            } catch (e: IOException) {
-                println(e.message)
+            } catch (_: IOException) {
+            } finally {
+                telnetServerJobGlobal!!.cancel()
             }
-            telnetServerJobGlobal!!.cancel()
         }
     }
     if (taskJobGlobal != null && taskJobGlobal!!.isActive) {
