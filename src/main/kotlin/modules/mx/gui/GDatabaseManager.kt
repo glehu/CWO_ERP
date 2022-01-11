@@ -44,11 +44,11 @@ class GDatabaseManager : View("Databases") {
     }
 
     init {
-        if (discographyIndexManager != null) indexManagers.add(discographyIndexManager!!)
-        if (contactIndexManager != null) indexManagers.add(contactIndexManager!!)
-        if (invoiceIndexManager != null) indexManagers.add(invoiceIndexManager!!)
-        if (itemIndexManager != null) indexManagers.add(itemIndexManager!!)
-        if (itemStockPostingIndexManager != null) indexManagers.add(itemStockPostingIndexManager!!)
+        if (discographyIndexManager != null) indexManagers.add(discographyIndexManager)
+        if (contactIndexManager != null) indexManagers.add(contactIndexManager)
+        if (invoiceIndexManager != null) indexManagers.add(invoiceIndexManager)
+        if (itemIndexManager != null) indexManagers.add(itemIndexManager)
+        if (itemStockPostingIndexManager != null) indexManagers.add(itemStockPostingIndexManager)
     }
 
     val table = tableview(indexManagers) {
@@ -73,6 +73,7 @@ class GDatabaseManager : View("Databases") {
                         prompt.openModal(block = true)
                         if (prompt.confirmed.value) {
                             updateDatabases()
+                            GAlert("Successfully reloaded all indices.").openModal()
                         }
                     }
                     prefWidth = rightButtonsWidth
@@ -82,7 +83,8 @@ class GDatabaseManager : View("Databases") {
                     button("Reset $ixModule") {
                         action {
                             val prompt = GAlert(
-                                "This action will fully reset the module. Continue?", true
+                                "This action will fully reset the module $ixModule.",
+                                true
                             )
                             prompt.openModal(block = true)
                             if (prompt.confirmed.value) {
@@ -99,6 +101,7 @@ class GDatabaseManager : View("Databases") {
                                     text = "Database $ixModule reset",
                                     moduleAlt = "MX"
                                 )
+                                GAlert("Successfully reset $ixModule.").openModal()
                             }
                         }
                         prefWidth = rightButtonsWidth

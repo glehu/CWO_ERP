@@ -1,6 +1,7 @@
 package modules.mx.gui.userAlerts
 
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.paint.Color
 import modules.mx.rightButtonsWidth
@@ -12,8 +13,12 @@ class GAlert(message: String, askConfirm: Boolean = false) : Fragment() {
         requestFocus()
         label(message)
         if (askConfirm) {
+            separator(Orientation.HORIZONTAL) {
+                paddingVertical = 50
+            }
+            label("Continue?")
             hbox {
-                paddingTop = 50
+                paddingTop = 40
                 alignment = Pos.CENTER
                 button("Confirm") {
                     action {
