@@ -20,7 +20,6 @@ class InvoiceItemProperty {
     var amount by amountProperty
     val userNameProperty = SimpleStringProperty("")
     var userName: String by userNameProperty
-
 }
 
 class InvoiceItemModel : ItemViewModel<InvoiceItemProperty>() {
@@ -37,7 +36,6 @@ fun getItemPropertyFromItem(item: InvoicePosition): InvoiceItemProperty {
     itemProperty.description = item.description
     itemProperty.price = item.grossPrice
     itemProperty.amount = item.amount
-    itemProperty.userName = item.userName
     itemProperty.uID = item.uID
     return itemProperty
 }
@@ -48,7 +46,6 @@ fun getItemFromItemProperty(itemProperty: InvoiceItemProperty): InvoicePosition 
     item.description = itemProperty.description
     item.grossPrice = itemProperty.price
     item.amount = itemProperty.amount
-    item.userName = itemProperty.userName
     item.uID = itemProperty.uID
     return item
 }

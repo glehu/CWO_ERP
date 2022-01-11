@@ -21,13 +21,7 @@ data class InvoicePosition(
     var netPrice: Double = 0.0
 
     @SerialName("n")
-    var amount: Double = 1.0
-
-    @SerialName("u")
-    var userName: String = ""
-
-    @SerialName("p")
-    var stockPostingUID: Int = -1
+    var amount: Double = 0.0
 
     override fun initialize() {
     }

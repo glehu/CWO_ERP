@@ -14,11 +14,9 @@ import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
-import modules.m4.ItemStockPosting
 import modules.m4.logic.ItemPriceManager
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.invoiceIndexManager
-import modules.mx.itemStockPostingIndexManager
 import modules.mx.logic.EMailer
 import modules.mx.logic.Log
 import tornadofx.Controller
@@ -90,17 +88,7 @@ class InvoiceController : IController, Controller() {
             }
             //Stock Posting
             for (item in wizard.invoice.item.itemsProperty) {
-                if (item.stockPostingUID == -1) {
-                    val stockPosting = ItemStockPosting(
-                        uID = -1,
-                        itemUID = item.uID,
-                        storageUnitFromUID = -1,
-                        storageUnitToUID = -1,
-                        amount = item.amount * -1
-                    )
-                    stockPosting.book()
-                    item.stockPostingUID = itemStockPostingIndexManager!!.save(stockPosting)
-                }
+                //TODO
             }
             wizard.invoice.item.status = 9
             wizard.invoice.item.statusText = InvoiceCLIController().getStatusText(wizard.invoice.item.status)

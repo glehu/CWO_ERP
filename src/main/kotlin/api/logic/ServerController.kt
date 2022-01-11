@@ -227,7 +227,6 @@ class ServerController {
                      */
                     val itemPosition = InvoicePosition(item.uID, item.description)
                     itemPosition.grossPrice = Json.decodeFromString<ItemPriceCategory>(item.prices[0]!!).grossPrice
-                    itemPosition.userName = activeUser.username
                     itemPosition.amount = body.cart[i].amount.toDouble()
                     order.items[i] = Json.encodeToString(itemPosition)
                 }

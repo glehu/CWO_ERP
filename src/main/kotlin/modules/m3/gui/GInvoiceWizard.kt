@@ -12,7 +12,6 @@ import modules.m3.logic.InvoiceController
 import modules.m3.misc.InvoiceModel
 import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemController
-import modules.mx.activeUser
 import tornadofx.*
 
 @InternalAPI
@@ -125,7 +124,6 @@ class InvoiceItemData : Fragment("Items") {
             makeEditable()
             prefWidth = 100.0
         }
-        readonlyColumn("User", InvoicePosition::userName).prefWidth = 250.0
 
         onEditCommit {
             invoice.commit()
@@ -167,11 +165,7 @@ class InvoiceItemData : Fragment("Items") {
             add(table)
             hbox {
                 button("Add Position") {
-                    action {
-                        val itemPosition = InvoicePosition(-1, "")
-                        itemPosition.userName = activeUser.username
-                        invoice.items.value.add(itemPosition)
-                    }
+                    action { invoice.items.value.add(InvoicePosition(-1, "")) }
                 }
                 button("Load Item") {
                     action {
@@ -184,7 +178,6 @@ class InvoiceItemData : Fragment("Items") {
                         }
                         itemPosition.grossPrice =
                             Json.decodeFromString<ItemPriceCategory>(item.prices[priceCategory]!!).grossPrice
-                        itemPosition.userName = activeUser.username
                         invoice.items.value.add(itemPosition)
                         invoice.commit()
                         invoiceController.calculate(invoice.item)
