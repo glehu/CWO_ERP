@@ -10,7 +10,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    jcenter()
+    gradlePluginPortal()
     maven {
         name = "komputing/KHash GitHub Packages"
         url = uri("https://maven.pkg.github.com/komputing/KHash")
