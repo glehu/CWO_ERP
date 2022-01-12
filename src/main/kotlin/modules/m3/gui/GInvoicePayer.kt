@@ -6,40 +6,40 @@ import modules.mx.rightButtonsWidth
 import tornadofx.*
 
 class GInvoicePayer : Fragment("Pay Invoice") {
-    var userConfirmed = false
-    private val amountToPay = SimpleDoubleProperty(0.0)
-    val paidAmount = SimpleDoubleProperty(0.0)
-    override val root = form {
-        fieldset("Payment") {
-            field("Total") {
-                hbox(4) {
-                    label(amountToPay)
-                    label("EUR")
-                }
-            }
-            field("Amount") { textfield(paidAmount) }
+  var userConfirmed = false
+  private val amountToPay = SimpleDoubleProperty(0.0)
+  val paidAmount = SimpleDoubleProperty(0.0)
+  override val root = form {
+    fieldset("Payment") {
+      field("Total") {
+        hbox(4) {
+          label(amountToPay)
+          label("EUR")
         }
-        button("Pay (Enter)") {
-            shortcut("Enter")
-            action {
-                userConfirmed = true
-                close()
-            }
-            prefWidth = rightButtonsWidth
-        }
-        button("Pay Fully (CTRL-S)") {
-            shortcut("CTRL-S")
-            action {
-                paidAmount.value = amountToPay.value
-                userConfirmed = true
-                close()
-            }
-            prefWidth = rightButtonsWidth
-            style { unsafe("-fx-base", Color.DARKGREEN) }
-        }
+      }
+      field("Amount") { textfield(paidAmount) }
     }
+    button("Pay (Enter)") {
+      shortcut("Enter")
+      action {
+        userConfirmed = true
+        close()
+      }
+      prefWidth = rightButtonsWidth
+    }
+    button("Pay Fully (CTRL-S)") {
+      shortcut("CTRL-S")
+      action {
+        paidAmount.value = amountToPay.value
+        userConfirmed = true
+        close()
+      }
+      prefWidth = rightButtonsWidth
+      style { unsafe("-fx-base", Color.DARKGREEN) }
+    }
+  }
 
-    fun setAmountToPay(amountToPay: Double) {
-        this.amountToPay.value = amountToPay
-    }
+  fun setAmountToPay(amountToPay: Double) {
+    this.amountToPay.value = amountToPay
+  }
 }

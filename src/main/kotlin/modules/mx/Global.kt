@@ -3,6 +3,8 @@ package modules.mx
 import api.logic.Server
 import api.logic.TelnetServer
 import api.logic.UsageTracker
+import com.github.ajalt.mordant.rendering.AnsiLevel
+import com.github.ajalt.mordant.terminal.Terminal
 import interfaces.IEntry
 import io.ktor.util.*
 import javafx.scene.image.Image
@@ -25,8 +27,6 @@ import modules.m4.ItemStockPosting
 import modules.m4.logic.ItemIndexManager
 import modules.m4.logic.ItemStockPostingIndexManager
 import java.io.File
-import com.github.ajalt.mordant.rendering.AnsiLevel
-import com.github.ajalt.mordant.terminal.Terminal
 
 //*************************************************
 //********************** SERIALIZERS **+***********
@@ -35,20 +35,20 @@ import com.github.ajalt.mordant.terminal.Terminal
 @InternalAPI
 @ExperimentalSerializationApi
 val serializersModuleGlobal = SerializersModule {
-    polymorphic(IEntry::class) {
-        subclass(Song::class, serializer())
-        subclass(Contact::class, serializer())
-        subclass(Invoice::class, serializer())
-        subclass(InvoicePosition::class, serializer())
-        subclass(Item::class, serializer())
-        subclass(ItemStockPosting::class, serializer())
-    }
+  polymorphic(IEntry::class) {
+    subclass(Song::class, serializer())
+    subclass(Contact::class, serializer())
+    subclass(Invoice::class, serializer())
+    subclass(InvoicePosition::class, serializer())
+    subclass(Item::class, serializer())
+    subclass(ItemStockPosting::class, serializer())
+  }
 }
 
 @InternalAPI
 @ExperimentalSerializationApi
 val protoBufGlobal = ProtoBuf {
-    serializersModule = serializersModuleGlobal
+  serializersModule = serializersModuleGlobal
 }
 
 //*************************************************

@@ -11,55 +11,55 @@ import modules.mx.invoiceIndexManager
 @ExperimentalSerializationApi
 @Serializable
 data class Invoice(override var uID: Int) : IEntry, IInvoice {
-    //*************************************************
-    //********************** User Input Data **********
-    //*************************************************
+  //*************************************************
+  //********************** User Input Data **********
+  //*************************************************
 
-    //----------------------------------v
-    //------------- Who? ---------------|
-    //----------------------------------^
-    var seller: String = "?"
-    var sellerUID: Int = -1
-    var buyer: String = "?"
-    var buyerUID: Int = -1
+  //----------------------------------v
+  //------------- Who? ---------------|
+  //----------------------------------^
+  var seller: String = "?"
+  var sellerUID: Int = -1
+  var buyer: String = "?"
+  var buyerUID: Int = -1
 
-    //----------------------------------v
-    //------------- When? --------------|
-    //----------------------------------^
-    var date: String = "??.??.????"
+  //----------------------------------v
+  //------------- When? --------------|
+  //----------------------------------^
+  var date: String = "??.??.????"
 
-    //----------------------------------v
-    //------------- What? --------------|
-    //----------------------------------^
-    var text: String = "?"
-    var grossTotal: Double = 0.0
-    var netTotal: Double = 0.0
-    var grossPaid: Double = 0.0
-    var netPaid: Double = 0.0
+  //----------------------------------v
+  //------------- What? --------------|
+  //----------------------------------^
+  var text: String = "?"
+  var grossTotal: Double = 0.0
+  var netTotal: Double = 0.0
+  var grossPaid: Double = 0.0
+  var netPaid: Double = 0.0
 
-    var customerNote: String = "?"
-    var internalNote: String = "?"
+  var customerNote: String = "?"
+  var internalNote: String = "?"
 
-    /**
-     * This map contains the items of the invoice.
-     *
-     * The key is the position number inside the invoice. The value is the JSON serialized item line.
-     */
-    var items: MutableMap<Int, String> = mutableMapOf()
+  /**
+   * This map contains the items of the invoice.
+   *
+   * The key is the position number inside the invoice. The value is the JSON serialized item line.
+   */
+  var items: MutableMap<Int, String> = mutableMapOf()
 
-    //*************************************************
-    //****************** Auto Generated Data **********
-    //*************************************************
+  //*************************************************
+  //****************** Auto Generated Data **********
+  //*************************************************
 
-    var status: Int = 0
-    var statusText: String = "?"
-    var finished: Boolean = false
-    var emailConfirmationSent: Boolean = false
-    var priceCategory: Int = 0
-    private var isIncome: Boolean = false
+  var status: Int = 0
+  var statusText: String = "?"
+  var finished: Boolean = false
+  var emailConfirmationSent: Boolean = false
+  var priceCategory: Int = 0
+  private var isIncome: Boolean = false
 
-    override fun initialize() {
-        if (uID == -1) uID = invoiceIndexManager!!.getUID()
-        if (grossTotal > 0) isIncome = true
-    }
+  override fun initialize() {
+    if (uID == -1) uID = invoiceIndexManager!!.getUID()
+    if (grossTotal > 0) isIncome = true
+  }
 }

@@ -17,67 +17,67 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class GEMailerSettings : IModule, Fragment("EMailer Settings") {
-    override val moduleNameLong = "EMailerSettings"
-    override val module = "MX"
-    override fun getIndexManager(): IIndexManager? {
-        return null
-    }
+  override val moduleNameLong = "EMailerSettings"
+  override val module = "MX"
+  override fun getIndexManager(): IIndexManager? {
+    return null
+  }
 
-    private val iniVal = getIni()
+  private val iniVal = getIni()
 
-    private fun getIni(): EMailerIni {
-        val iniFile = getSettingsFile(subSetting = "MGXEMailer")
-        val iniTxt = iniFile.readText()
-        return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else EMailerIni()
-    }
+  private fun getIni(): EMailerIni {
+    val iniFile = getSettingsFile(subSetting = "MGXEMailer")
+    val iniTxt = iniFile.readText()
+    return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else EMailerIni()
+  }
 
-    private val defaultFooterProperty = SimpleStringProperty(iniVal.defaultFooter)
-    private val writeStatistics = SimpleBooleanProperty(iniVal.writeStatistics)
+  private val defaultFooterProperty = SimpleStringProperty(iniVal.defaultFooter)
+  private val writeStatistics = SimpleBooleanProperty(iniVal.writeStatistics)
 
-    override val root = borderpane {
-        prefWidth = 800.0
-        prefHeight = 400.0
-        left = tabpane {
-            tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            tab("Default Texts") {
-                form {
-                    fieldset("Footer") {
-                        field("Default Footer") {
-                            textarea(defaultFooterProperty)
-                        }
-                    }
-                }
+  override val root = borderpane {
+    prefWidth = 800.0
+    prefHeight = 400.0
+    left = tabpane {
+      tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+      tab("Default Texts") {
+        form {
+          fieldset("Footer") {
+            field("Default Footer") {
+              textarea(defaultFooterProperty)
             }
-            tab("Automatic Processing") {
-                form {
-                    fieldset("Statistics") {
-                        field("Write Statistics") {
-                            checkbox(property = writeStatistics) {
-                                tooltip(
-                                    "When checked, keeps track of the amount of emails sent to each contact.\n" +
-                                            "Amount of EMails sent will be written into the contacts statistics."
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+          }
         }
-        bottom = hbox {
-            button("Save (CTRL+S)") {
-                prefWidth = rightButtonsWidth
-                shortcut("CTRL+S")
-            }.action {
-                getSettingsFile(subSetting = "MGXEMailer").writeText(
-                    Json.encodeToString(
-                        EMailerIni(
-                            defaultFooter = defaultFooterProperty.value,
-                            writeStatistics = writeStatistics.value
-                        )
-                    )
+      }
+      tab("Automatic Processing") {
+        form {
+          fieldset("Statistics") {
+            field("Write Statistics") {
+              checkbox(property = writeStatistics) {
+                tooltip(
+                  "When checked, keeps track of the amount of emails sent to each contact.\n" +
+                          "Amount of EMails sent will be written into the contacts statistics."
                 )
-                close()
+              }
             }
+          }
         }
+      }
     }
+    bottom = hbox {
+      button("Save (CTRL+S)") {
+        prefWidth = rightButtonsWidth
+        shortcut("CTRL+S")
+      }.action {
+        getSettingsFile(subSetting = "MGXEMailer").writeText(
+          Json.encodeToString(
+            EMailerIni(
+              defaultFooter = defaultFooterProperty.value,
+              writeStatistics = writeStatistics.value
+            )
+          )
+        )
+        close()
+      }
+    }
+  }
 }

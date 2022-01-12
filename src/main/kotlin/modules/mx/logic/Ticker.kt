@@ -17,21 +17,21 @@ import tornadofx.find
  * Other useful functions that need to be executed regularly can be put here, too.
  */
 class Ticker {
-    @DelicateCoroutinesApi
-    @ExperimentalSerializationApi
-    @InternalAPI
-    companion object TickerTask {
-        fun startTicker() = GlobalScope.launch {
-            do {
-                delay(5000L)
-                if (isClientGlobal) {
-                    // #### Client Ticker Actions: ####
-                } else {
-                    // #### Server Ticker Actions: ####
-                    find<GDatabaseManager>().refreshStats()
-                }
-                // #### General Ticker Actions: ####
-            } while (true)
+  @DelicateCoroutinesApi
+  @ExperimentalSerializationApi
+  @InternalAPI
+  companion object TickerTask {
+    fun startTicker() = GlobalScope.launch {
+      do {
+        delay(5000L)
+        if (isClientGlobal) {
+          // #### Client Ticker Actions: ####
+        } else {
+          // #### Server Ticker Actions: ####
+          find<GDatabaseManager>().refreshStats()
         }
+        // #### General Ticker Actions: ####
+      } while (true)
     }
+  }
 }

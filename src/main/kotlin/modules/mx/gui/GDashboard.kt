@@ -9,20 +9,20 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class GDashboard : View("Dashboard") {
-    private val userManager: UserManager by inject()
-    private val dbManager = find<GDatabaseManager>()
-    val activeUsers = tableview(userManager.getActiveUsers()) {
-        readonlyColumn("Username", User::username).prefWidth(175.0)
-        readonlyColumn("Online since", User::onlineSince).prefWidth(200.0)
+  private val userManager: UserManager by inject()
+  private val dbManager = find<GDatabaseManager>()
+  val activeUsers = tableview(userManager.getActiveUsers()) {
+    readonlyColumn("Username", User::username).prefWidth(175.0)
+    readonlyColumn("Online since", User::onlineSince).prefWidth(200.0)
+  }
+  override val root = vbox {
+    hbox(10) {
+      fieldset(dbManager.title) {
+        add(dbManager.table)
+      }
+      fieldset("Active Users") {
+        add(activeUsers)
+      }
     }
-    override val root = vbox {
-        hbox(10) {
-            fieldset(dbManager.title) {
-                add(dbManager.table)
-            }
-            fieldset("Active Users") {
-                add(activeUsers)
-            }
-        }
-    }
+  }
 }

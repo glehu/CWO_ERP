@@ -8,44 +8,44 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class ItemConfiguratorWizard : Wizard("Add new item") {
-    val item: InvoiceItemModel by inject()
+  val item: InvoiceItemModel by inject()
 
-    init {
-        enableStepLinks = true
-        add(InvoiceItemMainData::class)
-    }
+  init {
+    enableStepLinks = true
+    add(InvoiceItemMainData::class)
+  }
 }
 
 @InternalAPI
 @ExperimentalSerializationApi
 class InvoiceItemMainData : Fragment("Main") {
-    private val item: InvoiceItemModel by inject()
+  private val item: InvoiceItemModel by inject()
 
-    //----------------------------------v
-    //----------- Main Data ------------|
-    //----------------------------------^
-    override val root = form {
-        prefWidth = 500.0
-        fieldset {
-            field("UID") {
-                label(item.uID)
-            }
-            field("Description") {
-                textfield(item.description).required()
-            }
-            field("Price") {
-                hbox {
-                    textfield(item.price) {
-                        prefWidth = 200.0
-                    }.required()
-                    label("EUR") { paddingHorizontal = 20 }
-                }
-            }
-            field("Amount") { textfield(item.amount) }
+  //----------------------------------v
+  //----------- Main Data ------------|
+  //----------------------------------^
+  override val root = form {
+    prefWidth = 500.0
+    fieldset {
+      field("UID") {
+        label(item.uID)
+      }
+      field("Description") {
+        textfield(item.description).required()
+      }
+      field("Price") {
+        hbox {
+          textfield(item.price) {
+            prefWidth = 200.0
+          }.required()
+          label("EUR") { paddingHorizontal = 20 }
         }
+      }
+      field("Amount") { textfield(item.amount) }
     }
+  }
 
-    override fun onSave() {
-        isComplete = item.commit()
-    }
+  override fun onSave() {
+    isComplete = item.commit()
+  }
 }

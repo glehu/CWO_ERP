@@ -9,5 +9,5 @@ import modules.m4.logic.ItemStorageManager
 @ExperimentalSerializationApi
 @Serializable
 data class ItemStorages(val type: ItemStorageManager.CategoryType) {
-    val storages = mutableMapOf<Int, ItemStorage>()
+  val storages = mutableMapOf<Int, ItemStorage>()
 }

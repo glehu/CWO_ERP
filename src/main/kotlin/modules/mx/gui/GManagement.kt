@@ -11,12 +11,12 @@ import tornadofx.tabpane
 @InternalAPI
 @ExperimentalSerializationApi
 class GManagement : View("Management") {
-    override val root = tabpane {
-        tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+  override val root = tabpane {
+    tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
 
-        tab<GDashboard>()
-        tab<GUserManager>()
-        tab<GDatabaseManager>()
-        if (!isClientGlobal) tab<GAPI>() //TODO client work
-    }
+    tab<GDashboard>()
+    tab<GUserManager>()
+    tab<GDatabaseManager>()
+    if (!isClientGlobal) tab<GAPI>() //TODO client work
+  }
 }

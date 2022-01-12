@@ -15,11 +15,11 @@ import javax.crypto.spec.SecretKeySpec
  * @return the AES encrypted input string.
  */
 fun encryptAES(input: String, token: String = tokenGlobal): String {
-    val cipher = Cipher.getInstance("AES")
-    val keySpec = SecretKeySpec(token.toByteArray(), "AES")
-    cipher.init(Cipher.ENCRYPT_MODE, keySpec)
-    val encrypt = cipher.doFinal(input.toByteArray())
-    return Base64.getEncoder().encodeToString(encrypt)
+  val cipher = Cipher.getInstance("AES")
+  val keySpec = SecretKeySpec(token.toByteArray(), "AES")
+  cipher.init(Cipher.ENCRYPT_MODE, keySpec)
+  val encrypt = cipher.doFinal(input.toByteArray())
+  return Base64.getEncoder().encodeToString(encrypt)
 }
 
 /**
@@ -28,11 +28,11 @@ fun encryptAES(input: String, token: String = tokenGlobal): String {
  * @return the AES decrypted string.
  */
 fun decryptAES(input: String, token: String = tokenGlobal): String {
-    val cipher = Cipher.getInstance("AES")
-    val keySpec = SecretKeySpec(token.toByteArray(), "AES")
-    cipher.init(Cipher.DECRYPT_MODE, keySpec)
-    val decrypt = cipher.doFinal(Base64.getDecoder().decode(input))
-    return String(decrypt)
+  val cipher = Cipher.getInstance("AES")
+  val keySpec = SecretKeySpec(token.toByteArray(), "AES")
+  cipher.init(Cipher.DECRYPT_MODE, keySpec)
+  val decrypt = cipher.doFinal(Base64.getDecoder().decode(input))
+  return String(decrypt)
 }
 
 /**
@@ -42,11 +42,11 @@ fun decryptAES(input: String, token: String = tokenGlobal): String {
 @InternalAPI
 @ExperimentalSerializationApi
 fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String {
-    return Base64.getEncoder()
-        .encodeToString(
-            "$pepper$input$salt"
-                .digestKeccak(parameter = KeccakParameter.SHA3_512)
-        )
+  return Base64.getEncoder()
+    .encodeToString(
+      "$pepper$input$salt"
+        .digestKeccak(parameter = KeccakParameter.SHA3_512)
+    )
 }
 
 /**
@@ -57,10 +57,10 @@ fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String
 @InternalAPI
 @ExperimentalSerializationApi
 fun validateKeccak(
-    input: String,
-    base64KeccakString: String,
-    salt: String = "",
-    pepper: String = ""
+  input: String,
+  base64KeccakString: String,
+  salt: String = "",
+  pepper: String = ""
 ): Boolean {
-    return (encryptKeccak("$pepper$input$salt") == base64KeccakString)
+  return (encryptKeccak("$pepper$input$salt") == base64KeccakString)
 }

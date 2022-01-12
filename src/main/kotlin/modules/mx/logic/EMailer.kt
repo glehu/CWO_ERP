@@ -14,41 +14,41 @@ import modules.mx.getIniFile
 @InternalAPI
 @ExperimentalSerializationApi
 class EMailer : IModule {
-    override val moduleNameLong = "EMailer"
-    override val module = "MX"
-    override fun getIndexManager(): IIndexManager? {
-        return null
-    }
+  override val moduleNameLong = "EMailer"
+  override val module = "MX"
+  override fun getIndexManager(): IIndexManager? {
+    return null
+  }
 
-    private val jsonSerializer = Json {
-        prettyPrint = true
-    }
-    private val iniVal: Ini = jsonSerializer.decodeFromString(getIniFile().readText())
-    private val mailServer: MailServer
+  private val jsonSerializer = Json {
+    prettyPrint = true
+  }
+  private val iniVal: Ini = jsonSerializer.decodeFromString(getIniFile().readText())
+  private val mailServer: MailServer
 
-    init {
-        mailServer = MailServer(
-            host = iniVal.emailHost,
-            port = iniVal.emailPort,
-            username = iniVal.emailUsername,
-            password = iniVal.emailPassword
-        )
-        log(Log.LogType.SYS, "EMail Server ${iniVal.emailUsername} created.")
-    }
+  init {
+    mailServer = MailServer(
+      host = iniVal.emailHost,
+      port = iniVal.emailPort,
+      username = iniVal.emailUsername,
+      password = iniVal.emailPassword
+    )
+    log(Log.LogType.SYS, "EMail Server ${iniVal.emailUsername} created.")
+  }
 
-    fun sendEMailOverMailServer(
-        subject: String,
-        body: String,
-        recipient: String
-    ) {
-        mailServer.sendEmail(
-            Email(
-                from = iniVal.emailAddress,
-                subject = subject,
-                body = body,
-                recipient = recipient
-            )
-        )
-        log(Log.LogType.COM, "EMail $subject sent to $recipient")
-    }
+  fun sendEMailOverMailServer(
+    subject: String,
+    body: String,
+    recipient: String
+  ) {
+    mailServer.sendEmail(
+      Email(
+        from = iniVal.emailAddress,
+        subject = subject,
+        body = body,
+        recipient = recipient
+      )
+    )
+    log(Log.LogType.COM, "EMail $subject sent to $recipient")
+  }
 }

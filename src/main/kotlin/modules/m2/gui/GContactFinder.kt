@@ -23,52 +23,52 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class GContactFinder : IModule, IEntryFinder, View("Contact Finder") {
-    override val moduleNameLong = "ContactFinder"
-    override val module = "M2"
-    override fun getIndexManager(): IIndexManager {
-        return contactIndexManager!!
-    }
+  override val moduleNameLong = "ContactFinder"
+  override val module = "M2"
+  override fun getIndexManager(): IIndexManager {
+    return contactIndexManager!!
+  }
 
-    override var searchText: TextField by singleAssign()
-    override var exactSearch: CheckBox by singleAssign()
-    override var entriesFound: ObservableList<IEntry> = observableListOf()
-    override var ixNr = SimpleStringProperty()
-    override val ixNrList: ObservableList<String> = observableArrayList(getIndexUserSelection())
-    override val entryFinderSearchMask: EntryFinderSearchMask =
-        EntryFinderSearchMask(origin = this, ixManager = tryGetIndexManager())
+  override var searchText: TextField by singleAssign()
+  override var exactSearch: CheckBox by singleAssign()
+  override var entriesFound: ObservableList<IEntry> = observableListOf()
+  override var ixNr = SimpleStringProperty()
+  override val ixNrList: ObservableList<String> = observableArrayList(getIndexUserSelection())
+  override val entryFinderSearchMask: EntryFinderSearchMask =
+    EntryFinderSearchMask(origin = this, ixManager = tryGetIndexManager())
 
-    private val contactController: ContactController by inject()
-    private val transfer: SongPropertyMainDataModel by inject()
+  private val contactController: ContactController by inject()
+  private val transfer: SongPropertyMainDataModel by inject()
 
-    @Suppress("UNCHECKED_CAST")
-    override val table = tableview(entriesFound as ObservableList<Contact>) {
-        readonlyColumn("ID", Contact::uID)
-        readonlyColumn("Name", Contact::name).remainingWidth()
-        readonlyColumn("EMail", Contact::email)
-        readonlyColumn("F.Name", Contact::firstName)
-        readonlyColumn("City", Contact::city)
-        onUserSelect(1) {
-            if (transfer.uID.value == -2) {
-                //Data transfer
-                transfer.uID.value = it.uID
-                transfer.name.value = it.name
-                transfer.commit()
-                close()
-            } else {
-                if (!getEntryLock(it.uID)) {
-                    contactController.showEntry(it.uID)
-                    close()
-                } else {
-                    find<GAlertLocked>().openModal()
-                }
-            }
+  @Suppress("UNCHECKED_CAST")
+  override val table = tableview(entriesFound as ObservableList<Contact>) {
+    readonlyColumn("ID", Contact::uID)
+    readonlyColumn("Name", Contact::name).remainingWidth()
+    readonlyColumn("EMail", Contact::email)
+    readonlyColumn("F.Name", Contact::firstName)
+    readonlyColumn("City", Contact::city)
+    onUserSelect(1) {
+      if (transfer.uID.value == -2) {
+        //Data transfer
+        transfer.uID.value = it.uID
+        transfer.name.value = it.name
+        transfer.commit()
+        close()
+      } else {
+        if (!getEntryLock(it.uID)) {
+          contactController.showEntry(it.uID)
+          close()
+        } else {
+          find<GAlertLocked>().openModal()
         }
-        columnResizePolicy = SmartResize.POLICY
-        isFocusTraversable = false
-    } as TableView<IEntry>
-
-    override val root = form {
-        add(entryFinderSearchMask.searchMask)
-        add(table)
+      }
     }
+    columnResizePolicy = SmartResize.POLICY
+    isFocusTraversable = false
+  } as TableView<IEntry>
+
+  override val root = form {
+    add(entryFinderSearchMask.searchMask)
+    add(table)
+  }
 }

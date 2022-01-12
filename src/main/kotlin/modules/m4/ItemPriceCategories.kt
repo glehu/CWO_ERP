@@ -9,5 +9,5 @@ import modules.m4.logic.ItemPriceManager
 @ExperimentalSerializationApi
 @Serializable
 data class ItemPriceCategories(val type: ItemPriceManager.CategoryType) {
-    val priceCategories = mutableMapOf<Int, ItemPriceCategory>()
+  val priceCategories = mutableMapOf<Int, ItemPriceCategory>()
 }

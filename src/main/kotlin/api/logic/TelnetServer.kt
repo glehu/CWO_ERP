@@ -23,43 +23,43 @@ import java.net.InetSocketAddress
 @ExperimentalSerializationApi
 @InternalAPI
 class TelnetServer : IModule {
-    override val moduleNameLong = "TelnetServer"
-    override val module = "MX"
-    override fun getIndexManager(): IIndexManager? {
-        return null
-    }
+  override val moduleNameLong = "TelnetServer"
+  override val module = "MX"
+  override fun getIndexManager(): IIndexManager? {
+    return null
+  }
 
-    private val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
+  private val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
 
-    val telnetServer =
-        aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind(
-            localAddress = InetSocketAddress(
-                iniVal.telnetServerIPAddress.substringBefore(':'),
-                iniVal.telnetServerIPAddress.substringAfter(':').toInt()
-            )
-        )
+  val telnetServer =
+    aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().bind(
+      localAddress = InetSocketAddress(
+        iniVal.telnetServerIPAddress.substringBefore(':'),
+        iniVal.telnetServerIPAddress.substringAfter(':').toInt()
+      )
+    )
 
-    init {
+  init {
+    log(
+      logType = Log.LogType.SYS,
+      text = "TELNET SERVE ${telnetServer.localAddress}"
+    )
+    telnetServerJobGlobal = GlobalScope.launch {
+      while (true) {
         log(
-            logType = Log.LogType.SYS,
-            text = "TELNET SERVE ${telnetServer.localAddress}"
+          logType = Log.LogType.INFO,
+          text = "TELNET READY"
         )
-        telnetServerJobGlobal = GlobalScope.launch {
-            while (true) {
-                log(
-                    logType = Log.LogType.INFO,
-                    text = "TELNET READY"
-                )
-                val socket = telnetServer.accept()
-                launch {
-                    log(
-                        logType = Log.LogType.COM,
-                        text = "TELNET OPEN ${socket.remoteAddress}",
-                        apiEndpoint = "TELNET ${socket.localAddress}"
-                    )
-                    RawSocketChannel(socket).startSession()
-                }
-            }
+        val socket = telnetServer.accept()
+        launch {
+          log(
+            logType = Log.LogType.COM,
+            text = "TELNET OPEN ${socket.remoteAddress}",
+            apiEndpoint = "TELNET ${socket.localAddress}"
+          )
+          RawSocketChannel(socket).startSession()
         }
+      }
     }
+  }
 }

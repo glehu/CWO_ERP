@@ -9,8 +9,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.misc.getGenreList
-import modules.mx.logic.Log
 import modules.mx.discographyIndexManager
+import modules.mx.logic.Log
 import tornadofx.Controller
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
@@ -18,40 +18,40 @@ import kotlin.system.measureTimeMillis
 @InternalAPI
 @ExperimentalSerializationApi
 class DiscographyBenchmark : IModule, Controller() {
-    override val moduleNameLong = "DiscographyBenchmark"
-    override val module = "M1"
-    override fun getIndexManager(): IIndexManager {
-        return discographyIndexManager!!
-    }
+  override val moduleNameLong = "DiscographyBenchmark"
+  override val module = "M1"
+  override fun getIndexManager(): IIndexManager {
+    return discographyIndexManager!!
+  }
 
-    suspend fun insertRandomEntries(amount: Int) {
-        log(Log.LogType.INFO, "Benchmark entry insertion start")
-        val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
-        val timeInMillis = measureTimeMillis {
-            for (i in 1..amount) {
-                val song = Song(-1, getRandomGenre())
-                //Fill it with data
-                song.vocalist = song.name.drop(2)
-                song.producer = song.name.dropLast(2)
-                song.genre = getRandomGenre()
-                song.releaseDate = "01.01.1000"
-                save(
-                    entry = song,
-                    raf = raf,
-                    indexWriteToDisk = false,
-                )
-                if (i % 10_000 == 0) {
-                    log(Log.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
-                    coroutineScope { launch { discographyIndexManager!!.writeIndexData() } }
-                }
-            }
+  suspend fun insertRandomEntries(amount: Int) {
+    log(Log.LogType.INFO, "Benchmark entry insertion start")
+    val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
+    val timeInMillis = measureTimeMillis {
+      for (i in 1..amount) {
+        val song = Song(-1, getRandomGenre())
+        //Fill it with data
+        song.vocalist = song.name.drop(2)
+        song.producer = song.name.dropLast(2)
+        song.genre = getRandomGenre()
+        song.releaseDate = "01.01.1000"
+        save(
+          entry = song,
+          raf = raf,
+          indexWriteToDisk = false,
+        )
+        if (i % 10_000 == 0) {
+          log(Log.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
+          coroutineScope { launch { discographyIndexManager!!.writeIndexData() } }
         }
-        CwODB.closeRandomFileAccess(raf)
-        log(Log.LogType.INFO, "Benchmark entry insertion end (${timeInMillis / 1000} sec)")
+      }
     }
+    CwODB.closeRandomFileAccess(raf)
+    log(Log.LogType.INFO, "Benchmark entry insertion end (${timeInMillis / 1000} sec)")
+  }
 
-    private fun getRandomGenre(): String {
-        val genres = getGenreList()
-        return genres[Random.nextInt(0, genres.size)]
-    }
+  private fun getRandomGenre(): String {
+    val genres = getGenreList()
+    return genres[Random.nextInt(0, genres.size)]
+  }
 }

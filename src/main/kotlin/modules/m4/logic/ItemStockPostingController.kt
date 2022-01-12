@@ -8,10 +8,10 @@ import modules.mx.itemStockPostingIndexManager
 
 @ExperimentalSerializationApi
 @InternalAPI
-class ItemStockPostingController: IModule {
-    override val moduleNameLong = "ItemStockPostingController"
-    override val module = "M4SP"
-    override fun getIndexManager(): IIndexManager {
-        return itemStockPostingIndexManager!!
-    }
+class ItemStockPostingController : IModule {
+  override val moduleNameLong = "ItemStockPostingController"
+  override val module = "M4SP"
+  override fun getIndexManager(): IIndexManager {
+    return itemStockPostingIndexManager!!
+  }
 }

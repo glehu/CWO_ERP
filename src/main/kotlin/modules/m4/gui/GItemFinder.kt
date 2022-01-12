@@ -22,49 +22,49 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class GItemFinder : IEntryFinder, View("Item Finder") {
-    override val moduleNameLong = "ItemFinder"
-    override val module = "M4"
-    override fun getIndexManager(): IIndexManager {
-        return itemIndexManager!!
-    }
+  override val moduleNameLong = "ItemFinder"
+  override val module = "M4"
+  override fun getIndexManager(): IIndexManager {
+    return itemIndexManager!!
+  }
 
-    override var searchText: TextField by singleAssign()
-    override var exactSearch: CheckBox by singleAssign()
-    override var entriesFound: ObservableList<IEntry> = observableListOf()
-    override var ixNr = SimpleStringProperty()
-    override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
-    override val entryFinderSearchMask: EntryFinderSearchMask =
-        EntryFinderSearchMask(origin = this, ixManager = tryGetIndexManager())
+  override var searchText: TextField by singleAssign()
+  override var exactSearch: CheckBox by singleAssign()
+  override var entriesFound: ObservableList<IEntry> = observableListOf()
+  override var ixNr = SimpleStringProperty()
+  override val ixNrList: ObservableList<String> = FXCollections.observableArrayList(getIndexUserSelection())
+  override val entryFinderSearchMask: EntryFinderSearchMask =
+    EntryFinderSearchMask(origin = this, ixManager = tryGetIndexManager())
 
-    private val itemController: ItemController by inject()
-    private val transfer: SongPropertyMainDataModel by inject()
+  private val itemController: ItemController by inject()
+  private val transfer: SongPropertyMainDataModel by inject()
 
-    @Suppress("UNCHECKED_CAST")
-    override val table = tableview(entriesFound as ObservableList<Item>) {
-        readonlyColumn("ID", Item::uID)
-        readonlyColumn("Description", Item::description).remainingWidth()
-        onUserSelect(1) {
-            if (transfer.uID.value == -2) {
-                //Data transfer
-                transfer.uID.value = it.uID
-                transfer.name.value = it.description
-                transfer.commit()
-                close()
-            } else {
-                if (!getEntryLock(it.uID)) {
-                    itemController.showEntry(it.uID)
-                    close()
-                } else {
-                    find<GAlertLocked>().openModal()
-                }
-            }
+  @Suppress("UNCHECKED_CAST")
+  override val table = tableview(entriesFound as ObservableList<Item>) {
+    readonlyColumn("ID", Item::uID)
+    readonlyColumn("Description", Item::description).remainingWidth()
+    onUserSelect(1) {
+      if (transfer.uID.value == -2) {
+        //Data transfer
+        transfer.uID.value = it.uID
+        transfer.name.value = it.description
+        transfer.commit()
+        close()
+      } else {
+        if (!getEntryLock(it.uID)) {
+          itemController.showEntry(it.uID)
+          close()
+        } else {
+          find<GAlertLocked>().openModal()
         }
-        columnResizePolicy = SmartResize.POLICY
-        isFocusTraversable = false
-    } as TableView<IEntry>
-
-    override val root = form {
-        add(entryFinderSearchMask.searchMask)
-        add(table)
+      }
     }
+    columnResizePolicy = SmartResize.POLICY
+    isFocusTraversable = false
+  } as TableView<IEntry>
+
+  override val root = form {
+    add(entryFinderSearchMask.searchMask)
+    add(table)
+  }
 }

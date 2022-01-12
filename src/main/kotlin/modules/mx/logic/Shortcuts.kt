@@ -15,39 +15,39 @@ import kotlin.streams.asSequence
  * @return the index formatted string
  */
 fun indexFormat(text: String): String {
-    val songNameArray = text.uppercase(Locale.getDefault()).toCharArray()
-    var formatted = ""
-    for (i in songNameArray.indices) {
-        //Anything but whitespaces
-        val regex = "^\\s$".toRegex()
-        if (!regex.matches(songNameArray[i].toString())) {
-            formatted += songNameArray[i]
-        }
+  val songNameArray = text.uppercase(Locale.getDefault()).toCharArray()
+  var formatted = ""
+  for (i in songNameArray.indices) {
+    //Anything but whitespaces
+    val regex = "^\\s$".toRegex()
+    if (!regex.matches(songNameArray[i].toString())) {
+      formatted += songNameArray[i]
     }
-    return formatted
+  }
+  return formatted
 }
 
 /**
  * @return the default date (01.01.1970)
  */
 fun getDefaultDate(): String {
-    return "01.01.1970"
+  return "01.01.1970"
 }
 
 /**
  * @return a random string (letters or numbers) of a certain length.
  */
 fun getRandomString(size: Long, numbers: Boolean = false): String {
-    val dictionary = if (!numbers) "ABCDEFGHIJKLMNOPQRSTUVWXYZ" else "123456789"
-    return Random().ints(size, 0, dictionary.length)
-        .asSequence()
-        .map(dictionary::get)
-        .joinToString("")
+  val dictionary = if (!numbers) "ABCDEFGHIJKLMNOPQRSTUVWXYZ" else "123456789"
+  return Random().ints(size, 0, dictionary.length)
+    .asSequence()
+    .map(dictionary::get)
+    .joinToString("")
 }
 
 fun Double.roundTo(numFractionDigits: Int): Double {
-    val factor = 10.0.pow(numFractionDigits.toDouble())
-    return (this * factor).roundToInt() / factor
+  val factor = 10.0.pow(numFractionDigits.toDouble())
+  return (this * factor).roundToInt() / factor
 }
 
 /**
@@ -55,5 +55,5 @@ fun Double.roundTo(numFractionDigits: Int): Double {
  * @return a two-dimensional array.
  */
 fun d2Array(rows: Int, cols: Int): Array<Array<String>> {
-    return Array(rows) { Array(cols) { "" } }
+  return Array(rows) { Array(cols) { "" } }
 }

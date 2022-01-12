@@ -10,6 +10,6 @@ import modules.mx.logic.UserManager
 @InternalAPI
 @Serializable
 data class Credentials(val type: UserManager.CredentialsType) {
-    @SerialName("c")
-    val credentials = mutableMapOf<String, User>()
+  @SerialName("c")
+  val credentials = mutableMapOf<String, User>()
 }

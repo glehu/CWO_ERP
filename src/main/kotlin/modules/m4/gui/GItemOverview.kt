@@ -13,71 +13,71 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class GItemOverview : IOverview, View("Inventory") {
-    private val itemController: ItemController by inject()
-    override val root = borderpane {
-        right = vbox {
-            button("Search") {
-                action { itemController.searchEntry() }
-                tooltip("Opens the search screen.")
-                prefWidth = rightButtonsWidth
-            }
-            button("New") {
-                action { itemController.newEntry() }
-                tooltip("Add a new contact to the database.")
-                prefWidth = rightButtonsWidth
-            }
-            button("Save") {
-                action { runBlocking { itemController.saveEntry() } }
-                tooltip("Saves the current contact.")
-                prefWidth = rightButtonsWidth
-            }
-            button("Analytics") {
-                //TODO: Not yet implemented
-                isDisable = true
-                //action { m4Controller.openAnalytics() }
-                tooltip("TBD")
-                prefWidth = rightButtonsWidth
-            }
-            button("Settings") {
-                action { runBlocking { itemController.showSettings() } }
-                tooltip("Opens the settings screen.")
-                prefWidth = rightButtonsWidth
-            }
-            button("Data Import") {
-                //TODO: Not yet implemented
-                isDisable = true
-                //action { m4Controller.openDataImport() }
-                tooltip("TBD")
-                prefWidth = rightButtonsWidth
-            }
-        }
-        center = form {
-            itemController.newEntry()
-            vbox {
-                hbox(10) {
-                    style {
-                        unsafe("-fx-background-color", Color.web("#373e43", 1.0))
-                        paddingAll = 10
-                    }
-                    addClass(Stylesheet.fieldsetBorder)
-                    fieldset("Main Data") {
-                        add(ItemMainData::class)
-                        addClass(Stylesheet.fieldsetBorder)
-                    }
-                    fieldset("Prices") {
-                        add(ItemPricesData::class)
-                        addClass(Stylesheet.fieldsetBorder)
-                    }
-                    fieldset("Statistics") {
-                        add(ItemStatistics::class)
-                        addClass(Stylesheet.fieldsetBorder)
-                    }
-                }
-                fieldset("Stock") {
-                    add(ItemStorageData::class)
-                    addClass(Stylesheet.fieldsetBorder)
-                }
-            }
-        }
+  private val itemController: ItemController by inject()
+  override val root = borderpane {
+    right = vbox {
+      button("Search") {
+        action { itemController.searchEntry() }
+        tooltip("Opens the search screen.")
+        prefWidth = rightButtonsWidth
+      }
+      button("New") {
+        action { itemController.newEntry() }
+        tooltip("Add a new contact to the database.")
+        prefWidth = rightButtonsWidth
+      }
+      button("Save") {
+        action { runBlocking { itemController.saveEntry() } }
+        tooltip("Saves the current contact.")
+        prefWidth = rightButtonsWidth
+      }
+      button("Analytics") {
+        //TODO: Not yet implemented
+        isDisable = true
+        //action { m4Controller.openAnalytics() }
+        tooltip("TBD")
+        prefWidth = rightButtonsWidth
+      }
+      button("Settings") {
+        action { runBlocking { itemController.showSettings() } }
+        tooltip("Opens the settings screen.")
+        prefWidth = rightButtonsWidth
+      }
+      button("Data Import") {
+        //TODO: Not yet implemented
+        isDisable = true
+        //action { m4Controller.openDataImport() }
+        tooltip("TBD")
+        prefWidth = rightButtonsWidth
+      }
     }
+    center = form {
+      itemController.newEntry()
+      vbox {
+        hbox(10) {
+          style {
+            unsafe("-fx-background-color", Color.web("#373e43", 1.0))
+            paddingAll = 10
+          }
+          addClass(Stylesheet.fieldsetBorder)
+          fieldset("Main Data") {
+            add(ItemMainData::class)
+            addClass(Stylesheet.fieldsetBorder)
+          }
+          fieldset("Prices") {
+            add(ItemPricesData::class)
+            addClass(Stylesheet.fieldsetBorder)
+          }
+          fieldset("Statistics") {
+            add(ItemStatistics::class)
+            addClass(Stylesheet.fieldsetBorder)
+          }
+        }
+        fieldset("Stock") {
+          add(ItemStorageData::class)
+          addClass(Stylesheet.fieldsetBorder)
+        }
+      }
+    }
+  }
 }

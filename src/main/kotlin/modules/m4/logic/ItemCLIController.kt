@@ -12,14 +12,14 @@ import modules.mx.itemIndexManager
 @ExperimentalSerializationApi
 @InternalAPI
 class ItemCLIController : IModule {
-    override val moduleNameLong = "ItemCLIController"
-    override val module = "M4"
-    override fun getIndexManager(): IIndexManager {
-        return itemIndexManager!!
-    }
+  override val moduleNameLong = "ItemCLIController"
+  override val module = "M4"
+  override fun getIndexManager(): IIndexManager {
+    return itemIndexManager!!
+  }
 
-    fun getIni(): ItemIni {
-        val iniTxt = getSettingsFileText()
-        return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else ItemIni()
-    }
+  fun getIni(): ItemIni {
+    val iniTxt = getSettingsFileText()
+    return if (iniTxt.isNotEmpty()) Json.decodeFromString(iniTxt) else ItemIni()
+  }
 }

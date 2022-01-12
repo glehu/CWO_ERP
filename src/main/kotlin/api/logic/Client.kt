@@ -17,45 +17,45 @@ import modules.mx.logic.UserManager
  * @return an instance of an authorized HttpClient.
  */
 fun getUserClient(username: String = activeUser.username, password: String = activeUser.password): HttpClient {
-    return HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
-                isLenient = true
-                ignoreUnknownKeys = true
-            })
-        }
-        install(Auth) {
-            basic {
-                credentials {
-                    BasicAuthCredentials(username = username, password = password)
-                }
-                sendWithoutRequest { request ->
-                    request.url.host == "0.0.0.0"
-                }
-            }
-        }
+  return HttpClient(CIO) {
+    install(JsonFeature) {
+      serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+      })
     }
+    install(Auth) {
+      basic {
+        credentials {
+          BasicAuthCredentials(username = username, password = password)
+        }
+        sendWithoutRequest { request ->
+          request.url.host == "0.0.0.0"
+        }
+      }
+    }
+  }
 }
 
 @ExperimentalSerializationApi
 @InternalAPI
 fun getTokenClient(token: String = activeUser.apiToken.accessToken): HttpClient {
-    if (activeUser.apiToken.expireUnixTimestamp <= Timestamp.getUnixTimestamp()) {
-        UserManager().login(activeUser.username, activeUser.password)
+  if (activeUser.apiToken.expireUnixTimestamp <= Timestamp.getUnixTimestamp()) {
+    UserManager().login(activeUser.username, activeUser.password)
+  }
+  return HttpClient(CIO) {
+    install(JsonFeature) {
+      serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+      })
     }
-    return HttpClient(CIO) {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
-                isLenient = true
-                ignoreUnknownKeys = true
-            })
+    install(Auth) {
+      bearer {
+        loadTokens {
+          BearerTokens(token, "")
         }
-        install(Auth) {
-            bearer {
-                loadTokens {
-                    BearerTokens(token, "")
-                }
-            }
-        }
+      }
     }
+  }
 }

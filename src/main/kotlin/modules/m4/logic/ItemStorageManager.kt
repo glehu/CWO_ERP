@@ -35,139 +35,139 @@ import kotlin.collections.set
 @InternalAPI
 @ExperimentalSerializationApi
 class ItemStorageManager : IModule, Controller() {
-    override val moduleNameLong = "ItemStorageManager"
-    override val module = "M4"
-    override fun getIndexManager(): IIndexManager? {
-        return null
-    }
+  override val moduleNameLong = "ItemStorageManager"
+  override val module = "M4"
+  override fun getIndexManager(): IIndexManager? {
+    return null
+  }
 
-    fun funUpdateStorage(storageNew: ItemStorage, storageOld: ItemStorage) {
-        if (!isClientGlobal) {
-            val storages = getStorages()
-            //Check if number changed
-            if (storageNew.number != storageOld.number) {
-                storages.storages.remove(storageOld.number)
-            }
-            storages.storages[storageNew.number] = storageNew
-            writeStorages(storages)
-        } else {
-            runBlocking {
-                launch {
-                    getTokenClient().post("${getApiUrl()}savestorage") {
-                        contentType(ContentType.Application.Json)
-                        body = ListDeltaJson(
-                            listEntryNew = Json.encodeToString(storageNew),
-                            listEntryOld = Json.encodeToString(storageOld)
-                        )
-                    }
-                }
-            }
+  fun funUpdateStorage(storageNew: ItemStorage, storageOld: ItemStorage) {
+    if (!isClientGlobal) {
+      val storages = getStorages()
+      //Check if number changed
+      if (storageNew.number != storageOld.number) {
+        storages.storages.remove(storageOld.number)
+      }
+      storages.storages[storageNew.number] = storageNew
+      writeStorages(storages)
+    } else {
+      runBlocking {
+        launch {
+          getTokenClient().post("${getApiUrl()}savestorage") {
+            contentType(ContentType.Application.Json)
+            body = ListDeltaJson(
+              listEntryNew = Json.encodeToString(storageNew),
+              listEntryOld = Json.encodeToString(storageOld)
+            )
+          }
         }
-        if (!cliMode) find<GItemStorageManager>().refreshStorages()
+      }
     }
+    if (!cliMode) find<GItemStorageManager>().refreshStorages()
+  }
 
-    fun deleteStorage(storage: ItemStorage) {
-        if (!isClientGlobal) {
-            val storages = getStorages()
-            storages.storages.remove(storage.number)
-            writeStorages(storages)
-        } else {
-            runBlocking {
-                launch {
-                    getTokenClient().post("${getApiUrl()}deletestorage") {
-                        contentType(ContentType.Application.Json)
-                        body = ListDeltaJson(
-                            listEntryNew = Json.encodeToString(storage),
-                            listEntryOld = ""
-                        )
-                    }
-                }
-            }
+  fun deleteStorage(storage: ItemStorage) {
+    if (!isClientGlobal) {
+      val storages = getStorages()
+      storages.storages.remove(storage.number)
+      writeStorages(storages)
+    } else {
+      runBlocking {
+        launch {
+          getTokenClient().post("${getApiUrl()}deletestorage") {
+            contentType(ContentType.Application.Json)
+            body = ListDeltaJson(
+              listEntryNew = Json.encodeToString(storage),
+              listEntryOld = ""
+            )
+          }
         }
-        if (!cliMode) tornadofx.find<GItemStorageManager>().refreshStorages()
+      }
     }
+    if (!cliMode) tornadofx.find<GItemStorageManager>().refreshStorages()
+  }
 
-    fun getStorages(): ItemStorages {
-        lateinit var storages: ItemStorages
-        if (!isClientGlobal) {
-            val storageFile = getStoragesFile()
-            if (!storageFile.isFile) initializeCategories(storageFile)
-            storages = Json.decodeFromString(storageFile.readText())
-        } else {
-            runBlocking {
-                launch {
-                    storages = getTokenClient().get("${getApiUrl()}storages")
-                }
-            }
+  fun getStorages(): ItemStorages {
+    lateinit var storages: ItemStorages
+    if (!isClientGlobal) {
+      val storageFile = getStoragesFile()
+      if (!storageFile.isFile) initializeCategories(storageFile)
+      storages = Json.decodeFromString(storageFile.readText())
+    } else {
+      runBlocking {
+        launch {
+          storages = getTokenClient().get("${getApiUrl()}storages")
         }
-        return storages
+      }
     }
+    return storages
+  }
 
-    private fun writeStorages(categories: ItemStorages) {
-        getStoragesFile().writeText(Json.encodeToString(categories))
-    }
+  private fun writeStorages(categories: ItemStorages) {
+    getStoragesFile().writeText(Json.encodeToString(categories))
+  }
 
-    private fun getStoragesFile() = File("${getModulePath(module)}\\storages.dat")
+  private fun getStoragesFile() = File("${getModulePath(module)}\\storages.dat")
 
-    private fun initializeCategories(storageFile: File) {
-        val mainStorage = ItemStorage(0, "default")
-        mainStorage.storageUnits.add(ItemStorageUnit(0, ""))
-        val categories = ItemStorages(CategoryType.MAIN)
-        categories.storages[mainStorage.number] = mainStorage
-        storageFile.createNewFile()
-        storageFile.writeText(Json.encodeToString(categories))
-    }
+  private fun initializeCategories(storageFile: File) {
+    val mainStorage = ItemStorage(0, "default")
+    mainStorage.storageUnits.add(ItemStorageUnit(0, ""))
+    val categories = ItemStorages(CategoryType.MAIN)
+    categories.storages[mainStorage.number] = mainStorage
+    storageFile.createNewFile()
+    storageFile.writeText(Json.encodeToString(categories))
+  }
 
-    enum class CategoryType {
-        MAIN
-    }
+  enum class CategoryType {
+    MAIN
+  }
 
-    /**
-     * Used to retrieve the first new available number.
-     * @return a number to be used for a price category.
-     */
-    fun getNumber(categories: ItemStorages): Int {
-        var storageNumber = 0
-        if (!isClientGlobal) {
-            val numbers = IntArray(categories.storages.size)
-            var counter = 0
-            if (categories.storages.isNotEmpty()) {
-                for ((_, category) in categories.storages) {
-                    numbers[counter] = category.number
-                    counter++
-                }
-                numbers.sort()
-                counter = 0
-                for (number in numbers) {
-                    if (number == counter) counter++
-                }
-            }
-            storageNumber = counter
-        } else {
-            runBlocking {
-                launch {
-                    storageNumber = getTokenClient().get("${getApiUrl()}storagenumber")
-                }
-            }
+  /**
+   * Used to retrieve the first new available number.
+   * @return a number to be used for a price category.
+   */
+  fun getNumber(categories: ItemStorages): Int {
+    var storageNumber = 0
+    if (!isClientGlobal) {
+      val numbers = IntArray(categories.storages.size)
+      var counter = 0
+      if (categories.storages.isNotEmpty()) {
+        for ((_, category) in categories.storages) {
+          numbers[counter] = category.number
+          counter++
         }
-        return storageNumber
+        numbers.sort()
+        counter = 0
+        for (number in numbers) {
+          if (number == counter) counter++
+        }
+      }
+      storageNumber = counter
+    } else {
+      runBlocking {
+        launch {
+          storageNumber = getTokenClient().get("${getApiUrl()}storagenumber")
+        }
+      }
     }
+    return storageNumber
+  }
 
-    fun getLockedCellColor(isLocked: Boolean): MultiValue<Paint> =
-        if (isLocked) MultiValue(arrayOf(Color.RED)) else MultiValue(arrayOf(Color.GREEN))
+  fun getLockedCellColor(isLocked: Boolean): MultiValue<Paint> =
+    if (isLocked) MultiValue(arrayOf(Color.RED)) else MultiValue(arrayOf(Color.GREEN))
 
-    fun addStorage(categories: ItemStorages) =
-        showCategory(ItemStorage(getNumber(categories), ""), categories)
+  fun addStorage(categories: ItemStorages) =
+    showCategory(ItemStorage(getNumber(categories), ""), categories)
 
-    fun getStorages(categories: ItemStorages): ObservableList<ItemStorage> {
-        val priceCategories = observableListOf<ItemStorage>()
-        val sortedMap = categories.storages.toSortedMap()
-        for ((_, v) in sortedMap) priceCategories.add(v)
-        return priceCategories
-    }
+  fun getStorages(categories: ItemStorages): ObservableList<ItemStorage> {
+    val priceCategories = observableListOf<ItemStorage>()
+    val sortedMap = categories.storages.toSortedMap()
+    for ((_, v) in sortedMap) priceCategories.add(v)
+    return priceCategories
+  }
 
-    fun showCategory(category: ItemStorage, categories: ItemStorages) {
-        GItemStorage(category).openModal(block = true)
-        getStorages(categories)
-    }
+  fun showCategory(category: ItemStorage, categories: ItemStorages) {
+    GItemStorage(category).openModal(block = true)
+    getStorages(categories)
+  }
 }

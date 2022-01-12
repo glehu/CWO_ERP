@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EMailerIni(
-    var defaultFooter: String = "",
-    var writeStatistics: Boolean = true
+  var defaultFooter: String = "",
+  var writeStatistics: Boolean = true
 )
