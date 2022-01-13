@@ -5,7 +5,7 @@ import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.misc.ContactModel
 import modules.m3.gui.GInvoiceFinder
-import modules.m4.Statistic
+import modules.mx.Statistic
 import tornadofx.*
 
 @ExperimentalSerializationApi

@@ -1,4 +1,4 @@
-package modules.m4.logic
+package modules.m4storage.logic
 
 import api.logic.getTokenClient
 import api.misc.json.ListDeltaJson
@@ -16,11 +16,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.m4.ItemStorage
-import modules.m4.ItemStorageUnit
-import modules.m4.ItemStorages
-import modules.m4.gui.GItemStorage
-import modules.m4.gui.GItemStorageManager
+import modules.m4storage.ItemStorage
+import modules.m4storage.ItemStorageUnit
+import modules.m4storage.ItemStorages
+import modules.m4storage.gui.GItemStorage
+import modules.m4storage.gui.GItemStorageManager
 import modules.mx.cliMode
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal

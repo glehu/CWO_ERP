@@ -1,9 +1,9 @@
-package modules.m4.gui
+package modules.m4storage.gui
 
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m4.ItemStorage
-import modules.m4.logic.ItemStorageManager
+import modules.m4storage.ItemStorage
+import modules.m4storage.logic.ItemStorageManager
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.rightButtonsWidth
 import tornadofx.*

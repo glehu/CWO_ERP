@@ -11,7 +11,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.logic.InvoiceCLIController
 import modules.m3.misc.InvoiceIni
-import modules.m4.Statistic
+import modules.mx.Statistic
 import modules.mx.invoiceIndexManager
 import modules.mx.rightButtonsWidth
 import tornadofx.*

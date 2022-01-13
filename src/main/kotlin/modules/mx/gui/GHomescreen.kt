@@ -17,7 +17,7 @@ import modules.m2.gui.GContactOverview
 import modules.m3.gui.GInvoiceOverview
 import modules.m4.gui.GItemOverview
 import modules.m4.gui.GItemPriceManager
-import modules.m4.gui.GItemStorageManager
+import modules.m4storage.gui.GItemStorageManager
 import modules.mx.*
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.logic.*

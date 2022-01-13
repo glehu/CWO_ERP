@@ -12,7 +12,7 @@ import modules.m1.logic.DiscographyIndexManager
 import modules.m2.logic.ContactIndexManager
 import modules.m3.logic.InvoiceIndexManager
 import modules.m4.logic.ItemIndexManager
-import modules.m4.logic.ItemStockPostingIndexManager
+import modules.m4stockposting.logic.ItemStockPostingIndexManager
 import modules.mx.*
 import modules.mx.gui.CWOMainGUI
 import modules.mx.gui.showPreferences

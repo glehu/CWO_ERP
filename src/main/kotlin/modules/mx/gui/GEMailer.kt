@@ -13,7 +13,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m2.Contact
 import modules.m2.logic.ContactController
-import modules.m4.Statistic
+import modules.mx.Statistic
 import modules.mx.contactIndexManager
 import modules.mx.misc.EMailerIni
 import modules.mx.rightButtonsWidth

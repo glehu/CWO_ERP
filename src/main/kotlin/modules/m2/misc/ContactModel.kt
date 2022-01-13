@@ -13,7 +13,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m2.Contact
-import modules.m4.Statistic
+import modules.mx.Statistic
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.observableListOf

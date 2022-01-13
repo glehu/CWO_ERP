@@ -1,14 +1,14 @@
-package modules.m4.gui
+package modules.m4storage.gui
 
 import io.ktor.util.*
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m4.ItemStorage
-import modules.m4.ItemStorageUnit
+import modules.m4storage.ItemStorage
+import modules.m4storage.ItemStorageUnit
 import modules.m4.misc.ItemModel
-import modules.m4.misc.getStoragePropertyFromStorage
+import modules.m4storage.misc.getStoragePropertyFromStorage
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 

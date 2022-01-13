@@ -1,4 +1,4 @@
-package modules.m4
+package modules.m4storage
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

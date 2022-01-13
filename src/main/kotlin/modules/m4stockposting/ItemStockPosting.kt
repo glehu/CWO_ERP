@@ -1,4 +1,4 @@
-package modules.m4
+package modules.m4stockposting
 
 import interfaces.IEntry
 import io.ktor.util.*

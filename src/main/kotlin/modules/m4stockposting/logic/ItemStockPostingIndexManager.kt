@@ -1,4 +1,4 @@
-package modules.m4.logic
+package modules.m4stockposting.logic
 
 import db.Index
 import interfaces.IEntry
@@ -7,7 +7,7 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m4.Item
-import modules.m4.ItemStockPosting
+import modules.m4stockposting.ItemStockPosting
 import modules.mx.itemStockPostingIndexManager
 import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger

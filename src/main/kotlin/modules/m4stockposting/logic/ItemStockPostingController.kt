@@ -1,4 +1,4 @@
-package modules.m4.logic
+package modules.m4stockposting.logic
 
 import interfaces.IIndexManager
 import interfaces.IModule

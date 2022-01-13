@@ -1,10 +1,10 @@
-package modules.m4.misc
+package modules.m4storage.misc
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
-import modules.m4.ItemStorage
-import modules.m4.ItemStorageUnit
+import modules.m4storage.ItemStorage
+import modules.m4storage.ItemStorageUnit
 import tornadofx.ItemViewModel
 import tornadofx.getValue
 import tornadofx.observableListOf

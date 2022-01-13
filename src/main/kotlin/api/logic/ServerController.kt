@@ -23,7 +23,7 @@ import modules.m3.logic.InvoiceCLIController
 import modules.m4.Item
 import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemPriceManager
-import modules.m4.logic.ItemStorageManager
+import modules.m4storage.logic.ItemStorageManager
 import modules.mx.*
 import modules.mx.logic.*
 import java.io.File

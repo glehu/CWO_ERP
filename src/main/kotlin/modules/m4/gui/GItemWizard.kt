@@ -9,9 +9,14 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.*
 import modules.m4.logic.ItemController
-import modules.m4.logic.ItemStockPostingController
-import modules.m4.logic.ItemStorageManager
+import modules.m4stockposting.logic.ItemStockPostingController
+import modules.m4storage.logic.ItemStorageManager
 import modules.m4.misc.ItemModel
+import modules.m4stockposting.ItemStockPosting
+import modules.m4storage.ItemStorage
+import modules.m4storage.ItemStorageUnit
+import modules.m4storage.gui.GItemStockAdder
+import modules.mx.Statistic
 import modules.mx.gui.GImageViewer
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.isClientGlobal

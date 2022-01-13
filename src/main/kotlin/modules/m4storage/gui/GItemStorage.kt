@@ -1,14 +1,14 @@
-package modules.m4.gui
+package modules.m4storage.gui
 
 import io.ktor.util.*
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m4.ItemStorage
-import modules.m4.ItemStorageUnit
-import modules.m4.logic.ItemStorageManager
-import modules.m4.misc.ItemStorageModel
-import modules.m4.misc.getStorageFromStorageProperty
-import modules.m4.misc.getStoragePropertyFromStorage
+import modules.m4storage.ItemStorage
+import modules.m4storage.ItemStorageUnit
+import modules.m4storage.logic.ItemStorageManager
+import modules.m4storage.misc.ItemStorageModel
+import modules.m4storage.misc.getStorageFromStorageProperty
+import modules.m4storage.misc.getStoragePropertyFromStorage
 import modules.mx.rightButtonsWidth
 import tornadofx.*
 

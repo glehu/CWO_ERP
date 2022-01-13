@@ -1,4 +1,4 @@
-package modules.m4
+package modules.mx
 
 import kotlinx.serialization.Serializable
 

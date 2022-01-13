@@ -23,9 +23,9 @@ import modules.m3.Invoice
 import modules.m3.InvoicePosition
 import modules.m3.logic.InvoiceIndexManager
 import modules.m4.Item
-import modules.m4.ItemStockPosting
+import modules.m4stockposting.ItemStockPosting
 import modules.m4.logic.ItemIndexManager
-import modules.m4.logic.ItemStockPostingIndexManager
+import modules.m4stockposting.logic.ItemStockPostingIndexManager
 import java.io.File
 
 //*************************************************

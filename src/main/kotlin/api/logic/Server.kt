@@ -25,7 +25,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import modules.m4.logic.ItemPriceManager
-import modules.m4.logic.ItemStorageManager
+import modules.m4storage.logic.ItemStorageManager
 import modules.mx.*
 import modules.mx.gui.GDashboard
 import modules.mx.logic.Log
