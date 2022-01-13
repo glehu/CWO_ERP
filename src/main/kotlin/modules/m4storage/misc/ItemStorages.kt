@@ -1,8 +1,9 @@
-package modules.m4storage
+package modules.m4storage.misc
 
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
+import modules.m4storage.ItemStorage
 import modules.m4storage.logic.ItemStorageManager
 
 @InternalAPI

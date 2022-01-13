@@ -18,7 +18,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m4storage.ItemStorage
 import modules.m4storage.ItemStorageUnit
-import modules.m4storage.ItemStorages
+import modules.m4storage.misc.ItemStorages
 import modules.m4storage.gui.GItemStorage
 import modules.m4storage.gui.GItemStorageManager
 import modules.mx.cliMode
