@@ -7,21 +7,18 @@ import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.m4.*
+import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemController
-import modules.m4stockposting.logic.ItemStockPostingController
-import modules.m4storage.logic.ItemStorageManager
 import modules.m4.misc.ItemModel
 import modules.m4stockposting.ItemStockPosting
+import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.ItemStorage
 import modules.m4storage.ItemStorageUnit
 import modules.m4storage.gui.GItemStockAdder
+import modules.m4storage.logic.ItemStorageManager
 import modules.mx.Statistic
 import modules.mx.gui.GImageViewer
 import modules.mx.gui.userAlerts.GAlert
-import modules.mx.isClientGlobal
-import modules.mx.itemStockPostingIndexManager
-import modules.mx.logic.Log
 import tornadofx.*
 
 @InternalAPI
@@ -199,9 +196,12 @@ class ItemStorageData : Fragment("Stock") {
     onUserSelect {
       storageUnitsList.clear()
       selectedStorage = it
+      val storage = ItemStorageManager().getStorages().storages[it.number]!!
       for (sUnit in it.storageUnits) {
-        storageUnitsList.add(sUnit)
+        storage.storageUnits[sUnit.number].stock = sUnit.stock
+        storage.storageUnits[sUnit.number].locked = sUnit.locked
       }
+      for (sUnit in storage.storageUnits) storageUnitsList.add(sUnit)
       storageUnitsTable.refresh()
       storageUnitsTable.requestResize()
     }
@@ -230,22 +230,21 @@ class ItemStorageData : Fragment("Stock") {
               "No stock has been added."
             ).openModal()
           } else {
+            //Add stock to the row item (visually only)
             rowItem.stock += stockAdder.stockToAddAmount.value
+            //Add stock to the underlying item
+            this@ItemStorageData.item
+              .storages.value[selectedStorage.number]
+              .storageUnits[rowItem.number].stock += rowItem.stock
             val stockPosting = ItemStockPosting(
               uID = -1,
               itemUID = this@ItemStorageData.item.uID.value,
               storageUnitFromUID = -1,
-              storageUnitToUID = stockAdder.storageUnitNumber.value,
+              storageUnitToUID = rowItem.number,
               amount = stockAdder.stockToAddAmount.value,
               note = stockAdder.note.value
             )
             stockPosting.book()
-            if (!isClientGlobal) {
-              itemStockPostingIndexManager!!.log(
-                Log.LogType.INFO,
-                "ITEM ${this@ItemStorageData.item.uID.value} ADDED ${stockAdder.stockToAddAmount.value}"
-              )
-            }
             refresh()
             requestLayout()
             runBlocking {

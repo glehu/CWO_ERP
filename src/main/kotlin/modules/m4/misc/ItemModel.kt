@@ -7,11 +7,12 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.m4.*
+import modules.m4.Item
+import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemPriceManager
-import modules.m4storage.logic.ItemStorageManager
 import modules.m4storage.ItemStorage
 import modules.m4storage.ItemStorageUnit
+import modules.m4storage.logic.ItemStorageManager
 import modules.mx.Statistic
 import tornadofx.ItemViewModel
 import tornadofx.getValue
@@ -37,7 +38,7 @@ class ItemProperty {
   var productInfoJson: String by productInfoJsonProperty
   var statisticsProperty = observableListOf<Statistic>()
   var priceCategoriesProperty = ItemPriceManager().getCategories(ItemPriceManager().getCategories())
-  var storagesProperty = ItemStorageManager().getStorages(ItemStorageManager().getStorages())
+  var storagesProperty = ItemStorageManager().getStoragesObservableList(ItemStorageManager().getStorages())
 }
 
 @InternalAPI
@@ -49,7 +50,6 @@ class ItemModel : ItemViewModel<ItemProperty>() {
   val ean = bind(ItemProperty::eanProperty)
   val manufacturerNr = bind(ItemProperty::manufacturerCodeProperty)
   val imagePath = bind(ItemProperty::imagePathProperty)
-  val productInfoJson = bind(ItemProperty::productInfoJsonProperty)
   val statistics = bind(ItemProperty::statisticsProperty)
   val priceCategories = bind(ItemProperty::priceCategoriesProperty)
   val storages = bind(ItemProperty::storagesProperty)
@@ -68,18 +68,13 @@ fun getItemPropertyFromItem(item: Item): ItemProperty {
   itemProperty.productInfoJson = item.productInfoJson
   // Get the current price categories, so we are working with the latest data
   itemProperty.priceCategoriesProperty = ItemPriceManager().getCategories(ItemPriceManager().getCategories())
-  // Get the current storage locations, so we are working with the latest data
-  itemProperty.storagesProperty = ItemStorageManager().getStorages(ItemStorageManager().getStorages())
-  // Fill the item's statistics
-  for ((_, statisticString) in item.statistics) {
-    val statistic = Json.decodeFromString<Statistic>(statisticString)
-    itemProperty.statisticsProperty.add(statistic)
-  }
   // Fill the price categories' prices according to their number
   for ((_, priceCategoryString) in item.prices) {
     val priceCategory = Json.decodeFromString<ItemPriceCategory>(priceCategoryString)
     itemProperty.priceCategoriesProperty[priceCategory.number].grossPrice = priceCategory.grossPrice
   }
+  // Get the current storage locations, so we are working with the latest data
+  itemProperty.storagesProperty = ItemStorageManager().getStoragesObservableList(ItemStorageManager().getStorages())
   // Fill the storage locations' stock amount according to their number
   for ((_, storageString) in item.stock) {
     val storage = Json.decodeFromString<ItemStorage>(storageString)
@@ -87,6 +82,10 @@ fun getItemPropertyFromItem(item: Item): ItemProperty {
       itemProperty.storagesProperty[storage.number].storageUnits[storageUnit.number].stock = storageUnit.stock
       itemProperty.storagesProperty[storage.number].storageUnits[storageUnit.number].locked = storageUnit.locked
     }
+  }
+  // Fill the item's statistics
+  for ((_, statisticString) in item.statistics) {
+    itemProperty.statisticsProperty.add(Json.decodeFromString<Statistic>(statisticString))
   }
   return itemProperty
 }
@@ -111,7 +110,7 @@ fun getItemFromItemProperty(itemProperty: ItemProperty): Item {
   for (storage in itemProperty.storagesProperty) {
     val storageUnits = mutableListOf<ItemStorageUnit>()
     for (storageUnit in storage.storageUnits) {
-      storageUnits.add(storageUnit)
+      if (storageUnit.stock != 0.0) storageUnits.add(storageUnit)
     }
     storage.storageUnits = storageUnits
     if (storage.storageUnits.isNotEmpty()) item.stock[item.stock.size] = Json.encodeToString(storage)

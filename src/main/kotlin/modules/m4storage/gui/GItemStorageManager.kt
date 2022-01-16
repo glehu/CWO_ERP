@@ -48,7 +48,7 @@ class GItemStorageManager : View("Item Storage Locations") {
 
   fun refreshStorages() {
     storages = storageManager.getStorages()
-    storagesList = storageManager.getStorages(storages)
+    storagesList = storageManager.getStoragesObservableList(storages)
     table.items = storagesList
     table.refresh()
   }

@@ -18,9 +18,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m4storage.ItemStorage
 import modules.m4storage.ItemStorageUnit
-import modules.m4storage.misc.ItemStorages
 import modules.m4storage.gui.GItemStorage
 import modules.m4storage.gui.GItemStorageManager
+import modules.m4storage.misc.ItemStorages
 import modules.mx.cliMode
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
@@ -91,7 +91,7 @@ class ItemStorageManager : IModule, Controller() {
     lateinit var storages: ItemStorages
     if (!isClientGlobal) {
       val storageFile = getStoragesFile()
-      if (!storageFile.isFile) initializeCategories(storageFile)
+      if (!storageFile.isFile) initializeStorages(storageFile)
       storages = Json.decodeFromString(storageFile.readText())
     } else {
       runBlocking {
@@ -109,7 +109,7 @@ class ItemStorageManager : IModule, Controller() {
 
   private fun getStoragesFile() = File("${getModulePath(module)}\\storages.dat")
 
-  private fun initializeCategories(storageFile: File) {
+  private fun initializeStorages(storageFile: File) {
     val mainStorage = ItemStorage(0, "default")
     mainStorage.storageUnits.add(ItemStorageUnit(0, ""))
     val categories = ItemStorages(CategoryType.MAIN)
@@ -159,7 +159,7 @@ class ItemStorageManager : IModule, Controller() {
   fun addStorage(categories: ItemStorages) =
     showCategory(ItemStorage(getNumber(categories), ""), categories)
 
-  fun getStorages(categories: ItemStorages): ObservableList<ItemStorage> {
+  fun getStoragesObservableList(categories: ItemStorages): ObservableList<ItemStorage> {
     val priceCategories = observableListOf<ItemStorage>()
     val sortedMap = categories.storages.toSortedMap()
     for ((_, v) in sortedMap) priceCategories.add(v)
@@ -168,6 +168,6 @@ class ItemStorageManager : IModule, Controller() {
 
   fun showCategory(category: ItemStorage, categories: ItemStorages) {
     GItemStorage(category).openModal(block = true)
-    getStorages(categories)
+    getStoragesObservableList(categories)
   }
 }
