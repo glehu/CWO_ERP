@@ -3,6 +3,7 @@ package modules.m2.gui
 import io.ktor.util.*
 import javafx.scene.paint.Color
 import kotlinx.serialization.ExperimentalSerializationApi
+import modules.m1.gui.GDiscographyFinder
 import modules.m2.misc.ContactModel
 import modules.m3.gui.GInvoiceFinder
 import modules.mx.Statistic
@@ -24,6 +25,8 @@ class ContactConfiguratorWizard : Wizard("Add new contact") {
   }
 }
 
+@ExperimentalSerializationApi
+@InternalAPI
 class ContactMainData : Fragment("Main Data") {
   private val contact: ContactModel by inject()
 
@@ -35,7 +38,18 @@ class ContactMainData : Fragment("Main Data") {
       field("UID") {
         label(contact.uID)
       }
-      field("Name") { textfield(contact.name).required() }
+      field("Name") {
+        textfield(contact.name) {
+          contextmenu {
+            item("Contact's Songs").action {
+              val finder = GDiscographyFinder()
+              finder.openModal()
+              finder.modalSearch(contact.name.value, 2)
+            }
+          }
+          required()
+        }
+      }
       field("Salutation") { textfield(contact.salutation) }
       field("EMail Address") { textfield(contact.email) }
       field("First Name") { textfield(contact.firstName) }
