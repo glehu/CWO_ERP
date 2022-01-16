@@ -88,20 +88,22 @@ class GDatabaseManager : View("Databases") {
               )
               prompt.openModal(block = true)
               if (prompt.confirmed.value) {
-                CwODB.resetModuleDatabase(ixModule)
-                indexManager.setLastChangeData(-1, activeUser.username)
-                updateDatabases()
-                indexManager.log(
-                  logType = Log.LogType.INFO,
-                  text = "Database $ixModule reset",
-                  moduleAlt = ixModule
-                )
-                indexManager.log(
-                  logType = Log.LogType.INFO,
-                  text = "Database $ixModule reset",
-                  moduleAlt = "MX"
-                )
-                GAlert("Successfully reset $ixModule.").openModal()
+                val success = CwODB.resetModuleDatabase(ixModule)
+                if (success) {
+                  indexManager.setLastChangeData(-1, activeUser.username)
+                  updateDatabases()
+                  indexManager.log(
+                    logType = Log.LogType.INFO,
+                    text = "Database $ixModule reset",
+                    moduleAlt = ixModule
+                  )
+                  indexManager.log(
+                    logType = Log.LogType.INFO,
+                    text = "Database $ixModule reset",
+                    moduleAlt = "MX"
+                  )
+                  GAlert("Successfully reset the module $ixModule.").openModal()
+                } else GAlert("Resetting the module $ixModule failed!").openModal()
               }
             }
             prefWidth = rightButtonsWidth

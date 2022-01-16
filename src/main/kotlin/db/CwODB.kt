@@ -218,16 +218,23 @@ class CwODB {
     }
 
     /**
-     * Used to reset a module's database including index files. Logfiles remain untouched by this operation.
+     * Used to reset a module's database including index files.
+     *
+     * Logfiles remain untouched by this operation.
+     * @return true, if the operation was successful.
      */
-    fun resetModuleDatabase(module: String) {
+    fun resetModuleDatabase(module: String): Boolean {
       val modulePath = getModulePath(module)
-      if (File(modulePath).isDirectory) {
+      return if (File(modulePath).isDirectory) {
         File("$modulePath\\$module.db").delete()
         File("$modulePath\\$module.nu").delete()
         File("$modulePath\\lastentry.db").delete()
-        for (i in 0..99) File("$modulePath\\$module.ix$i").delete()
-      }
+        for (i in 0..99) {
+          val file = File("$modulePath\\$module.ix$i")
+          if (file.exists()) file.delete()
+        }
+        true
+      } else false
     }
 
     /**
