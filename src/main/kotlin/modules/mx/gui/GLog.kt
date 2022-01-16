@@ -133,7 +133,10 @@ class GLog(title: String) : Fragment(title) {
     return props.keys.associateWith { props[it]?.get(this) }
   }
 
-  fun showLog(logFile: File, regex: Regex) {
+  fun showLog(
+    logFile: File,
+    regex: Regex = ".*".toRegex()
+  ) {
     val loadingNotification = GAlert("Loading...")
     loadingNotification.openModal()
     this.logFile = logFile

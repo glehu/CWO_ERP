@@ -8,7 +8,7 @@ data class InvoiceIni(
   var todoStatuses: String = "0",
   var autoCommission: Boolean = true,
   var autoCreateContacts: Boolean = true,
-  var autoSendEMailConfirmation: Boolean = true
+  var autoSendEmailConfirmation: Boolean = true
 ) {
   init {
     val default = mutableMapOf(

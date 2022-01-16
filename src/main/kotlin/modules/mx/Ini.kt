@@ -16,5 +16,5 @@ data class Ini(
   @SerialName("SMTP Password") var emailPassword: String,
   @SerialName("SMTP Host") var emailHost: String,
   @SerialName("SMTP Port") var emailPort: String,
-  @SerialName("Send EMails as") var emailAddress: String
+  @SerialName("Send Emails as") var emailAddress: String
 )

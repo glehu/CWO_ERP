@@ -16,7 +16,7 @@ import kotlinx.serialization.json.Json
 import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
-import modules.mx.logic.EMailer
+import modules.mx.logic.Emailer
 import modules.mx.logic.Log
 import modules.mx.protoBufGlobal
 import java.io.File
@@ -339,14 +339,14 @@ interface IModule {
     return ok
   }
 
-  fun sendEMail(
+  fun sendEmail(
     subject: String,
     body: String,
     recipient: String
   ): Boolean {
     var success = false
     if (!isClientGlobal) {
-      EMailer().sendEMailOverMailServer(subject, body, recipient)
+      Emailer().sendEmailOverMailServer(subject, body, recipient)
       success = true
     } else {
       runBlocking {

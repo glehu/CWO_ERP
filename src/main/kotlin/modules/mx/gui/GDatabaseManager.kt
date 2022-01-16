@@ -92,8 +92,7 @@ class GDatabaseManager : View("Databases") {
               )
               prompt.openModal(block = true)
               if (prompt.confirmed.value) {
-                val success = CwODB.resetModuleDatabase(ixModule)
-                if (success) {
+                if (CwODB.resetModuleDatabase(ixModule)) {
                   indexManager.setLastChangeData(-1, activeUser.username)
                   updateDatabases()
                   indexManager.log(
@@ -107,7 +106,10 @@ class GDatabaseManager : View("Databases") {
                     moduleAlt = "MX"
                   )
                   GAlert("Successfully reset the module $ixModule.").openModal()
-                } else GAlert("Resetting the module $ixModule failed!").openModal()
+                } else {
+                  updateDatabases()
+                  GAlert("Resetting the module $ixModule failed!").openModal()
+                }
               }
             }
             prefWidth = rightButtonsWidth
@@ -118,9 +120,7 @@ class GDatabaseManager : View("Databases") {
     }
     right = vbox {
       button("Show log") {
-        action {
-          GLog("MX").showLog(Log.getLogFile("MX"), "DATABASE".toRegex())
-        }
+        action { GLog("MX").showLog(Log.getLogFile("MX"), "DATABASE".toRegex()) }
         prefWidth = rightButtonsWidth
       }
     }

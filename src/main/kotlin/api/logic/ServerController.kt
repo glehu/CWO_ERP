@@ -265,7 +265,7 @@ class ServerController {
         }
       }
       order.seller = "<Self>"
-      if (m3IniVal.autoSendEMailConfirmation) order.emailConfirmationSent = true
+      if (m3IniVal.autoSendEmailConfirmation) order.emailConfirmationSent = true
       mutex.withLock {
         invoiceIndexManager!!.save(entry = order, userName = userName)
       }
@@ -277,8 +277,8 @@ class ServerController {
           moduleAlt = invoiceIndexManager!!.module
         )
       }
-      if (m3IniVal.autoSendEMailConfirmation) {
-        EMailer().sendEMail(
+      if (m3IniVal.autoSendEmailConfirmation) {
+        Emailer().sendEmail(
           subject = "Web Shop Order #${order.uID}",
           body = "Hey, we're confirming your order over ${order.grossTotal} Euro.\n" +
                   "Order Number: #${order.uID}\n" +

@@ -478,7 +478,7 @@ class Server : IModule, Controller() {
     //TODO: Needs to check rights (currently there are no email rights)
     post("sendemail") {
       val body = call.receive<EMailJson>()
-      sendEMail(body.subject, body.body, body.recipient)
+      sendEmail(body.subject, body.body, body.recipient)
       call.respond(true)
     }
   }

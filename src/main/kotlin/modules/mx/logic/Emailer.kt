@@ -13,8 +13,8 @@ import modules.mx.getIniFile
 
 @InternalAPI
 @ExperimentalSerializationApi
-class EMailer : IModule {
-  override val moduleNameLong = "EMailer"
+class Emailer : IModule {
+  override val moduleNameLong = "Emailer"
   override val module = "MX"
   override fun getIndexManager(): IIndexManager? {
     return null
@@ -33,10 +33,10 @@ class EMailer : IModule {
       username = iniVal.emailUsername,
       password = iniVal.emailPassword
     )
-    log(Log.LogType.SYS, "EMail Server ${iniVal.emailUsername} created.")
+    log(Log.LogType.SYS, "Email Server ${iniVal.emailUsername} created.")
   }
 
-  fun sendEMailOverMailServer(
+  fun sendEmailOverMailServer(
     subject: String,
     body: String,
     recipient: String
@@ -49,6 +49,6 @@ class EMailer : IModule {
         recipient = recipient
       )
     )
-    log(Log.LogType.COM, "EMail $subject sent to $recipient")
+    log(Log.LogType.COM, "Email $subject sent to $recipient")
   }
 }

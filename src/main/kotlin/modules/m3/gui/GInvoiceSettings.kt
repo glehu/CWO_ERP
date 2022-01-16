@@ -31,7 +31,7 @@ class GInvoiceSettings : IModule, Fragment("Invoice Settings") {
   private val todoStatuses = SimpleStringProperty(iniVal.todoStatuses)
   private val autoCommission = SimpleBooleanProperty(iniVal.autoCommission)
   private val autoCreateContacts = SimpleBooleanProperty(iniVal.autoCreateContacts)
-  private val autoSendEMailConfirmation = SimpleBooleanProperty(iniVal.autoSendEMailConfirmation)
+  private val autoSendEMailConfirmation = SimpleBooleanProperty(iniVal.autoSendEmailConfirmation)
 
   override val root = borderpane {
     prefWidth = 800.0
@@ -115,7 +115,7 @@ class GInvoiceSettings : IModule, Fragment("Invoice Settings") {
               todoStatuses = todoStatuses.value,
               autoCommission = autoCommission.value,
               autoCreateContacts = autoCreateContacts.value,
-              autoSendEMailConfirmation = autoSendEMailConfirmation.value
+              autoSendEmailConfirmation = autoSendEMailConfirmation.value
             )
           )
         )

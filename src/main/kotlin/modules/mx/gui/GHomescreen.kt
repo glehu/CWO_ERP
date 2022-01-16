@@ -21,6 +21,7 @@ import modules.m4storage.gui.GItemStorageManager
 import modules.mx.*
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.logic.*
+import modules.mx.logic.Log.MXLog.getLogFile
 import modules.mx.misc.UserModel
 import modules.mx.misc.getUserPropertyFromUser
 import styling.Stylesheet
@@ -159,24 +160,12 @@ class GHomescreen : View(titleGlobal) {
       menu("Misc") {
         menu("Log") {
           menu("Show Logfile") {
-            item("Discography").action {
-              GLog("M1 Discography").showLog(Log.getLogFile("M1"), ".*".toRegex())
-            }
-            item("Contacts").action {
-              GLog("Contacts").showLog(Log.getLogFile("M2"), ".*".toRegex())
-            }
-            item("Invoices").action {
-              GLog("Invoices").showLog(Log.getLogFile("M3"), ".*".toRegex())
-            }
-            item("Items").action {
-              GLog("Items").showLog(Log.getLogFile("M4"), ".*".toRegex())
-            }
-            item("Item Stock Postings").action {
-              GLog("Item Stock Postings").showLog(Log.getLogFile("M4SP"), ".*".toRegex())
-            }
-            item("Management").action {
-              GLog("Management").showLog(Log.getLogFile("MX"), ".*".toRegex())
-            }
+            item("Discography").action { GLog("Discography").showLog(getLogFile("M1")) }
+            item("Contacts").action { GLog("Contacts").showLog(getLogFile("M2")) }
+            item("Invoices").action { GLog("Invoices").showLog(getLogFile("M3")) }
+            item("Items").action { GLog("Items").showLog(getLogFile("M4")) }
+            item("Item Stock Postings").action { GLog("Item Stock Postings").showLog(getLogFile("M4SP")) }
+            item("Management").action { GLog("Management").showLog(getLogFile("MX")) }
           }
           separator()
           item("Clear Logfiles").action {
@@ -218,7 +207,7 @@ class GHomescreen : View(titleGlobal) {
         tab<GItemStorageManager>()
       }
       if (activeUser.canAccessManagement) {
-        //Only server can do this
+        //Only server can do this as for now
         if (!isClientGlobal) tab<GManagement>()
       }
     }

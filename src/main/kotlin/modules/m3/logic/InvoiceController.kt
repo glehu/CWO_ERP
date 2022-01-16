@@ -17,7 +17,7 @@ import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.m4.logic.ItemPriceManager
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.invoiceIndexManager
-import modules.mx.logic.EMailer
+import modules.mx.logic.Emailer
 import modules.mx.logic.Log
 import tornadofx.Controller
 
@@ -191,7 +191,7 @@ class InvoiceController : IController, Controller() {
       wizard.invoice.item.statusText = InvoiceCLIController().getStatusText(wizard.invoice.item.status)
       saveEntry()
       log(Log.LogType.INFO, "Invoice ${wizard.invoice.item.uID} commissioned.")
-      EMailer().sendEMail(
+      Emailer().sendEmail(
         subject = "Web Shop Order #${wizard.invoice.item.uID}",
         body = "Hey, we're confirming your order over ${wizard.invoice.item.grossTotal} Euro.\n" + "Order Number: #${wizard.invoice.item.uID}\n" + "Date: ${wizard.invoice.item.date}",
         recipient = wizard.invoice.item.buyer

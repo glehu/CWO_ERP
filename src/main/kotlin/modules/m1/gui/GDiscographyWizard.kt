@@ -365,101 +365,89 @@ class SongCollaborationData : Fragment("Collaboration") {
     hbox(20) {
       fieldset("Vocalist Feature") {
         field("Feat Vox 1") {
-          hbox {
-            textfield(songCollaborationData.coVocalist1) {
-              contextmenu {
-                item("Show contact").action {
-                  if (songCollaborationData.coVocalist1UID.value != -1) {
-                    contactController.showEntry(songCollaborationData.coVocalist1UID.value)
-                  }
-                  songCollaborationData.coVocalist1.value =
-                    contactController.getContactName(
-                      songCollaborationData.coVocalist1UID.value,
-                      songCollaborationData.coVocalist1.value
-                    )
+          textfield(songCollaborationData.coVocalist1) {
+            contextmenu {
+              item("Show contact").action {
+                if (songCollaborationData.coVocalist1UID.value != -1) {
+                  contactController.showEntry(songCollaborationData.coVocalist1UID.value)
                 }
-                item("Load contact").action {
-                  val contact = contactController.selectAndLoadContact()
-                  songCollaborationData.coVocalist1UID.value = contact.uID
-                  songCollaborationData.coVocalist1.value = contact.name
-                }
+                songCollaborationData.coVocalist1.value =
+                  contactController.getContactName(
+                    songCollaborationData.coVocalist1UID.value,
+                    songCollaborationData.coVocalist1.value
+                  )
+              }
+              item("Load contact").action {
+                val contact = contactController.selectAndLoadContact()
+                songCollaborationData.coVocalist1UID.value = contact.uID
+                songCollaborationData.coVocalist1.value = contact.name
               }
             }
-            label(songCollaborationData.coVocalist1UID) { paddingHorizontal = 20 }
           }
         }
         field("Feat Vox 2") {
-          hbox {
-            textfield(songCollaborationData.coVocalist2) {
-              contextmenu {
-                item("Show contact").action {
-                  if (songCollaborationData.coVocalist2UID.value != -1) contactController.showEntry(
-                    songCollaborationData.coVocalist2UID.value
+          textfield(songCollaborationData.coVocalist2) {
+            contextmenu {
+              item("Show contact").action {
+                if (songCollaborationData.coVocalist2UID.value != -1) contactController.showEntry(
+                  songCollaborationData.coVocalist2UID.value
+                )
+                songCollaborationData.coVocalist2.value =
+                  contactController.getContactName(
+                    songCollaborationData.coVocalist2UID.value,
+                    songCollaborationData.coVocalist2.value
                   )
-                  songCollaborationData.coVocalist2.value =
-                    contactController.getContactName(
-                      songCollaborationData.coVocalist2UID.value,
-                      songCollaborationData.coVocalist2.value
-                    )
-                }
-                item("Load contact").action {
-                  val contact = contactController.selectAndLoadContact()
-                  songCollaborationData.coVocalist2UID.value = contact.uID
-                  songCollaborationData.coVocalist2.value = contact.name
-                }
+              }
+              item("Load contact").action {
+                val contact = contactController.selectAndLoadContact()
+                songCollaborationData.coVocalist2UID.value = contact.uID
+                songCollaborationData.coVocalist2.value = contact.name
               }
             }
-            label(songCollaborationData.coVocalist2UID) { paddingHorizontal = 20 }
           }
         }
       }
       fieldset("Producer Collaboration") {
         field("Coproducer 1") {
-          hbox {
-            textfield(songCollaborationData.coProducer1) {
-              contextmenu {
-                item("Show contact").action {
-                  if (songCollaborationData.coProducer1UID.value != -1) contactController.showEntry(
-                    songCollaborationData.coProducer1UID.value
+          textfield(songCollaborationData.coProducer1) {
+            contextmenu {
+              item("Show contact").action {
+                if (songCollaborationData.coProducer1UID.value != -1) contactController.showEntry(
+                  songCollaborationData.coProducer1UID.value
+                )
+                songCollaborationData.coProducer1.value =
+                  contactController.getContactName(
+                    songCollaborationData.coProducer1UID.value,
+                    songCollaborationData.coProducer1.value
                   )
-                  songCollaborationData.coProducer1.value =
-                    contactController.getContactName(
-                      songCollaborationData.coProducer1UID.value,
-                      songCollaborationData.coProducer1.value
-                    )
-                }
-                item("Load contact").action {
-                  val contact = contactController.selectAndLoadContact()
-                  songCollaborationData.coProducer1UID.value = contact.uID
-                  songCollaborationData.coProducer1.value = contact.name
-                }
+              }
+              item("Load contact").action {
+                val contact = contactController.selectAndLoadContact()
+                songCollaborationData.coProducer1UID.value = contact.uID
+                songCollaborationData.coProducer1.value = contact.name
               }
             }
-            label(songCollaborationData.coProducer1UID) { paddingHorizontal = 20 }
           }
         }
         field("Coproducer 2") {
-          hbox {
-            textfield(songCollaborationData.coProducer2) {
-              contextmenu {
-                item("Show contact").action {
-                  if (songCollaborationData.coProducer2UID.value != -1) contactController.showEntry(
-                    songCollaborationData.coProducer2UID.value
+          textfield(songCollaborationData.coProducer2) {
+            contextmenu {
+              item("Show contact").action {
+                if (songCollaborationData.coProducer2UID.value != -1) contactController.showEntry(
+                  songCollaborationData.coProducer2UID.value
+                )
+                songCollaborationData.coProducer2.value =
+                  contactController.getContactName(
+                    songCollaborationData.coProducer2UID.value,
+                    songCollaborationData.coProducer2.value
                   )
-                  songCollaborationData.coProducer2.value =
-                    contactController.getContactName(
-                      songCollaborationData.coProducer2UID.value,
-                      songCollaborationData.coProducer2.value
-                    )
-                }
-                item("Load contact").action {
-                  val contact = contactController.selectAndLoadContact()
-                  songCollaborationData.coProducer2UID.value = contact.uID
-                  songCollaborationData.coProducer2.value = contact.name
-                }
+              }
+              item("Load contact").action {
+                val contact = contactController.selectAndLoadContact()
+                songCollaborationData.coProducer2UID.value = contact.uID
+                songCollaborationData.coProducer2.value = contact.name
               }
             }
-            label(songCollaborationData.coProducer2UID) { paddingHorizontal = 20 }
           }
         }
       }

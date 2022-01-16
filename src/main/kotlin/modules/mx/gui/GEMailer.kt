@@ -75,7 +75,7 @@ class GEMailer : IModule, View("EMailer") {
         prefWidth = rightButtonsWidth * 1.5
         style { unsafe("-fx-base", Color.DARKGREEN) }
         action {
-          if (sendEMail(
+          if (sendEmail(
               subject = subjectProperty.value,
               body = getBodyText(),
               recipient = recipientProperty.value
