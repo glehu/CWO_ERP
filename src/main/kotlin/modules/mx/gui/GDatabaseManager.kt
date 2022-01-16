@@ -44,11 +44,15 @@ class GDatabaseManager : View("Databases") {
   }
 
   init {
-    if (discographyIndexManager != null) indexManagers.add(discographyIndexManager)
-    if (contactIndexManager != null) indexManagers.add(contactIndexManager)
-    if (invoiceIndexManager != null) indexManagers.add(invoiceIndexManager)
-    if (itemIndexManager != null) indexManagers.add(itemIndexManager)
-    if (itemStockPostingIndexManager != null) indexManagers.add(itemStockPostingIndexManager)
+    addIfExists(discographyIndexManager)
+    addIfExists(contactIndexManager)
+    addIfExists(invoiceIndexManager)
+    addIfExists(itemIndexManager)
+    addIfExists(itemStockPostingIndexManager)
+  }
+
+  private fun addIfExists(indexManager: IIndexManager?) {
+    if (indexManager != null) indexManagers.add(indexManager)
   }
 
   val table = tableview(indexManagers) {
