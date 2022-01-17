@@ -28,7 +28,11 @@ class GItemStorageManager : View("Item Storage Locations") {
     onUserSelect(1) {
       if (isStorageSelectMode || it.number != 0) {
         selectedStorageUID = it.number
-        selectedStorageUnitUID = storageManager.showItemStorageUnit(it, storages, isStorageSelectMode)
+        selectedStorageUnitUID = if (!isStorageSelectMode || it.storageUnits.size > 1) {
+          storageManager.showItemStorageUnit(it, storages, isStorageSelectMode)
+        } else {
+          0
+        }
         if (isStorageSelectMode) close()
       } else {
         GAlert(
