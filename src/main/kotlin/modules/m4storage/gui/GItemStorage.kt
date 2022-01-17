@@ -15,6 +15,10 @@ import tornadofx.*
 @ExperimentalSerializationApi
 @InternalAPI
 class GItemStorage(storage: ItemStorage) : Fragment("Storage Locations") {
+
+  var isStorageSelectMode: Boolean = false
+  var selectedStorageUnitUID: Int = -1
+
   private val storageManager: ItemStorageManager by inject()
   private val storageModel = ItemStorageModel(getStoragePropertyFromStorage(storage))
   private val originalStorageProperty = storage.copy()
@@ -27,6 +31,12 @@ class GItemStorage(storage: ItemStorage) : Fragment("Storage Locations") {
     }
     column("Lock", ItemStorageUnit::locked) {
       makeEditable()
+    }
+    onUserSelect(1) {
+      if (isStorageSelectMode) {
+        selectedStorageUnitUID = it.number
+        close()
+      }
     }
     enableCellEditing()
     regainFocusAfterEdit()

@@ -13,6 +13,10 @@ import tornadofx.*
 class GItemStorageManager : View("Item Storage Locations") {
   private val storageManager: ItemStorageManager by inject()
 
+  var isStorageSelectMode: Boolean = false
+  var selectedStorageUID: Int = -1
+  var selectedStorageUnitUID: Int = -1
+
   @ExperimentalSerializationApi
   private var storages = storageManager.getStorages()
   private var storagesList = observableListOf<ItemStorage>()
@@ -22,8 +26,10 @@ class GItemStorageManager : View("Item Storage Locations") {
     readonlyColumn("Lock", ItemStorage::locked).prefWidth(50.0)
       .cellFormat { text = ""; style { backgroundColor = storageManager.getLockedCellColor(it) } }
     onUserSelect(1) {
-      if (it.number != 0) {
-        storageManager.showCategory(it, storages)
+      if (isStorageSelectMode || it.number != 0) {
+        selectedStorageUID = it.number
+        selectedStorageUnitUID = storageManager.showItemStorageUnit(it, storages, isStorageSelectMode)
+        if (isStorageSelectMode) close()
       } else {
         GAlert(
           "The default storage cannot be edited.\n\n" +

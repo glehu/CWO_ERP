@@ -156,18 +156,26 @@ class ItemStorageManager : IModule, Controller() {
   fun getLockedCellColor(isLocked: Boolean): MultiValue<Paint> =
     if (isLocked) MultiValue(arrayOf(Color.RED)) else MultiValue(arrayOf(Color.GREEN))
 
-  fun addStorage(categories: ItemStorages) =
-    showCategory(ItemStorage(getNumber(categories), ""), categories)
+  fun addStorage(itemStorages: ItemStorages) =
+    showItemStorageUnit(ItemStorage(getNumber(itemStorages), ""), itemStorages)
 
-  fun getStoragesObservableList(categories: ItemStorages): ObservableList<ItemStorage> {
-    val priceCategories = observableListOf<ItemStorage>()
-    val sortedMap = categories.storages.toSortedMap()
-    for ((_, v) in sortedMap) priceCategories.add(v)
-    return priceCategories
+  fun getStoragesObservableList(itemStorages: ItemStorages): ObservableList<ItemStorage> {
+    val itemStoragesList = observableListOf<ItemStorage>()
+    val sortedMap = itemStorages.storages.toSortedMap()
+    for ((_, v) in sortedMap) itemStoragesList.add(v)
+    return itemStoragesList
   }
 
-  fun showCategory(category: ItemStorage, categories: ItemStorages) {
-    GItemStorage(category).openModal(block = true)
-    getStoragesObservableList(categories)
+  fun showItemStorageUnit(
+    itemStorage: ItemStorage,
+    itemStorages: ItemStorages,
+    isStorageSelectMode: Boolean = false
+  ): Int {
+    val storageUnit = GItemStorage(itemStorage)
+    storageUnit.isStorageSelectMode = isStorageSelectMode
+    storageUnit.openModal(block = true)
+    val storageUnitUID = storageUnit.selectedStorageUnitUID
+    getStoragesObservableList(itemStorages)
+    return storageUnitUID
   }
 }

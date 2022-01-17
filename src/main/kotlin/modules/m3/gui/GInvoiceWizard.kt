@@ -12,6 +12,8 @@ import modules.m3.logic.InvoiceController
 import modules.m3.misc.InvoiceModel
 import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemController
+import modules.m4storage.gui.GItemStorageManager
+import modules.m4storage.logic.ItemStorageManager
 import tornadofx.*
 
 @InternalAPI
@@ -111,19 +113,48 @@ class InvoiceItemData : Fragment("Items") {
     isEditable = true
     column("Description", InvoicePosition::description) {
       makeEditable()
-      prefWidth = 300.0
+      prefWidth = 400.0
     }
     column("Gross", InvoicePosition::grossPrice) {
       makeEditable()
-      prefWidth = 100.0
+      prefWidth = 150.0
     }
     readonlyColumn("Net", InvoicePosition::netPrice) {
-      prefWidth = 100.0
+      prefWidth = 150.0
     }
     column("Amount", InvoicePosition::amount) {
       makeEditable()
       prefWidth = 100.0
     }
+    column("Load", InvoicePosition::storageFromUID) { prefWidth = 75.0 }
+      .cellFormat {
+        graphic = hbox {
+          button("+").action {
+            val storageView = GItemStorageManager()
+            storageView.isStorageSelectMode = true
+            storageView.openModal(block = true)
+            rowItem.storageFromUID = storageView.selectedStorageUID
+            rowItem.storageUnitFromUID = storageView.selectedStorageUnitUID
+            refresh()
+            requestLayout()
+          }
+        }
+      }
+    column("Storage", InvoicePosition::storageFromUID) { prefWidth = 150.0 }
+      .cellFormat {
+        text = if (it != -1) {
+          ItemStorageManager().getStorages().storages[it]!!.description
+        } else "None"
+        style { unsafe("-fx-text-fill", Color.WHITE) }
+      }
+    column("Storage Unit", InvoicePosition::storageUnitFromUID) { prefWidth = 150.0 }
+      .cellFormat {
+        text = if (it != -1) {
+          ItemStorageManager().getStorages().storages[rowItem.storageFromUID]!!.storageUnits[it].description
+        } else "None"
+        style { unsafe("-fx-text-fill", Color.WHITE) }
+      }
+    prefWidth = 200.0
 
     onEditCommit {
       invoice.commit()
@@ -159,9 +190,7 @@ class InvoiceItemData : Fragment("Items") {
           label("EUR") { paddingHorizontal = 20 }
         }
       }
-      /**
-       * Invoice positions table
-       */
+      //Invoice positions table
       add(table)
       hbox {
         button("Add Position") {

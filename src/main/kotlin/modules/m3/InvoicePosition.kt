@@ -23,6 +23,12 @@ data class InvoicePosition(
   @SerialName("n")
   var amount: Double = 0.0
 
+  @SerialName("sf")
+  var storageFromUID: Int = -1
+
+  @SerialName("suf")
+  var storageUnitFromUID: Int = -1
+
   override fun initialize() {
   }
 }
