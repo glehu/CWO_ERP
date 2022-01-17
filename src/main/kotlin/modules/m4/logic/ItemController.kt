@@ -3,6 +3,7 @@ package modules.m4.logic
 import interfaces.IController
 import interfaces.IIndexManager
 import io.ktor.util.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.misc.SongPropertyMainDataModel
 import modules.m4.Item
@@ -12,6 +13,8 @@ import modules.m4.gui.ItemConfiguratorWizard
 import modules.m4.misc.ItemProperty
 import modules.m4.misc.getItemFromItemProperty
 import modules.m4.misc.getItemPropertyFromItem
+import modules.m4stockposting.ItemStockPosting
+import modules.m4stockposting.logic.ItemStockPostingController
 import modules.mx.itemIndexManager
 import tornadofx.Controller
 import tornadofx.Scope
@@ -85,5 +88,24 @@ class ItemController : IController, Controller() {
   fun showSettings() {
     val settings = find<GItemSettings>()
     settings.openModal()
+  }
+
+  fun addStock(storageUID: Int, storageUnitUID: Int, amount: Double, note: String = "") {
+    wizard.item
+      .storages.value[storageUID]
+      .storageUnits[storageUnitUID].stock += amount
+    val stockPosting = ItemStockPosting(
+      uID = -1,
+      itemUID = wizard.item.uID.value,
+      storageUnitFromUID = -1,
+      storageUnitToUID = storageUID,
+      amount = amount,
+      note = note
+    )
+    stockPosting.book()
+    runBlocking {
+      ItemStockPostingController().save(stockPosting)
+      ItemController().saveEntry(unlock = false)
+    }
   }
 }

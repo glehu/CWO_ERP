@@ -5,13 +5,10 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.scene.image.Image
 import javafx.scene.paint.Color
 import javafx.stage.FileChooser
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemController
 import modules.m4.misc.ItemModel
-import modules.m4stockposting.ItemStockPosting
-import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.ItemStorage
 import modules.m4storage.ItemStorageUnit
 import modules.m4storage.gui.GItemStockAdder
@@ -233,24 +230,14 @@ class ItemStorageData : Fragment("Stock") {
             //Add stock to the row item (visually only)
             rowItem.stock += stockAdder.stockToAddAmount.value
             //Add stock to the underlying item
-            this@ItemStorageData.item
-              .storages.value[selectedStorage.number]
-              .storageUnits[rowItem.number].stock += rowItem.stock
-            val stockPosting = ItemStockPosting(
-              uID = -1,
-              itemUID = this@ItemStorageData.item.uID.value,
-              storageUnitFromUID = -1,
-              storageUnitToUID = rowItem.number,
+            ItemController().addStock(
+              storageUID = this@ItemStorageData.selectedStorage.number,
+              storageUnitUID = rowItem.number,
               amount = stockAdder.stockToAddAmount.value,
               note = stockAdder.note.value
             )
-            stockPosting.book()
             refresh()
             requestLayout()
-            runBlocking {
-              ItemStockPostingController().save(stockPosting)
-              ItemController().saveEntry(unlock = false)
-            }
           }
         }
       }
