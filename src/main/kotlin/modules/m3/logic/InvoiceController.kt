@@ -14,6 +14,7 @@ import modules.m3.gui.InvoiceConfiguratorWizard
 import modules.m3.misc.InvoiceProperty
 import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
+import modules.m4.logic.ItemController
 import modules.m4.logic.ItemPriceManager
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.invoiceIndexManager
@@ -88,7 +89,13 @@ class InvoiceController : IController, Controller() {
       }
       //Stock Posting
       for (item in wizard.invoice.item.itemsProperty) {
-        //TODO
+        ItemController().postStock(
+          itemUID = item.uID,
+          storageUID = item.storageFromUID,
+          storageUnitUID = item.storageUnitFromUID,
+          amount = item.amount,
+          note = "inv${wizard.invoice.uID.value}"
+        )
       }
       wizard.invoice.item.status = 9
       wizard.invoice.item.statusText = InvoiceCLIController().getStatusText(wizard.invoice.item.status)

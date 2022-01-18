@@ -94,18 +94,26 @@ class ItemController : IController, Controller() {
     wizard.item
       .storages.value[storageUID]
       .storageUnits[storageUnitUID].stock += amount
+    postStock(wizard.item.uID.value, storageUID, storageUnitUID, amount, note)
+    runBlocking {
+      ItemController().saveEntry(unlock = false)
+    }
+  }
+
+  fun postStock(itemUID: Int, storageUID: Int, storageUnitUID: Int, amount: Double, note: String = "") {
     val stockPosting = ItemStockPosting(
       uID = -1,
-      itemUID = wizard.item.uID.value,
+      itemUID = itemUID,
+      storageFromUID = -1,
       storageUnitFromUID = -1,
-      storageUnitToUID = storageUID,
+      storageToUID = storageUID,
+      storageUnitToUID = storageUnitUID,
       amount = amount,
       note = note
     )
     stockPosting.book()
     runBlocking {
       ItemStockPostingController().save(stockPosting)
-      ItemController().saveEntry(unlock = false)
     }
   }
 }

@@ -13,7 +13,9 @@ import modules.mx.logic.Timestamp
 data class ItemStockPosting(
   override var uID: Int,
   val itemUID: Int,
+  val storageFromUID: Int,
   val storageUnitFromUID: Int,
+  val storageToUID: Int,
   val storageUnitToUID: Int,
   val amount: Double,
   val note: String = ""
