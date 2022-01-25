@@ -14,9 +14,8 @@ import tornadofx.*
 
 @ExperimentalSerializationApi
 @InternalAPI
-class GItemStorage(storage: ItemStorage) : Fragment("Storage Locations") {
+class GItemStorage(storage: ItemStorage, var isStorageSelectMode: Boolean = false) : Fragment("Storage Locations") {
 
-  var isStorageSelectMode: Boolean = false
   var selectedStorageUnitUID: Int = -1
 
   private val storageManager: ItemStorageManager by inject()
@@ -53,50 +52,54 @@ class GItemStorage(storage: ItemStorage) : Fragment("Storage Locations") {
       }
       field("Storage Units") {
         add(storageUnitsTable)
-        vbox {
-          button("Add Unit") {
-            action {
-              storageModel.storageUnits.value.add(
-                ItemStorageUnit(storageModel.storageUnits.value.size, "?")
-              )
-              storageUnitsTable.refresh()
+        if (!isStorageSelectMode) {
+          vbox {
+            button("Add Unit") {
+              action {
+                storageModel.storageUnits.value.add(
+                  ItemStorageUnit(storageModel.storageUnits.value.size, "?")
+                )
+                storageUnitsTable.refresh()
+              }
+              prefWidth = rightButtonsWidth
             }
-            prefWidth = rightButtonsWidth
-          }
-          button("Remove Unit") {
-            action {
-              storageModel.storageUnits.value.remove(storageUnitsTable.selectedItem)
+            button("Remove Unit") {
+              action {
+                storageModel.storageUnits.value.remove(storageUnitsTable.selectedItem)
+              }
+              tooltip("Removes the selected statistic from the item.")
+              style { unsafe("-fx-base", Color.DARKRED) }
+              prefWidth = rightButtonsWidth
             }
-            tooltip("Removes the selected statistic from the item.")
-            style { unsafe("-fx-base", Color.DARKRED) }
-            prefWidth = rightButtonsWidth
           }
         }
       }
     }
-    button("Save (CTRL+S)") {
-      shortcut("CTRL+S")
-      action {
-        storageModel.validate()
-        if (storageModel.isValid) {
-          storageModel.commit()
-          storageManager.funUpdateStorage(
-            storageNew = getStorageFromStorageProperty(storageModel.item),
-            storageOld = originalStorageProperty
-          )
+    if (!isStorageSelectMode) {
+      button("Save (CTRL+S)") {
+        shortcut("CTRL+S")
+        action {
+          storageModel.validate()
+          if (storageModel.isValid) {
+            storageModel.commit()
+            storageManager.funUpdateStorage(
+              storageNew = getStorageFromStorageProperty(storageModel.item),
+              storageOld = originalStorageProperty
+            )
+            close()
+          }
+        }
+        prefWidth = rightButtonsWidth
+      }
+      button("Delete") {
+        prefWidth = rightButtonsWidth
+        action {
+          storageManager.deleteStorage(originalStorageProperty)
           close()
         }
+        style { unsafe("-fx-base", Color.DARKRED) }
+        vboxConstraints { marginTop = 25.0 }
       }
-      prefWidth = rightButtonsWidth
-    }
-    button("Delete") {
-      prefWidth = rightButtonsWidth
-      action {
-        storageManager.deleteStorage(originalStorageProperty)
-        close()
-      }
-      style { unsafe("-fx-base", Color.DARKRED) }
-      vboxConstraints { marginTop = 25.0 }
     }
   }
 }

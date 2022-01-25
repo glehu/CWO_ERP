@@ -130,8 +130,7 @@ class InvoiceItemData : Fragment("Items") {
       .cellFormat {
         graphic = hbox {
           button("+").action {
-            val storageView = GItemStorageManager()
-            storageView.isStorageSelectMode = true
+            val storageView = GItemStorageManager(isStorageSelectMode = true)
             storageView.openModal(block = true)
             rowItem.storageFromUID = storageView.selectedStorageUID
             rowItem.storageUnitFromUID = storageView.selectedStorageUnitUID

@@ -171,8 +171,7 @@ class ItemStorageManager : IModule, Controller() {
     itemStorages: ItemStorages,
     isStorageSelectMode: Boolean = false
   ): Int {
-    val storageUnit = GItemStorage(itemStorage)
-    storageUnit.isStorageSelectMode = isStorageSelectMode
+    val storageUnit = GItemStorage(itemStorage, isStorageSelectMode = isStorageSelectMode)
     storageUnit.openModal(block = true)
     val storageUnitUID = storageUnit.selectedStorageUnitUID
     getStoragesObservableList(itemStorages)

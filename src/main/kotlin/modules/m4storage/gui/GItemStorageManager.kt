@@ -10,10 +10,9 @@ import tornadofx.*
 
 @InternalAPI
 @ExperimentalSerializationApi
-class GItemStorageManager : View("Item Storage Locations") {
+class GItemStorageManager(var isStorageSelectMode: Boolean = false) : View("Item Storage Locations") {
   private val storageManager: ItemStorageManager by inject()
 
-  var isStorageSelectMode: Boolean = false
   var selectedStorageUID: Int = -1
   var selectedStorageUnitUID: Int = -1
 
@@ -46,12 +45,14 @@ class GItemStorageManager : View("Item Storage Locations") {
   override val root = borderpane {
     refreshStorages()
     center = table
-    right = vbox {
-      button("Add Storage") {
-        action {
-          storageManager.addStorage(storages)
+    if (!isStorageSelectMode) {
+      right = vbox {
+        button("Add Storage") {
+          action {
+            storageManager.addStorage(storages)
+          }
+          prefWidth = rightButtonsWidth
         }
-        prefWidth = rightButtonsWidth
       }
     }
   }
