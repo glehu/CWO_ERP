@@ -34,7 +34,7 @@ class InvoiceProperty {
   var buyerUID: Int by buyerUIDProperty
   val dateProperty = SimpleObjectProperty(LocalDate.now())
   var date: LocalDate by dateProperty
-  val textProperty = SimpleStringProperty()
+  val textProperty = SimpleStringProperty("Invoice")
   var text: String by textProperty
   val grossTotalProperty = SimpleDoubleProperty()
   var grossTotal: Double by grossTotalProperty
