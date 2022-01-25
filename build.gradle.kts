@@ -50,7 +50,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.10")
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.2.0")
     implementation("com.github.komputing.khash:keccak:1.1.1")
-    implementation("com.benasher44:uuid:0.3.1")
+    implementation("com.benasher44:uuid:0.4.0")
     implementation("com.sultanofcardio:mailman:3.1.2")
     implementation("com.github.ajalt.mordant:mordant:2.0.0-beta4")
 }
