@@ -293,7 +293,7 @@ class ServerController {
       val registrationPayload = appCall.receive<RegistrationPayload>()
       val userManager = UserManager()
       var exists = false
-      var success = true
+      var isSuccess = true
       var message = ""
       mutex.withLock {
         val credentials = userManager.getCredentials()
@@ -303,7 +303,7 @@ class ServerController {
           }
         }
         if (exists) {
-          success = false
+          isSuccess = false
           message = "User already exists"
         } else {
           val user = User(registrationPayload.username, encryptAES(registrationPayload.password))
@@ -311,7 +311,7 @@ class ServerController {
           log(Log.LogType.COM, "User ${registrationPayload.username} registered.", appCall.request.uri)
         }
       }
-      return RegistrationResponse(success, message)
+      return RegistrationResponse(isSuccess, message)
     }
 
     fun getItemImage(): String {

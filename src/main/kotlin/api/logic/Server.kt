@@ -47,6 +47,12 @@ class Server : IModule, Controller() {
   private val userManager: UserManager by inject()
   lateinit var text: String
 
+  init {
+    serverJobGlobal = GlobalScope.launch {
+      serverEngine.start(wait = true)
+    }
+  }
+
   val serverEngine = embeddedServer(
     factory = Netty,
     host = iniVal.serverIPAddress.substringBefore(':'),
@@ -106,17 +112,14 @@ class Server : IModule, Controller() {
       route("/mockingbird") {
         post {
           val text: String = call.receive()
-          log(
-            Log.LogType.COM,
-            text,
-            call.request.uri
-          )
+          log(Log.LogType.COM, text, call.request.uri)
           call.respondText(text)
         }
       }
+      register()
       spotifyAuthCallback()
+
       authenticate("auth-basic") {
-        register()
         login()
         logout()
         //------------------------------------------------------v
@@ -496,12 +499,6 @@ class Server : IModule, Controller() {
           )
         )
       }
-    }
-  }
-
-  init {
-    serverJobGlobal = GlobalScope.launch {
-      serverEngine.start(wait = true)
     }
   }
 }
