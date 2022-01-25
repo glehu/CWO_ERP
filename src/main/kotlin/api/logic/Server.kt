@@ -47,12 +47,6 @@ class Server : IModule, Controller() {
   private val userManager: UserManager by inject()
   lateinit var text: String
 
-  init {
-    serverJobGlobal = GlobalScope.launch {
-      serverEngine.start(wait = true)
-    }
-  }
-
   val serverEngine = embeddedServer(
     factory = Netty,
     host = iniVal.serverIPAddress.substringBefore(':'),
@@ -198,6 +192,12 @@ class Server : IModule, Controller() {
           userTracking()
         }
       }
+    }
+  }
+
+  init {
+    serverJobGlobal = GlobalScope.launch {
+      serverEngine.start(wait = true)
     }
   }
 
