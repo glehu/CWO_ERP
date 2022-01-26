@@ -96,8 +96,8 @@ class ItemController : IController, Controller() {
       .storageUnits[storageUnitUID].stock += amount
     postStock(
       itemUID = wizard.item.uID.value,
-      storageUID = storageUID,
-      storageUnitUID = storageUnitUID,
+      storageFromUID = storageUID,
+      storageUnitFromUID = storageUnitUID,
       amount = amount,
       note = note,
       bookItemStock = false
@@ -109,15 +109,15 @@ class ItemController : IController, Controller() {
 
   fun postStock(
     itemUID: Int,
-    storageUID: Int,
-    storageUnitUID: Int,
+    storageFromUID: Int,
+    storageUnitFromUID: Int,
     amount: Double,
     note: String = "",
     bookItemStock: Boolean = true
   ) {
     if (bookItemStock) {
       val itemProperty = getItemPropertyFromItem(get(itemUID) as Item)
-      itemProperty.storagesProperty[storageUID].storageUnits[storageUnitUID].stock -= amount
+      itemProperty.storagesProperty[storageFromUID].storageUnits[storageUnitFromUID].stock -= amount
       runBlocking {
         save(getItemFromItemProperty(itemProperty))
       }
@@ -125,10 +125,10 @@ class ItemController : IController, Controller() {
     val stockPosting = ItemStockPosting(
       uID = -1,
       itemUID = itemUID,
-      storageFromUID = -1,
-      storageUnitFromUID = -1,
-      storageToUID = storageUID,
-      storageUnitToUID = storageUnitUID,
+      storageFromUID = storageFromUID,
+      storageUnitFromUID = storageUnitFromUID,
+      storageToUID = -1,
+      storageUnitToUID = -1,
       amount = amount,
       note = note
     )

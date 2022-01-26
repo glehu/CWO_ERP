@@ -5,22 +5,23 @@ import api.misc.json.*
 import db.CwODB
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.network.selector.*
+import io.ktor.network.sockets.*
 import io.ktor.util.*
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import io.ktor.utils.io.*
+import kotlinx.coroutines.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.json.Json
-import modules.mx.activeUser
-import modules.mx.getModulePath
-import modules.mx.isClientGlobal
+import modules.mx.*
 import modules.mx.logic.Emailer
 import modules.mx.logic.Log
-import modules.mx.protoBufGlobal
+import modules.mx.logic.indexFormat
 import java.io.File
 import java.io.RandomAccessFile
+import java.net.InetSocketAddress
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -359,5 +360,76 @@ interface IModule {
       }
     }
     return success
+  }
+
+  fun getEntriesFromIndexSearch(
+    searchText: String,
+    ixNr: Int,
+    showAll: Boolean,
+    entryOut: (IEntry) -> Unit
+  ) {
+    if (!isClientGlobal) {
+      CwODB.getEntriesFromSearchString(
+        searchText = indexFormat(searchText),
+        ixNr = ixNr,
+        exactSearch = true,
+        indexManager = getIndexManager()!!,
+        maxSearchResults = if (showAll) -1 else maxSearchResultsGlobal
+      ) { _, bytes ->
+        try {
+          entryOut(decode(bytes))
+        } catch (e: Exception) {
+          log(Log.LogType.ERROR, "IXLOOK-ERR-${e.message}")
+        }
+      }
+    } else {
+      // ########## RAW SOCKET TCP DATA TRANSFER ##########
+      runBlocking {
+        val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
+        val socket =
+          aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().connect(
+            InetSocketAddress(
+              iniVal.telnetServerIPAddress.substringBefore(':'),
+              iniVal.telnetServerIPAddress.substringAfter(':').toInt()
+            )
+          )
+        val sockIn = socket.openReadChannel()
+        val sockOut = socket.openWriteChannel(autoFlush = true)
+        var exact = "SPE"
+        if (showAll) exact += "FULL"
+        sockOut.writeStringUtf8(
+          "IXS $module $ixNr $exact NAME ${indexFormat(searchText)}\r\n"
+        )
+        var response: String? = ""
+        // Remove the HEY welcome message
+        for (i in 0..2) {
+          response = sockIn.readUTF8Line()
+          println(response)
+          if (response == "HEY") {
+            response = sockIn.readUTF8Line()
+            println(response)
+            break
+          }
+        }
+        // Continue with results
+        if (response == "RESULTS") {
+          var done = false
+          var inputLine = ""
+          while (!done) {
+            withTimeoutOrNull(1000) {
+              inputLine = sockIn.readUTF8Line()!!
+            }
+            if (inputLine != "DONE") {
+              try {
+                val entryJson = Json.decodeFromString<EntryJson>(inputLine)
+                entryOut(decode(entryJson.entry))
+              } catch (e: Exception) {
+                println("IXLOOK-ERR-${e.message} FOR $inputLine")
+              }
+            } else done = true
+          }
+        }
+      }
+    }
   }
 }

@@ -12,6 +12,7 @@ import modules.m3.logic.InvoiceController
 import modules.m3.misc.InvoiceModel
 import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemController
+import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.gui.GItemStorageManager
 import modules.m4storage.logic.ItemStorageManager
 import tornadofx.*
@@ -153,7 +154,12 @@ class InvoiceItemData : Fragment("Items") {
         } else "None"
         style { unsafe("-fx-text-fill", Color.WHITE) }
       }
-    prefWidth = 200.0
+    column("Available", InvoicePosition::storageUnitFromUID) { prefWidth = 100.0 }
+      .cellFormat {
+        text = if (it != -1) {
+          ItemStockPostingController().getAvailableStock(it, this.rowItem.storageFromUID).toString()
+        } else ""
+      }
 
     onEditCommit {
       invoice.commit()

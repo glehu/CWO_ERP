@@ -15,13 +15,13 @@ import kotlin.streams.asSequence
  * @return the index formatted string
  */
 fun indexFormat(text: String): String {
-  val songNameArray = text.uppercase(Locale.getDefault()).toCharArray()
+  val charArray = text.uppercase(Locale.getDefault()).toCharArray()
   var formatted = ""
-  for (i in songNameArray.indices) {
+  for (i in charArray.indices) {
     //Anything but whitespaces
     val regex = "^\\s$".toRegex()
-    if (!regex.matches(songNameArray[i].toString())) {
-      formatted += songNameArray[i]
+    if (!regex.matches(charArray[i].toString())) {
+      formatted += charArray[i]
     }
   }
   return formatted

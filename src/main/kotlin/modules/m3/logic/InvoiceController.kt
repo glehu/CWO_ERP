@@ -91,8 +91,8 @@ class InvoiceController : IController, Controller() {
       for (item in wizard.invoice.item.itemsProperty) {
         ItemController().postStock(
           itemUID = item.uID,
-          storageUID = item.storageFromUID,
-          storageUnitUID = item.storageUnitFromUID,
+          storageFromUID = item.storageFromUID,
+          storageUnitFromUID = item.storageUnitFromUID,
           amount = item.amount,
           note = "inv${wizard.invoice.uID.value}"
         )

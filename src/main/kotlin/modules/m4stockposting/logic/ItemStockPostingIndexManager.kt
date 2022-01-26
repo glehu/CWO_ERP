@@ -71,8 +71,8 @@ class ItemStockPostingIndexManager : IIndexManager, Controller() {
       writeToDisk,
       userName,
       Pair(1, entry.itemUID.toString()),
-      Pair(2, entry.storageUnitFromUID.toString()),
-      Pair(3, entry.storageUnitToUID.toString()),
+      Pair(2, entry.ixStorageAndStorageUnitFrom),
+      Pair(3, entry.ixStorageAndStorageUnitTo),
       Pair(4, entry.dateBooked),
       Pair(5, entry.status.toString())
     )

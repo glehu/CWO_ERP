@@ -20,8 +20,11 @@ data class ItemStockPosting(
   val amount: Double,
   val note: String = ""
 ) : IEntry {
-  private var isFinished: Boolean = false
+  var isFinished: Boolean = false
   var status: Int = 0
+
+  var ixStorageAndStorageUnitFrom: String = ""
+  var ixStorageAndStorageUnitTo: String = ""
 
   /**
    * Contains the Unix Hex Timestamp of the moment the stock posting was booked.
@@ -37,6 +40,8 @@ data class ItemStockPosting(
         if (!isFinished) isFinished = true
       }
     }
+    ixStorageAndStorageUnitFrom = "<${storageFromUID}><${storageUnitFromUID}>"
+    ixStorageAndStorageUnitTo = "<${storageToUID}><${storageUnitToUID}>"
   }
 
   fun book() {
