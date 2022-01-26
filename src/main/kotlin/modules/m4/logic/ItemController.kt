@@ -96,8 +96,10 @@ class ItemController : IController, Controller() {
       .storageUnits[storageUnitUID].stock += amount
     postStock(
       itemUID = wizard.item.uID.value,
-      storageFromUID = storageUID,
-      storageUnitFromUID = storageUnitUID,
+      storageFromUID = -1,
+      storageUnitFromUID = -1,
+      storageToUID = storageUID,
+      storageUnitToUID = storageUnitUID,
       amount = amount,
       note = note,
       bookItemStock = false
@@ -111,6 +113,8 @@ class ItemController : IController, Controller() {
     itemUID: Int,
     storageFromUID: Int,
     storageUnitFromUID: Int,
+    storageToUID: Int,
+    storageUnitToUID: Int,
     amount: Double,
     note: String = "",
     bookItemStock: Boolean = true
@@ -127,8 +131,8 @@ class ItemController : IController, Controller() {
       itemUID = itemUID,
       storageFromUID = storageFromUID,
       storageUnitFromUID = storageUnitFromUID,
-      storageToUID = -1,
-      storageUnitToUID = -1,
+      storageToUID = storageToUID,
+      storageUnitToUID = storageUnitToUID,
       amount = amount,
       note = note
     )

@@ -93,6 +93,8 @@ class InvoiceController : IController, Controller() {
           itemUID = item.uID,
           storageFromUID = item.storageFromUID,
           storageUnitFromUID = item.storageUnitFromUID,
+          storageToUID = -1,
+          storageUnitToUID = -1,
           amount = item.amount,
           note = "inv${wizard.invoice.uID.value}"
         )
