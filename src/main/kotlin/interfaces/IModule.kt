@@ -32,7 +32,7 @@ interface IModule {
   fun getIndexManager(): IIndexManager?
 
   fun getServerUrl(): String {
-    return "http://${modules.mx.serverIPAddressGlobal}/"
+    return "http://${serverIPAddressGlobal}/"
   }
 
   fun getApiUrl(): String {
@@ -416,7 +416,7 @@ interface IModule {
           var done = false
           var inputLine = ""
           while (!done) {
-            withTimeoutOrNull(1000) {
+            withTimeoutOrNull(5000) {
               inputLine = sockIn.readUTF8Line()!!
             }
             if (inputLine != "DONE") {
