@@ -233,9 +233,8 @@ class InvoiceController : IController, Controller() {
         pos.storageFrom1UID = -1
         pos.storageUnitFrom1UID = -1
       } else {
-        //Check if the selected storage unit suits the position's amount
-        val available = ItemStockPostingController().getAvailableStock(pos.storageUnitFrom1UID, pos.storageFrom1UID)
-        if (available >= pos.amount) continue
+        val valid = ItemStockPostingController().check(pos.storageFrom1UID, pos.storageUnitFrom1UID, pos.amount)
+        if (valid) continue
         //Try to find a new storage unit
         val uIDs = ItemStockPostingController().getStorageUnitWithAtLeast(pos.amount)
         wizard.invoice.items.value[i].storageFrom1UID = uIDs.first

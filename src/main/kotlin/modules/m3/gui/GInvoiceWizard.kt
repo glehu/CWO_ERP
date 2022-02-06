@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 import modules.m2.Contact
 import modules.m2.logic.ContactController
 import modules.m3.InvoicePosition
+import modules.m3.logic.InvoiceCLIController
 import modules.m3.logic.InvoiceController
 import modules.m3.misc.InvoiceModel
 import modules.m4.ItemPriceCategory
@@ -107,6 +108,7 @@ class InvoiceMainData : Fragment("Main") {
 @InternalAPI
 @ExperimentalSerializationApi
 class InvoiceItemData : Fragment("Items") {
+  private val ini = InvoiceCLIController().getIni()
   private val invoice: InvoiceModel by inject()
   private val invoiceController: InvoiceController by inject()
   private val table = tableview(invoice.items) {
@@ -163,7 +165,7 @@ class InvoiceItemData : Fragment("Items") {
 
     onEditCommit {
       invoice.commit()
-      invoiceController.checkStorageUnits()
+      if (ini.autoStorageSelection) invoiceController.checkStorageUnits()
       invoiceController.calculate(invoice.item)
       this.tableView.refresh()
     }
