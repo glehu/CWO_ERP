@@ -23,11 +23,31 @@ data class InvoicePosition(
   @SerialName("n")
   var amount: Double = 0.0
 
-  @SerialName("sf")
-  var storageFromUID: Int = -1
+  /*
+  #### Storages & Stock Posting [1/2] ####
+   */
 
-  @SerialName("suf")
-  var storageUnitFromUID: Int = -1
+  @SerialName("sf1")
+  var storageFrom1UID: Int = -1
+
+  @SerialName("suf1")
+  var storageUnitFrom1UID: Int = -1
+
+  @SerialName("spf1")
+  var stockPostingFrom1UID: Int = -1
+
+  /*
+  #### Storages & Stock Posting [2/2] ####
+   */
+
+  @SerialName("sf2")
+  var storageFrom2UID: Int = -1
+
+  @SerialName("suf2")
+  var storageUnitFrom2UID: Int = -1
+
+  @SerialName("spf2")
+  var stockPostingFrom2UID: Int = -1
 
   override fun initialize() {
   }

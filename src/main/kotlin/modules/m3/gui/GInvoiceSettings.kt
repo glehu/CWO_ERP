@@ -5,6 +5,7 @@ import interfaces.IModule
 import io.ktor.util.*
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.collections.FXCollections
 import javafx.scene.control.TabPane
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
@@ -32,6 +33,11 @@ class GInvoiceSettings : IModule, Fragment("Invoice Settings") {
   private val autoCommission = SimpleBooleanProperty(iniVal.autoCommission)
   private val autoCreateContacts = SimpleBooleanProperty(iniVal.autoCreateContacts)
   private val autoSendEMailConfirmation = SimpleBooleanProperty(iniVal.autoSendEmailConfirmation)
+  private var autoStorageSelection = SimpleBooleanProperty(iniVal.autoStorageSelection)
+  private var autoStorageSelectionOrder = SimpleStringProperty(iniVal.autoStorageSelectionOrder)
+  private var autoStorageSelectionOrderTypes = FXCollections.observableArrayList(
+    "LIFO", "FIFO", "HIFO", "LOFO", "FEFO"
+  )
 
   override val root = borderpane {
     prefWidth = 800.0
@@ -66,6 +72,14 @@ class GInvoiceSettings : IModule, Fragment("Invoice Settings") {
                 tooltip("Displays the To Do relevant statuses, seperated by a comma <,>.")
               }
             }
+          }
+        }
+      }
+      tab("Storage Posting") {
+        form {
+          fieldset("Automatic Storage Selection") {
+            field("Auto Mode") { checkbox("", autoStorageSelection) }
+            field("Storage Selection Order") { combobox(autoStorageSelectionOrder, autoStorageSelectionOrderTypes) }
           }
         }
       }
@@ -115,7 +129,9 @@ class GInvoiceSettings : IModule, Fragment("Invoice Settings") {
               todoStatuses = todoStatuses.value,
               autoCommission = autoCommission.value,
               autoCreateContacts = autoCreateContacts.value,
-              autoSendEmailConfirmation = autoSendEMailConfirmation.value
+              autoSendEmailConfirmation = autoSendEMailConfirmation.value,
+              autoStorageSelection = autoStorageSelection.value,
+              autoStorageSelectionOrder = autoStorageSelectionOrder.value
             )
           )
         )

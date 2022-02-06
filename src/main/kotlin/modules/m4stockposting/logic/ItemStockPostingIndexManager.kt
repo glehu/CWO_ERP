@@ -42,7 +42,8 @@ class ItemStockPostingIndexManager : IIndexManager, Controller() {
       2, //Storage Unit From
       3, //Storage Unit To
       4, //Date
-      5 //Status
+      5, //Status
+      6 //Amount
     )
   }
 
@@ -52,7 +53,8 @@ class ItemStockPostingIndexManager : IIndexManager, Controller() {
       "2-From",
       "3-To",
       "4-Date",
-      "5-Status"
+      "5-Status",
+      "6-Amount"
     )
   }
 
@@ -74,7 +76,8 @@ class ItemStockPostingIndexManager : IIndexManager, Controller() {
       Pair(2, entry.ixStorageAndStorageUnitFrom),
       Pair(3, entry.ixStorageAndStorageUnitTo),
       Pair(4, entry.dateBooked),
-      Pair(5, entry.status.toString())
+      Pair(5, entry.status.toString()),
+      Pair(6, (entry.stockAvailable ?: 0.0).toString())
     )
   }
 

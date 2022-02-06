@@ -366,15 +366,19 @@ interface IModule {
     searchText: String,
     ixNr: Int,
     showAll: Boolean,
+    format: Boolean = true,
+    numberComparison: Boolean = false,
     entryOut: (IEntry) -> Unit
   ) {
+    val searchTextFormatted = if (format) indexFormat(searchText) else searchText
     if (!isClientGlobal) {
       CwODB.getEntriesFromSearchString(
-        searchText = indexFormat(searchText),
+        searchText = searchTextFormatted,
         ixNr = ixNr,
         exactSearch = true,
         indexManager = getIndexManager()!!,
-        maxSearchResults = if (showAll) -1 else maxSearchResultsGlobal
+        maxSearchResults = if (showAll) -1 else maxSearchResultsGlobal,
+        numberComparison = numberComparison
       ) { _, bytes ->
         try {
           entryOut(decode(bytes))
@@ -398,7 +402,7 @@ interface IModule {
         var exact = "SPE"
         if (showAll) exact += "FULL"
         sockOut.writeStringUtf8(
-          "IXS $module $ixNr $exact NAME ${indexFormat(searchText)}\r\n"
+          "IXS $module $ixNr $exact NAME $searchTextFormatted\r\n"
         )
         var response: String? = ""
         // Remove the HEY welcome message

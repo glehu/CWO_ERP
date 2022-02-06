@@ -16,6 +16,7 @@ import modules.m3.misc.getInvoiceFromInvoiceProperty
 import modules.m3.misc.getInvoicePropertyFromInvoice
 import modules.m4.logic.ItemController
 import modules.m4.logic.ItemPriceManager
+import modules.m4stockposting.logic.ItemStockPostingController
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.invoiceIndexManager
 import modules.mx.logic.Emailer
@@ -91,8 +92,9 @@ class InvoiceController : IController, Controller() {
       for (item in wizard.invoice.item.itemsProperty) {
         ItemController().postStock(
           itemUID = item.uID,
-          storageFromUID = item.storageFromUID,
-          storageUnitFromUID = item.storageUnitFromUID,
+          storageFromUID = item.storageFrom1UID,
+          storageUnitFromUID = item.storageUnitFrom1UID,
+          stockPostingFromUID = item.stockPostingFrom1UID,
           storageToUID = -1,
           storageUnitToUID = -1,
           amount = item.amount,
@@ -218,5 +220,29 @@ class InvoiceController : IController, Controller() {
       }
     }
     return valid
+  }
+
+  fun checkStorageUnits() {
+    var i = 0
+    for (pos in wizard.invoice.items.value) {
+      //Check if we need to check the storages
+      if (pos.amount == 0.0) {
+        //Was a storage unit selected?
+        if (pos.storageUnitFrom1UID == -1) continue
+        //Reset storage unit
+        pos.storageFrom1UID = -1
+        pos.storageUnitFrom1UID = -1
+      } else {
+        //Check if the selected storage unit suits the position's amount
+        val available = ItemStockPostingController().getAvailableStock(pos.storageUnitFrom1UID, pos.storageFrom1UID)
+        if (available >= pos.amount) continue
+        //Try to find a new storage unit
+        val uIDs = ItemStockPostingController().getStorageUnitWithAtLeast(pos.amount)
+        wizard.invoice.items.value[i].storageFrom1UID = uIDs.first
+        wizard.invoice.items.value[i].storageUnitFrom1UID = uIDs.second
+        wizard.invoice.items.value[i].stockPostingFrom1UID = uIDs.third
+      }
+      i++
+    }
   }
 }

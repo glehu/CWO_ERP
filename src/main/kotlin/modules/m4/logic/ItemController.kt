@@ -98,6 +98,7 @@ class ItemController : IController, Controller() {
       itemUID = wizard.item.uID.value,
       storageFromUID = -1,
       storageUnitFromUID = -1,
+      stockPostingFromUID = -1,
       storageToUID = storageUID,
       storageUnitToUID = storageUnitUID,
       amount = amount,
@@ -113,6 +114,7 @@ class ItemController : IController, Controller() {
     itemUID: Int,
     storageFromUID: Int,
     storageUnitFromUID: Int,
+    stockPostingFromUID: Int,
     storageToUID: Int,
     storageUnitToUID: Int,
     amount: Double,
@@ -131,14 +133,23 @@ class ItemController : IController, Controller() {
       itemUID = itemUID,
       storageFromUID = storageFromUID,
       storageUnitFromUID = storageUnitFromUID,
+      stockPostingFromUID = stockPostingFromUID,
       storageToUID = storageToUID,
       storageUnitToUID = storageUnitToUID,
       amount = amount,
       note = note
     )
-    stockPosting.book()
     runBlocking {
+      stockPosting.book()
       ItemStockPostingController().save(stockPosting)
+      //Are we taking stock from a stock posting?
+      if (stockPostingFromUID != -1) {
+        val stockPostingFrom = ItemStockPostingController().get(stockPostingFromUID) as ItemStockPosting
+        if (stockPostingFrom.stockAvailable != null) {
+          stockPostingFrom.stockAvailable = stockPostingFrom.stockAvailable?.minus(amount)
+          ItemStockPostingController().save(stockPostingFrom)
+        }
+      }
     }
   }
 }

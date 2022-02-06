@@ -9,6 +9,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m3.Invoice
 import modules.m3.InvoicePosition
+import modules.m3.misc.AutoStorageSelectionOrderType
 import modules.m3.misc.InvoiceIni
 import modules.m4.logic.ItemPriceManager
 import modules.mx.invoiceIndexManager
@@ -56,5 +57,20 @@ class InvoiceCLIController : IModule {
 
   fun getGrossFromNet(net: Double, vat: Double): Double {
     return net + (net * vat)
+  }
+
+  /**
+   * @return [AutoStorageSelectionOrderType]
+   */
+  fun getAutoStorageSelectionOrder(invoiceIni: InvoiceIni? = null): AutoStorageSelectionOrderType {
+    val ini = invoiceIni ?: getIni()
+    return when (ini.autoStorageSelectionOrder) {
+      "LIFO" -> AutoStorageSelectionOrderType.LIFO
+      "FIFO" -> AutoStorageSelectionOrderType.FIFO
+      "HIFO" -> AutoStorageSelectionOrderType.HIFO
+      "LOFO" -> AutoStorageSelectionOrderType.LOFO
+      "FEFO" -> AutoStorageSelectionOrderType.FEFO
+      else -> AutoStorageSelectionOrderType.LIFO
+    }
   }
 }

@@ -127,42 +127,43 @@ class InvoiceItemData : Fragment("Items") {
       makeEditable()
       prefWidth = 100.0
     }
-    column("Load", InvoicePosition::storageFromUID) { prefWidth = 75.0 }
+    column("Load", InvoicePosition::storageFrom1UID) { prefWidth = 75.0 }
       .cellFormat {
         graphic = hbox {
           button("+").action {
             val storageView = GItemStorageManager(isStorageSelectMode = true)
             storageView.openModal(block = true)
-            rowItem.storageFromUID = storageView.selectedStorageUID
-            rowItem.storageUnitFromUID = storageView.selectedStorageUnitUID
+            rowItem.storageFrom1UID = storageView.selectedStorageUID
+            rowItem.storageUnitFrom1UID = storageView.selectedStorageUnitUID
             refresh()
             requestLayout()
           }
         }
       }
-    column("Storage", InvoicePosition::storageFromUID) { prefWidth = 150.0 }
+    column("Storage", InvoicePosition::storageFrom1UID) { prefWidth = 150.0 }
       .cellFormat {
         text = if (it != -1) {
           ItemStorageManager().getStorages().storages[it]!!.description
         } else "None"
         style { unsafe("-fx-text-fill", Color.WHITE) }
       }
-    column("Storage Unit", InvoicePosition::storageUnitFromUID) { prefWidth = 150.0 }
+    column("Storage Unit", InvoicePosition::storageUnitFrom1UID) { prefWidth = 150.0 }
       .cellFormat {
         text = if (it != -1) {
-          ItemStorageManager().getStorages().storages[rowItem.storageFromUID]!!.storageUnits[it].description
+          ItemStorageManager().getStorages().storages[rowItem.storageFrom1UID]!!.storageUnits[it].description
         } else "None"
         style { unsafe("-fx-text-fill", Color.WHITE) }
       }
-    column("Available", InvoicePosition::storageUnitFromUID) { prefWidth = 100.0 }
+    column("Available", InvoicePosition::storageUnitFrom1UID) { prefWidth = 100.0 }
       .cellFormat {
         text = if (it != -1) {
-          ItemStockPostingController().getAvailableStock(it, this.rowItem.storageFromUID).toString()
+          ItemStockPostingController().getAvailableStock(it, this.rowItem.storageFrom1UID).toString()
         } else ""
       }
 
     onEditCommit {
       invoice.commit()
+      invoiceController.checkStorageUnits()
       invoiceController.calculate(invoice.item)
       this.tableView.refresh()
     }

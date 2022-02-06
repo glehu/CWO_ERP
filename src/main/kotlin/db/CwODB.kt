@@ -69,6 +69,7 @@ class CwODB {
       maxSearchResults: Int = maxSearchResultsGlobal,
       indexManager: IIndexManager,
       module: String = indexManager.module,
+      numberComparison: Boolean = false,
       updateProgress: (Int, ByteArray) -> Unit
     ) {
       var counter = 0
@@ -93,8 +94,14 @@ class CwODB {
             return
           } else {
             //Searches in the provided index
-            filteredMap = indexManager.indexList[ixNr]!!.indexMap.filterValues {
-              it.content.contains(searchText.toRegex())
+            filteredMap = if (!numberComparison) {
+              indexManager.indexList[ixNr]!!.indexMap.filterValues {
+                it.content.contains(searchText.toRegex())
+              }
+            } else {
+              indexManager.indexList[ixNr]!!.indexMap.filterValues {
+                it.content.toDouble() >= searchText.toDouble()
+              }
             }
           }
         } else {

@@ -23,8 +23,8 @@ import modules.m3.Invoice
 import modules.m3.InvoicePosition
 import modules.m3.logic.InvoiceIndexManager
 import modules.m4.Item
-import modules.m4stockposting.ItemStockPosting
 import modules.m4.logic.ItemIndexManager
+import modules.m4stockposting.ItemStockPosting
 import modules.m4stockposting.logic.ItemStockPostingIndexManager
 import java.io.File
 
@@ -124,7 +124,7 @@ fun getIcon() = Image("file:///$dataPath\\data\\img\\orochi_logo_red_200x200.png
 fun getLogo() = Image("file:///$dataPath\\data\\img\\orochi_logo_red_500x500.png")
 
 //Search settings
-var maxSearchResultsGlobal: Int = 0
+var maxSearchResultsGlobal: Int = 2000
 
 //GUI settings
 const val rightButtonsWidth = 150.0

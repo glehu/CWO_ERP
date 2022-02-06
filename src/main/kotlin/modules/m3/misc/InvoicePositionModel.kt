@@ -43,8 +43,8 @@ fun getItemPropertyFromItem(item: InvoicePosition): InvoiceItemProperty {
   itemProperty.description = item.description
   itemProperty.price = item.grossPrice
   itemProperty.amount = item.amount
-  itemProperty.storageFromUID = item.storageFromUID
-  itemProperty.storageUnitFromUID = item.storageUnitFromUID
+  itemProperty.storageFromUID = item.storageFrom1UID
+  itemProperty.storageUnitFromUID = item.storageUnitFrom1UID
   return itemProperty
 }
 
@@ -57,7 +57,7 @@ fun getItemFromItemProperty(itemProperty: InvoiceItemProperty): InvoicePosition 
   item.grossPrice = itemProperty.price
   item.netPrice = InvoiceCLIController().getNetFromGross(item.grossPrice, 0.19)
   item.amount = itemProperty.amount
-  item.storageFromUID = itemProperty.storageFromUID
-  item.storageFromUID = itemProperty.storageUnitFromUID
+  item.storageFrom1UID = itemProperty.storageFromUID
+  item.storageFrom1UID = itemProperty.storageUnitFromUID
   return item
 }
