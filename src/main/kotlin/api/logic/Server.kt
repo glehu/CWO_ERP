@@ -182,6 +182,8 @@ class Server : IModule, Controller() {
           getStorageNumber()
           saveStorage()
           deleteStorage()
+          checkStorage()
+          getAvailableStock()
 
           getItemImage()
 
@@ -473,6 +475,26 @@ class Server : IModule, Controller() {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.getItemImage())
+      }
+    }
+  }
+
+  private fun Route.checkStorage() {
+    post("m4sp/check") {
+      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+        call.respond(HttpStatusCode.Forbidden)
+      } else {
+        call.respond(ServerController.checkStorage(call.receive() as TwoIntOneDoubleJson))
+      }
+    }
+  }
+
+  private fun Route.getAvailableStock() {
+    post("m4sp/avail") {
+      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+        call.respond(HttpStatusCode.Forbidden)
+      } else {
+        call.respond(ServerController.getAvailableStock(call.receive() as PairIntJson))
       }
     }
   }

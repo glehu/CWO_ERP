@@ -144,3 +144,16 @@ data class SettingsRequestJson(
   val module: String,
   val subSetting: String
 )
+
+@Serializable
+data class TwoIntOneDoubleJson(
+  val first: Int,
+  val second: Int,
+  val third: Double
+)
+
+@Serializable
+data class PairIntJson(
+  val first: Int,
+  val second: Int
+)

@@ -23,6 +23,7 @@ import modules.m3.logic.InvoiceCLIController
 import modules.m4.Item
 import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemPriceManager
+import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.logic.ItemStorageManager
 import modules.mx.*
 import modules.mx.logic.*
@@ -329,6 +330,14 @@ class ServerController {
         ixNr = 2,
         exactSearch = true
       )
+    }
+
+    fun checkStorage(request: TwoIntOneDoubleJson): Boolean {
+      return ItemStockPostingController().check(request.first, request.second, request.third)
+    }
+
+    fun getAvailableStock(request: PairIntJson): Double {
+      return ItemStockPostingController().getAvailableStock(request.first, request.second)
     }
   }
 }
