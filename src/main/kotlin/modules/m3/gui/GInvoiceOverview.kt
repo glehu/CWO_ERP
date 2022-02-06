@@ -106,13 +106,13 @@ class GInvoiceOverview : IOverview, View("Invoices") {
             addClass(Stylesheet.fieldsetBorder)
           }
           fieldset {
-            add(InvoiceItemData::class)
+            add(InvoiceNotesData::class)
             addClass(Stylesheet.fieldsetBorder)
             hgrow = Priority.ALWAYS
           }
         }
         fieldset {
-          add(InvoiceNotesData::class)
+          add(InvoiceItemData::class)
           addClass(Stylesheet.fieldsetBorder)
           hgrow = Priority.ALWAYS
         }

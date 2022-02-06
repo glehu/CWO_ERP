@@ -90,21 +90,67 @@ class InvoiceController : IController, Controller() {
       }
       //Stock Posting
       for (item in wizard.invoice.item.itemsProperty) {
-        ItemController().postStock(
+        commitStockPosting(
           itemUID = item.uID,
           storageFromUID = item.storageFrom1UID,
           storageUnitFromUID = item.storageUnitFrom1UID,
-          stockPostingFromUID = item.stockPostingFrom1UID,
-          storageToUID = -1,
-          storageUnitToUID = -1,
-          amount = item.amount,
-          note = "inv${wizard.invoice.uID.value}"
+          storageAmount = item.storageAmount1,
+          stockPostingsFromUID = item.stockPostingsFrom1UID
+        )
+        commitStockPosting(
+          itemUID = item.uID,
+          storageFromUID = item.storageFrom2UID,
+          storageUnitFromUID = item.storageUnitFrom2UID,
+          storageAmount = item.storageAmount2,
+          stockPostingsFromUID = item.stockPostingsFrom2UID
+        )
+        commitStockPosting(
+          itemUID = item.uID,
+          storageFromUID = item.storageFrom3UID,
+          storageUnitFromUID = item.storageUnitFrom3UID,
+          storageAmount = item.storageAmount3,
+          stockPostingsFromUID = item.stockPostingsFrom3UID
         )
       }
       wizard.invoice.item.status = 9
       wizard.invoice.item.statusText = InvoiceCLIController().getStatusText(wizard.invoice.item.status)
       wizard.invoice.item.finished = true
       saveEntry()
+    }
+  }
+
+  private fun commitStockPosting(
+    itemUID: Int,
+    storageFromUID: Int,
+    storageUnitFromUID: Int,
+    storageAmount: Double,
+    stockPostingsFromUID: Map<Int, Double>
+  ) {
+    if (storageFromUID == -1 || storageUnitFromUID == -1) return
+    if (stockPostingsFromUID.isEmpty()) {
+      ItemController().postStock(
+        itemUID = itemUID,
+        storageFromUID = storageFromUID,
+        storageUnitFromUID = storageUnitFromUID,
+        stockPostingFromUID = -1,
+        storageToUID = -1,
+        storageUnitToUID = -1,
+        amount = storageAmount,
+        note = "inv${wizard.invoice.uID.value}"
+      )
+    } else {
+      for (stockPosting in stockPostingsFromUID) {
+        ItemController().postStock(
+          itemUID = itemUID,
+          storageFromUID = storageFromUID,
+          storageUnitFromUID = storageUnitFromUID,
+          stockPostingFromUID = stockPosting.key,
+          storageToUID = -1,
+          storageUnitToUID = -1,
+          amount = stockPosting.value,
+          note = "inv${wizard.invoice.uID.value}"
+        )
+      }
     }
   }
 
@@ -223,29 +269,60 @@ class InvoiceController : IController, Controller() {
   }
 
   fun checkStorageUnits() {
-    var i = 0
-    for (pos in wizard.invoice.items.value) {
+    for ((i, pos) in wizard.invoice.items.value.withIndex()) {
       //Check if we need to check the storages
       if (pos.amount == 0.0) {
-        //Was a storage unit selected?
-        if (pos.storageUnitFrom1UID == -1) continue
-        //Reset storage unit
-        pos.storageFrom1UID = -1
-        pos.storageUnitFrom1UID = -1
+        //Reset storage units
+        pos.storageFrom1UID = -1; pos.storageUnitFrom1UID = -1; pos.stockPostingsFrom1UID.clear()
+        pos.storageFrom2UID = -1; pos.storageUnitFrom2UID = -1; pos.stockPostingsFrom2UID.clear()
+        pos.storageFrom3UID = -1; pos.storageUnitFrom3UID = -1; pos.stockPostingsFrom3UID.clear()
       } else {
-        val valid = ItemStockPostingController().check(
-          storageFromUID = pos.storageFrom1UID,
-          storageUnitFromUID = pos.storageUnitFrom1UID,
-          amount = pos.amount
-        )
-        if (valid) continue
-        //Try to find a new storage unit
+        //Try to find (a) new storage unit(s)
+        //Scenario: A purchase has been made before this request
+        //Solution: Try finding a stock posting that could fit it all at once
         val uIDs = ItemStockPostingController().getStorageUnitWithAtLeast(pos.amount)
-        wizard.invoice.items.value[i].storageFrom1UID = uIDs.first
-        wizard.invoice.items.value[i].storageUnitFrom1UID = uIDs.second
-        wizard.invoice.items.value[i].stockPostingFrom1UID = uIDs.third
+        if (uIDs.first != -1) {
+          pos.storageFrom1UID = uIDs.first
+          pos.storageUnitFrom1UID = uIDs.second
+          pos.stockPostingsFrom1UID[uIDs.third] = pos.amount
+          pos.storageAmount1 = pos.amount
+        } else {
+          //Scenario: We have to split the amount into multiple bookings
+          //          (Up to three storage units, but unlimited stock postings on the same storage unit)
+          //Solution: Check which storages have available stock
+          val storagesFrom = ItemStockPostingController().getStorageUnitsWithStock(pos.amount)
+          pos.stockPostingsFrom1UID.clear()
+          pos.storageAmount1 = 0.0
+          if (storagesFrom[0].isNotEmpty()) {
+            pos.storageFrom1UID = storagesFrom[0][0].first.storageToUID
+            pos.storageUnitFrom1UID = storagesFrom[0][0].first.storageUnitToUID
+            for (stockPosting in storagesFrom[0]) {
+              pos.stockPostingsFrom1UID[stockPosting.first.uID] = stockPosting.second
+              pos.storageAmount1 += stockPosting.second
+            }
+          }
+          pos.stockPostingsFrom2UID.clear()
+          pos.storageAmount2 = 0.0
+          if (storagesFrom[1].isNotEmpty()) {
+            pos.storageFrom2UID = storagesFrom[1][0].first.storageToUID
+            pos.storageUnitFrom2UID = storagesFrom[1][0].first.storageUnitToUID
+            for (stockPosting in storagesFrom[1]) {
+              pos.stockPostingsFrom2UID[stockPosting.first.uID] = stockPosting.second
+              pos.storageAmount2 += stockPosting.second
+            }
+          }
+          pos.stockPostingsFrom3UID.clear()
+          pos.storageAmount3 = 0.0
+          if (storagesFrom[2].isNotEmpty()) {
+            pos.storageFrom3UID = storagesFrom[2][0].first.storageToUID
+            pos.storageUnitFrom3UID = storagesFrom[2][0].first.storageUnitToUID
+            for (stockPosting in storagesFrom[2]) {
+              pos.stockPostingsFrom3UID[stockPosting.first.uID] = stockPosting.second
+              pos.storageAmount3 += stockPosting.second
+            }
+          }
+        }
       }
-      i++
     }
   }
 }

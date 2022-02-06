@@ -82,6 +82,76 @@ class ItemStockPostingController : IModule {
     return pickAccordingToOrderType(entriesFound, InvoiceCLIController().getAutoStorageSelectionOrder())
   }
 
+  fun getStorageUnitsWithStock(amount: Double): Array<ArrayList<Pair<ItemStockPosting, Double>>> {
+    val storagesFrom: Array<ArrayList<Pair<ItemStockPosting, Double>>> =
+      arrayOf(arrayListOf(), arrayListOf(), arrayListOf())
+    val entriesFound: ArrayList<ItemStockPosting> = arrayListOf()
+    var amountLeft = amount
+    getEntriesFromIndexSearch(
+      searchText = "1",
+      ixNr = 6,
+      showAll = true,
+      format = false,
+      numberComparison = true
+    ) {
+      it as ItemStockPosting
+      if (check(
+          storageFromUID = it.storageToUID,
+          storageUnitFromUID = it.storageUnitToUID,
+          amount = 1.0
+        )) {
+        entriesFound.add(it)
+      }
+    }
+    //Evaluate and choose
+    var storagesIterator = -1
+    var lastStorageUID = -1
+    var lastStorageUnitUID = -1
+    when (InvoiceCLIController().getAutoStorageSelectionOrder()) {
+      AutoStorageSelectionOrderType.LIFO -> {
+        //Start with the oldest one
+        for (stockPosting in entriesFound) {
+          if (stockPosting.storageToUID != lastStorageUID || stockPosting.storageUnitToUID != lastStorageUnitUID) {
+            storagesIterator++
+            if (storagesIterator >= 3) break //Max storages filled, so leave
+          }
+          var amountTemp = stockPosting.stockAvailable
+          if (amountLeft - stockPosting.stockAvailable!! <= 0) {
+            amountTemp = amountLeft
+            amountLeft = 0.0
+          } else {
+            amountLeft -= stockPosting.stockAvailable!!
+          }
+          storagesFrom[storagesIterator].add(Pair(stockPosting, amountTemp!!))
+          lastStorageUID = stockPosting.storageToUID
+          lastStorageUnitUID = stockPosting.storageUnitToUID
+        }
+      }
+      AutoStorageSelectionOrderType.FIFO -> {
+        //Start with the newest one
+        for (stockPosting in entriesFound.reversed()) {
+          if (stockPosting.storageToUID != lastStorageUID || stockPosting.storageUnitToUID != lastStorageUnitUID) {
+            storagesIterator++
+            if (storagesIterator >= 3) break //Max storages filled, so leave
+          }
+          var amountTemp = stockPosting.stockAvailable
+          if (amountLeft - stockPosting.stockAvailable!! <= 0) {
+            amountTemp = amountLeft
+            amountLeft = 0.0
+          } else {
+            amountLeft -= stockPosting.stockAvailable!!
+          }
+          storagesFrom[storagesIterator].add(Pair(stockPosting, amountTemp!!))
+          lastStorageUID = stockPosting.storageToUID
+        }
+      }
+      else -> {
+        return arrayOf(arrayListOf(), arrayListOf(), arrayListOf())
+      }
+    }
+    return storagesFrom
+  }
+
   /**
    * Filters a list of stock posting entries according to the provided stock
    * @return a [Triple] StorageUID, StorageUnitUID and ItemStockPostingUID

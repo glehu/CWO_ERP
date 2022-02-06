@@ -129,7 +129,7 @@ class InvoiceItemData : Fragment("Items") {
       makeEditable()
       prefWidth = 100.0
     }
-    column("Load", InvoicePosition::storageFrom1UID) { prefWidth = 75.0 }
+    column("Load", InvoicePosition::storageFrom1UID) { prefWidth = 50.0 }
       .cellFormat {
         graphic = hbox {
           button("+").action {
@@ -142,24 +142,93 @@ class InvoiceItemData : Fragment("Items") {
           }
         }
       }
-    column("Storage", InvoicePosition::storageFrom1UID) { prefWidth = 150.0 }
+    column("Storage 1", InvoicePosition::storageFrom1UID) { prefWidth = 100.0 }
       .cellFormat {
         text = if (it != -1) {
           ItemStorageManager().getStorages().storages[it]!!.description
         } else "None"
         style { unsafe("-fx-text-fill", Color.WHITE) }
       }
-    column("Storage Unit", InvoicePosition::storageUnitFrom1UID) { prefWidth = 150.0 }
+    column("Unit 1", InvoicePosition::storageUnitFrom1UID) { prefWidth = 100.0 }
       .cellFormat {
         text = if (it != -1) {
           ItemStorageManager().getStorages().storages[rowItem.storageFrom1UID]!!.storageUnits[it].description
         } else "None"
         style { unsafe("-fx-text-fill", Color.WHITE) }
       }
-    column("Available", InvoicePosition::storageUnitFrom1UID) { prefWidth = 100.0 }
+    column("Amount 1", InvoicePosition::storageAmount1) { prefWidth = 75.0 }
+    column("Left 1", InvoicePosition::storageUnitFrom1UID) { prefWidth = 75.0 }
       .cellFormat {
         text = if (it != -1) {
           ItemStockPostingController().getAvailableStock(it, this.rowItem.storageFrom1UID).toString()
+        } else ""
+      }
+    column("Load", InvoicePosition::storageFrom2UID) { prefWidth = 50.0 }
+      .cellFormat {
+        graphic = hbox {
+          button("+").action {
+            val storageView = GItemStorageManager(isStorageSelectMode = true)
+            storageView.openModal(block = true)
+            rowItem.storageFrom2UID = storageView.selectedStorageUID
+            rowItem.storageUnitFrom2UID = storageView.selectedStorageUnitUID
+            refresh()
+            requestLayout()
+          }
+        }
+      }
+    column("Storage 2", InvoicePosition::storageFrom2UID) { prefWidth = 100.0 }
+      .cellFormat {
+        text = if (it != -1) {
+          ItemStorageManager().getStorages().storages[it]!!.description
+        } else "None"
+        style { unsafe("-fx-text-fill", Color.WHITE) }
+      }
+    column("Unit 2", InvoicePosition::storageUnitFrom2UID) { prefWidth = 100.0 }
+      .cellFormat {
+        text = if (it != -1) {
+          ItemStorageManager().getStorages().storages[rowItem.storageFrom2UID]!!.storageUnits[it].description
+        } else "None"
+        style { unsafe("-fx-text-fill", Color.WHITE) }
+      }
+    column("Amount 2", InvoicePosition::storageAmount2) { prefWidth = 75.0 }
+    column("Left 2", InvoicePosition::storageUnitFrom2UID) { prefWidth = 75.0 }
+      .cellFormat {
+        text = if (it != -1) {
+          ItemStockPostingController().getAvailableStock(it, this.rowItem.storageFrom2UID).toString()
+        } else ""
+      }
+    column("Load", InvoicePosition::storageFrom3UID) { prefWidth = 50.0 }
+      .cellFormat {
+        graphic = hbox {
+          button("+").action {
+            val storageView = GItemStorageManager(isStorageSelectMode = true)
+            storageView.openModal(block = true)
+            rowItem.storageFrom3UID = storageView.selectedStorageUID
+            rowItem.storageUnitFrom3UID = storageView.selectedStorageUnitUID
+            refresh()
+            requestLayout()
+          }
+        }
+      }
+    column("Storage 3", InvoicePosition::storageFrom3UID) { prefWidth = 100.0 }
+      .cellFormat {
+        text = if (it != -1) {
+          ItemStorageManager().getStorages().storages[it]!!.description
+        } else "None"
+        style { unsafe("-fx-text-fill", Color.WHITE) }
+      }
+    column("Unit 3", InvoicePosition::storageUnitFrom3UID) { prefWidth = 100.0 }
+      .cellFormat {
+        text = if (it != -1) {
+          ItemStorageManager().getStorages().storages[rowItem.storageFrom3UID]!!.storageUnits[it].description
+        } else "None"
+        style { unsafe("-fx-text-fill", Color.WHITE) }
+      }
+    column("Amount 3", InvoicePosition::storageAmount3) { prefWidth = 75.0 }
+    column("Left 3", InvoicePosition::storageUnitFrom3UID) { prefWidth = 75.0 }
+      .cellFormat {
+        text = if (it != -1) {
+          ItemStockPostingController().getAvailableStock(it, this.rowItem.storageFrom3UID).toString()
         } else ""
       }
 
