@@ -113,16 +113,18 @@ class RawSocketChannel(
       "M4SP" -> itemStockPostingIndexManager!!
       else -> return
     }
-    if (args[4] == "NAME") {
+    if (args[4] == "NAME" || args[4] == "NMBR") {
       var first = true
       val maxSearchResultsOverride =
         if ((args[3].length == 7) && (args[3].substring(3, 7) == "FULL")) -1 else maxSearchResultsGlobal
+      val numberComparison = (args[4] == "NMBR")
       CwODB.getEntriesFromSearchString(
         searchText = indexFormat(args[5]),
         ixNr = args[2].toInt(),
         exactSearch = (args[3].substring(0, 3) == "SPE"),
         maxSearchResults = maxSearchResultsOverride,
-        indexManager = indexManager
+        indexManager = indexManager,
+        numberComparison = numberComparison
       ) { _, bytes ->
         try {
           runBlocking {

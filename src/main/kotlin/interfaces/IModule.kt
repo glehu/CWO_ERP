@@ -401,8 +401,9 @@ interface IModule {
         val sockOut = socket.openWriteChannel(autoFlush = true)
         var exact = "SPE"
         if (showAll) exact += "FULL"
+        val inputType = if (!numberComparison) "NAME" else "NMBR"
         sockOut.writeStringUtf8(
-          "IXS $module $ixNr $exact NAME $searchTextFormatted\r\n"
+          "IXS $module $ixNr $exact $inputType $searchTextFormatted\r\n"
         )
         var response: String? = ""
         // Remove the HEY welcome message
