@@ -233,7 +233,11 @@ class InvoiceController : IController, Controller() {
         pos.storageFrom1UID = -1
         pos.storageUnitFrom1UID = -1
       } else {
-        val valid = ItemStockPostingController().check(pos.storageFrom1UID, pos.storageUnitFrom1UID, pos.amount)
+        val valid = ItemStockPostingController().check(
+          storageFromUID = pos.storageFrom1UID,
+          storageUnitFromUID = pos.storageUnitFrom1UID,
+          amount = pos.amount
+        )
         if (valid) continue
         //Try to find a new storage unit
         val uIDs = ItemStockPostingController().getStorageUnitWithAtLeast(pos.amount)

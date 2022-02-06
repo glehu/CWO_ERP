@@ -51,7 +51,13 @@ class ItemStockPostingController : IModule {
       numberComparison = true
     ) {
       it as ItemStockPosting
-      if (check(it.storageToUID, it.storageUnitToUID, amount)) entriesFound.add(it)
+      if (check(
+          storageFromUID = it.storageToUID,
+          storageUnitFromUID = it.storageUnitToUID,
+          amount = amount
+        )) {
+        entriesFound.add(it)
+      }
     }
     //Filter the list according to the storage selection order type e.g. FIFO First In First Out and return
     return pickAccordingToOrderType(entriesFound, InvoiceCLIController().getAutoStorageSelectionOrder())

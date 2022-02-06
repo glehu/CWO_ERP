@@ -194,9 +194,11 @@ class ItemStorageData : Fragment("Stock") {
       storageUnitsList.clear()
       selectedStorage = it
       val storage = ItemStorageManager().getStorages().storages[it.number]!!
-      for (sUnit in it.storageUnits) {
-        storage.storageUnits[sUnit.number].stock = sUnit.stock
-        storage.storageUnits[sUnit.number].locked = sUnit.locked
+      for (storageUnit in it.storageUnits) {
+        storage.storageUnits[storageUnit.number].stock = storageUnit.stock
+        val storageUnitLock =
+          storageUnit.locked || item.storages.value[it.number].storageUnits[storageUnit.number].locked
+        storage.storageUnits[storageUnit.number].locked = storageUnitLock
       }
       for (sUnit in storage.storageUnits) storageUnitsList.add(sUnit)
       storageUnitsTable.refresh()
@@ -242,8 +244,13 @@ class ItemStorageData : Fragment("Stock") {
         }
       }
     }
-    column("Lock", ItemStorageUnit::locked) {
-      makeEditable()
+    readonlyColumn("Lock", ItemStorageUnit::locked) {
+      cellFormat {
+        text = ""
+        style {
+          backgroundColor = storageManager.getLockedCellColor(it)
+        }
+      }
     }
     columnResizePolicy = SmartResize.POLICY
     isFocusTraversable = false
