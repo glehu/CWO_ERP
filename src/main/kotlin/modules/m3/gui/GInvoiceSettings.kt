@@ -36,7 +36,7 @@ class GInvoiceSettings : IModule, Fragment("Invoice Settings") {
   private var autoStorageSelection = SimpleBooleanProperty(iniVal.autoStorageSelection)
   private var autoStorageSelectionOrder = SimpleStringProperty(iniVal.autoStorageSelectionOrder)
   private var autoStorageSelectionOrderTypes = FXCollections.observableArrayList(
-    "LIFO", "FIFO", "HIFO", "LOFO", "FEFO"
+    "LIFO", "FIFO" //, "HIFO", "LOFO", "FEFO"     TODO: not implemented
   )
 
   override val root = borderpane {
