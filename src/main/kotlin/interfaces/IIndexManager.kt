@@ -154,6 +154,10 @@ interface IIndexManager : IModule {
             content = indexFormat(ixContent).uppercase()
           )
         }
+      } else {
+        synchronized(this) {
+          indexList[ixNr]!!.indexMap.remove(uID)
+        }
       }
     }
     if (writeToDisk) {
