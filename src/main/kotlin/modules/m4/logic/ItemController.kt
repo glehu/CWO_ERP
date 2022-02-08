@@ -55,6 +55,7 @@ class ItemController : IController, Controller() {
       )
       wizard.isComplete = false
     }
+    if (!unlock) showEntry(wizard.item.uID.value)
   }
 
   override fun showEntry(uID: Int) {
