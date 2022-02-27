@@ -1,7 +1,7 @@
 package modules.mx.logic
 
-import api.logic.Server
-import api.logic.TelnetServer
+import api.logic.core.Server
+import api.logic.core.TelnetServer
 import com.github.ajalt.mordant.animation.progressAnimation
 import com.github.ajalt.mordant.rendering.TextColors.*
 import interfaces.IIndexManager

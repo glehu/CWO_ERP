@@ -1,6 +1,8 @@
-package api.logic
+package api.logic.core
 
 import api.gui.GSpotify
+import api.logic.SpotifyAUTH
+import api.logic.webapps.WebPlanner
 import api.misc.json.*
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -192,6 +194,9 @@ class Server : IModule, Controller() {
            */
           addWebshopOrder()
           userTracking()
+          // Web Apps
+          webPlannerCommit()
+          webPlannerRequest()
         }
       }
     }
@@ -378,6 +383,19 @@ class Server : IModule, Controller() {
       } else {
         call.respond(ServerController.placeWebshopOrder(call))
       }
+    }
+  }
+
+  private fun Route.webPlannerCommit() {
+    post("/planner") {
+      WebPlanner().save(call)
+      call.respond(HttpStatusCode.OK)
+    }
+  }
+
+  private fun Route.webPlannerRequest() {
+    post("/planner/load") {
+      call.respond(WebPlanner().load(call))
     }
   }
 

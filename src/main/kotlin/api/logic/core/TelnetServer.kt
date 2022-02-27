@@ -1,4 +1,4 @@
-package api.logic
+package api.logic.core
 
 import interfaces.IIndexManager
 import interfaces.IModule

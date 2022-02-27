@@ -157,3 +157,71 @@ data class PairIntJson(
   val first: Int,
   val second: Int
 )
+
+@Serializable
+data class WebPlannerCommit(
+  val action: String,
+  val project: String,
+  val cells: Array<WebPlannerCell>
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    other as WebPlannerCommit
+    if (!cells.contentEquals(other.cells)) return false
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return cells.contentHashCode()
+  }
+}
+
+@Serializable
+data class WebPlannerRequest(
+  val action: String,
+  val project: String
+)
+
+@Serializable
+data class WebPlannerResponse(
+  val type: String,
+  val content: Array<WebPlannerCell>
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    other as WebPlannerResponse
+    if (!content.contentEquals(other.content)) return false
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return content.contentHashCode()
+  }
+}
+
+@Serializable
+data class WebPlannerCell(
+  val x: Int,
+  val y: Int,
+  val id: Int,
+  val type: String,
+  val rows: Int,
+  val box: Int,
+  val history: Array<String>,
+  val name: String = "",
+  val description: String = ""
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    other as WebPlannerCell
+    if (!history.contentEquals(other.history)) return false
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return history.contentHashCode()
+  }
+}

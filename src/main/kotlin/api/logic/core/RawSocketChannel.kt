@@ -1,4 +1,4 @@
-package api.logic
+package api.logic.core
 
 import api.misc.json.EntryJson
 import db.CwODB

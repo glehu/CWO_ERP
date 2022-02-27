@@ -1,8 +1,8 @@
 package modules.mx.logic
 
-import api.logic.Server
-import api.logic.TelnetServer
 import api.logic.UsageTracker
+import api.logic.core.Server
+import api.logic.core.TelnetServer
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.serialization.ExperimentalSerializationApi

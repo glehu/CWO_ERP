@@ -1,8 +1,8 @@
 package modules.mx
 
-import api.logic.Server
-import api.logic.TelnetServer
 import api.logic.UsageTracker
+import api.logic.core.Server
+import api.logic.core.TelnetServer
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
 import interfaces.IEntry
