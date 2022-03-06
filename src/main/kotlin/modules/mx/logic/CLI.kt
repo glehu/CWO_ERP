@@ -113,7 +113,7 @@ class CLI : IModule {
       when (args[1]) {
         "dbstat" -> {
           val header = arrayOf("DB", "Desc", "#", "DB MiB", "IX MiB", "Date", "User")
-          val ix = observableListOf(
+          val ix = listOf(
             //M1
             discographyIndexManager,
             //M2
@@ -126,7 +126,7 @@ class CLI : IModule {
             itemStockPostingIndexManager
           )
           val data = d2Array(ix.size, header.size)
-          for (i in 0 until ix.size) {
+          for (i in ix.indices) {
             if (ix[i] != null) {
               data[i][0] = ix[i]!!.module
               data[i][1] = ix[i]!!.moduleNameLong
