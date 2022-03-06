@@ -31,9 +31,11 @@ class CLI : IModule {
    * Runs the software without GUI in command line interpretation (CLI) mode.
    */
   fun runCLI() {
+    cliClearTerminal()
     cliMode = true
     cliCheckIni()
     val login: Boolean = if (activeUser.username.isEmpty()) cliLogin() else true
+    cliClearTerminal()
     var terminated = !login
     var inputArgs: List<String>
     while (!terminated) {
@@ -43,6 +45,16 @@ class CLI : IModule {
       terminated = cliHandleInput(inputArgs)
     }
     cliExit()
+  }
+
+  /**
+   * Clears the terminal screen and resets the cursor position.
+   */
+  private fun cliClearTerminal() {
+    terminal.cursor.move {
+      clearScreen()
+      setPosition(0, 0)
+    }
   }
 
   private fun cliCheckIni() {
@@ -176,6 +188,7 @@ class CLI : IModule {
   }
 
   private fun cliExit() {
+    cliClearTerminal()
     exitMain()
     log(Log.LogType.INFO, "System terminated by user.")
     terminal.println(

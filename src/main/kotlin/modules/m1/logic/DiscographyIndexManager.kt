@@ -9,12 +9,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m1.Song
 import modules.mx.discographyIndexManager
-import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
 @InternalAPI
 @ExperimentalSerializationApi
-class DiscographyIndexManager : IModule, IIndexManager, Controller() {
+class DiscographyIndexManager : IModule, IIndexManager {
   override val moduleNameLong = "DiscographyIndexManager"
   override val module = "M1"
   override fun getIndexManager(): IIndexManager {

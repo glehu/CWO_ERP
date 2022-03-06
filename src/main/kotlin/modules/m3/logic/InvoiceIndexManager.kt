@@ -8,12 +8,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m3.Invoice
 import modules.mx.invoiceIndexManager
-import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
 @InternalAPI
 @ExperimentalSerializationApi
-class InvoiceIndexManager : IIndexManager, Controller() {
+class InvoiceIndexManager : IIndexManager {
   override val moduleNameLong = "InvoiceIndexManager"
   override val module = "M3"
   override fun getIndexManager(): IIndexManager {

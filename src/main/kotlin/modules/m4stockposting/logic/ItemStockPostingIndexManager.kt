@@ -9,12 +9,11 @@ import kotlinx.serialization.encodeToString
 import modules.m4.Item
 import modules.m4stockposting.ItemStockPosting
 import modules.mx.itemStockPostingIndexManager
-import tornadofx.Controller
 import java.util.concurrent.atomic.AtomicInteger
 
 @InternalAPI
 @ExperimentalSerializationApi
-class ItemStockPostingIndexManager : IIndexManager, Controller() {
+class ItemStockPostingIndexManager : IIndexManager {
   override val moduleNameLong = "ItemStockPostingIndexManager"
   override val module = "M4SP"
   override fun getIndexManager(): IIndexManager {

@@ -30,15 +30,13 @@ import modules.mx.*
 import modules.mx.gui.GDashboard
 import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
-import modules.mx.logic.UserManager
-import tornadofx.Controller
 import java.io.File
 import java.nio.file.Paths
 
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
-class Server : IModule, Controller() {
+class Server : IModule {
   override val moduleNameLong = "Server"
   override val module = "MX"
   override fun getIndexManager(): IIndexManager? {
@@ -46,7 +44,6 @@ class Server : IModule, Controller() {
   }
 
   private val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
-  private val userManager: UserManager by inject()
   private val userCLIManager = UserCLIManager()
   lateinit var text: String
 
@@ -224,8 +221,7 @@ class Server : IModule, Controller() {
         call.request.uri
       )
       if (!cliMode) {
-        find<GDashboard>().activeUsers.items = userManager.getActiveUsers()
-        find<GDashboard>().activeUsers.refresh()
+        GDashboard().update()
       }
     }
   }
@@ -249,8 +245,7 @@ class Server : IModule, Controller() {
         )
       )
       if (!cliMode) {
-        find<GDashboard>().activeUsers.items = userManager.getActiveUsers()
-        find<GDashboard>().activeUsers.refresh()
+        GDashboard().update()
       }
     }
   }
@@ -261,7 +256,7 @@ class Server : IModule, Controller() {
       if (code != null) {
         call.respondFile(File(Paths.get(dataPath, "data", "web", "spotifyCallback.html").toString()))
         log(Log.LogType.COM, "Spotify Auth Callback received")
-        val spotifyAPI = find<GSpotify>()
+        val spotifyAPI = GSpotify()
         spotifyAPI.authCodeProperty.value = code
         spotifyAPI.showTokenData(
           SpotifyAUTH().getAccessTokenFromAuthCode(code) as SpotifyAuthCallbackJson

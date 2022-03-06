@@ -8,7 +8,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.getModulePath
 import modules.mx.maxSearchResultsGlobal
-import tornadofx.Controller
 import java.io.File
 import java.io.RandomAccessFile
 import java.nio.file.Paths
@@ -16,7 +15,7 @@ import java.nio.file.Paths
 @ExperimentalSerializationApi
 class CwODB {
   @InternalAPI
-  companion object CwODB : Controller() {
+  companion object CwODB {
     /**
      * Used to save the ByteArray of an entry (achieved by serialization) and store it in the database.
      * @return the position in the database and byte size of the stored entry.

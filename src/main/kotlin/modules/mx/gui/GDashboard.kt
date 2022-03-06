@@ -11,7 +11,7 @@ import tornadofx.*
 class GDashboard : View("Dashboard") {
   private val userManager: UserManager by inject()
   private val dbManager = find<GDatabaseManager>()
-  val activeUsers = tableview(userManager.getActiveUsers()) {
+  private val activeUsers = tableview(userManager.getActiveUsers()) {
     readonlyColumn("Username", User::username).prefWidth(175.0)
     readonlyColumn("Online since", User::onlineSince).prefWidth(200.0)
   }
@@ -24,5 +24,10 @@ class GDashboard : View("Dashboard") {
         add(activeUsers)
       }
     }
+  }
+
+  fun update() {
+    find<GDashboard>().activeUsers.items = userManager.getActiveUsers()
+    find<GDashboard>().activeUsers.refresh()
   }
 }
