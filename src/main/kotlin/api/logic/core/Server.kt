@@ -95,7 +95,7 @@ class Server : IModule {
     routing {
       route("/") {
         get {
-          call.respondFile(File("$dataPath\\data\\web\\home.html"))
+          call.respondFile(File(Paths.get(dataPath, "data", "web", "home.html").toString()))
         }
       }
       route("/web") {
