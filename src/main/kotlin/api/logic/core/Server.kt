@@ -64,9 +64,9 @@ class Server : IModule {
     }
     sslConnector(
       keyStore = keystore,
-      keyAlias = "sampleAlias",
-      keyStorePassword = { "foobar".toCharArray() },
-      privateKeyPassword = { "foobar".toCharArray() }) {
+      keyAlias = "cWoErP",
+      keyStorePassword = { "CwOeRp".toCharArray() },
+      privateKeyPassword = { "CwOeRp".toCharArray() }) {
       host = iniVal.serverIPAddress.substringBefore(':')
       port = iniVal.serverIPAddress.substringAfter(':').toInt()
       keyStorePath = keyStoreFile
