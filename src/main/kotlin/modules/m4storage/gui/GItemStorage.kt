@@ -18,7 +18,7 @@ class GItemStorage(storage: ItemStorage, var isStorageSelectMode: Boolean = fals
 
   var selectedStorageUnitUID: Int = -1
 
-  private val storageManager: ItemStorageManager by inject()
+  private val storageManager = ItemStorageManager()
   private val storageModel = ItemStorageModel(getStoragePropertyFromStorage(storage))
   private val originalStorageProperty = storage.copy()
   private val storageUnitsTable = tableview(storageModel.storageUnits) {

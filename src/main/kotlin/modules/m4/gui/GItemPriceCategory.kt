@@ -14,7 +14,7 @@ import tornadofx.*
 @ExperimentalSerializationApi
 @InternalAPI
 class GItemPriceCategory(priceCategory: ItemPriceCategory) : Fragment("Price Category") {
-  private val priceManager: ItemPriceManager by inject()
+  private val priceManager = ItemPriceManager()
   private val priceCategoryModel = M4PriceCategoryModel(getPriceCategoryPropertyFromCategory(priceCategory))
   private val originalPriceCategory = priceCategory.copy()
   override val root = form {

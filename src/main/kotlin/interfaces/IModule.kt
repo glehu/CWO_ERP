@@ -33,7 +33,7 @@ interface IModule {
   fun getIndexManager(): IIndexManager?
 
   fun getServerUrl(): String {
-    return "http://${serverIPAddressGlobal}/"
+    return "${serverIPAddressGlobal}/"
   }
 
   fun getApiUrl(): String {
@@ -325,7 +325,7 @@ interface IModule {
     val sub = if (subSetting.isNotEmpty()) {
       "-$subSetting"
     } else ""
-    return File(Paths.get(getModulePath(moduleShort),"$moduleShort$sub.ini").toString())
+    return File(Paths.get(getModulePath(moduleShort), "$moduleShort$sub.ini").toString())
   }
 
   private fun checkSettingsFile(subSetting: String = ""): Boolean {

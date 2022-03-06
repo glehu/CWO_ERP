@@ -11,7 +11,7 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class GItemPriceManager : View("Item Price Categories") {
-  private val categoryManager: ItemPriceManager by inject()
+  private val categoryManager = ItemPriceManager()
 
   @ExperimentalSerializationApi
   private var categories = categoryManager.getCategories()

@@ -176,7 +176,7 @@ class ItemPricesData : Fragment("Prices") {
 class ItemStorageData : Fragment("Stock") {
   private val item: ItemModel by inject()
   private val lastItemUID = SimpleIntegerProperty(item.uID.value)
-  private val storageManager: ItemStorageManager by inject()
+  private val storageManager = ItemStorageManager()
   private var selectedStorage: ItemStorage = ItemStorage(0, "")
   private var storagesTable = tableview(item.storages) {
     isEditable = true

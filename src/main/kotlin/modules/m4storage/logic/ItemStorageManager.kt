@@ -24,17 +24,17 @@ import modules.m4storage.misc.ItemStorages
 import modules.mx.cliMode
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
-import tornadofx.Controller
 import tornadofx.MultiValue
 import tornadofx.observableListOf
 import java.io.File
+import java.nio.file.Paths
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
 @InternalAPI
 @ExperimentalSerializationApi
-class ItemStorageManager : IModule, Controller() {
+class ItemStorageManager : IModule {
   override val moduleNameLong = "ItemStorageManager"
   override val module = "M4"
   override fun getIndexManager(): IIndexManager? {
@@ -63,7 +63,7 @@ class ItemStorageManager : IModule, Controller() {
         }
       }
     }
-    if (!cliMode) find<GItemStorageManager>().refreshStorages()
+    if (!cliMode) GItemStorageManager().refreshStorages()
   }
 
   fun deleteStorage(storage: ItemStorage) {
@@ -84,7 +84,7 @@ class ItemStorageManager : IModule, Controller() {
         }
       }
     }
-    if (!cliMode) tornadofx.find<GItemStorageManager>().refreshStorages()
+    if (!cliMode) GItemStorageManager().refreshStorages()
   }
 
   fun getStorages(): ItemStorages {
@@ -107,7 +107,7 @@ class ItemStorageManager : IModule, Controller() {
     getStoragesFile().writeText(Json.encodeToString(categories))
   }
 
-  private fun getStoragesFile() = File("${getModulePath(module)}\\storages.dat")
+  private fun getStoragesFile() = File(Paths.get(getModulePath(module), "storages.dat").toString())
 
   private fun initializeStorages(storageFile: File) {
     val mainStorage = ItemStorage(0, "default")

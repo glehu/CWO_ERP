@@ -21,7 +21,6 @@ import modules.m4.gui.GItemPriceManager
 import modules.mx.cliMode
 import modules.mx.getModulePath
 import modules.mx.isClientGlobal
-import tornadofx.Controller
 import tornadofx.observableListOf
 import java.io.File
 import kotlin.collections.component1
@@ -30,7 +29,7 @@ import kotlin.collections.set
 
 @InternalAPI
 @ExperimentalSerializationApi
-class ItemPriceManager : IModule, Controller() {
+class ItemPriceManager : IModule {
   override val moduleNameLong = "ItemPriceManager"
   override val module = "M4"
   override fun getIndexManager(): IIndexManager? {
@@ -59,7 +58,7 @@ class ItemPriceManager : IModule, Controller() {
         }
       }
     }
-    if (!cliMode) find<GItemPriceManager>().refreshCategories()
+    if (!cliMode) GItemPriceManager().refreshCategories()
   }
 
   fun deleteCategory(category: ItemPriceCategory) {
@@ -80,7 +79,7 @@ class ItemPriceManager : IModule, Controller() {
         }
       }
     }
-    if (!cliMode) tornadofx.find<GItemPriceManager>().refreshCategories()
+    if (!cliMode) GItemPriceManager().refreshCategories()
   }
 
   fun getCategories(): ItemPriceCategories {

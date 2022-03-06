@@ -1,7 +1,7 @@
 package api.logic
 
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.apache.*
 import io.ktor.client.features.auth.*
 import io.ktor.client.features.auth.providers.*
 import io.ktor.client.features.json.*
@@ -17,7 +17,9 @@ import modules.mx.logic.UserCLIManager
  * @return an instance of an authorized HttpClient.
  */
 fun getUserClient(username: String = activeUser.username, password: String = activeUser.password): HttpClient {
-  return HttpClient(CIO) {
+  return HttpClient(Apache) {
+    engine {
+    }
     install(JsonFeature) {
       serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
         isLenient = true
@@ -43,7 +45,9 @@ fun getTokenClient(token: String = activeUser.apiToken.accessToken): HttpClient 
   if (activeUser.apiToken.expireUnixTimestamp <= Timestamp.getUnixTimestamp()) {
     UserCLIManager().login(activeUser.username, activeUser.password)
   }
-  return HttpClient(CIO) {
+  return HttpClient(Apache) {
+    engine {
+    }
     install(JsonFeature) {
       serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
         isLenient = true

@@ -11,7 +11,7 @@ import tornadofx.*
 @InternalAPI
 @ExperimentalSerializationApi
 class GItemStorageManager(var isStorageSelectMode: Boolean = false) : View("Item Storage Locations") {
-  private val storageManager: ItemStorageManager by inject()
+  private val storageManager = ItemStorageManager()
 
   var selectedStorageUID: Int = -1
   var selectedStorageUnitUID: Int = -1
