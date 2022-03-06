@@ -205,7 +205,7 @@ data class WebPlannerResponse(
 data class WebPlannerCell(
   val x: Int,
   val y: Int,
-  val id: Int,
+  val id: String,
   val type: String,
   val rows: Int,
   val box: Int,
