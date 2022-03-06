@@ -13,6 +13,7 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.http.*
+import io.ktor.network.tls.certificates.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -30,6 +31,7 @@ import modules.mx.*
 import modules.mx.gui.GDashboard
 import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Paths
 
@@ -47,11 +49,36 @@ class Server : IModule {
   private val userCLIManager = UserCLIManager()
   lateinit var text: String
 
-  val serverEngine = embeddedServer(
-    factory = Netty,
-    host = iniVal.serverIPAddress.substringBefore(':'),
-    port = iniVal.serverIPAddress.substringAfter(':').toInt()
-  ) {
+  private val keyStoreFile = File(Paths.get("build", "keystore.jks").toString())
+  private val keystore = generateCertificate(
+    file = keyStoreFile,
+    keyAlias = "cWoErP",
+    keyPassword = "CwOeRp",
+    jksPassword = "CwOeRp"
+  )
+  private val environment = applicationEngineEnvironment {
+    log = LoggerFactory.getLogger("ktor.application")
+    connector {
+      host = iniVal.serverIPAddress.substringBefore(':')
+      port = iniVal.serverIPAddress.substringAfter(':').toInt() + 1
+    }
+    sslConnector(
+      keyStore = keystore,
+      keyAlias = "sampleAlias",
+      keyStorePassword = { "foobar".toCharArray() },
+      privateKeyPassword = { "foobar".toCharArray() }) {
+      host = iniVal.serverIPAddress.substringBefore(':')
+      port = iniVal.serverIPAddress.substringAfter(':').toInt()
+      keyStorePath = keyStoreFile
+    }
+    module {
+      module()
+    }
+  }
+
+  val serverEngine = embeddedServer(Netty, environment)
+
+  fun Application.module() {
     install(ContentNegotiation) {
       json(Json {
         prettyPrint = true
@@ -74,8 +101,8 @@ class Server : IModule {
         verifier(
           JWT
             .require(Algorithm.HMAC256(iniVal.token))
-            .withAudience("http://${iniVal.serverIPAddress}/")
-            .withIssuer("http://${iniVal.serverIPAddress}/")
+            .withAudience("https://${iniVal.serverIPAddress}/")
+            .withIssuer("https://${iniVal.serverIPAddress}/")
             .build()
         )
         validate { credential ->
