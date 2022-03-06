@@ -22,6 +22,7 @@ import modules.mx.logic.indexFormat
 import java.io.File
 import java.io.RandomAccessFile
 import java.net.InetSocketAddress
+import java.nio.file.Paths
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -324,7 +325,7 @@ interface IModule {
     val sub = if (subSetting.isNotEmpty()) {
       "-$subSetting"
     } else ""
-    return File("${getModulePath(moduleShort)}\\$moduleShort$sub.ini")
+    return File(Paths.get(getModulePath(moduleShort),"$moduleShort$sub.ini").toString())
   }
 
   private fun checkSettingsFile(subSetting: String = ""): Boolean {

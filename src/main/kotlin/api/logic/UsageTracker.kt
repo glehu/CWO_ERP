@@ -15,6 +15,7 @@ import modules.mx.getModulePath
 import modules.mx.logic.Log
 import modules.mx.logic.Timestamp
 import java.io.File
+import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicLong
 
 @InternalAPI
@@ -49,20 +50,20 @@ class UsageTracker {
 
   fun getUsageLogFile(check: Boolean = true): File {
     if (check) checkFile(getUsageLogFile(false))
-    return File("${getPath()}\\utrLog.txt")
+    return File(Paths.get(getPath(), "utrLog.txt").toString())
   }
 
   private fun getUsageStatsFile(check: Boolean = true): File {
     if (check) checkFile(getUsageStatsFile(false))
-    return File("${getPath()}\\utrStats.txt")
+    return File(Paths.get(getPath(), "utrStats.txt").toString())
   }
 
-  private fun getPath(): File {
-    return File(getModulePath("MX"))
+  private fun getPath(): String {
+    return getModulePath("MX")
   }
 
   private fun checkFile(fileToCheck: File): Boolean {
-    val usageFilePath = getPath()
+    val usageFilePath = File(getPath())
     if (!usageFilePath.isDirectory) {
       usageFilePath.mkdirs()
     }

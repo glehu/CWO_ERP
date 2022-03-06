@@ -2,6 +2,7 @@ package modules.mx.logic
 
 import modules.mx.getModulePath
 import java.io.File
+import java.nio.file.Paths
 
 class APIFileManager {
   companion object {
@@ -10,9 +11,10 @@ class APIFileManager {
     }
 
     fun getAPITokenFile(api: String): File {
-      val tokenFilePath = File("${getModulePath("MX")}\\api\\$api")
+      val path = Paths.get(getModulePath("MX"), "api", api).toString()
+      val tokenFilePath = File(path)
       if (!tokenFilePath.isDirectory) tokenFilePath.mkdirs()
-      val tokenFile = File("$tokenFilePath\\${api}_token.json")
+      val tokenFile = File(Paths.get(path, "${api}_token.json").toString())
       if (!tokenFile.isFile) tokenFile.createNewFile()
       return tokenFile
     }

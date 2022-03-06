@@ -15,6 +15,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.logic.Log
 import java.io.File
+import java.nio.file.Paths
 
 @ExperimentalSerializationApi
 @InternalAPI
@@ -49,7 +50,7 @@ class WebPlanner : IWebApp, IModule {
   }
 
   private fun getUserProjectFile(project: String): File {
-    return File(getWebAppPath(project) + project + ".json")
+    return File(Paths.get(getWebAppPath(project), "$project.json").toString())
   }
 
   private fun checkUserProject(project: String, createIfMissing: Boolean = true) {

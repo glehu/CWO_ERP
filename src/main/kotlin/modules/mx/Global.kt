@@ -27,6 +27,7 @@ import modules.m4.logic.ItemIndexManager
 import modules.m4stockposting.ItemStockPosting
 import modules.m4stockposting.logic.ItemStockPostingIndexManager
 import java.io.File
+import java.nio.file.Paths
 
 //*************************************************
 //********************** SERIALIZERS **+***********
@@ -117,11 +118,11 @@ var taskJobGlobal: Job? = null
 //File locations
 val programPath: String = System.getProperty("user.dir")
 var dataPath: String = ""
-fun getModulePath(module: String) = "$dataPath\\data\\$module"
-fun getIniFile() = File("$programPath\\cwo_erp.ini")
-fun getClientSecretFile(api: String) = File("$dataPath\\data\\api\\${api}_cs.txt")
-fun getIcon() = Image("file:///$dataPath\\data\\img\\orochi_logo_red_200x200.png")
-fun getLogo() = Image("file:///$dataPath\\data\\img\\orochi_logo_red_500x500.png")
+fun getModulePath(module: String) = Paths.get(dataPath, "data", module).toString()
+fun getIniFile() = File(Paths.get(programPath,"cwo_erp.ini").toString())
+fun getClientSecretFile(api: String) = File(Paths.get(dataPath,"data","api","${api}_cs.txt").toString())
+fun getIcon() = Image("file:///" + Paths.get(dataPath,"data","img","orochi_logo_red_200x200.png").toString())
+fun getLogo() = Image("file:///" + Paths.get(dataPath,"data","img","orochi_logo_red_500x500.png").toString())
 
 //Search settings
 var maxSearchResultsGlobal: Int = 2000

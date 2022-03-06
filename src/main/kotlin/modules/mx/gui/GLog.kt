@@ -15,6 +15,7 @@ import modules.mx.rightButtonsWidth
 import tornadofx.*
 import java.io.File
 import java.io.InputStream
+import java.nio.file.Paths
 import kotlin.math.roundToInt
 import kotlin.reflect.full.memberProperties
 
@@ -105,7 +106,7 @@ class GLog(title: String) : Fragment(title) {
     val directory = chooseDirectory("Choose directory for the CSV file to be saved in:")
     val timestamp = Timestamp.now().replace(':', '-')
     val file = File(
-      directory!!.path + "\\Log_$title-$timestamp.csv"
+      Paths.get(directory!!.path, "Log_$title-$timestamp.csv").toString()
     )
     file.createNewFile()
     val list = logDisplay.toList()

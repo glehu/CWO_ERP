@@ -11,6 +11,7 @@ import modules.mx.maxSearchResultsGlobal
 import tornadofx.Controller
 import java.io.File
 import java.io.RandomAccessFile
+import java.nio.file.Paths
 
 @ExperimentalSerializationApi
 class CwODB {
@@ -233,11 +234,11 @@ class CwODB {
     fun resetModuleDatabase(module: String): Boolean {
       val modulePath = getModulePath(module)
       return if (File(modulePath).isDirectory) {
-        File("$modulePath\\$module.db").delete()
-        File("$modulePath\\$module.nu").delete()
-        File("$modulePath\\lastentry.db").delete()
+        File(Paths.get(modulePath, "$module.db").toString()).delete()
+        File(Paths.get(modulePath, "$module.nu").toString()).delete()
+        File(Paths.get(modulePath, "lastentry.db").toString()).delete()
         for (i in 0..99) {
-          val file = File("$modulePath\\$module.ix$i")
+          val file = File(Paths.get(modulePath, "$module.ix$i").toString())
           if (file.exists()) file.delete()
         }
         true
@@ -249,7 +250,7 @@ class CwODB {
      * @return the database file.
      */
     fun getDatabaseFile(module: String): File {
-      return File("${getModulePath(module)}\\$module.db")
+      return File(Paths.get(getModulePath(module), "$module.db").toString())
     }
   }
 }

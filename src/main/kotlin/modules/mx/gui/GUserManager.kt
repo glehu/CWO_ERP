@@ -5,6 +5,7 @@ import javafx.collections.ObservableList
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.User
 import modules.mx.logic.Log
+import modules.mx.logic.UserCLIManager
 import modules.mx.logic.UserManager
 import modules.mx.rightButtonsWidth
 import tornadofx.*
@@ -13,6 +14,7 @@ import tornadofx.*
 @ExperimentalSerializationApi
 class GUserManager : View("User Management") {
   private val userManager: UserManager by inject()
+  private val userCLIManager = UserCLIManager()
 
   @ExperimentalSerializationApi
   private var users: ObservableList<User> = observableListOf(User("", ""))
@@ -30,7 +32,7 @@ class GUserManager : View("User Management") {
     readonlyColumn("Inventory", User::canAccessInventory)
       .cellFormat { text = ""; style { backgroundColor = userManager.getRightsCellColor(it) } }
     onUserSelect(1) {
-      userManager.showUser(it, userManager.getCredentials(), users)
+      userManager.showUser(it, userCLIManager.getCredentials(), users)
     }
   }
   override val root = borderpane {
@@ -39,7 +41,7 @@ class GUserManager : View("User Management") {
     right = vbox {
       button("Add user") {
         action {
-          userManager.addUser(userManager.getCredentials(), users)
+          userManager.addUser(userCLIManager.getCredentials(), users)
         }
         prefWidth = rightButtonsWidth
       }
@@ -53,7 +55,7 @@ class GUserManager : View("User Management") {
   }
 
   private fun refreshUsers() {
-    users = userManager.getUsersObservableList(users, userManager.getCredentials())
+    users = userManager.getUsersObservableList(users, userCLIManager.getCredentials())
     table.items = users
     table.refresh()
   }

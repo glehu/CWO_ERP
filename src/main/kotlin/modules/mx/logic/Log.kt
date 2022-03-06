@@ -11,6 +11,7 @@ import modules.mx.getModulePath
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.isClientGlobal
 import java.io.File
+import java.nio.file.Paths
 
 class Log {
   enum class LogType {
@@ -26,8 +27,8 @@ class Log {
       return null
     }
 
-    private fun getLogPath(module: String) = "${getModulePath(module)}\\log"
-    fun getLogFile(module: String) = File("${getLogPath(module)}\\${module}_log.txt")
+    private fun getLogPath(module: String) = Paths.get(getModulePath(module),"log").toString()
+    fun getLogFile(module: String) = File(Paths.get(getLogPath(module),"${module}_log.txt").toString())
 
     /**
      * Writes a log message to the disk.

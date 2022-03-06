@@ -24,6 +24,7 @@ import modules.mx.logic.indexFormat
 import modules.mx.logic.roundTo
 import modules.mx.terminal
 import java.io.File
+import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.collections.set
 import kotlin.concurrent.thread
@@ -236,14 +237,14 @@ interface IIndexManager : IModule {
    * @return the index file of a provided module
    */
   fun getIndexFile(ixNr: Int): File {
-    return File("${getModulePath(module)}\\$module.ix$ixNr")
+    return File(Paths.get(getModulePath(module),"$module.ix$ixNr").toString())
   }
 
   /**
    * @return the file storing the last change date hex value
    */
   private fun getLastChangeDateHexFile(): File {
-    return File("${getModulePath(module)}\\lastchange.json")
+    return File(Paths.get(getModulePath(module),"lastchange.json").toString())
   }
 
   /**
@@ -286,7 +287,7 @@ interface IIndexManager : IModule {
   }
 
   private fun getNuFile(): File {
-    return File("${getModulePath(module)}\\$module.nu")
+    return File(Paths.get(getModulePath(module),"$module.nu").toString())
   }
 
   private fun checkNuFile(): Boolean {

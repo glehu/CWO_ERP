@@ -58,7 +58,7 @@ class GLogin : Fragment("CWO ERP") {
   private val loginUser = UserModel(getUserPropertyFromUser(User("", "")))
   private val modeOffline = SimpleBooleanProperty(false)
   private val modeSafety = SimpleBooleanProperty(false)
-  private val userManager: UserManager by inject()
+  private val userCLIManager = UserCLIManager()
   override val root = borderpane {
     top = menubar {
       menu("Menu") {
@@ -119,7 +119,7 @@ class GLogin : Fragment("CWO ERP") {
                 runAsyncWithProgress {
                   if (loginUser.username.value.isNotEmpty() && loginUser.username.value.isNotEmpty()) {
                     validResponse =
-                      userManager.login(loginUser.username.value, loginUser.password.value)
+                      userCLIManager.login(loginUser.username.value, loginUser.password.value)
                   }
                 } ui {
                   if (validResponse) {

@@ -47,7 +47,7 @@ class CLI : IModule {
 
   private fun cliCheckIni() {
     val progress = terminal.progressAnimation {
-      text("Checking .ini file...")
+      text("Checking for .ini file in $programPath...")
       progressBar(pendingChar = "-", completeChar = "|")
       percentage()
       completed()
@@ -137,7 +137,7 @@ class CLI : IModule {
           } else {
             userManager.getUsersObservableList(
               users = observableListOf(User("", "")),
-              credentials = userManager.getCredentials()
+              credentials = UserCLIManager().getCredentials()
             )
           }
           userManager.getActiveUsers()
@@ -279,7 +279,7 @@ class CLI : IModule {
         print("${gray("CWO:>")} Password: ")
         password = System.console().readPassword().concatToString()
       }
-      loggedIn = UserManager().login(username, password, doLog = true)
+      loggedIn = UserCLIManager().login(username, password, doLog = true)
     }
     return true
   }

@@ -10,6 +10,7 @@ import kotlinx.serialization.json.Json
 import modules.mx.getModulePath
 import tornadofx.Controller
 import java.io.File
+import java.nio.file.Paths
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -33,9 +34,10 @@ class SpotifyController : IAPI, Controller() {
   }
 
   private fun getUserDataFile(): File {
-    val filePath = File("${getModulePath("MX")}\\api\\$apiName")
+    val path = Paths.get(getModulePath("MX"), "api", apiName).toString()
+    val filePath = File(path)
     if (!filePath.isDirectory) filePath.mkdirs()
-    val userDataFile = File("$filePath\\${apiName}_user.json")
+    val userDataFile = File(Paths.get(path, "${apiName}_user.json").toString())
     if (!userDataFile.isFile) userDataFile.createNewFile()
     return userDataFile
   }

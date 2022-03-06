@@ -139,7 +139,7 @@ fun loadIndex(module: String = "") {
 @InternalAPI
 fun exitMain() {
   if (activeUser.username.isEmpty()) return
-  UserManager().logout(activeUser.username, activeUser.password)
+  UserCLIManager().logout(activeUser.username, activeUser.password)
   if (!isClientGlobal) {
     if (serverJobGlobal != null && serverJobGlobal!!.isActive) {
       Log.log(Log.LogType.INFO, "Shutting down server...")

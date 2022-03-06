@@ -20,9 +20,7 @@ import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -31,9 +29,11 @@ import modules.m4storage.logic.ItemStorageManager
 import modules.mx.*
 import modules.mx.gui.GDashboard
 import modules.mx.logic.Log
+import modules.mx.logic.UserCLIManager
 import modules.mx.logic.UserManager
 import tornadofx.Controller
 import java.io.File
+import java.nio.file.Paths
 
 @DelicateCoroutinesApi
 @InternalAPI
@@ -47,6 +47,7 @@ class Server : IModule, Controller() {
 
   private val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
   private val userManager: UserManager by inject()
+  private val userCLIManager = UserCLIManager()
   lateinit var text: String
 
   val serverEngine = embeddedServer(
@@ -64,7 +65,7 @@ class Server : IModule, Controller() {
       basic("auth-basic") {
         realm = "Access to the '/' path"
         validate { credentials ->
-          if (userManager.login(credentials.name, credentials.password, false)) {
+          if (userCLIManager.login(credentials.name, credentials.password, false)) {
             UserIdPrincipal(credentials.name)
           } else {
             null
@@ -107,9 +108,12 @@ class Server : IModule, Controller() {
       }
       route("/mockingbird") {
         post {
-          val text: String = call.receive()
-          log(Log.LogType.COM, text, call.request.uri)
-          call.respondText(text)
+          runBlocking {
+            val text: String = call.receive()
+            delay(text.toLong())
+            log(Log.LogType.COM, text, call.request.uri)
+            call.respondText(text)
+          }
         }
       }
       register()
@@ -210,7 +214,7 @@ class Server : IModule, Controller() {
 
   private fun Route.logout() {
     get("/logout") {
-      UserManager().setUserOnlineStatus(
+      userCLIManager.setUserOnlineStatus(
         username = call.principal<UserIdPrincipal>()?.name!!,
         online = false
       )
@@ -233,14 +237,13 @@ class Server : IModule, Controller() {
         "User ${call.principal<UserIdPrincipal>()?.name} login",
         call.request.uri
       )
-      val userManager = UserManager()
-      userManager.setUserOnlineStatus(
+      userCLIManager.setUserOnlineStatus(
         username = call.principal<UserIdPrincipal>()?.name!!,
         online = true
       )
       call.respond(
         ServerController.generateLoginResponse(
-          userManager
+          userCLIManager
             .getCredentials()
             .credentials[call.principal<UserIdPrincipal>()?.name]!!
         )
@@ -256,7 +259,7 @@ class Server : IModule, Controller() {
     get("/authcallback/spotify") {
       val code: String? = call.request.queryParameters["code"]
       if (code != null) {
-        call.respondFile(File("$dataPath\\data\\web\\spotifyCallback.html"))
+        call.respondFile(File(Paths.get(dataPath, "data", "web", "spotifyCallback.html").toString()))
         log(Log.LogType.COM, "Spotify Auth Callback received")
         val spotifyAPI = find<GSpotify>()
         spotifyAPI.authCodeProperty.value = code
@@ -297,7 +300,7 @@ class Server : IModule, Controller() {
   private fun Route.getIndexSelection(vararg indexManager: IIndexManager) {
     for (ix in indexManager) {
       get("${ix.module.lowercase()}/indexselection") {
-        if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
+        if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(ix.getIndexUserSelection())
@@ -309,7 +312,7 @@ class Server : IModule, Controller() {
   private fun Route.getEntry(vararg indexManager: IIndexManager) {
     for (ix in indexManager) {
       get("${ix.module.lowercase()}/entry/{searchString}") {
-        if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
+        if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(
@@ -326,7 +329,7 @@ class Server : IModule, Controller() {
   private fun Route.saveEntry(vararg indexManager: IIndexManager) {
     for (ix in indexManager) {
       post("${ix.module.lowercase()}/saveentry") {
-        if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
+        if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           val entryJson: EntryJson = call.receive()
@@ -345,7 +348,7 @@ class Server : IModule, Controller() {
   private fun Route.getEntryLock(vararg indexManager: IIndexManager) {
     for (ix in indexManager) {
       get("${ix.module.lowercase()}/getentrylock/{searchString}") {
-        if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
+        if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(
@@ -362,7 +365,7 @@ class Server : IModule, Controller() {
   private fun Route.setEntryLock(vararg indexManager: IIndexManager) {
     for (ix in indexManager) {
       get("${ix.module.lowercase()}/setentrylock/{searchString}") {
-        if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
+        if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(
@@ -378,7 +381,7 @@ class Server : IModule, Controller() {
 
   private fun Route.addWebshopOrder() {
     post("m3/neworder") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M3")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M3")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.placeWebshopOrder(call))
@@ -401,7 +404,7 @@ class Server : IModule, Controller() {
 
   private fun Route.getPriceCategories() {
     get("m4/pricecategories") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
@@ -413,7 +416,7 @@ class Server : IModule, Controller() {
 
   private fun Route.getPriceCategoryNumber() {
     get("m4/categorynumber") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
@@ -425,7 +428,7 @@ class Server : IModule, Controller() {
 
   private fun Route.savePriceCategory() {
     post("m4/savecategory") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.updatePriceCategories(call.receive() as ListDeltaJson))
@@ -435,7 +438,7 @@ class Server : IModule, Controller() {
 
   private fun Route.deletePriceCategory() {
     post("m4/deletecategory") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.deletePriceCategory(call.receive() as ListDeltaJson))
@@ -445,7 +448,7 @@ class Server : IModule, Controller() {
 
   private fun Route.getStorages() {
     get("m4/storages") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
@@ -457,7 +460,7 @@ class Server : IModule, Controller() {
 
   private fun Route.getStorageNumber() {
     get("m4/storagenumber") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
@@ -469,7 +472,7 @@ class Server : IModule, Controller() {
 
   private fun Route.saveStorage() {
     post("m4/savestorage") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.updateStorages(call.receive() as ListDeltaJson))
@@ -479,7 +482,7 @@ class Server : IModule, Controller() {
 
   private fun Route.deleteStorage() {
     post("m4/deletestorage") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.deleteStorage(call.receive() as ListDeltaJson))
@@ -489,7 +492,7 @@ class Server : IModule, Controller() {
 
   private fun Route.getItemImage() {
     get("m4/getimage/{itemUID}") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.getItemImage())
@@ -499,7 +502,7 @@ class Server : IModule, Controller() {
 
   private fun Route.checkStorage() {
     post("m4sp/check") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.checkStorage(call.receive() as TwoIntOneDoubleJson))
@@ -509,7 +512,7 @@ class Server : IModule, Controller() {
 
   private fun Route.getAvailableStock() {
     post("m4sp/avail") {
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.getAvailableStock(call.receive() as PairIntJson))
@@ -529,7 +532,7 @@ class Server : IModule, Controller() {
   private fun Route.getSettingsFileText() {
     post("getsettingsfiletext") {
       val body: SettingsRequestJson = Json.decodeFromString(call.receive())
-      if (!userManager.checkModuleRight(ServerController.getJWTUsername(call), body.module)) {
+      if (!userCLIManager.checkModuleRight(ServerController.getJWTUsername(call), body.module)) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(

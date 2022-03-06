@@ -28,6 +28,7 @@ import modules.m4storage.logic.ItemStorageManager
 import modules.mx.*
 import modules.mx.logic.*
 import java.io.File
+import java.nio.file.Paths
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -292,7 +293,7 @@ class ServerController {
 
     suspend fun registerUser(appCall: ApplicationCall): RegistrationResponse {
       val registrationPayload = appCall.receive<RegistrationPayload>()
-      val userManager = UserManager()
+      val userManager = UserCLIManager()
       var exists = false
       var isSuccess = true
       var message = ""
@@ -316,7 +317,7 @@ class ServerController {
     }
 
     fun getItemImage(): String {
-      val sampleImg = File("$dataPath\\data\\img\\orochi_logo_red_500x500.png")
+      val sampleImg = File(Paths.get(dataPath,"data","img","orochi_logo_red_500x500.png").toString())
       return Base64.getEncoder().encodeToString(sampleImg.readBytes())
     }
 

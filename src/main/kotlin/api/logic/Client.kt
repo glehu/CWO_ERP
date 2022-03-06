@@ -10,7 +10,7 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.activeUser
 import modules.mx.logic.Timestamp
-import modules.mx.logic.UserManager
+import modules.mx.logic.UserCLIManager
 
 /**
  * If the software is being run in client mode it needs to communicate with the server to create and edit data.
@@ -41,7 +41,7 @@ fun getUserClient(username: String = activeUser.username, password: String = act
 @InternalAPI
 fun getTokenClient(token: String = activeUser.apiToken.accessToken): HttpClient {
   if (activeUser.apiToken.expireUnixTimestamp <= Timestamp.getUnixTimestamp()) {
-    UserManager().login(activeUser.username, activeUser.password)
+    UserCLIManager().login(activeUser.username, activeUser.password)
   }
   return HttpClient(CIO) {
     install(JsonFeature) {
