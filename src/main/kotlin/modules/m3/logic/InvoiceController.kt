@@ -269,7 +269,7 @@ class InvoiceController : IController, Controller() {
   }
 
   fun checkStorageUnits() {
-    for ((i, pos) in wizard.invoice.items.value.withIndex()) {
+    for (pos in wizard.invoice.items.value) {
       //Check if we need to check the storages
       if (pos.amount == 0.0) {
         //Reset storage units
