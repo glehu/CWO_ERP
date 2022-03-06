@@ -92,6 +92,7 @@ class CLI : IModule {
       "load" -> cliLoad(inputArgs)
       "show" -> cliShow(inputArgs)
       "qs" -> cliQuickStart()
+      "clear" -> cliClearTerminal()
     }
     return terminated
   }
@@ -249,6 +250,8 @@ class CLI : IModule {
             "\t\t${gray("-active")} -> shows all active users"
     val qs =
       "qs -> quick start. loads the indices and starts the servers."
+    val clear =
+      "clear -> clears the terminal screen"
     //****************************************************
     val helpText = when (args[1]) {
       "help" -> help
@@ -257,13 +260,15 @@ class CLI : IModule {
       "start" -> startDetail
       "load" -> loadDetail
       "show" -> showDetail
+      "clear" -> clear
       else -> {
         exit +
                 "\n$chuser" +
                 "\n$start" +
                 "\n$load" +
                 "\n$show" +
-                "\n$qs"
+                "\n$qs" +
+                "\n$clear"
       }
     }
     terminal.println(helpText)
