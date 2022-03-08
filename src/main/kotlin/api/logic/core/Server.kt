@@ -13,7 +13,6 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.http.*
-import io.ktor.network.tls.certificates.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -33,7 +32,9 @@ import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.io.FileInputStream
 import java.nio.file.Paths
+import java.security.KeyStore
 
 @DelicateCoroutinesApi
 @InternalAPI
@@ -48,28 +49,21 @@ class Server : IModule {
   private val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
   private val userCLIManager = UserCLIManager()
   lateinit var text: String
-
-  private val keyStoreFile = File(Paths.get("build", "keystore.jks").toString())
-  private val keystore = generateCertificate(
-    file = keyStoreFile,
-    keyAlias = "cWoErP",
-    keyPassword = "CwOeRp",
-    jksPassword = "CwOeRp"
-  )
+  private val keystore: KeyStore = KeyStore.getInstance("JKS")
   private val environment = applicationEngineEnvironment {
     log = LoggerFactory.getLogger("ktor.application")
     connector {
       host = iniVal.serverIPAddress.substringBefore(':')
-      port = iniVal.serverIPAddress.substringAfter(':').toInt() + 1
+      port = 80
     }
     sslConnector(
       keyStore = keystore,
-      keyAlias = "cWoErP",
-      keyStorePassword = { "CwOeRp".toCharArray() },
-      privateKeyPassword = { "CwOeRp".toCharArray() }) {
+      keyAlias = System.getenv(iniVal.envKeyAlias) ?: "?",
+      keyStorePassword = { (System.getenv(iniVal.envKeyStorePassword) ?: "?").toCharArray() },
+      privateKeyPassword = { (System.getenv(iniVal.envPrivKeyPassword) ?: "?").toCharArray() }
+    ) {
       host = iniVal.serverIPAddress.substringBefore(':')
-      port = iniVal.serverIPAddress.substringAfter(':').toInt()
-      keyStorePath = keyStoreFile
+      port = 443
     }
     module {
       module()
@@ -79,6 +73,10 @@ class Server : IModule {
   val serverEngine = embeddedServer(Netty, environment)
 
   fun Application.module() {
+    install(HttpsRedirect) {
+      sslPort = 443
+      permanentRedirect = true
+    }
     install(ContentNegotiation) {
       json(Json {
         prettyPrint = true
@@ -231,6 +229,10 @@ class Server : IModule {
   }
 
   init {
+    keystore.load(
+      FileInputStream(Paths.get(programPath, "keystore.jks").toString()),
+      (System.getenv(iniVal.envCertPassword) ?: "?").toCharArray()
+    )
     serverJobGlobal = GlobalScope.launch {
       serverEngine.start(wait = true)
     }

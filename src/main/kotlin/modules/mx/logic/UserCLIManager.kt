@@ -116,12 +116,17 @@ class UserCLIManager : IModule {
   ): Boolean {
     var successful = false
     val user = credentials.credentials[username]
-    if (user != null && user.password == encryptAES(password)) {
-      successful = true
-      if (activeUser.username.isEmpty()) activeUser = user
-      if (doLog) log(Log.LogType.INFO, "User \"$username\" login successful")
+    if (user == null) {
+      successful = false
+      if (doLog) log(Log.LogType.ERROR, "No such user found")
     } else {
-      if (doLog) log(Log.LogType.WARNING, "User \"$username\" login failed: wrong credentials")
+      if (user.password == encryptAES(password)) {
+        successful = true
+        if (activeUser.username.isEmpty()) activeUser = user
+        if (doLog) log(Log.LogType.INFO, "User \"$username\" login successful")
+      } else {
+        if (doLog) log(Log.LogType.ERROR, "User \"$username\" login failed: wrong credentials")
+      }
     }
     return successful
   }

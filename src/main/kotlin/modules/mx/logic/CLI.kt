@@ -30,19 +30,51 @@ class CLI : IModule {
   /**
    * Runs the software without GUI in command line interpretation (CLI) mode.
    */
-  fun runCLI() {
+  fun runCLI(args: Array<String>) {
     cliClearTerminal()
     cliMode = true
     cliCheckIni()
+    log(Log.LogType.INFO, "BOOTING CWO ERP CLI MODE")
+    if (args.contains("-env")) {
+      log(Log.LogType.SYS, "LOADING ENVIRONMENT VARIABLES")
+      // Get User and Password from the system's environment variables
+      val envUser: String = System.getenv("CWOERPUSER") ?: "?"
+      val envPass: String = System.getenv("CWOERPPASS") ?: "?"
+      if (envUser != "?" && envPass != "?") {
+        // Attempt to log in the user
+        log(Log.LogType.SYS, "LOGGING IN")
+        if (!UserCLIManager().login(envUser, envPass, doLog = true)) {
+          log(Log.LogType.ERROR, "TERMINATED PROCESS REASON wrong-credentials")
+          cliExit()
+        }
+      } else {
+        log(
+          Log.LogType.WARNING,
+          "REMOVED FLAG -env REASON incomplete-env-variables HELP check CWOERPUSER and CWOERPPASS"
+        )
+      }
+    }
+    if (args.contains("-server")) {
+      log(Log.LogType.SYS, "STARTING SERVER MODE")
+      try {
+        cliQuickStart()
+      } catch (e: Exception) {
+        log(Log.LogType.ERROR, "ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
+        terminal.println(
+          red("ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
+        )
+        cliExit(false)
+      }
+    }
+    // Prompts the user to log in if there is no active user
     val login: Boolean = if (activeUser.username.isEmpty()) cliLogin() else true
     cliClearTerminal()
+    // Terminate if the user is somehow not logged in at this point
     var terminated = !login
-    var inputArgs: List<String>
     while (!terminated) {
       terminal.print("\n${magenta("${activeUser.username}:>")} ")
       //Wait for user input
-      inputArgs = (readLine() ?: "").split(" ")
-      terminated = cliHandleInput(inputArgs)
+      terminated = cliHandleInput((readLine() ?: "").split(" "))
     }
     cliExit()
   }
@@ -93,6 +125,7 @@ class CLI : IModule {
       "show" -> cliShow(inputArgs)
       "qs" -> cliQuickStart()
       "clear" -> cliClearTerminal()
+      else -> terminal.println(red("ERROR: Unknown Command ${white(inputArgs[0])}"))
     }
     return terminated
   }
@@ -188,12 +221,12 @@ class CLI : IModule {
     )
   }
 
-  private fun cliExit() {
-    cliClearTerminal()
+  private fun cliExit(clearTerminal: Boolean = true) {
+    if (clearTerminal) cliClearTerminal()
+    log(Log.LogType.SYS, "Terminating System...")
     exitMain()
-    log(Log.LogType.INFO, "System terminated by user.")
     terminal.println(
-      "${gray("CWO:>")} ${green("System successfully terminated by user.")}"
+      "${gray("CWO:>")} ${green("System successfully terminated.")}"
     )
     exitProcess(0)
   }

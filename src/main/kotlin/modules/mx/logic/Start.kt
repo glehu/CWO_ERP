@@ -24,12 +24,12 @@ import java.io.IOException
 @InternalAPI
 @ExperimentalSerializationApi
 fun main(args: Array<String>) {
-  if (args.isEmpty() || args[0] == "gui") {
+  if (args.isEmpty() || args[0] == "-gui") {
     // GUI
     launch<CWOMainGUI>()
-  } else if (args[0] == "cli" || args[0] == "cmd") {
+  } else if (args[0] == "-cli" || args[0] == "-cmd") {
     // Command Line Interpreter
-    CLI().runCLI()
+    CLI().runCLI(args)
   }
 }
 
@@ -142,7 +142,7 @@ fun exitMain() {
   UserCLIManager().logout(activeUser.username, activeUser.password)
   if (!isClientGlobal) {
     if (serverJobGlobal != null && serverJobGlobal!!.isActive) {
-      Log.log(Log.LogType.INFO, "Shutting down server...")
+      Log.log(Log.LogType.SYS, "Shutting down server...")
       try {
         server.serverEngine.stop(100L, 100L)
       } catch (_: IOException) {
@@ -151,7 +151,7 @@ fun exitMain() {
       }
     }
     if (telnetServerJobGlobal != null && telnetServerJobGlobal!!.isActive) {
-      Log.log(Log.LogType.INFO, "Shutting down telnet server...")
+      Log.log(Log.LogType.SYS, "Shutting down telnet server...")
       try {
         telnetServer.telnetServer.close()
       } catch (_: IOException) {
@@ -161,7 +161,7 @@ fun exitMain() {
     }
   }
   if (taskJobGlobal != null && taskJobGlobal!!.isActive) {
-    Log.log(Log.LogType.INFO, "Shutting down ticker...")
+    Log.log(Log.LogType.SYS, "Shutting down ticker...")
     taskJobGlobal!!.cancel()
   }
 }

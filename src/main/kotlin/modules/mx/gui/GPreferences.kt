@@ -26,6 +26,10 @@ class GPreferences : View("Preferences") {
   private val emailHostProperty = SimpleStringProperty("?")
   private val emailPortProperty = SimpleStringProperty("?")
   private val emailAddressProperty = SimpleStringProperty("?")
+  private val envKeyAlias = SimpleStringProperty("?")
+  private val envKeyStorePassword = SimpleStringProperty("?")
+  private val envPrivKeyPassword = SimpleStringProperty("?")
+  private val envCertPassword = SimpleStringProperty("?")
 
   private val jsonSerializer = Json {
     prettyPrint = true
@@ -51,7 +55,11 @@ class GPreferences : View("Preferences") {
             emailPassword = emailPasswordProperty.value,
             emailHost = emailHostProperty.value,
             emailPort = emailPortProperty.value,
-            emailAddress = emailAddressProperty.value
+            emailAddress = emailAddressProperty.value,
+            envKeyAlias = envKeyAlias.value,
+            envKeyStorePassword = envKeyStorePassword.value,
+            envPrivKeyPassword = envPrivKeyPassword.value,
+            envCertPassword = envCertPassword.value
           )
         )
       )
@@ -70,6 +78,10 @@ class GPreferences : View("Preferences") {
       emailHostProperty.value = iniVal.emailHost
       emailPortProperty.value = iniVal.emailPort
       emailAddressProperty.value = iniVal.emailAddress
+      envKeyAlias.value = iniVal.envKeyAlias
+      envKeyStorePassword.value = iniVal.envKeyStorePassword
+      envPrivKeyPassword.value = iniVal.envPrivKeyPassword
+      envCertPassword.value = iniVal.envCertPassword
     }
     vbox {
       fieldset {
@@ -133,7 +145,11 @@ class GPreferences : View("Preferences") {
                 emailPassword = emailPasswordProperty.value,
                 emailHost = emailHostProperty.value,
                 emailPort = emailPortProperty.value,
-                emailAddress = emailAddressProperty.value
+                emailAddress = emailAddressProperty.value,
+                envKeyAlias = envKeyAlias.value,
+                envKeyStorePassword = envKeyStorePassword.value,
+                envPrivKeyPassword = envPrivKeyPassword.value,
+                envCertPassword = envCertPassword.value
               )
             )
           )

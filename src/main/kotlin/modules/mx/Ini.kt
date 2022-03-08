@@ -16,5 +16,9 @@ data class Ini(
   @SerialName("SMTP Password") var emailPassword: String,
   @SerialName("SMTP Host") var emailHost: String,
   @SerialName("SMTP Port") var emailPort: String,
-  @SerialName("Send Emails as") var emailAddress: String
+  @SerialName("Send Emails as") var emailAddress: String,
+  @SerialName("Key Alias Env Variable") var envKeyAlias: String,
+  @SerialName("KeyStore Password Env Variable") var envKeyStorePassword: String,
+  @SerialName("PrivKey Password Env Variable") var envPrivKeyPassword: String,
+  @SerialName("Cert Password Env Variable") var envCertPassword: String,
 )
