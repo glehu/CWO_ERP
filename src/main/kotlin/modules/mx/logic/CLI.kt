@@ -9,6 +9,7 @@ import interfaces.IModule
 import io.ktor.util.*
 import javafx.collections.ObservableList
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -30,7 +31,7 @@ class CLI : IModule {
   /**
    * Runs the software without GUI in command line interpretation (CLI) mode.
    */
-  fun runCLI(args: Array<String>) {
+  suspend fun runCLI(args: Array<String>) {
     cliClearTerminal()
     cliMode = true
     cliCheckIni()
@@ -58,6 +59,10 @@ class CLI : IModule {
       log(Log.LogType.SYS, "STARTING SERVER MODE")
       try {
         cliQuickStart()
+        val terminated = false
+        while (!terminated) {
+          delay(1000)
+        }
       } catch (e: Exception) {
         log(Log.LogType.ERROR, "ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
         terminal.println(
@@ -65,18 +70,19 @@ class CLI : IModule {
         )
         cliExit(false)
       }
+    } else {
+      // Prompts the user to log in if there is no active user
+      val login: Boolean = if (activeUser.username.isEmpty()) cliLogin() else true
+      cliClearTerminal()
+      // Terminate if the user is somehow not logged in at this point
+      var terminated = !login
+      while (!terminated) {
+        terminal.print("\n${magenta("${activeUser.username}:>")} ")
+        //Wait for user input
+        terminated = cliHandleInput((readLine() ?: "").split(" "))
+      }
+      cliExit()
     }
-    // Prompts the user to log in if there is no active user
-    val login: Boolean = if (activeUser.username.isEmpty()) cliLogin() else true
-    cliClearTerminal()
-    // Terminate if the user is somehow not logged in at this point
-    var terminated = !login
-    while (!terminated) {
-      terminal.print("\n${magenta("${activeUser.username}:>")} ")
-      //Wait for user input
-      terminated = cliHandleInput((readLine() ?: "").split(" "))
-    }
-    cliExit()
   }
 
   /**

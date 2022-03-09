@@ -23,7 +23,7 @@ import java.io.IOException
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
-fun main(args: Array<String>) {
+suspend fun main(args: Array<String>) {
   if (args.isEmpty() || args[0] == "-gui") {
     // GUI
     launch<CWOMainGUI>()
