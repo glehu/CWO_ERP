@@ -171,18 +171,14 @@ class Server : IModule {
         route("/mockingbird/submit") {
           post {
             runBlocking {
-              launch {
-                Mockingbird.handleSubmit(call)
-              }
               ServerController.pauseRequest(2000)
+              Mockingbird.handleSubmit(call)
             }
           }
           get {
             runBlocking {
-              launch {
-                Mockingbird.handleSubmit(call)
-              }
               ServerController.pauseRequest(2000)
+              Mockingbird.handleSubmit(call)
             }
           }
         }
