@@ -208,7 +208,7 @@ data class WebPlannerCell(
   val id: String,
   val type: String,
   val rows: Int,
-  val box: Int,
+  val box: String,
   val history: Array<String>,
   val name: String = "",
   val description: String = ""
