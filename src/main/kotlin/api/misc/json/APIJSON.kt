@@ -225,3 +225,20 @@ data class WebPlannerCell(
     return history.contentHashCode()
   }
 }
+
+@Serializable
+data class WebMockingbirdConfig(
+  val config: MockingbirdConfig
+)
+
+@Serializable
+data class MockingbirdConfig(
+  val content_type: String,
+  val message_type: String,
+  val return_type: String,
+  val return_message: String,
+  val return_code: String,
+  val return_redirect: String,
+  val return_delay: String,
+  val return_delay_unit: String
+)

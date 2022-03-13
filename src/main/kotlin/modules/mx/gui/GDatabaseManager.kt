@@ -11,10 +11,27 @@ import modules.m2.logic.ContactIndexManager
 import modules.m3.logic.InvoiceIndexManager
 import modules.m4.logic.ItemIndexManager
 import modules.m4stockposting.logic.ItemStockPostingIndexManager
-import modules.mx.*
+import modules.mx.activeUser
+import modules.mx.contactIndexManager
+import modules.mx.discographyIndexManager
 import modules.mx.gui.userAlerts.GAlert
+import modules.mx.invoiceIndexManager
+import modules.mx.itemIndexManager
+import modules.mx.itemStockPostingIndexManager
 import modules.mx.logic.Log
-import tornadofx.*
+import modules.mx.rightButtonsWidth
+import tornadofx.SmartResize
+import tornadofx.View
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.form
+import tornadofx.observableListOf
+import tornadofx.prefWidth
+import tornadofx.readonlyColumn
+import tornadofx.style
+import tornadofx.tableview
+import tornadofx.vbox
 
 @InternalAPI
 @ExperimentalSerializationApi

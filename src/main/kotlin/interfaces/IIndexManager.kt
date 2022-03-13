@@ -237,14 +237,14 @@ interface IIndexManager : IModule {
    * @return the index file of a provided module
    */
   fun getIndexFile(ixNr: Int): File {
-    return File(Paths.get(getModulePath(module),"$module.ix$ixNr").toString())
+    return File(Paths.get(getModulePath(module), "$module.ix$ixNr").toString())
   }
 
   /**
    * @return the file storing the last change date hex value
    */
   private fun getLastChangeDateHexFile(): File {
-    return File(Paths.get(getModulePath(module),"lastchange.json").toString())
+    return File(Paths.get(getModulePath(module), "lastchange.json").toString())
   }
 
   /**
@@ -287,7 +287,7 @@ interface IIndexManager : IModule {
   }
 
   private fun getNuFile(): File {
-    return File(Paths.get(getModulePath(module),"$module.nu").toString())
+    return File(Paths.get(getModulePath(module), "$module.nu").toString())
   }
 
   private fun checkNuFile(): Boolean {

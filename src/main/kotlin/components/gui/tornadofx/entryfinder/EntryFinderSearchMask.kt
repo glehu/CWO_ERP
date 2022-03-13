@@ -10,10 +10,26 @@ import javafx.collections.ObservableList
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TableView
 import javafx.scene.control.TextField
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.logic.Log
-import tornadofx.*
+import tornadofx.View
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.checkbox
+import tornadofx.combobox
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.observableListOf
+import tornadofx.requestResize
+import tornadofx.singleAssign
+import tornadofx.textfield
+import tornadofx.tooltip
 
 @ExperimentalSerializationApi
 @InternalAPI

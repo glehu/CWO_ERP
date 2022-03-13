@@ -10,7 +10,21 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.ContactImport
 import modules.m2.misc.ContactModel
 import modules.mx.gui.GProgressbar
-import tornadofx.*
+import tornadofx.FileChooserMode
+import tornadofx.Fragment
+import tornadofx.action
+import tornadofx.button
+import tornadofx.chooseFile
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.getValue
+import tornadofx.hbox
+import tornadofx.label
+import tornadofx.paddingHorizontal
+import tornadofx.setValue
+import tornadofx.textfield
+import tornadofx.vbox
 import java.io.File
 
 @InternalAPI

@@ -5,8 +5,15 @@ import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
 import kotlinx.serialization.ExperimentalSerializationApi
 import styling.Stylesheet
-import tornadofx.*
-
+import tornadofx.View
+import tornadofx.addClass
+import tornadofx.fieldset
+import tornadofx.hgrow
+import tornadofx.paddingAll
+import tornadofx.style
+import tornadofx.tab
+import tornadofx.tabpane
+import tornadofx.vbox
 
 @InternalAPI
 @ExperimentalSerializationApi

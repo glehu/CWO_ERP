@@ -18,7 +18,15 @@ import modules.m2.Contact
 import modules.m2.logic.ContactController
 import modules.mx.contactIndexManager
 import modules.mx.gui.userAlerts.GAlertLocked
-import tornadofx.*
+import tornadofx.SmartResize
+import tornadofx.View
+import tornadofx.form
+import tornadofx.observableListOf
+import tornadofx.onUserSelect
+import tornadofx.readonlyColumn
+import tornadofx.remainingWidth
+import tornadofx.singleAssign
+import tornadofx.tableview
 
 @InternalAPI
 @ExperimentalSerializationApi

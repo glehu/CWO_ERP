@@ -1,6 +1,10 @@
 package api.logic
 
-import api.misc.json.*
+import api.misc.json.SpotifyAlbumListJson
+import api.misc.json.SpotifyArtistJson
+import api.misc.json.SpotifyArtistListJson
+import api.misc.json.SpotifyTracklistJson
+import api.misc.json.SpotifyUserProfileJson
 import interfaces.IAPI
 import interfaces.IIndexManager
 import interfaces.IModule

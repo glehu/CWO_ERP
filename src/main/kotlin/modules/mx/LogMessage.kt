@@ -1,9 +1,11 @@
 package modules.mx
 
+import io.ktor.util.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import modules.mx.logic.Log
 
+@InternalAPI
 @Serializable
 data class LogMessage(
   @SerialName("ts")

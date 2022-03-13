@@ -9,7 +9,17 @@ import modules.m4.misc.M4PriceCategoryModel
 import modules.m4.misc.getPriceCategoryFromCategoryProperty
 import modules.m4.misc.getPriceCategoryPropertyFromCategory
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.action
+import tornadofx.button
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.label
+import tornadofx.required
+import tornadofx.style
+import tornadofx.textfield
+import tornadofx.vboxConstraints
 
 @ExperimentalSerializationApi
 @InternalAPI

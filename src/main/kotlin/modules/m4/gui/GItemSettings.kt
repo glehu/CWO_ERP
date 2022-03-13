@@ -10,7 +10,16 @@ import kotlinx.serialization.json.Json
 import modules.m4.misc.ItemIni
 import modules.mx.invoiceIndexManager
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.hbox
+import tornadofx.tab
+import tornadofx.tabpane
+import tornadofx.tooltip
 
 @InternalAPI
 @ExperimentalSerializationApi

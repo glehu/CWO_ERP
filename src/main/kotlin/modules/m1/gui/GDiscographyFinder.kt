@@ -19,7 +19,15 @@ import modules.m1.Song
 import modules.m1.logic.DiscographyController
 import modules.mx.discographyIndexManager
 import modules.mx.gui.userAlerts.GAlertLocked
-import tornadofx.*
+import tornadofx.SmartResize
+import tornadofx.View
+import tornadofx.form
+import tornadofx.observableListOf
+import tornadofx.onUserSelect
+import tornadofx.readonlyColumn
+import tornadofx.remainingWidth
+import tornadofx.singleAssign
+import tornadofx.tableview
 
 @InternalAPI
 @ExperimentalSerializationApi

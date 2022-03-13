@@ -7,7 +7,11 @@
 package modules.m1.misc
 
 import io.ktor.util.*
-import javafx.beans.property.*
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import tornadofx.ItemViewModel
@@ -253,7 +257,6 @@ class SongPropertyCollaborationDataModel : ItemViewModel<SongPropertyCollaborati
   val coProducer2 = bind(SongPropertyCollaborationData::coProducer2Property)
   val coProducer2UID = bind(SongPropertyCollaborationData::coProducer2UIDProperty)
 }
-
 
 class SongPropertyCopyrightData {
   //----------------------------------v

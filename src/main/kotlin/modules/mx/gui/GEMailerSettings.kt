@@ -12,7 +12,19 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.misc.EMailerIni
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.checkbox
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.hbox
+import tornadofx.tab
+import tornadofx.tabpane
+import tornadofx.textarea
+import tornadofx.tooltip
 
 @InternalAPI
 @ExperimentalSerializationApi

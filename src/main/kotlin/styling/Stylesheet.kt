@@ -2,8 +2,11 @@ package styling
 
 import javafx.scene.paint.Color
 import javafx.scene.text.FontWeight
-import tornadofx.*
+import tornadofx.CssBox
+import tornadofx.Dimension
 import tornadofx.Stylesheet
+import tornadofx.cssclass
+import tornadofx.derive
 
 class Stylesheet : Stylesheet() {
   companion object {

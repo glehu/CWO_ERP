@@ -9,7 +9,16 @@ import javafx.scene.chart.XYChart
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.gui.GProgressbar
 import modules.mx.usageTracker
-import tornadofx.*
+import tornadofx.View
+import tornadofx.action
+import tornadofx.areachart
+import tornadofx.button
+import tornadofx.form
+import tornadofx.getValue
+import tornadofx.hbox
+import tornadofx.observableListOf
+import tornadofx.setValue
+import tornadofx.vbox
 
 @InternalAPI
 @ExperimentalSerializationApi

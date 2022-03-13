@@ -9,9 +9,40 @@ import io.ktor.util.*
 import javafx.collections.FXCollections
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.logic.DiscographyController
-import modules.m1.misc.*
+import modules.m1.misc.SongPropertyAlbumEPDataModel
+import modules.m1.misc.SongPropertyAvailabilityDataModel
+import modules.m1.misc.SongPropertyCollaborationDataModel
+import modules.m1.misc.SongPropertyCompletionStateModel
+import modules.m1.misc.SongPropertyCopyrightDataModel
+import modules.m1.misc.SongPropertyFinancialDataModel
+import modules.m1.misc.SongPropertyMainDataModel
+import modules.m1.misc.SongPropertyMiscDataModel
+import modules.m1.misc.SongPropertyPromotionDataModel
+import modules.m1.misc.SongPropertyStatisticsDataModel
+import modules.m1.misc.SongPropertyVisualizationDataModel
+import modules.m1.misc.getAlbumTypeList
+import modules.m1.misc.getGenreList
+import modules.m1.misc.getSongTypeList
 import modules.m2.logic.ContactController
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.Wizard
+import tornadofx.action
+import tornadofx.checkbox
+import tornadofx.combobox
+import tornadofx.contextmenu
+import tornadofx.datepicker
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.hbox
+import tornadofx.item
+import tornadofx.label
+import tornadofx.paddingHorizontal
+import tornadofx.required
+import tornadofx.style
+import tornadofx.textfield
+import tornadofx.useMaxSize
+import tornadofx.vbox
 
 //This Wizard is used to create new songs
 @InternalAPI

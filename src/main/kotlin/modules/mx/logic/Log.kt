@@ -27,8 +27,8 @@ class Log {
       return null
     }
 
-    private fun getLogPath(module: String) = Paths.get(getModulePath(module),"log").toString()
-    fun getLogFile(module: String) = File(Paths.get(getLogPath(module),"${module}_log.txt").toString())
+    private fun getLogPath(module: String) = Paths.get(getModulePath(module), "log").toString()
+    fun getLogFile(module: String) = File(Paths.get(getLogPath(module), "${module}_log.txt").toString())
 
     /**
      * Writes a log message to the disk.

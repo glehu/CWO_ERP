@@ -5,12 +5,20 @@ import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import kotlinx.serialization.ExperimentalSerializationApi
+import modules.m4.misc.ItemModel
 import modules.m4storage.ItemStorage
 import modules.m4storage.ItemStorageUnit
-import modules.m4.misc.ItemModel
 import modules.m4storage.misc.getStoragePropertyFromStorage
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.action
+import tornadofx.button
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.label
+import tornadofx.textarea
+import tornadofx.textfield
 
 @ExperimentalSerializationApi
 @InternalAPI

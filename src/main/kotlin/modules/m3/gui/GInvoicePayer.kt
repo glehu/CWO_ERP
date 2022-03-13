@@ -3,7 +3,16 @@ package modules.m3.gui
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.scene.paint.Color
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.action
+import tornadofx.button
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.hbox
+import tornadofx.label
+import tornadofx.style
+import tornadofx.textfield
 
 class GInvoicePayer : Fragment("Pay Invoice") {
   var userConfirmed = false

@@ -119,10 +119,10 @@ var taskJobGlobal: Job? = null
 val programPath: String = System.getProperty("user.dir")
 var dataPath: String = ""
 fun getModulePath(module: String) = Paths.get(dataPath, "data", module).toString()
-fun getIniFile() = File(Paths.get(programPath,"cwo_erp.ini").toString())
-fun getClientSecretFile(api: String) = File(Paths.get(dataPath,"data","api","${api}_cs.txt").toString())
-fun getIcon() = Image("file:///" + Paths.get(dataPath,"data","img","orochi_logo_red_200x200.png").toString())
-fun getLogo() = Image("file:///" + Paths.get(dataPath,"data","img","orochi_logo_red_500x500.png").toString())
+fun getIniFile() = File(Paths.get(programPath, "cwo_erp.ini").toString())
+fun getClientSecretFile(api: String) = File(Paths.get(dataPath, "data", "api", "${api}_cs.txt").toString())
+fun getIcon() = Image("file:///" + Paths.get(dataPath, "data", "img", "orochi_logo_red_200x200.png").toString())
+fun getLogo() = Image("file:///" + Paths.get(dataPath, "data", "img", "orochi_logo_red_500x500.png").toString())
 
 //Search settings
 var maxSearchResultsGlobal: Int = 2000

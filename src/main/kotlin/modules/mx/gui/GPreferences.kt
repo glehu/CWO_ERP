@@ -10,7 +10,18 @@ import modules.mx.Ini
 import modules.mx.getIniFile
 import modules.mx.logic.getRandomString
 import modules.mx.logic.readAndSetIniValues
-import tornadofx.*
+import tornadofx.View
+import tornadofx.action
+import tornadofx.button
+import tornadofx.chooseDirectory
+import tornadofx.combobox
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.find
+import tornadofx.form
+import tornadofx.textfield
+import tornadofx.tooltip
+import tornadofx.vbox
 
 @ExperimentalSerializationApi
 class GPreferences : View("Preferences") {

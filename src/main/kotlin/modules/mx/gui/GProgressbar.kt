@@ -1,7 +1,13 @@
 package modules.mx.gui
 
 import javafx.scene.text.FontWeight
-import tornadofx.*
+import tornadofx.TaskStatus
+import tornadofx.View
+import tornadofx.label
+import tornadofx.progressbar
+import tornadofx.style
+import tornadofx.vbox
+import tornadofx.visibleWhen
 
 class GProgressbar : View() {
   private val status: TaskStatus by inject()

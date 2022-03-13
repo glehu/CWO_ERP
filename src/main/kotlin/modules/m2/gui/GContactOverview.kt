@@ -11,7 +11,21 @@ import modules.m2.logic.ContactController
 import modules.mx.isClientGlobal
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet
-import tornadofx.*
+import tornadofx.View
+import tornadofx.action
+import tornadofx.addClass
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.hbox
+import tornadofx.paddingAll
+import tornadofx.paddingVertical
+import tornadofx.separator
+import tornadofx.style
+import tornadofx.tooltip
+import tornadofx.vbox
+import tornadofx.vgrow
 
 @InternalAPI
 @ExperimentalSerializationApi

@@ -8,7 +8,17 @@ import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
 import modules.mx.logic.UserManager
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.View
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.observableListOf
+import tornadofx.onUserSelect
+import tornadofx.prefWidth
+import tornadofx.readonlyColumn
+import tornadofx.style
+import tornadofx.tableview
+import tornadofx.vbox
 
 @InternalAPI
 @ExperimentalSerializationApi

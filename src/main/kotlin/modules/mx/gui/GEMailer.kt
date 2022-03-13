@@ -17,7 +17,22 @@ import modules.mx.Statistic
 import modules.mx.contactIndexManager
 import modules.mx.misc.EMailerIni
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.View
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.label
+import tornadofx.paddingVertical
+import tornadofx.separator
+import tornadofx.style
+import tornadofx.textarea
+import tornadofx.textfield
+import tornadofx.tooltip
+import tornadofx.vbox
+import kotlin.collections.set
 
 @ExperimentalSerializationApi
 @InternalAPI

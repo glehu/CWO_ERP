@@ -1,7 +1,11 @@
 package modules.m1.logic
 
 import api.logic.SpotifyAPI
-import api.misc.json.*
+import api.misc.json.SpotifyAlbumJson
+import api.misc.json.SpotifyAlbumListJson
+import api.misc.json.SpotifyArtistJson
+import api.misc.json.SpotifyTrackJson
+import api.misc.json.SpotifyTracklistJson
 import db.CwODB
 import db.IndexContent
 import interfaces.IIndexManager

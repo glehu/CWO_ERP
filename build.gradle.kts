@@ -28,8 +28,8 @@ application {
 }
 
 dependencies {
-  implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.0")
-  implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.0")
+  implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.3.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt")
@@ -49,7 +49,7 @@ dependencies {
   implementation("io.ktor:ktor-client-auth:1.6.4")
   implementation("io.ktor:ktor-serialization:1.6.4")
   implementation("io.ktor:ktor-network:1.6.4")
-  implementation("ch.qos.logback:logback-classic:1.2.10")
+  implementation("ch.qos.logback:logback-classic:1.2.11")
   implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.2.0")
   implementation("com.github.komputing.khash:keccak:1.1.1")
   implementation("com.benasher44:uuid:0.4.0")

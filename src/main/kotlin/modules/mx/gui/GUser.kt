@@ -12,7 +12,17 @@ import modules.mx.misc.UserModel
 import modules.mx.misc.getUserFromUserProperty
 import modules.mx.misc.getUserPropertyFromUser
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.action
+import tornadofx.button
+import tornadofx.checkbox
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.required
+import tornadofx.style
+import tornadofx.textfield
+import tornadofx.vboxConstraints
 
 @ExperimentalSerializationApi
 @InternalAPI

@@ -7,7 +7,30 @@ import modules.m1.gui.GDiscographyFinder
 import modules.m2.misc.ContactModel
 import modules.m3.gui.GInvoiceFinder
 import modules.mx.Statistic
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.Wizard
+import tornadofx.action
+import tornadofx.button
+import tornadofx.checkbox
+import tornadofx.column
+import tornadofx.contextmenu
+import tornadofx.datepicker
+import tornadofx.enableCellEditing
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.hbox
+import tornadofx.item
+import tornadofx.label
+import tornadofx.makeEditable
+import tornadofx.paddingHorizontal
+import tornadofx.regainFocusAfterEdit
+import tornadofx.required
+import tornadofx.selectedItem
+import tornadofx.style
+import tornadofx.tableview
+import tornadofx.textfield
+import tornadofx.tooltip
 
 @ExperimentalSerializationApi
 @InternalAPI

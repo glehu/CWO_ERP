@@ -1,6 +1,7 @@
 package modules.mx.gui
 
 import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
+import io.ktor.util.*
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
@@ -12,13 +13,38 @@ import modules.mx.LogMessage
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.logic.Timestamp
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.SmartResize
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.chooseDirectory
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.hbox
+import tornadofx.label
+import tornadofx.minWidth
+import tornadofx.observableListOf
+import tornadofx.paddingHorizontal
+import tornadofx.plusAssign
+import tornadofx.readonlyColumn
+import tornadofx.remainingWidth
+import tornadofx.rowItem
+import tornadofx.separator
+import tornadofx.singleAssign
+import tornadofx.smartResize
+import tornadofx.tableview
+import tornadofx.textfield
+import tornadofx.tooltip
+import tornadofx.vbox
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Paths
 import kotlin.math.roundToInt
 import kotlin.reflect.full.memberProperties
 
+@InternalAPI
 class GLog(title: String) : Fragment(title) {
   private var logFile: File? = null
 

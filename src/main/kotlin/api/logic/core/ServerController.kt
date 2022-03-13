@@ -1,6 +1,13 @@
 package api.logic.core
 
-import api.misc.json.*
+import api.misc.json.ListDeltaJson
+import api.misc.json.LoginResponseJson
+import api.misc.json.PairIntJson
+import api.misc.json.RegistrationPayload
+import api.misc.json.RegistrationResponse
+import api.misc.json.TwoIntOneDoubleJson
+import api.misc.json.ValidationContainerJson
+import api.misc.json.WebshopOrder
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import interfaces.IIndexManager
@@ -10,6 +17,7 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.request.*
 import io.ktor.util.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -25,8 +33,18 @@ import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemPriceManager
 import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.logic.ItemStorageManager
-import modules.mx.*
-import modules.mx.logic.*
+import modules.mx.Ini
+import modules.mx.User
+import modules.mx.contactIndexManager
+import modules.mx.dataPath
+import modules.mx.getIniFile
+import modules.mx.invoiceIndexManager
+import modules.mx.itemIndexManager
+import modules.mx.logic.Emailer
+import modules.mx.logic.Log
+import modules.mx.logic.UserCLIManager
+import modules.mx.logic.encryptAES
+import modules.mx.logic.encryptKeccak
 import java.io.File
 import java.nio.file.Paths
 import java.time.LocalDate
@@ -317,7 +335,7 @@ class ServerController {
     }
 
     fun getItemImage(): String {
-      val sampleImg = File(Paths.get(dataPath,"data","img","orochi_logo_red_500x500.png").toString())
+      val sampleImg = File(Paths.get(dataPath, "data", "img", "orochi_logo_red_500x500.png").toString())
       return Base64.getEncoder().encodeToString(sampleImg.readBytes())
     }
 
@@ -339,6 +357,15 @@ class ServerController {
 
     fun getAvailableStock(request: PairIntJson): Double {
       return ItemStockPostingController().getAvailableStock(request.first, request.second)
+    }
+
+    /**
+     * Introduce delay avoiding having to deal with this load heavy operation too often
+     */
+    suspend fun pauseRequest(durationMs: Long) {
+      log(Log.LogType.COM, "Pausing Request for $durationMs ms...")
+      delay(durationMs)
+      log(Log.LogType.COM, "Resuming Request that waited $durationMs ms...")
     }
   }
 }

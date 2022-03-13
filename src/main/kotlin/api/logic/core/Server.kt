@@ -2,8 +2,15 @@ package api.logic.core
 
 import api.gui.GSpotify
 import api.logic.SpotifyAUTH
+import api.logic.webapps.Mockingbird
 import api.logic.webapps.WebPlanner
-import api.misc.json.*
+import api.misc.json.EMailJson
+import api.misc.json.EntryJson
+import api.misc.json.ListDeltaJson
+import api.misc.json.PairIntJson
+import api.misc.json.SettingsRequestJson
+import api.misc.json.SpotifyAuthCallbackJson
+import api.misc.json.TwoIntOneDoubleJson
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import interfaces.IIndexManager
@@ -20,16 +27,30 @@ import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import modules.m4.logic.ItemPriceManager
 import modules.m4storage.logic.ItemStorageManager
-import modules.mx.*
+import modules.mx.Ini
+import modules.mx.cliMode
+import modules.mx.contactIndexManager
+import modules.mx.dataPath
+import modules.mx.discographyIndexManager
+import modules.mx.getIniFile
 import modules.mx.gui.GDashboard
+import modules.mx.invoiceIndexManager
+import modules.mx.itemIndexManager
+import modules.mx.itemStockPostingIndexManager
 import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
+import modules.mx.programPath
+import modules.mx.serverJobGlobal
+import modules.mx.usageTracker
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileInputStream
@@ -129,13 +150,9 @@ class Server : IModule {
         }
       }
       route("/mockingbird") {
+        // Mock Requests
         post {
-          runBlocking {
-            val text: String = call.receive()
-            delay(text.toLong())
-            log(Log.LogType.COM, text, call.request.uri)
-            call.respondText(text)
-          }
+          Mockingbird.handleRequest(call)
         }
       }
       register()
@@ -150,6 +167,25 @@ class Server : IModule {
       }
       authenticate("auth-jwt") {
         tokenRemainingTime()
+        // Mockingbird Settings etc.
+        route("/mockingbird/submit") {
+          post {
+            runBlocking {
+              launch {
+                Mockingbird.handleSubmit(call)
+              }
+              ServerController.pauseRequest(2000)
+            }
+          }
+          get {
+            runBlocking {
+              launch {
+                Mockingbird.handleSubmit(call)
+              }
+              ServerController.pauseRequest(2000)
+            }
+          }
+        }
         route("/api")
         {
           /**

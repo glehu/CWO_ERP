@@ -6,7 +6,16 @@ import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemPriceManager
 import modules.mx.gui.userAlerts.GAlert
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.View
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.observableListOf
+import tornadofx.onUserSelect
+import tornadofx.prefWidth
+import tornadofx.readonlyColumn
+import tornadofx.tableview
+import tornadofx.vbox
 
 @InternalAPI
 @ExperimentalSerializationApi

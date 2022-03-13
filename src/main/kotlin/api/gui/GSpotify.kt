@@ -16,7 +16,19 @@ import modules.m1.logic.DiscographyImport
 import modules.mx.gui.GProgressbar
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet.Companion.fieldsetBorder
-import tornadofx.*
+import tornadofx.View
+import tornadofx.action
+import tornadofx.addClass
+import tornadofx.button
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.fold
+import tornadofx.form
+import tornadofx.hbox
+import tornadofx.squeezebox
+import tornadofx.style
+import tornadofx.textfield
+import tornadofx.tooltip
 
 @InternalAPI
 @ExperimentalSerializationApi

@@ -7,7 +7,22 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.logic.ContactAnalytics
 import modules.mx.contactIndexManager
 import modules.mx.gui.GProgressbar
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.action
+import tornadofx.button
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.getValue
+import tornadofx.piechart
+import tornadofx.setValue
+import tornadofx.textfield
+import tornadofx.tooltip
+import tornadofx.vbox
+import kotlin.collections.MutableMap
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.iterator
 
 @InternalAPI
 @ExperimentalSerializationApi

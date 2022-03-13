@@ -15,7 +15,31 @@ import modules.m3.misc.InvoiceIni
 import modules.mx.Statistic
 import modules.mx.invoiceIndexManager
 import modules.mx.rightButtonsWidth
-import tornadofx.*
+import tornadofx.Fragment
+import tornadofx.action
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.checkbox
+import tornadofx.column
+import tornadofx.combobox
+import tornadofx.enableCellEditing
+import tornadofx.field
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.hbox
+import tornadofx.makeEditable
+import tornadofx.observableListOf
+import tornadofx.readonlyColumn
+import tornadofx.tab
+import tornadofx.tableview
+import tornadofx.tabpane
+import tornadofx.textfield
+import tornadofx.tooltip
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.iterator
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 
 @InternalAPI
 @ExperimentalSerializationApi

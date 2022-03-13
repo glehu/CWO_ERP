@@ -8,7 +8,18 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m4.logic.ItemController
 import modules.mx.rightButtonsWidth
 import styling.Stylesheet
-import tornadofx.*
+import tornadofx.View
+import tornadofx.action
+import tornadofx.addClass
+import tornadofx.borderpane
+import tornadofx.button
+import tornadofx.fieldset
+import tornadofx.form
+import tornadofx.hbox
+import tornadofx.paddingAll
+import tornadofx.style
+import tornadofx.tooltip
+import tornadofx.vbox
 
 @InternalAPI
 @ExperimentalSerializationApi

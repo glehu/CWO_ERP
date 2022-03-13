@@ -17,7 +17,15 @@ import modules.m4.Item
 import modules.m4.logic.ItemController
 import modules.mx.gui.userAlerts.GAlertLocked
 import modules.mx.itemIndexManager
-import tornadofx.*
+import tornadofx.SmartResize
+import tornadofx.View
+import tornadofx.form
+import tornadofx.observableListOf
+import tornadofx.onUserSelect
+import tornadofx.readonlyColumn
+import tornadofx.remainingWidth
+import tornadofx.singleAssign
+import tornadofx.tableview
 
 @InternalAPI
 @ExperimentalSerializationApi

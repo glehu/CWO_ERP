@@ -15,7 +15,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import modules.mx.*
+import modules.mx.Credentials
+import modules.mx.User
+import modules.mx.activeUser
+import modules.mx.getModulePath
+import modules.mx.isClientGlobal
 import java.io.File
 import java.nio.file.Paths
 import java.time.LocalDateTime
@@ -29,7 +33,6 @@ class UserCLIManager : IModule {
   override fun getIndexManager(): IIndexManager? {
     return null
   }
-
 
   /**
    * Attempts to log in a user.
