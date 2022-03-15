@@ -176,15 +176,12 @@ class Server : IModule {
             }
           }
           get {
-            runBlocking {
-              ServerController.pauseRequest(2000)
-              Mockingbird.handleSubmit(call)
-            }
+            Mockingbird.handleSubmit(call)
           }
         }
         route("/api")
         {
-          /**
+          /*
            * General Endpoints
            */
           getIndexSelection(
@@ -225,12 +222,12 @@ class Server : IModule {
           sendEMail()
           getSettingsFileText()
 
-          /**
+          /*
            * M3 Endpoints (Invoice)
            */
           getOwnInvoices()
 
-          /**
+          /*
            * M4 Endpoints (Item)
            */
           getPriceCategories()
@@ -247,12 +244,14 @@ class Server : IModule {
 
           getItemImage()
 
-          /**
+          /*
            * Web Solution Endpoints
            */
           addWebshopOrder()
           userTracking()
-          // Web Apps
+          /*
+           * Web Apps
+           */
           webPlannerCommit()
           webPlannerRequest()
         }
