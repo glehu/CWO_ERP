@@ -211,18 +211,22 @@ data class WebPlannerCell(
   val box: String,
   val history: Array<String>,
   val name: String = "",
-  val description: String = ""
+  val description: String = "",
+  val comments: Array<String>
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
     other as WebPlannerCell
     if (!history.contentEquals(other.history)) return false
+    if (!comments.contentEquals(other.comments)) return false
     return true
   }
 
   override fun hashCode(): Int {
-    return history.contentHashCode()
+    var result = history.contentHashCode()
+    result = 31 * result + comments.contentHashCode()
+    return result
   }
 }
 
