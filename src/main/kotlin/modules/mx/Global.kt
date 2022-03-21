@@ -26,6 +26,7 @@ import modules.m4.Item
 import modules.m4.logic.ItemIndexManager
 import modules.m4stockposting.ItemStockPosting
 import modules.m4stockposting.logic.ItemStockPostingIndexManager
+import modules.m5.logic.UniChatroomIndexManager
 import java.io.File
 import java.nio.file.Paths
 
@@ -90,6 +91,13 @@ var itemIndexManager: ItemIndexManager? = null
 @InternalAPI
 @ExperimentalSerializationApi
 var itemStockPostingIndexManager: ItemStockPostingIndexManager? = null
+
+/**
+ * The global index for messages
+ */
+@InternalAPI
+@ExperimentalSerializationApi
+var uniChatroomIndexManager: UniChatroomIndexManager? = null
 
 //*************************************************
 //********************** TRACKER ******************
