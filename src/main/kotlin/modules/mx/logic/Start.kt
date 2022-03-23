@@ -13,6 +13,7 @@ import modules.m2.logic.ContactIndexManager
 import modules.m3.logic.InvoiceIndexManager
 import modules.m4.logic.ItemIndexManager
 import modules.m4stockposting.logic.ItemStockPostingIndexManager
+import modules.m5.logic.UniChatroomIndexManager
 import modules.mx.Ini
 import modules.mx.activeUser
 import modules.mx.cliMode
@@ -37,6 +38,7 @@ import modules.mx.telnetServer
 import modules.mx.telnetServerJobGlobal
 import modules.mx.titleGlobal
 import modules.mx.tokenGlobal
+import modules.mx.uniChatroomIndexManager
 import modules.mx.usageTracker
 import tornadofx.launch
 import java.io.File
@@ -83,6 +85,7 @@ fun checkLogFiles() {
   Log.checkLogFile("M3", true)
   Log.checkLogFile("M4", true)
   Log.checkLogFile("M4SP", true)
+  Log.checkLogFile("M5", true)
 }
 
 fun checkModules() {
@@ -92,6 +95,7 @@ fun checkModules() {
   checkModuleDir("M3")
   checkModuleDir("M4")
   checkModuleDir("M4SP")
+  checkModuleDir("M5")
 }
 
 fun checkModuleDir(module: String) {
@@ -146,6 +150,7 @@ fun loadIndex(module: String = "") {
       "m3" -> invoiceIndexManager = InvoiceIndexManager()
       "m4" -> itemIndexManager = ItemIndexManager()
       "m4sp" -> itemStockPostingIndexManager = ItemStockPostingIndexManager()
+      "m5" -> uniChatroomIndexManager = UniChatroomIndexManager()
     }
   } else {
     discographyIndexManager = DiscographyIndexManager()
@@ -153,6 +158,7 @@ fun loadIndex(module: String = "") {
     invoiceIndexManager = InvoiceIndexManager()
     itemIndexManager = ItemIndexManager()
     itemStockPostingIndexManager = ItemStockPostingIndexManager()
+    uniChatroomIndexManager = UniChatroomIndexManager()
   }
 }
 

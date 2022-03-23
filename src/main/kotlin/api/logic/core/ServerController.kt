@@ -6,6 +6,10 @@ import api.misc.json.PairIntJson
 import api.misc.json.RegistrationPayload
 import api.misc.json.RegistrationResponse
 import api.misc.json.TwoIntOneDoubleJson
+import api.misc.json.UniChatroomAddMessage
+import api.misc.json.UniChatroomCreateChatroom
+import api.misc.json.UniChatroomGetChatroom
+import api.misc.json.UniChatroomGetMessages
 import api.misc.json.ValidationContainerJson
 import api.misc.json.WebshopOrder
 import com.auth0.jwt.JWT
@@ -15,7 +19,9 @@ import interfaces.IModule
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
+import io.ktor.http.*
 import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.util.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
@@ -33,6 +39,8 @@ import modules.m4.ItemPriceCategory
 import modules.m4.logic.ItemPriceManager
 import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.logic.ItemStorageManager
+import modules.m5.UniChatroom
+import modules.m5.logic.UniChatroomController
 import modules.mx.Ini
 import modules.mx.User
 import modules.mx.contactIndexManager
@@ -366,6 +374,62 @@ class ServerController {
       log(Log.LogType.COM, "Pausing Request for $durationMs ms...")
       delay(durationMs)
       log(Log.LogType.COM, "Resuming Request that waited $durationMs ms...")
+    }
+
+    suspend fun createUniChatroom(config: UniChatroomCreateChatroom, owner: String): UniChatroom {
+      val uniChatroom: UniChatroom
+      with(UniChatroomController()) {
+        uniChatroom = createChatroom(config.title)
+        uniChatroom.addMember(owner, "owner")
+        // Some extra stuff for debugging... yay
+        if (config.title.contains("debug?")) {
+          uniChatroom.addMember("tester1", "debug_tester")
+          uniChatroom.addMember("tester2", "debug_tester")
+          uniChatroom.addMessage("tester1", "message1")
+          uniChatroom.addMessage("tester2", "message2")
+        }
+        mutex.withLock {
+          saveChatroom(uniChatroom)
+        }
+      }
+      return uniChatroom
+    }
+
+    suspend fun getUniChatroom(appCall: ApplicationCall, config: UniChatroomGetChatroom) {
+      val uniChatroom: UniChatroom?
+      with(UniChatroomController()) {
+        mutex.withLock {
+          uniChatroom = getChatroom(config.uniChatroomGUID)
+        }
+      }
+      if (uniChatroom == null) {
+        appCall.respond(HttpStatusCode.NotFound)
+      } else {
+        appCall.respond(uniChatroom)
+      }
+    }
+
+    suspend fun addMessageToUniChatroom(config: UniChatroomAddMessage, member: String): HttpStatusCode {
+      log(Log.LogType.COM, "Checking for UniChatroom ${config.uniChatroomGUID}")
+      with(UniChatroomController()) {
+        mutex.withLock {
+          val uniChatroom: UniChatroom = getChatroom(config.uniChatroomGUID) ?: return HttpStatusCode.NotFound
+          if (!uniChatroom.addMessage(member, config.text)) return HttpStatusCode.BadRequest
+          saveChatroom(uniChatroom)
+        }
+        return HttpStatusCode.OK
+      }
+    }
+
+    suspend fun getMessagesOfUniChatroom(appCall: ApplicationCall, config: UniChatroomGetMessages) {
+      with(UniChatroomController()) {
+        val uniChatroom = getChatroom(config.uniChatroomGUID)
+        if (uniChatroom == null) {
+          appCall.respond(HttpStatusCode.NotFound)
+        } else {
+          appCall.respond(uniChatroom.messages)
+        }
+      }
     }
   }
 }

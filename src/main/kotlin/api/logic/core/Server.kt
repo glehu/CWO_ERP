@@ -11,6 +11,10 @@ import api.misc.json.PairIntJson
 import api.misc.json.SettingsRequestJson
 import api.misc.json.SpotifyAuthCallbackJson
 import api.misc.json.TwoIntOneDoubleJson
+import api.misc.json.UniChatroomAddMessage
+import api.misc.json.UniChatroomCreateChatroom
+import api.misc.json.UniChatroomGetChatroom
+import api.misc.json.UniChatroomGetMessages
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import interfaces.IIndexManager
@@ -243,6 +247,14 @@ class Server : IModule {
           getAvailableStock()
 
           getItemImage()
+
+          /*
+           * M5 Endpoints (UniChatroom)
+           */
+          createUniChatroom()
+          getUniChatroom()
+          addMessageToUniChatroom()
+          getMessagesOfUniChatroom()
 
           /*
            * Web Solution Endpoints
@@ -597,6 +609,34 @@ class Server : IModule {
           )
         )
       }
+    }
+  }
+
+  private fun Route.createUniChatroom() {
+    post("m5/createchatroom") {
+      val config: UniChatroomCreateChatroom = Json.decodeFromString(call.receive())
+      call.respond(ServerController.createUniChatroom(config, ServerController.getJWTUsername(call)))
+    }
+  }
+
+  private fun Route.getUniChatroom() {
+    post("m5/getchatroom") {
+      val config: UniChatroomGetChatroom = Json.decodeFromString(call.receive())
+      ServerController.getUniChatroom(call, config)
+    }
+  }
+
+  private fun Route.addMessageToUniChatroom() {
+    post("m5/addmessage") {
+      val config: UniChatroomAddMessage = Json.decodeFromString(call.receive())
+      call.respond(ServerController.addMessageToUniChatroom(config, ServerController.getJWTUsername(call)))
+    }
+  }
+
+  private fun Route.getMessagesOfUniChatroom() {
+    post("m5/getmessages") {
+      val config: UniChatroomGetMessages = Json.decodeFromString(call.receive())
+      ServerController.getMessagesOfUniChatroom(call, config)
     }
   }
 }

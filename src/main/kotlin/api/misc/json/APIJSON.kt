@@ -246,3 +246,24 @@ data class MockingbirdConfig(
   val return_delay: String,
   val return_delay_unit: String
 )
+
+@Serializable
+data class UniChatroomCreateChatroom(
+  val title: String
+)
+
+@Serializable
+data class UniChatroomGetChatroom(
+  val uniChatroomGUID: String
+)
+
+@Serializable
+data class UniChatroomAddMessage(
+  val uniChatroomGUID: String,
+  val text: String
+)
+
+@Serializable
+data class UniChatroomGetMessages(
+  val uniChatroomGUID: String
+)

@@ -26,6 +26,7 @@ import modules.m4.Item
 import modules.m4.logic.ItemIndexManager
 import modules.m4stockposting.ItemStockPosting
 import modules.m4stockposting.logic.ItemStockPostingIndexManager
+import modules.m5.UniChatroom
 import modules.m5.logic.UniChatroomIndexManager
 import java.io.File
 import java.nio.file.Paths
@@ -44,6 +45,7 @@ val serializersModuleGlobal = SerializersModule {
     subclass(InvoicePosition::class, serializer())
     subclass(Item::class, serializer())
     subclass(ItemStockPosting::class, serializer())
+    subclass(UniChatroom::class, serializer())
   }
 }
 
