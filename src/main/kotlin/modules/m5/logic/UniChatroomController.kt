@@ -26,9 +26,12 @@ class UniChatroomController : IModule {
   }
 
   fun getChatroom(chatroomGUID: String): UniChatroom? {
-    var uniChatroom: UniChatroom? = null
-    getEntriesFromIndexSearch(chatroomGUID, 2, true) {
-      uniChatroom = it as UniChatroom
+    var uniChatroom: UniChatroom?
+    synchronized(this) {
+      uniChatroom = null
+      getEntriesFromIndexSearch(chatroomGUID, 2, true) {
+        uniChatroom = it as UniChatroom
+      }
     }
     return uniChatroom
   }
@@ -37,9 +40,10 @@ class UniChatroomController : IModule {
     save(uniChatroom)
   }
 
-  fun UniChatroom.addMember(member: String, role: String) {
+  fun UniChatroom.addMember(member: String, role: String): Boolean {
     this.members[member] = role
     log(Log.LogType.COM, "Member added")
+    return true
   }
 
   fun UniChatroom.addMessage(member: String, message: String): Boolean {

@@ -18,10 +18,13 @@ data class UniChatroom(
     if (uID == -1) uID = uniChatroomIndexManager!!.getUID()
     if (chatroomGUID == "") chatroomGUID = Uuid.randomUUID().toString()
     if (dateCreated == "") dateCreated = Timestamp.getUnixTimestampHex()
+    // Always keep this up to date
+    dateChangedUnix = Timestamp.getUnixTimestamp()
   }
 
   var chatroomGUID = ""
   var dateCreated = ""
+  var dateChangedUnix = -1L
   var status = 1
   var members: MutableMap<String, String> = mutableMapOf()
   var banlist: MutableMap<String, String> = mutableMapOf()

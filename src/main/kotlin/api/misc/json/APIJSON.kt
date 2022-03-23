@@ -253,17 +253,14 @@ data class UniChatroomCreateChatroom(
 )
 
 @Serializable
-data class UniChatroomGetChatroom(
-  val uniChatroomGUID: String
-)
-
-@Serializable
 data class UniChatroomAddMessage(
   val uniChatroomGUID: String,
   val text: String
 )
 
 @Serializable
-data class UniChatroomGetMessages(
-  val uniChatroomGUID: String
+data class UniChatroomAddMember(
+  val uniChatroomGUID: String,
+  val member: String,
+  val role: String
 )

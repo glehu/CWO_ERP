@@ -11,10 +11,9 @@ import api.misc.json.PairIntJson
 import api.misc.json.SettingsRequestJson
 import api.misc.json.SpotifyAuthCallbackJson
 import api.misc.json.TwoIntOneDoubleJson
+import api.misc.json.UniChatroomAddMember
 import api.misc.json.UniChatroomAddMessage
 import api.misc.json.UniChatroomCreateChatroom
-import api.misc.json.UniChatroomGetChatroom
-import api.misc.json.UniChatroomGetMessages
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import interfaces.IIndexManager
@@ -255,6 +254,8 @@ class Server : IModule {
           getUniChatroom()
           addMessageToUniChatroom()
           getMessagesOfUniChatroom()
+          addMemberToUniChatroom()
+          getMembersOfUniChatroom()
 
           /*
            * Web Solution Endpoints
@@ -620,23 +621,34 @@ class Server : IModule {
   }
 
   private fun Route.getUniChatroom() {
-    post("m5/getchatroom") {
-      val config: UniChatroomGetChatroom = Json.decodeFromString(call.receive())
-      ServerController.getUniChatroom(call, config)
+    get("m5/getchatroom/{uniChatroomGUID}") {
+      ServerController.getUniChatroom(call)
     }
   }
 
   private fun Route.addMessageToUniChatroom() {
     post("m5/addmessage") {
       val config: UniChatroomAddMessage = Json.decodeFromString(call.receive())
-      call.respond(ServerController.addMessageToUniChatroom(config, ServerController.getJWTUsername(call)))
+      ServerController.addMessageToUniChatroom(call, config, ServerController.getJWTUsername(call))
     }
   }
 
   private fun Route.getMessagesOfUniChatroom() {
-    post("m5/getmessages") {
-      val config: UniChatroomGetMessages = Json.decodeFromString(call.receive())
-      ServerController.getMessagesOfUniChatroom(call, config)
+    get("m5/getmessages/{uniChatroomGUID}") {
+      ServerController.getMessagesOfUniChatroom(call)
+    }
+  }
+
+  private fun Route.addMemberToUniChatroom() {
+    post("m5/addmember/{uniChatroomGUID}") {
+      val config: UniChatroomAddMember = Json.decodeFromString(call.receive())
+      ServerController.addMemberToUniChatroom(call, config)
+    }
+  }
+
+  private fun Route.getMembersOfUniChatroom() {
+    get("m5/getmembers/{uniChatroomGUID}") {
+      ServerController.getMembersOfUniChatroom(call)
     }
   }
 }
