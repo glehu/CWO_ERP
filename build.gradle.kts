@@ -48,6 +48,7 @@ dependencies {
   implementation("io.ktor:ktor-auth-jwt:1.6.4")
   implementation("io.ktor:ktor-client-auth:1.6.4")
   implementation("io.ktor:ktor-serialization:1.6.4")
+  implementation("io.ktor:ktor-websockets:1.6.4")
   implementation("io.ktor:ktor-network:1.6.4")
   implementation("ch.qos.logback:logback-classic:1.2.11")
   implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.2.0")

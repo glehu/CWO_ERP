@@ -168,7 +168,7 @@ class ServerController {
     @InternalAPI
     fun generateLoginResponse(user: User): ValidationContainerJson {
       val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
-      //               Hours
+      //                 h   min  sec  ms
       val expiresInMs = (1 * 60 * 60 * 1000)
       val expiresAt = Date(System.currentTimeMillis() + expiresInMs)
       val token = JWT.create()

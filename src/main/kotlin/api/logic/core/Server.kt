@@ -23,6 +23,8 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.features.*
 import io.ktor.http.*
+import io.ktor.http.cio.websocket.*
+import io.ktor.network.sockets.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -30,7 +32,9 @@ import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -59,6 +63,9 @@ import java.io.File
 import java.io.FileInputStream
 import java.nio.file.Paths
 import java.security.KeyStore
+import java.time.Duration
+import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
 @DelicateCoroutinesApi
 @InternalAPI
@@ -96,6 +103,7 @@ class Server : IModule {
 
   val serverEngine = embeddedServer(Netty, environment)
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   fun Application.module() {
     install(HttpsRedirect) {
       sslPort = 443
@@ -141,6 +149,12 @@ class Server : IModule {
       header(HttpHeaders.ContentType)
       header(HttpHeaders.Authorization)
     }
+    install(WebSockets) {
+      pingPeriod = Duration.ofSeconds(2)
+      timeout = Duration.ofSeconds(2)
+      maxFrameSize = Long.MAX_VALUE
+      masking = false
+    }
     routing {
       route("/") {
         get {
@@ -160,6 +174,38 @@ class Server : IModule {
       }
       register()
       spotifyAuthCallback()
+
+      val connections = Collections.synchronizedSet<Connection?>(LinkedHashSet())
+      val connectionsToDelete = Collections.synchronizedSet<Connection?>(LinkedHashSet())
+      webSocket("/clarifier/{unichatroomGUID}") {
+        val routePar = call.parameters["unichatroomGUID"]
+        val thisConnection = Connection(this, "")
+        connections += thisConnection
+        send("Logged in as [${thisConnection.id}] for Clarifier Session $routePar")
+
+        for (frame in incoming) {
+          when (frame) {
+            is Frame.Text -> {
+              val receivedText = frame.readText()
+              val textWithUsername = "[${thisConnection.id}]: $receivedText"
+              connections.forEach {
+                if (!it.session.outgoing.isClosedForSend) {
+                  it.session.send(textWithUsername)
+                } else {
+                  connectionsToDelete.add(it)
+                }
+              }
+              connectionsToDelete.forEach {
+                connections.remove(it)
+              }
+            }
+            is Frame.Close -> {
+              connections.remove(thisConnection)
+            }
+            else -> {}
+          }
+        }
+      }
 
       authenticate("auth-basic") {
         login()
@@ -280,6 +326,14 @@ class Server : IModule {
     serverJobGlobal = GlobalScope.launch {
       serverEngine.start(wait = true)
     }
+  }
+
+  class Connection(val session: DefaultWebSocketSession, val username: String) {
+    companion object {
+      var lastId = AtomicInteger(0)
+    }
+
+    val id = "u${lastId.getAndIncrement()}"
   }
 
   private fun Route.logout() {
