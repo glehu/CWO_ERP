@@ -74,49 +74,53 @@ class CwODB {
     ) {
       var counter = 0
       var entryBytes: ByteArray
-      if (getDatabaseFile(module).isFile) {
-        val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
-        val filteredMap: Map<Int, IndexContent>
-        if (!isGetAll(searchText)) {
-          if (!exactSearch) {
-            //Searches in all available indices
-            returnFromAllIndices(indexManager, searchText) { indexResult ->
-              for (uID in indexResult.keys) {
-                val baseIndex = indexManager.getBaseIndex(uID)
-                entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
-                if (entryBytes.isEmpty()) continue
-                counter++
-                //Callback
-                updateProgress(uID, entryBytes)
-                if (maxSearchResults > -1 && counter >= maxSearchResults) break
+      try {
+        if (getDatabaseFile(module).isFile) {
+          val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
+          val filteredMap: Map<Int, IndexContent>
+          if (!isGetAll(searchText)) {
+            if (!exactSearch) {
+              //Searches in all available indices
+              returnFromAllIndices(indexManager, searchText) { indexResult ->
+                for (uID in indexResult.keys) {
+                  val baseIndex = indexManager.getBaseIndex(uID)
+                  entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
+                  if (entryBytes.isEmpty()) continue
+                  counter++
+                  //Callback
+                  updateProgress(uID, entryBytes)
+                  if (maxSearchResults > -1 && counter >= maxSearchResults) break
+                }
               }
-            }
-            return
-          } else {
-            //Searches in the provided index
-            filteredMap = if (!numberComparison) {
-              indexManager.indexList[ixNr]!!.indexMap.filterValues {
-                it.content.contains(searchText.toRegex())
-              }
+              return
             } else {
-              indexManager.indexList[ixNr]!!.indexMap.filterValues {
-                it.content.toDouble() >= searchText.toDouble()
+              //Searches in the provided index
+              filteredMap = if (!numberComparison) {
+                indexManager.indexList[ixNr]!!.indexMap.filterValues {
+                  it.content.contains(searchText.toRegex())
+                }
+              } else {
+                indexManager.indexList[ixNr]!!.indexMap.filterValues {
+                  it.content.toDouble() >= searchText.toDouble()
+                }
               }
             }
+          } else {
+            //No search text -> Show all entries
+            filteredMap = indexManager.indexList[0]!!.indexMap
           }
-        } else {
-          //No search text -> Show all entries
-          filteredMap = indexManager.indexList[0]!!.indexMap
+          for (uID in filteredMap.keys) {
+            val baseIndex = indexManager.getBaseIndex(uID)
+            entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
+            if (entryBytes.isEmpty()) continue
+            counter++
+            //Callback
+            updateProgress(uID, entryBytes)
+            if (maxSearchResults > -1 && counter >= maxSearchResults) break
+          }
         }
-        for (uID in filteredMap.keys) {
-          val baseIndex = indexManager.getBaseIndex(uID)
-          entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
-          if (entryBytes.isEmpty()) continue
-          counter++
-          //Callback
-          updateProgress(uID, entryBytes)
-          if (maxSearchResults > -1 && counter >= maxSearchResults) break
-        }
+      } catch (e: java.lang.NullPointerException) {
+        println(e.message)
       }
     }
 

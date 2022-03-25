@@ -36,7 +36,12 @@ class UniChatroomIndexManager : IIndexManager {
   override var lastUID = AtomicInteger(-1)
 
   init {
-    initialize()
+    initialize(
+      1, //Title
+      2, //ChatroomGUID
+      3, //Date Created
+      4, //Status
+    )
   }
 
   override fun getIndicesList(): ArrayList<String> {

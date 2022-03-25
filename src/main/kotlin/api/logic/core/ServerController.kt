@@ -22,6 +22,8 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -61,6 +63,8 @@ import kotlin.collections.set
 
 @ExperimentalSerializationApi
 class ServerController {
+  @ExperimentalCoroutinesApi
+  @DelicateCoroutinesApi
   @InternalAPI
   @ExperimentalSerializationApi
   companion object Server : IModule {
