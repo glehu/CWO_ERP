@@ -174,12 +174,6 @@ class Server : IModule {
       register()
       spotifyAuthCallback()
 
-      webSocket("/clarifier/{unichatroomGUID}") {
-        with(UniChatroomController()) {
-          this@webSocket.startSession(call)
-        }
-      }
-
       authenticate("auth-basic") {
         login()
         logout()
@@ -275,6 +269,14 @@ class Server : IModule {
           getMessagesOfUniChatroom()
           addMemberToUniChatroom()
           getMembersOfUniChatroom()
+          /*
+           * Clarifier WebSocket Session
+           */
+          webSocket("/clarifier/{unichatroomGUID}") {
+            with(UniChatroomController()) {
+              this@webSocket.startSession(call)
+            }
+          }
 
           /*
            * Web Solution Endpoints
@@ -299,14 +301,6 @@ class Server : IModule {
     serverJobGlobal = GlobalScope.launch {
       serverEngine.start(wait = true)
     }
-  }
-
-  class Connection(val session: DefaultWebSocketSession, val username: String) {
-    companion object {
-      var lastId = AtomicInteger(0)
-    }
-
-    val id = "u${lastId.getAndIncrement()}"
   }
 
   private fun Route.logout() {
