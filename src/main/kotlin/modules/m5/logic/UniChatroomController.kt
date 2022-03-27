@@ -141,7 +141,7 @@ class UniChatroomController : IModule {
                   UniMessage(
                     "_server",
                     "Logged in as $username",
-                    Timestamp.getUnixTimestampHex()
+                    Timestamp.now()
                   )
                 )
               )
