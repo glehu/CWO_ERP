@@ -217,15 +217,27 @@ class UniChatroomController : IModule {
     }
 
     // Send login info and share link
-    send(
-      Json.encodeToString(
-        UniMessage(
-          from = "_server",
-          message = "Logged in as $username for Clarifier Session ${uniChatroom.chatroomGUID}",
-          timestamp = Timestamp.now()
+    connections.forEach {
+      if (!it.session.outgoing.isClosedForSend) {
+        it.session.send(
+          Json.encodeToString(
+            UniMessage(
+              from = "_server",
+              message = "[LoginNotification] $username has joined the Clarifier Session! Say Hi!",
+              timestamp = Timestamp.now()
+            )
+          )
         )
-      )
-    )
+      } else {
+        connectionsToDelete.add(it)
+      }
+    }
+    if (connectionsToDelete.size > 0) {
+      connectionsToDelete.forEach {
+        connections.remove(it)
+      }
+      connectionsToDelete.clear()
+    }
 
     // Wait for new messages and distribute them
     for (frame in incoming) {
