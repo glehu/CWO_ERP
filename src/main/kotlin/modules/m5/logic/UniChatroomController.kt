@@ -11,8 +11,8 @@ import io.ktor.util.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.time.withTimeout
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -25,7 +25,6 @@ import modules.mx.logic.Log
 import modules.mx.logic.Timestamp
 import modules.mx.logic.UserCLIManager
 import modules.mx.uniChatroomIndexManager
-import java.time.Duration
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -43,6 +42,7 @@ class UniChatroomController : IModule {
   companion object {
     val connections: MutableSet<Connection> = Collections.synchronizedSet(LinkedHashSet())
     val connectionsToDelete: MutableSet<Connection> = Collections.synchronizedSet(LinkedHashSet())
+    val mutex = Mutex()
   }
 
   fun createChatroom(title: String): UniChatroom {
@@ -74,23 +74,27 @@ class UniChatroomController : IModule {
     val newMember = Json.encodeToString(createMember(username, Json.encodeToString(role)))
     // Does the member already exist in the Clarifier Session?
     var indexAt = -1
+    var found = false
     for (uniMember in this.members) {
       indexAt++
       if (Json.decodeFromString<UniMember>(uniMember).username == username) {
+        found = true
         break
       }
     }
-    if (indexAt != -1) {
+    if (indexAt != -1 && found) {
       // Does the member already have this role?
       val member: UniMember = Json.decodeFromString(this.members[indexAt])
       var roleIndexAt = -1
+      found = false
       for (rle in member.roles) {
         roleIndexAt++
         if (Json.decodeFromString<UniRole>(rle).name == role.name) {
+          found = true
           break
         }
       }
-      if (roleIndexAt == -1) {
+      if (roleIndexAt == -1 && found) {
         // Add role and save changes to the member by inserting it back into the array
         member.roles.add(Json.encodeToString(role))
         this.members[indexAt] = Json.encodeToString(member)
@@ -207,50 +211,45 @@ class UniChatroomController : IModule {
     // Retrieve Clarifier Session
     var uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, thisConnection.username)
 
-    // Send login info and share link
-    send(
-      Json.encodeToString(
-        UniMessage("_server", "Logged in as $username", Timestamp.now())
-      )
-    )
-    send(
-      Json.encodeToString(
-        UniMessage("_server", uniChatroom.chatroomGUID, Timestamp.now())
-      )
-    )
-
     // Send all messages
     for (msg in uniChatroom.messages) {
       send(msg)
     }
 
+    // Send login info and share link
+    send(
+      Json.encodeToString(
+        UniMessage(
+          from = "_server",
+          message = "Logged in as $username for Clarifier Session ${uniChatroom.chatroomGUID}",
+          timestamp = Timestamp.now()
+        )
+      )
+    )
+
     // Wait for new messages and distribute them
     for (frame in incoming) {
       when (frame) {
         is Frame.Text -> {
-          val uniMessage = UniMessage(thisConnection.username, frame.readText(), Timestamp.now())
-          runBlocking {
+          mutex.withLock {
+            val uniMessage = UniMessage(thisConnection.username, frame.readText(), Timestamp.now())
             connections.forEach {
               if (!it.session.outgoing.isClosedForSend) {
-                withTimeout(Duration.ofSeconds(5)) {
-                  it.session.send(Json.encodeToString(uniMessage))
-                }
+                it.session.send(Json.encodeToString(uniMessage))
               } else {
                 connectionsToDelete.add(it)
               }
             }
-
             uniChatroom = getChatroom(uniChatroom.chatroomGUID)!!
             uniChatroom.addMessage(thisConnection.username, uniMessage)
-            // Remove closed connections
-            if (connectionsToDelete.size > 0) {
-              connectionsToDelete.forEach {
-                uniChatroom.removeMember(it.username)
-                connections.remove(it)
-              }
-              connectionsToDelete.clear()
-            }
             saveChatroom(uniChatroom)
+          }
+          // Remove closed connections
+          if (connectionsToDelete.size > 0) {
+            connectionsToDelete.forEach {
+              connections.remove(it)
+            }
+            connectionsToDelete.clear()
           }
         }
         is Frame.Close -> {
