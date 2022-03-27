@@ -14,8 +14,6 @@ import api.misc.json.TwoIntOneDoubleJson
 import api.misc.json.UniChatroomAddMember
 import api.misc.json.UniChatroomAddMessage
 import api.misc.json.UniChatroomCreateChatroom
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -64,7 +62,6 @@ import java.io.FileInputStream
 import java.nio.file.Paths
 import java.security.KeyStore
 import java.time.Duration
-import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalCoroutinesApi
 @DelicateCoroutinesApi
@@ -127,15 +124,12 @@ class Server : IModule {
       }
       jwt("auth-jwt") {
         realm = "Access to the '/' path"
-        verifier(
-          JWT
-            .require(Algorithm.HMAC256(iniVal.token))
-            .withAudience("https://${iniVal.serverIPAddress}/")
-            .withIssuer("https://${iniVal.serverIPAddress}/")
-            .build()
-        )
+        verifier(ServerController.buildJWTVerifier(iniVal))
+        // Check if user can access any module
         validate { credential ->
-          if (credential.payload.getClaim("username").asString() != "") {
+          if (UserCLIManager().checkModuleRight(
+              credential.payload.getClaim("username").asString(), "M*"
+            )) {
             JWTPrincipal(credential.payload)
           } else {
             null
@@ -173,6 +167,15 @@ class Server : IModule {
       }
       register()
       spotifyAuthCallback()
+
+      /*
+       * Clarifier WebSocket Session
+      */
+      webSocket("/clarifier/{unichatroomGUID}") {
+        with(UniChatroomController()) {
+          this@webSocket.startSession(call)
+        }
+      }
 
       authenticate("auth-basic") {
         login()
@@ -269,14 +272,6 @@ class Server : IModule {
           getMessagesOfUniChatroom()
           addMemberToUniChatroom()
           getMembersOfUniChatroom()
-          /*
-           * Clarifier WebSocket Session
-           */
-          webSocket("/clarifier/{unichatroomGUID}") {
-            with(UniChatroomController()) {
-              this@webSocket.startSession(call)
-            }
-          }
 
           /*
            * Web Solution Endpoints

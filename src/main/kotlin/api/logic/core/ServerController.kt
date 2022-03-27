@@ -13,6 +13,7 @@ import api.misc.json.ValidationContainerJson
 import api.misc.json.WebshopOrder
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.interfaces.JWTVerifier
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -73,6 +74,8 @@ class ServerController {
     override fun getIndexManager(): IIndexManager? {
       return null
     }
+
+    val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
 
     private val mutex = Mutex()
 
@@ -190,7 +193,8 @@ class ServerController {
           accessM1 = user.canAccessDiscography,
           accessM2 = user.canAccessContacts,
           accessM3 = user.canAccessInvoices,
-          accessM4 = user.canAccessInventory
+          accessM4 = user.canAccessInventory,
+          accessM5 = user.canAccessClarifier
         )
       )
       return ValidationContainerJson(
@@ -201,6 +205,14 @@ class ServerController {
           pepper = encryptKeccak("CWO_ERP LoginValidation")
         )
       )
+    }
+
+    fun buildJWTVerifier(iniVal: Ini): JWTVerifier {
+      return JWT
+        .require(Algorithm.HMAC256(iniVal.token))
+        .withAudience("https://${iniVal.serverIPAddress}/")
+        .withIssuer("https://${iniVal.serverIPAddress}/")
+        .build()
     }
 
     @InternalAPI

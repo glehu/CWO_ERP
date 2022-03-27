@@ -18,6 +18,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m5.UniChatroom
 import modules.mx.logic.Log
+import modules.mx.logic.Timestamp
+import modules.mx.logic.UserCLIManager
 import modules.mx.uniChatroomIndexManager
 import java.time.Duration
 import java.util.*
@@ -64,7 +66,7 @@ class UniChatroomController : IModule {
     return true
   }
 
-  fun UniChatroom.removeMember(member: String) {
+  private fun UniChatroom.removeMember(member: String) {
     this.members.remove(member)
   }
 
@@ -77,7 +79,7 @@ class UniChatroomController : IModule {
       log(Log.LogType.ERROR, "Message invalid (checkMember)")
       return false
     }
-    this.messages.add(Json.encodeToString(UniMessage(member, message)))
+    this.messages.add(Json.encodeToString(UniMessage(member, message, Timestamp.now())))
     return true
   }
 
@@ -110,12 +112,61 @@ class UniChatroomController : IModule {
       return
     }
 
-    val thisConnection = Connection(this, ServerController.getJWTUsername(appCall))
+    var authSuccess = false
+    var terminated = false
+    var username = ""
+
+    // Wait for bearer token then authorize with provided JWT Token
+    while (!authSuccess || terminated) {
+      for (frame in incoming) {
+        when (frame) {
+          is Frame.Text -> {
+            // Retrieve username from validated token
+            username = ServerController
+              .buildJWTVerifier(ServerController.iniVal)
+              .verify(frame.readText())
+              .getClaim("username")
+              .asString()
+            // Further, check user rights
+            if (
+              UserCLIManager()
+                .checkModuleRight(
+                  username = username,
+                  module = "M5"
+                )
+            ) {
+              authSuccess = true
+              send(
+                Json.encodeToString(
+                  UniMessage(
+                    "_server",
+                    "Logged in as $username",
+                    Timestamp.getUnixTimestampHex()
+                  )
+                )
+              )
+              break
+            } else {
+              this.close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Unauthorized"))
+              terminated = true
+              break
+            }
+          }
+          else -> {}
+        }
+      }
+    }
+    if (!authSuccess) return
+
+    // Add this new WebSocket connection
+    val thisConnection = Connection(this, username)
     connections += thisConnection
 
+    // Retrieve Clarifier Session
     var uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, thisConnection.username)
 
-    send(Json.encodeToString(UniMessage("_server", uniChatroom.chatroomGUID)))
+    // Send share link
+    send(Json.encodeToString(UniMessage("_server", uniChatroom.chatroomGUID, Timestamp.now())))
 
     // Send all messages
     for (msg in uniChatroom.messages) {
@@ -126,7 +177,7 @@ class UniChatroomController : IModule {
     for (frame in incoming) {
       when (frame) {
         is Frame.Text -> {
-          val uniMessage = UniMessage(thisConnection.username, frame.readText())
+          val uniMessage = UniMessage(thisConnection.username, frame.readText(), Timestamp.now())
           runBlocking {
             connections.forEach {
               if (!it.session.outgoing.isClosedForSend) {

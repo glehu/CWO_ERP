@@ -42,7 +42,8 @@ data class LoginResponseJson(
   val accessM1: Boolean,
   val accessM2: Boolean,
   val accessM3: Boolean,
-  val accessM4: Boolean
+  val accessM4: Boolean,
+  val accessM5: Boolean
 )
 
 @Serializable

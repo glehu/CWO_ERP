@@ -63,15 +63,27 @@ class UserCLIManager : IModule {
   }
 
   fun checkModuleRight(username: String, module: String): Boolean {
-    val user = getCredentials().credentials[username]!!
-    when (module.uppercase()) {
+    if (username.isEmpty() || module.length < 2) return false
+    val user = getCredentials().credentials[username] ?: return false
+    when (module.uppercase().substring(0, 2)) {
       "MX" -> return user.canAccessManagement
       "M1" -> return user.canAccessDiscography
       "M2" -> return user.canAccessContacts
       "M3" -> return user.canAccessInvoices
-      "M4", "M4SP" -> return user.canAccessInventory
+      "M4" -> return user.canAccessInventory
+      "M5" -> return user.canAccessClarifier
+      "M*" -> {
+        var flag = 0
+        if (user.canAccessManagement) flag++
+        if (user.canAccessDiscography) flag++
+        if (user.canAccessContacts) flag++
+        if (user.canAccessInvoices) flag++
+        if (user.canAccessInventory) flag++
+        if (user.canAccessClarifier) flag++
+        return (flag > 0)
+      }
+      else -> return false
     }
-    return false
   }
 
   fun updateUser(userNew: User, userOriginal: User, credentials: Credentials) {
@@ -162,6 +174,7 @@ class UserCLIManager : IModule {
             activeUser.canAccessContacts = loginResponse.accessM2
             activeUser.canAccessInvoices = loginResponse.accessM3
             activeUser.canAccessInventory = loginResponse.accessM4
+            activeUser.canAccessClarifier = loginResponse.accessM5
             val resp: String = getTokenClient().get("${getServerUrl()}tokenremainingtime")
             println(resp)
           } else validResponse = false

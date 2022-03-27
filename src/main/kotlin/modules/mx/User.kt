@@ -25,6 +25,9 @@ data class User(
   @SerialName("rM4")
   var canAccessInventory: Boolean = true
 
+  @SerialName("rM5")
+  var canAccessClarifier: Boolean = true
+
   @SerialName("ol")
   var online: Boolean = false
 
