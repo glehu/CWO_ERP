@@ -23,6 +23,7 @@ import modules.mx.getModulePath
 import modules.mx.isClientGlobal
 import tornadofx.observableListOf
 import java.io.File
+import java.nio.file.Paths
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -102,7 +103,7 @@ class ItemPriceManager : IModule {
     getCategoriesFile().writeText(Json.encodeToString(categories))
   }
 
-  private fun getCategoriesFile() = File("${getModulePath(module)}\\categories.dat")
+  private fun getCategoriesFile() = File(Paths.get(getModulePath(module), "categories.dat").toString())
 
   private fun initializeCategories(credentialsFile: File) {
     val mainCategory = ItemPriceCategory(0, "default", 19.0)
