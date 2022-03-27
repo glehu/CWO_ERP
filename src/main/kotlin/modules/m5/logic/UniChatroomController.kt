@@ -71,12 +71,32 @@ class UniChatroomController : IModule {
 
   fun UniChatroom.addMember(username: String, role: UniRole): Boolean {
     if (username.isEmpty()) return false
-    val payload = Json.encodeToString(createMember(username, Json.encodeToString(role)))
-    val indexAt = this.members.indexOf(username)
+    val newMember = Json.encodeToString(createMember(username, Json.encodeToString(role)))
+    // Does the member already exist in the Clarifier Session?
+    var indexAt = -1
+    for (uniMember in this.members) {
+      indexAt++
+      if (Json.decodeFromString<UniMember>(uniMember).username == username) {
+        break
+      }
+    }
     if (indexAt != -1) {
-      this.members[indexAt] = payload
+      // Does the member already have this role?
+      val member: UniMember = Json.decodeFromString(this.members[indexAt])
+      var roleIndexAt = -1
+      for (rle in member.roles) {
+        roleIndexAt++
+        if (Json.decodeFromString<UniRole>(rle).name == role.name) {
+          break
+        }
+      }
+      if (roleIndexAt == -1) {
+        // Add role and save changes to the member by inserting it back into the array
+        member.roles.add(Json.encodeToString(role))
+        this.members[indexAt] = Json.encodeToString(member)
+      }
     } else {
-      this.members.add(payload)
+      this.members.add(newMember)
     }
     return true
   }
@@ -167,15 +187,6 @@ class UniChatroomController : IModule {
                 )
             ) {
               authSuccess = true
-              send(
-                Json.encodeToString(
-                  UniMessage(
-                    "_server",
-                    "Logged in as $username",
-                    Timestamp.now()
-                  )
-                )
-              )
               break
             } else {
               this.close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Unauthorized"))
@@ -196,8 +207,17 @@ class UniChatroomController : IModule {
     // Retrieve Clarifier Session
     var uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, thisConnection.username)
 
-    // Send share link
-    send(Json.encodeToString(UniMessage("_server", uniChatroom.chatroomGUID, Timestamp.now())))
+    // Send login info and share link
+    send(
+      Json.encodeToString(
+        UniMessage("_server", "Logged in as $username", Timestamp.now())
+      )
+    )
+    send(
+      Json.encodeToString(
+        UniMessage("_server", uniChatroom.chatroomGUID, Timestamp.now())
+      )
+    )
 
     // Send all messages
     for (msg in uniChatroom.messages) {
