@@ -26,7 +26,7 @@ data class UniChatroom(
   var dateCreated = ""
   var dateChangedUnix = -1L
   var status = 1
-  var members: MutableMap<String, String> = mutableMapOf()
-  var banlist: MutableMap<String, String> = mutableMapOf()
+  var members: ArrayList<String> = arrayListOf()
+  var banlist: ArrayList<String> = arrayListOf()
   var messages: ArrayList<String> = arrayListOf()
 }

@@ -9,6 +9,7 @@ import interfaces.IEntry
 import io.ktor.util.*
 import javafx.scene.image.Image
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.modules.SerializersModule
@@ -26,7 +27,9 @@ import modules.m4.Item
 import modules.m4.logic.ItemIndexManager
 import modules.m4stockposting.ItemStockPosting
 import modules.m4stockposting.logic.ItemStockPostingIndexManager
+import modules.m5.IUniRole
 import modules.m5.UniChatroom
+import modules.m5.UniRole
 import modules.m5.logic.UniChatroomIndexManager
 import java.io.File
 import java.nio.file.Paths
@@ -46,6 +49,9 @@ val serializersModuleGlobal = SerializersModule {
     subclass(Item::class, serializer())
     subclass(ItemStockPosting::class, serializer())
     subclass(UniChatroom::class, serializer())
+  }
+  polymorphic(IUniRole::class) {
+    subclass(UniRole::class, serializer())
   }
 }
 
@@ -144,6 +150,7 @@ const val rightButtonsWidth = 150.0
 var differenceFromUTC: Int = 0
 
 //Server/Client
+@ExperimentalCoroutinesApi
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi

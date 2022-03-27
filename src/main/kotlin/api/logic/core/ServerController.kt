@@ -42,6 +42,7 @@ import modules.m4.logic.ItemPriceManager
 import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.logic.ItemStorageManager
 import modules.m5.UniChatroom
+import modules.m5.UniRole
 import modules.m5.logic.UniChatroomController
 import modules.mx.Ini
 import modules.mx.User
@@ -395,14 +396,7 @@ class ServerController {
       val uniChatroom: UniChatroom
       with(UniChatroomController()) {
         uniChatroom = createChatroom(config.title)
-        uniChatroom.addMember(owner, "owner")
-        // Some extra stuff for debugging... yay
-        if (config.title.contains("debug?")) {
-          uniChatroom.addMember("tester1", "debug_tester")
-          uniChatroom.addMember("tester2", "debug_tester")
-          uniChatroom.addMessage("tester1", "message1")
-          uniChatroom.addMessage("tester2", "message2")
-        }
+        uniChatroom.addMember(owner, UniRole("owner"))
         mutex.withLock {
           saveChatroom(uniChatroom)
         }
@@ -476,7 +470,7 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
-          if (!uniChatroom.addMember(config.member, config.role)) {
+          if (!uniChatroom.addMember(config.member, getRoleFromConfig(config.role))) {
             appCall.respond(HttpStatusCode.InternalServerError)
             return
           }
@@ -484,6 +478,10 @@ class ServerController {
         }
         appCall.respond(HttpStatusCode.OK)
       }
+    }
+
+    private fun getRoleFromConfig(role: String): UniRole {
+      return UniRole(role)
     }
 
     suspend fun getMembersOfUniChatroom(appCall: ApplicationCall) {

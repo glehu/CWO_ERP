@@ -1,4 +1,4 @@
-package modules.m5.logic
+package modules.m5
 
 import com.benasher44.uuid.Uuid
 import kotlinx.serialization.SerialName

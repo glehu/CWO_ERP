@@ -14,9 +14,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.time.withTimeout
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m5.UniChatroom
+import modules.m5.UniMember
+import modules.m5.UniMessage
+import modules.m5.UniRole
 import modules.mx.logic.Log
 import modules.mx.logic.Timestamp
 import modules.mx.logic.UserCLIManager
@@ -61,13 +65,31 @@ class UniChatroomController : IModule {
     save(uniChatroom)
   }
 
-  fun UniChatroom.addMember(member: String, role: String): Boolean {
-    this.members[member] = role
+  private fun createMember(username: String, role: String): UniMember {
+    return UniMember(username, arrayListOf(role))
+  }
+
+  fun UniChatroom.addMember(username: String, role: UniRole): Boolean {
+    if (username.isEmpty()) return false
+    val payload = Json.encodeToString(createMember(username, Json.encodeToString(role)))
+    val indexAt = this.members.indexOf(username)
+    if (indexAt != -1) {
+      this.members[indexAt] = payload
+    } else {
+      this.members.add(payload)
+    }
     return true
   }
 
-  private fun UniChatroom.removeMember(member: String) {
-    this.members.remove(member)
+  private fun UniChatroom.removeMember(username: String) {
+    var indexAt = -1
+    for (uniMember in this.members) {
+      indexAt++
+      if (Json.decodeFromString<UniMember>(uniMember).username == username) {
+        break
+      }
+    }
+    if (indexAt != -1) this.members.removeAt(indexAt)
   }
 
   fun UniChatroom.addMessage(member: String, message: String): Boolean {
@@ -92,8 +114,17 @@ class UniChatroomController : IModule {
   }
 
   private fun UniChatroom.checkMember(member: String): Boolean {
-    if (!this.members.containsKey(member)) return false
-    if (this.banlist.containsKey(member)) return false
+    var isMember = false
+    for (uniMember in this.members) {
+      if (Json.decodeFromString<UniMember>(uniMember).username == member) isMember = true
+    }
+    if (!isMember) return false
+
+    var isBanned = false
+    for (uniMember in this.banlist) {
+      if (Json.decodeFromString<UniMember>(uniMember).username == member) isBanned = true
+    }
+    if (isBanned) return false
     return true
   }
 
@@ -213,17 +244,16 @@ class UniChatroomController : IModule {
   private suspend fun getOrCreateUniChatroom(
     uniChatroomGUID: String,
     member: String,
-    joinWithRole: String = "member"
   ): UniChatroom {
     // Does the requested Clarifier Session exist?
     var uniChatroom = getChatroom(uniChatroomGUID)
     if (uniChatroom == null) {
       // Create a new Clarifier Session
       uniChatroom = createChatroom(uniChatroomGUID)
-      uniChatroom.addMember(member, "creator")
+      uniChatroom.addMember(member, UniRole("owner"))
       // Join existing one
     } else {
-      uniChatroom.addMember(member, joinWithRole)
+      uniChatroom.addMember(member, UniRole("member"))
     }
     saveChatroom(uniChatroom)
     return uniChatroom
