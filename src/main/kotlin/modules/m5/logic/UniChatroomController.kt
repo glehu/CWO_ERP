@@ -40,8 +40,7 @@ class UniChatroomController : IModule {
   }
 
   companion object {
-    val connections: MutableSet<Connection> = Collections.synchronizedSet(LinkedHashSet())
-    val connectionsToDelete: MutableSet<Connection> = Collections.synchronizedSet(LinkedHashSet())
+    val clarifierSessions: MutableSet<ClarifierSession> = Collections.synchronizedSet(LinkedHashSet())
     val mutex = Mutex()
   }
 
@@ -160,6 +159,11 @@ class UniChatroomController : IModule {
     val id = "u${lastId.getAndIncrement()}"
   }
 
+  class ClarifierSession(val chatroomGUID: String) {
+    val connections: MutableSet<Connection> = Collections.synchronizedSet(LinkedHashSet())
+    val connectionsToDelete: MutableSet<Connection> = Collections.synchronizedSet(LinkedHashSet())
+  }
+
   suspend fun DefaultWebSocketServerSession.startSession(appCall: ApplicationCall) {
     val uniChatroomGUID = appCall.parameters["unichatroomGUID"]
     if (uniChatroomGUID.isNullOrEmpty()) {
@@ -204,9 +208,23 @@ class UniChatroomController : IModule {
     }
     if (!authSuccess) return
 
+    // Does this Clarifier Session exist?
+    var found = false
+    var clarifierSession: ClarifierSession? = null
+    clarifierSessions.forEach {
+      if (it.chatroomGUID == uniChatroomGUID) {
+        found = true
+        clarifierSession = it
+      }
+    }
+    if (!found) {
+      clarifierSession = ClarifierSession(uniChatroomGUID)
+      clarifierSessions.add(clarifierSession!!)
+    }
+
     // Add this new WebSocket connection
     val thisConnection = Connection(this, username)
-    connections += thisConnection
+    clarifierSession!!.connections += thisConnection
 
     // Retrieve Clarifier Session
     var uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, thisConnection.username)
@@ -217,7 +235,7 @@ class UniChatroomController : IModule {
     }
 
     // Send login info and share link
-    connections.forEach {
+    clarifierSession!!.connections.forEach {
       if (!it.session.outgoing.isClosedForSend) {
         it.session.send(
           Json.encodeToString(
@@ -229,14 +247,14 @@ class UniChatroomController : IModule {
           )
         )
       } else {
-        connectionsToDelete.add(it)
+        clarifierSession!!.connectionsToDelete.add(it)
       }
     }
-    if (connectionsToDelete.size > 0) {
-      connectionsToDelete.forEach {
-        connections.remove(it)
+    if (clarifierSession!!.connectionsToDelete.size > 0) {
+      clarifierSession!!.connectionsToDelete.forEach {
+        clarifierSession!!.connections.remove(it)
       }
-      connectionsToDelete.clear()
+      clarifierSession!!.connectionsToDelete.clear()
     }
 
     // Wait for new messages and distribute them
@@ -245,11 +263,11 @@ class UniChatroomController : IModule {
         is Frame.Text -> {
           mutex.withLock {
             val uniMessage = UniMessage(thisConnection.username, frame.readText(), Timestamp.now())
-            connections.forEach {
+            clarifierSession!!.connections.forEach {
               if (!it.session.outgoing.isClosedForSend) {
                 it.session.send(Json.encodeToString(uniMessage))
               } else {
-                connectionsToDelete.add(it)
+                clarifierSession!!.connectionsToDelete.add(it)
               }
             }
             uniChatroom = getChatroom(uniChatroom.chatroomGUID)!!
@@ -257,15 +275,15 @@ class UniChatroomController : IModule {
             saveChatroom(uniChatroom)
           }
           // Remove closed connections
-          if (connectionsToDelete.size > 0) {
-            connectionsToDelete.forEach {
-              connections.remove(it)
+          if (clarifierSession!!.connectionsToDelete.size > 0) {
+            clarifierSession!!.connectionsToDelete.forEach {
+              clarifierSession!!.connections.remove(it)
             }
-            connectionsToDelete.clear()
+            clarifierSession!!.connectionsToDelete.clear()
           }
         }
         is Frame.Close -> {
-          connections.remove(thisConnection)
+          clarifierSession!!.connections.remove(thisConnection)
         }
         else -> {}
       }
