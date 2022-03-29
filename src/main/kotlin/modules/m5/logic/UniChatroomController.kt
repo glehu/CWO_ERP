@@ -236,7 +236,7 @@ class UniChatroomController : IModule {
           Json.encodeToString(
             UniMessage(
               from = "_server",
-              message = "[LoginNotification] $username has joined the Clarifier Session! Say Hi!",
+              message = "[s:LoginNotification]$username has joined the Clarifier session! Say hi!",
               timestamp = Timestamp.now()
             )
           )
