@@ -229,11 +229,6 @@ class UniChatroomController : IModule {
     // Retrieve Clarifier Session
     var uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, thisConnection.username)
 
-    // Send all messages
-    for (msg in uniChatroom.messages) {
-      send(msg)
-    }
-
     // Send login info and share link
     clarifierSession!!.connections.forEach {
       if (!it.session.outgoing.isClosedForSend) {
