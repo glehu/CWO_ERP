@@ -71,7 +71,7 @@ class UniChatroomController : IModule {
     return UniMember(username, arrayListOf(role))
   }
 
-  fun UniChatroom.addMember(
+  fun UniChatroom.addOrUpdateMember(
     username: String,
     role: UniRole? = null,
     fcmToken: String? = null
@@ -103,7 +103,7 @@ class UniChatroomController : IModule {
   /**
    * Adds a role to this member
    */
-  fun UniMember.addRole(role: UniRole) {
+  private fun UniMember.addRole(role: UniRole) {
     // Does the member already have this role?
     var found = false
     for (rle in this.roles) {
@@ -331,10 +331,10 @@ class UniChatroomController : IModule {
     if (uniChatroom == null) {
       // Create a new Clarifier Session
       uniChatroom = createChatroom(uniChatroomGUID)
-      uniChatroom.addMember(member, UniRole("owner"))
+      uniChatroom.addOrUpdateMember(member, UniRole("owner"))
       // Join existing one
     } else {
-      uniChatroom.addMember(member, UniRole("member"))
+      uniChatroom.addOrUpdateMember(member, UniRole("member"))
     }
     saveChatroom(uniChatroom)
     return uniChatroom

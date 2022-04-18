@@ -10,6 +10,7 @@ import api.misc.json.TwoIntOneDoubleJson
 import api.misc.json.UniChatroomAddMember
 import api.misc.json.UniChatroomAddMessage
 import api.misc.json.UniChatroomCreateChatroom
+import api.misc.json.UniChatroomMemberRole
 import api.misc.json.ValidationContainerJson
 import api.misc.json.WebshopOrder
 import com.auth0.jwt.JWT
@@ -398,7 +399,7 @@ class ServerController {
       val uniChatroom: UniChatroom
       with(UniChatroomController()) {
         uniChatroom = createChatroom(config.title)
-        uniChatroom.addMember(owner, UniRole("owner"))
+        uniChatroom.addOrUpdateMember(owner, UniRole("owner"))
         mutex.withLock {
           saveChatroom(uniChatroom)
         }
@@ -472,7 +473,7 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
-          if (!uniChatroom.addMember(config.member, getRoleFromConfig(config.role))) {
+          if (!uniChatroom.addOrUpdateMember(config.member, getRoleFromConfig(config.role))) {
             appCall.respond(HttpStatusCode.InternalServerError)
             return
           }
@@ -502,8 +503,9 @@ class ServerController {
       }
     }
 
-    suspend fun addRoleToMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomAddMember) {
-      if (config.uniChatroomGUID.isEmpty()) {
+    suspend fun addRoleToMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomMemberRole) {
+      val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
         return
       }
@@ -517,29 +519,37 @@ class ServerController {
       }
       with(UniChatroomController()) {
         mutex.withLock {
-          val uniChatroom: UniChatroom? = getChatroom(config.uniChatroomGUID)
+          val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
           if (uniChatroom == null) {
             appCall.respond(HttpStatusCode.NotFound)
             return
-          } else {
-            for (uniMember in uniChatroom.members) {
-              val member = Json.decodeFromString<UniMember>(uniMember)
-              if (member.username == config.member) {
-                member.addRole(UniRole(config.role))
-                saveChatroom(uniChatroom)
-                appCall.respond(HttpStatusCode.OK)
-                break
-              }
-            }
           }
+          if (uniChatroom.addOrUpdateMember(config.member, UniRole(config.role))) {
+            log(Log.LogType.COM, "Role ${config.role} added to ${config.member}")
+          }
+          saveChatroom(uniChatroom)
         }
+        appCall.respond(HttpStatusCode.OK)
       }
     }
 
-    suspend fun removeRoleOfMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomAddMember) {
+    suspend fun removeRoleOfMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomMemberRole) {
+      val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      if (config.member.isEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      if (config.role.isEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
       with(UniChatroomController()) {
         mutex.withLock {
-          val uniChatroom: UniChatroom? = getChatroom(config.uniChatroomGUID)
+          val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
           if (uniChatroom == null) {
             appCall.respond(HttpStatusCode.NotFound)
             return
@@ -581,7 +591,7 @@ class ServerController {
             return
           }
           val username = getJWTUsername(appCall)
-          if (uniChatroom.addMember(username, fcmToken = config.fcmToken)) {
+          if (uniChatroom.addOrUpdateMember(username, fcmToken = config.fcmToken)) {
             log(Log.LogType.COM, "User $username Subscribed to FCM Push Notifications")
           }
           saveChatroom(uniChatroom)
