@@ -1,6 +1,6 @@
 package api.logic.webapps
 
-import api.logic.core.ServerController
+import api.logic.core.ServerController.Server.getUsernameReversedBase
 import api.misc.json.MockingbirdConfig
 import api.misc.json.WebMockingbirdConfig
 import interfaces.IIndexManager
@@ -11,18 +11,21 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.util.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.logic.Log
-import java.util.*
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
 @InternalAPI
 class Mockingbird {
+  @DelicateCoroutinesApi
+  @ExperimentalCoroutinesApi
   companion object Mockingbird : IWebApp, IModule {
     override val moduleNameLong = "WebMockingbird"
     override val module = "MX"
@@ -85,14 +88,6 @@ class Mockingbird {
 
     private suspend fun handleLoadConfig(appCall: ApplicationCall) {
       appCall.respond(getProjectJsonFile(getUsernameReversedBase(appCall)).readText())
-    }
-
-    private fun getUsernameReversedBase(appCall: ApplicationCall): String {
-      val username = ServerController.getJWTUsername(appCall)
-      val usernameReversed = username.reversed()
-      val usernameBase = Base64.getUrlEncoder().encodeToString(usernameReversed.toByteArray())
-      return java.net.URLEncoder.encode(usernameBase, "utf-8")
-
     }
 
     private suspend fun handleSubmitConfig(appCall: ApplicationCall) {

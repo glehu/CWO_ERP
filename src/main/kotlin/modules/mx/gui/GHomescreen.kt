@@ -9,6 +9,7 @@ import javafx.scene.control.TabPane
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.gui.GDiscographyOverview
@@ -70,6 +71,7 @@ import tornadofx.textfield
 import tornadofx.tooltip
 import tornadofx.vbox
 
+@ExperimentalCoroutinesApi
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
@@ -94,6 +96,7 @@ class CWOMainGUI : IModule, App(GLogin::class, Stylesheet::class) {
   }
 }
 
+@ExperimentalCoroutinesApi
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi

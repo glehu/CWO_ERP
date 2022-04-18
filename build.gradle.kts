@@ -6,7 +6,7 @@ plugins {
   application
 }
 group = "me.duffy"
-version = "1.0-SNAPSHOT"
+version = "1.2.8-Clarifier"
 
 repositories {
   mavenCentral()
@@ -56,7 +56,22 @@ dependencies {
   implementation("com.benasher44:uuid:0.4.0")
   implementation("com.sultanofcardio:mailman:3.1.2")
   implementation("com.github.ajalt.mordant:mordant:2.0.0-beta4")
+  implementation("com.google.firebase:firebase-admin:8.1.0")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
+  implementation("com.ionspin.kotlin:bignum:0.3.4")
 }
+
+val mainClassName = "modules.mx.logic.StartKt"
+tasks.jar {
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
+  manifest {
+    attributes(mapOf("Main-Class" to mainClassName))
+  }
+  exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
+
+  from(configurations.compileClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+}
+
 tasks.withType<KotlinCompile> {
   kotlinOptions.jvmTarget = "1.8"
 }

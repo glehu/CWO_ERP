@@ -265,3 +265,8 @@ data class UniChatroomAddMember(
   val member: String,
   val role: String
 )
+
+@Serializable
+data class FirebaseCloudMessagingSubscription(
+  val fcmToken: String
+)

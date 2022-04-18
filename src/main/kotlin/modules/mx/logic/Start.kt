@@ -5,6 +5,7 @@ import api.logic.core.Server
 import api.logic.core.TelnetServer
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -44,9 +45,10 @@ import tornadofx.launch
 import java.io.File
 import java.io.IOException
 
+@ExperimentalSerializationApi
+@ExperimentalCoroutinesApi
 @DelicateCoroutinesApi
 @InternalAPI
-@ExperimentalSerializationApi
 suspend fun main(args: Array<String>) {
   if (args.isEmpty() || args[0] == "-gui") {
     // GUI
@@ -122,6 +124,7 @@ fun readAndSetIniValues() {
 /**
  * Starts the software with all necessary precautions
  */
+@ExperimentalCoroutinesApi
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
@@ -162,6 +165,7 @@ fun loadIndex(module: String = "") {
   }
 }
 
+@ExperimentalCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalSerializationApi
 @InternalAPI

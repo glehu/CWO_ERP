@@ -6,6 +6,7 @@ import api.logic.webapps.Mockingbird
 import api.logic.webapps.WebPlanner
 import api.misc.json.EMailJson
 import api.misc.json.EntryJson
+import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.ListDeltaJson
 import api.misc.json.PairIntJson
 import api.misc.json.SettingsRequestJson
@@ -14,6 +15,9 @@ import api.misc.json.TwoIntOneDoubleJson
 import api.misc.json.UniChatroomAddMember
 import api.misc.json.UniChatroomAddMessage
 import api.misc.json.UniChatroomCreateChatroom
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -148,6 +152,7 @@ class Server : IModule {
       maxFrameSize = Long.MAX_VALUE
       masking = false
     }
+    install(DoubleReceive)
     routing {
       route("/") {
         get {
@@ -272,6 +277,9 @@ class Server : IModule {
           getMessagesOfUniChatroom()
           addMemberToUniChatroom()
           getMembersOfUniChatroom()
+          addRoleToMemberOfUniChatroom()
+          removeRoleOfMemberOfUniChatroom()
+          setFirebaseCloudMessagingSubscription()
 
           /*
            * Web Solution Endpoints
@@ -289,13 +297,20 @@ class Server : IModule {
   }
 
   init {
+    // Get HTTPS Certificate
     keystore.load(
       FileInputStream(Paths.get(programPath, "keystore.jks").toString()),
       (System.getenv(iniVal.envCertPassword) ?: "?").toCharArray()
     )
+    // Start Server
     serverJobGlobal = GlobalScope.launch {
       serverEngine.start(wait = true)
     }
+    // Initialize Firebase Cloud Messaging Admin SDK
+    val options = FirebaseOptions.builder()
+      .setCredentials(GoogleCredentials.getApplicationDefault())
+      .build()
+    FirebaseApp.initializeApp(options)
   }
 
   private fun Route.logout() {
@@ -665,6 +680,27 @@ class Server : IModule {
   private fun Route.getMembersOfUniChatroom() {
     get("m5/getmembers/{uniChatroomGUID}") {
       ServerController.getMembersOfUniChatroom(call)
+    }
+  }
+
+  private fun Route.addRoleToMemberOfUniChatroom() {
+    post("m5/addrole") {
+      val config: UniChatroomAddMember = Json.decodeFromString(call.receive())
+      ServerController.addRoleToMemberOfUniChatroom(call, config)
+    }
+  }
+
+  private fun Route.removeRoleOfMemberOfUniChatroom() {
+    post("m5/removerole") {
+      val config: UniChatroomAddMember = Json.decodeFromString(call.receive())
+      ServerController.removeRoleOfMemberOfUniChatroom(call, config)
+    }
+  }
+
+  private fun Route.setFirebaseCloudMessagingSubscription() {
+    post("m5/subscribe/{uniChatroomGUID}") {
+      val config: FirebaseCloudMessagingSubscription = Json.decodeFromString(call.receive())
+      ServerController.setFirebaseCloudMessagingSubscription(call, config)
     }
   }
 }

@@ -13,6 +13,7 @@ import interfaces.IModule
 import io.ktor.util.*
 import javafx.collections.ObservableList
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -33,6 +34,7 @@ import modules.mx.terminal
 import tornadofx.observableListOf
 import kotlin.system.exitProcess
 
+@ExperimentalCoroutinesApi
 @DelicateCoroutinesApi
 @ExperimentalSerializationApi
 @InternalAPI

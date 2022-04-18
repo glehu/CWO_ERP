@@ -1,6 +1,9 @@
 package modules.m5.logic
 
 import api.logic.core.ServerController
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.MulticastMessage
+import com.google.firebase.messaging.Notification
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -68,9 +71,12 @@ class UniChatroomController : IModule {
     return UniMember(username, arrayListOf(role))
   }
 
-  fun UniChatroom.addMember(username: String, role: UniRole): Boolean {
+  fun UniChatroom.addMember(
+    username: String,
+    role: UniRole? = null,
+    fcmToken: String? = null
+  ): Boolean {
     if (username.isEmpty()) return false
-    val newMember = Json.encodeToString(createMember(username, Json.encodeToString(role)))
     // Does the member already exist in the Clarifier Session?
     var indexAt = -1
     var found = false
@@ -82,26 +88,45 @@ class UniChatroomController : IModule {
       }
     }
     if (indexAt != -1 && found) {
-      // Does the member already have this role?
       val member: UniMember = Json.decodeFromString(this.members[indexAt])
-      var roleIndexAt = -1
-      found = false
-      for (rle in member.roles) {
-        roleIndexAt++
-        if (Json.decodeFromString<UniRole>(rle).name == role.name) {
-          found = true
-          break
-        }
-      }
-      if (roleIndexAt == -1 && found) {
-        // Add role and save changes to the member by inserting it back into the array
-        member.roles.add(Json.encodeToString(role))
-        this.members[indexAt] = Json.encodeToString(member)
-      }
+      // Update
+      if (role != null) member.addRole(role)
+      if (!fcmToken.isNullOrEmpty()) member.subscribeFCM(fcmToken)
+      // Save
+      this.members[indexAt] = Json.encodeToString(member)
     } else {
-      this.members.add(newMember)
+      this.members.add(Json.encodeToString(createMember(username, Json.encodeToString(role))))
     }
     return true
+  }
+
+  /**
+   * Adds a role to this member
+   */
+  fun UniMember.addRole(role: UniRole) {
+    // Does the member already have this role?
+    var found = false
+    for (rle in this.roles) {
+      if (Json.decodeFromString<UniRole>(rle).name == role.name) {
+        found = true
+        break
+      }
+    }
+    if (!found) this.roles.add(Json.encodeToString(role))
+  }
+
+  /**
+   * Removes a role from this member
+   */
+  fun UniMember.removeRole(role: UniRole) {
+    var indexAt = -1
+    for (uniRole in this.roles) {
+      indexAt++
+      if (Json.decodeFromString<UniRole>(uniRole).name == role.name) {
+        break
+      }
+    }
+    if (indexAt != -1) this.roles.removeAt(indexAt)
   }
 
   private fun UniChatroom.removeMember(username: String) {
@@ -170,11 +195,9 @@ class UniChatroomController : IModule {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
-
     var authSuccess = false
     var terminated = false
     var username = ""
-
     // Wait for bearer token then authorize with provided JWT Token
     while (!authSuccess || terminated) {
       for (frame in incoming) {
@@ -207,7 +230,6 @@ class UniChatroomController : IModule {
       }
     }
     if (!authSuccess) return
-
     // Does this Clarifier Session exist?
     var found = false
     var clarifierSession: ClarifierSession? = null
@@ -221,14 +243,11 @@ class UniChatroomController : IModule {
       clarifierSession = ClarifierSession(uniChatroomGUID)
       clarifierSessions.add(clarifierSession!!)
     }
-
     // Add this new WebSocket connection
     val thisConnection = Connection(this, username)
     clarifierSession!!.connections += thisConnection
-
     // Retrieve Clarifier Session
     var uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, thisConnection.username)
-
     // Send login info and share link
     clarifierSession!!.connections.forEach {
       if (!it.session.outgoing.isClosedForSend) {
@@ -251,13 +270,13 @@ class UniChatroomController : IModule {
       }
       clarifierSession!!.connectionsToDelete.clear()
     }
-
     // Wait for new messages and distribute them
+    var uniMessage: UniMessage
     for (frame in incoming) {
       when (frame) {
         is Frame.Text -> {
           mutex.withLock {
-            val uniMessage = UniMessage(thisConnection.username, frame.readText(), Timestamp.now())
+            uniMessage = UniMessage(thisConnection.username, frame.readText(), Timestamp.now())
             clarifierSession!!.connections.forEach {
               if (!it.session.outgoing.isClosedForSend) {
                 it.session.send(Json.encodeToString(uniMessage))
@@ -265,10 +284,28 @@ class UniChatroomController : IModule {
                 clarifierSession!!.connectionsToDelete.add(it)
               }
             }
+            // Add new message to the chatroom
             uniChatroom = getChatroom(uniChatroom.chatroomGUID)!!
             uniChatroom.addMessage(thisConnection.username, uniMessage)
             saveChatroom(uniChatroom)
           }
+          // Send notification to all members
+          val fcmTokens: ArrayList<String> = arrayListOf()
+          for (memberJson in uniChatroom.members) {
+            val member: UniMember = Json.decodeFromString(memberJson)
+            if (member.firebaseCloudMessagingToken.isEmpty()) continue
+            fcmTokens.add(member.firebaseCloudMessagingToken)
+          }
+          val message = MulticastMessage.builder()
+            .setNotification(
+              Notification.builder()
+                .setTitle(uniChatroom.title)
+                .setBody("${thisConnection.username} has sent a message.")
+                .build()
+            )
+            .addAllTokens(fcmTokens)
+            .build()
+          FirebaseMessaging.getInstance().sendMulticast(message)
           // Remove closed connections
           if (clarifierSession!!.connectionsToDelete.size > 0) {
             clarifierSession!!.connectionsToDelete.forEach {
@@ -301,5 +338,23 @@ class UniChatroomController : IModule {
     }
     saveChatroom(uniChatroom)
     return uniChatroom
+  }
+
+  /**
+   * Adds a Firebase Cloud Messaging Token to this member
+   */
+  private fun UniMember.subscribeFCM(fcmToken: String) {
+    if (fcmToken.isEmpty()) {
+      this.unsubscribeFCM()
+      return
+    }
+    this.firebaseCloudMessagingToken = fcmToken
+  }
+
+  /**
+   * Removes the Firebase Cloud Messaging Token from this member
+   */
+  private fun UniMember.unsubscribeFCM() {
+    this.firebaseCloudMessagingToken = ""
   }
 }

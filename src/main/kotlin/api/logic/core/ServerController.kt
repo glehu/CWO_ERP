@@ -1,5 +1,6 @@
 package api.logic.core
 
+import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.ListDeltaJson
 import api.misc.json.LoginResponseJson
 import api.misc.json.PairIntJson
@@ -12,8 +13,8 @@ import api.misc.json.UniChatroomCreateChatroom
 import api.misc.json.ValidationContainerJson
 import api.misc.json.WebshopOrder
 import com.auth0.jwt.JWT
+import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import com.auth0.jwt.interfaces.JWTVerifier
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -42,6 +43,7 @@ import modules.m4.logic.ItemPriceManager
 import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.logic.ItemStorageManager
 import modules.m5.UniChatroom
+import modules.m5.UniMember
 import modules.m5.UniRole
 import modules.m5.logic.UniChatroomController
 import modules.mx.Ini
@@ -497,6 +499,94 @@ class ServerController {
         } else {
           appCall.respond(uniChatroom.members)
         }
+      }
+    }
+
+    suspend fun addRoleToMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomAddMember) {
+      if (config.uniChatroomGUID.isEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      if (config.member.isEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      if (config.role.isEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      with(UniChatroomController()) {
+        mutex.withLock {
+          val uniChatroom: UniChatroom? = getChatroom(config.uniChatroomGUID)
+          if (uniChatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          } else {
+            for (uniMember in uniChatroom.members) {
+              val member = Json.decodeFromString<UniMember>(uniMember)
+              if (member.username == config.member) {
+                member.addRole(UniRole(config.role))
+                saveChatroom(uniChatroom)
+                appCall.respond(HttpStatusCode.OK)
+                break
+              }
+            }
+          }
+        }
+      }
+    }
+
+    suspend fun removeRoleOfMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomAddMember) {
+      with(UniChatroomController()) {
+        mutex.withLock {
+          val uniChatroom: UniChatroom? = getChatroom(config.uniChatroomGUID)
+          if (uniChatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          } else {
+            for (uniMember in uniChatroom.members) {
+              val member = Json.decodeFromString<UniMember>(uniMember)
+              if (member.username == config.member) {
+                member.removeRole(UniRole(config.role))
+                saveChatroom(uniChatroom)
+                break
+              }
+            }
+          }
+        }
+      }
+    }
+
+    fun getUsernameReversedBase(appCall: ApplicationCall): String {
+      val username = getJWTUsername(appCall)
+      val usernameReversed = username.reversed()
+      val usernameBase = Base64.getUrlEncoder().encodeToString(usernameReversed.toByteArray())
+      return java.net.URLEncoder.encode(usernameBase, "utf-8")
+    }
+
+    suspend fun setFirebaseCloudMessagingSubscription(
+      appCall: ApplicationCall,
+      config: FirebaseCloudMessagingSubscription
+    ) {
+      val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      with(UniChatroomController()) {
+        mutex.withLock {
+          val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
+          if (uniChatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          val username = getJWTUsername(appCall)
+          if (uniChatroom.addMember(username, fcmToken = config.fcmToken)) {
+            log(Log.LogType.COM, "User $username Subscribed to FCM Push Notifications")
+          }
+          saveChatroom(uniChatroom)
+        }
+        appCall.respond(HttpStatusCode.OK)
       }
     }
   }
