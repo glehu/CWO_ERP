@@ -3,7 +3,9 @@ package modules.m5.logic
 import api.logic.core.ServerController
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.MulticastMessage
-import com.google.firebase.messaging.Notification
+import com.google.firebase.messaging.WebpushConfig
+import com.google.firebase.messaging.WebpushFcmOptions
+import com.google.firebase.messaging.WebpushNotification
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.application.*
@@ -297,10 +299,20 @@ class UniChatroomController : IModule {
             fcmTokens.add(member.firebaseCloudMessagingToken)
           }
           val message = MulticastMessage.builder()
-            .setNotification(
-              Notification.builder()
-                .setTitle(uniChatroom.title)
-                .setBody("${thisConnection.username} has sent a message.")
+            .setWebpushConfig(
+              WebpushConfig.builder()
+                .setNotification(
+                  WebpushNotification(
+                    uniChatroom.title,
+                    "${thisConnection.username} has sent a message."
+                  )
+                )
+                .setFcmOptions(
+                  WebpushFcmOptions
+                    .withLink("/apps/clarifier/wss/$uniChatroomGUID")
+                )
+                .putData("dlType", "router")
+                .putData("dlDest", "/apps/clarifier/wss/$uniChatroomGUID")
                 .build()
             )
             .addAllTokens(fcmTokens)
