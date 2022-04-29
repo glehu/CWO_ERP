@@ -1,17 +1,13 @@
 package modules.m5
 
-import com.benasher44.uuid.Uuid
 import kotlinx.serialization.SerialName
 
 @kotlinx.serialization.Serializable
 data class UniMessage(
-  @SerialName("from")
+  @SerialName("src")
   val from: String,
-  @SerialName("message")
+  @SerialName("msg")
   val message: String,
-  @SerialName("timestamp")
+  @SerialName("ts")
   val timestamp: String
-) {
-  @SerialName("uniChatroomGUID")
-  val messageGUID: String = Uuid.randomUUID().toString()
-}
+)

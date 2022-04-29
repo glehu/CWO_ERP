@@ -4,6 +4,7 @@ import com.benasher44.uuid.Uuid
 import interfaces.IEntry
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
 import modules.mx.logic.Timestamp
 import modules.mx.uniChatroomIndexManager
 
@@ -12,6 +13,7 @@ import modules.mx.uniChatroomIndexManager
 @kotlinx.serialization.Serializable
 data class UniChatroom(
   override var uID: Int,
+  @SerialName("t")
   var title: String,
 ) : IEntry {
   override fun initialize() {
@@ -22,9 +24,13 @@ data class UniChatroom(
     dateChangedUnix = Timestamp.getUnixTimestamp()
   }
 
+  @SerialName("guid")
   var chatroomGUID = ""
+  @SerialName("cdate")
   var dateCreated = ""
+  @SerialName("ts")
   var dateChangedUnix = -1L
+  @SerialName("s")
   var status = 1
   var members: ArrayList<String> = arrayListOf()
   var banlist: ArrayList<String> = arrayListOf()

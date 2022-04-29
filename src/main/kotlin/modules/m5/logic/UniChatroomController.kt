@@ -147,7 +147,7 @@ class UniChatroomController : IModule {
       log(Log.LogType.ERROR, "Message invalid (checkMessage)")
       return false
     }
-    if (!this.checkMember(member)) {
+    if (!this.checkIsMember(member) or this.checkIsMemberBanned(member)) {
       log(Log.LogType.ERROR, "Message invalid (checkMember)")
       return false
     }
@@ -163,19 +163,22 @@ class UniChatroomController : IModule {
     return message.isNotEmpty()
   }
 
-  private fun UniChatroom.checkMember(member: String): Boolean {
+  private fun UniChatroom.checkIsMember(member: String): Boolean {
+    if (member == "_server") return true
     var isMember = false
     for (uniMember in this.members) {
       if (Json.decodeFromString<UniMember>(uniMember).username == member) isMember = true
     }
-    if (!isMember) return false
+    return isMember
+  }
 
+  private fun UniChatroom.checkIsMemberBanned(member: String): Boolean {
+    if (member == "_server") return false
     var isBanned = false
     for (uniMember in this.banlist) {
       if (Json.decodeFromString<UniMember>(uniMember).username == member) isBanned = true
     }
-    if (isBanned) return false
-    return true
+    return isBanned
   }
 
   class Connection(val session: DefaultWebSocketSession, val username: String) {
@@ -189,6 +192,15 @@ class UniChatroomController : IModule {
   class ClarifierSession(val chatroomGUID: String) {
     val connections: MutableSet<Connection> = Collections.synchronizedSet(LinkedHashSet())
     val connectionsToDelete: MutableSet<Connection> = Collections.synchronizedSet(LinkedHashSet())
+
+    fun cleanup() {
+      if (connectionsToDelete.size > 0) {
+        connectionsToDelete.forEach {
+          connections.remove(it)
+        }
+        connectionsToDelete.clear()
+      }
+    }
   }
 
   suspend fun DefaultWebSocketServerSession.startSession(appCall: ApplicationCall) {
@@ -242,6 +254,7 @@ class UniChatroomController : IModule {
       }
     }
     if (!found) {
+      // Create a new Clarifier Session
       clarifierSession = ClarifierSession(uniChatroomGUID)
       clarifierSessions.add(clarifierSession!!)
     }
@@ -250,29 +263,41 @@ class UniChatroomController : IModule {
     clarifierSession!!.connections += thisConnection
     // Retrieve Clarifier Session
     var uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, thisConnection.username)
-    // Send login info and share link
-    clarifierSession!!.connections.forEach {
-      if (!it.session.outgoing.isClosedForSend) {
-        it.session.send(
-          Json.encodeToString(
-            UniMessage(
-              from = "_server",
-              message = "[s:LoginNotification]$username has joined the Clarifier session! Say hi!",
-              timestamp = Timestamp.now()
+    if (!uniChatroom.checkIsMember(thisConnection.username)) {
+      // Register new member
+      uniChatroom.addOrUpdateMember(thisConnection.username, UniRole("member"))
+      // Notify members of new registration
+      clarifierSession!!.connections.forEach {
+        if (!it.session.outgoing.isClosedForSend) {
+          it.session.send(
+            Json.encodeToString(
+              UniMessage(
+                from = "_server",
+                message = "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!",
+                timestamp = Timestamp.now()
+              )
             )
           )
+        } else {
+          clarifierSession!!.connectionsToDelete.add(it)
+        }
+      }
+      clarifierSession!!.cleanup()
+      mutex.withLock {
+        uniChatroom = getChatroom(uniChatroom.chatroomGUID)!!
+        uniChatroom.addMessage(
+          "_server", UniMessage(
+            "_server",
+            "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!",
+            Timestamp.now()
+          )
         )
-      } else {
-        clarifierSession!!.connectionsToDelete.add(it)
+        saveChatroom(uniChatroom)
       }
     }
-    if (clarifierSession!!.connectionsToDelete.size > 0) {
-      clarifierSession!!.connectionsToDelete.forEach {
-        clarifierSession!!.connections.remove(it)
-      }
-      clarifierSession!!.connectionsToDelete.clear()
-    }
+    // *****************************************
     // Wait for new messages and distribute them
+    // *****************************************
     var uniMessage: UniMessage
     for (frame in incoming) {
       when (frame) {
@@ -318,13 +343,7 @@ class UniChatroomController : IModule {
             .addAllTokens(fcmTokens)
             .build()
           FirebaseMessaging.getInstance().sendMulticast(message)
-          // Remove closed connections
-          if (clarifierSession!!.connectionsToDelete.size > 0) {
-            clarifierSession!!.connectionsToDelete.forEach {
-              clarifierSession!!.connections.remove(it)
-            }
-            clarifierSession!!.connectionsToDelete.clear()
-          }
+          clarifierSession!!.cleanup()
         }
         is Frame.Close -> {
           clarifierSession!!.connections.remove(thisConnection)
@@ -341,12 +360,9 @@ class UniChatroomController : IModule {
     // Does the requested Clarifier Session exist?
     var uniChatroom = getChatroom(uniChatroomGUID)
     if (uniChatroom == null) {
-      // Create a new Clarifier Session
+      // Create a new Clarifier Session and join it
       uniChatroom = createChatroom(uniChatroomGUID)
       uniChatroom.addOrUpdateMember(member, UniRole("owner"))
-      // Join existing one
-    } else {
-      uniChatroom.addOrUpdateMember(member, UniRole("member"))
     }
     saveChatroom(uniChatroom)
     return uniChatroom
