@@ -27,7 +27,6 @@ import modules.m5.UniMember
 import modules.m5.UniMessage
 import modules.m5.UniRole
 import modules.mx.logic.Log
-import modules.mx.logic.Timestamp
 import modules.mx.logic.UserCLIManager
 import modules.mx.uniChatroomIndexManager
 import java.util.*
@@ -131,7 +130,8 @@ class UniChatroomController : IModule {
     if (indexAt != -1) this.roles.removeAt(indexAt)
   }
 
-  private fun UniChatroom.removeMember(username: String) {
+  fun UniChatroom.removeMember(username: String): Boolean {
+    if (username.isEmpty()) return false
     var indexAt = -1
     for (uniMember in this.members) {
       indexAt++
@@ -139,7 +139,31 @@ class UniChatroomController : IModule {
         break
       }
     }
-    if (indexAt != -1) this.members.removeAt(indexAt)
+    return if (indexAt != -1) {
+      this.members.removeAt(indexAt)
+      true
+    } else false
+  }
+
+  /**
+   * Bans a member by putting him in the ban list
+   */
+  fun UniChatroom.banMember(
+    username: String
+  ): Boolean {
+    if (username.isEmpty()) return false
+    // Does the member already exist in the Clarifier's ban list'?
+    var found = false
+    for (uniMember in this.banlist) {
+      if (Json.decodeFromString<UniMember>(uniMember).username == username) {
+        found = true
+        break
+      }
+    }
+    return if (!found) {
+      this.banlist.add(Json.encodeToString(createMember(username, Json.encodeToString(UniRole("Banned")))))
+      true
+    } else false
   }
 
   fun UniChatroom.addMessage(member: String, message: String): Boolean {
@@ -151,11 +175,11 @@ class UniChatroomController : IModule {
       log(Log.LogType.ERROR, "Message invalid (checkMember)")
       return false
     }
-    this.messages.add(Json.encodeToString(UniMessage(member, message, Timestamp.now())))
+    this.messages.add(Json.encodeToString(UniMessage(member, message)))
     return true
   }
 
-  private fun UniChatroom.addMessage(member: String, uniMessage: UniMessage): Boolean {
+  fun UniChatroom.addMessage(member: String, uniMessage: UniMessage): Boolean {
     return this.addMessage(member, uniMessage.message)
   }
 
@@ -273,8 +297,7 @@ class UniChatroomController : IModule {
             Json.encodeToString(
               UniMessage(
                 from = "_server",
-                message = "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!",
-                timestamp = Timestamp.now()
+                message = "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!"
               )
             )
           )
@@ -286,10 +309,10 @@ class UniChatroomController : IModule {
       mutex.withLock {
         uniChatroom = getChatroom(uniChatroom.chatroomGUID)!!
         uniChatroom.addMessage(
-          "_server", UniMessage(
-            "_server",
-            "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!",
-            Timestamp.now()
+          "_server",
+          UniMessage(
+            from = "_server",
+            message = "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!",
           )
         )
         saveChatroom(uniChatroom)
@@ -303,7 +326,7 @@ class UniChatroomController : IModule {
       when (frame) {
         is Frame.Text -> {
           mutex.withLock {
-            uniMessage = UniMessage(thisConnection.username, frame.readText(), Timestamp.now())
+            uniMessage = UniMessage(thisConnection.username, frame.readText())
             clarifierSession!!.connections.forEach {
               if (!it.session.outgoing.isClosedForSend) {
                 it.session.send(Json.encodeToString(uniMessage))

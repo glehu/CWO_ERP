@@ -10,7 +10,9 @@ import api.misc.json.TwoIntOneDoubleJson
 import api.misc.json.UniChatroomAddMember
 import api.misc.json.UniChatroomAddMessage
 import api.misc.json.UniChatroomCreateChatroom
+import api.misc.json.UniChatroomImage
 import api.misc.json.UniChatroomMemberRole
+import api.misc.json.UniChatroomRemoveMember
 import api.misc.json.ValidationContainerJson
 import api.misc.json.WebshopOrder
 import com.auth0.jwt.JWT
@@ -45,6 +47,7 @@ import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.logic.ItemStorageManager
 import modules.m5.UniChatroom
 import modules.m5.UniMember
+import modules.m5.UniMessage
 import modules.m5.UniRole
 import modules.m5.logic.UniChatroomController
 import modules.mx.Ini
@@ -398,8 +401,18 @@ class ServerController {
     suspend fun createUniChatroom(config: UniChatroomCreateChatroom, owner: String): UniChatroom {
       val uniChatroom: UniChatroom
       with(UniChatroomController()) {
+        // Create Chatroom and populate it
         uniChatroom = createChatroom(config.title)
         uniChatroom.addOrUpdateMember(owner, UniRole("owner"))
+        uniChatroom.addMessage(
+          "_server",
+          UniMessage(
+            from = "_server",
+            message = "[s:RegistrationNotification]$owner has created ${config.title}!",
+          )
+        )
+        // Set Chatroom Image if provided
+        if (config.imgBase64.isNotEmpty()) uniChatroom.imgBase64 = config.imgBase64
         mutex.withLock {
           saveChatroom(uniChatroom)
         }
@@ -475,6 +488,58 @@ class ServerController {
           }
           if (!uniChatroom.addOrUpdateMember(config.member, getRoleFromConfig(config.role))) {
             appCall.respond(HttpStatusCode.InternalServerError)
+            return
+          }
+          saveChatroom(uniChatroom)
+        }
+        appCall.respond(HttpStatusCode.OK)
+      }
+    }
+
+    suspend fun removeMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomRemoveMember) {
+      val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      with(UniChatroomController()) {
+        mutex.withLock {
+          val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
+          if (uniChatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          if (!uniChatroom.removeMember(config.member)) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          saveChatroom(uniChatroom)
+        }
+        appCall.respond(HttpStatusCode.OK)
+      }
+    }
+
+    suspend fun banMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomRemoveMember) {
+      val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      with(UniChatroomController()) {
+        mutex.withLock {
+          val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
+          if (uniChatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          // Add member to the ban list to revoke all access rights
+          if (!uniChatroom.banMember(config.member)) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          // Now remove him from the member list
+          if (!uniChatroom.removeMember(config.member)) {
+            appCall.respond(HttpStatusCode.NotFound)
             return
           }
           saveChatroom(uniChatroom)
@@ -594,6 +659,26 @@ class ServerController {
           if (uniChatroom.addOrUpdateMember(username, fcmToken = config.fcmToken)) {
             log(Log.LogType.COM, "User $username Subscribed to FCM Push Notifications")
           }
+          saveChatroom(uniChatroom)
+        }
+        appCall.respond(HttpStatusCode.OK)
+      }
+    }
+
+    suspend fun setUniChatroomImage(appCall: ApplicationCall, config: UniChatroomImage) {
+      val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      with(UniChatroomController()) {
+        mutex.withLock {
+          val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
+          if (uniChatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          uniChatroom.imgBase64 = config.imageBase64
           saveChatroom(uniChatroom)
         }
         appCall.respond(HttpStatusCode.OK)

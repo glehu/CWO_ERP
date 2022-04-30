@@ -32,6 +32,8 @@ data class UniChatroom(
   var dateChangedUnix = -1L
   @SerialName("s")
   var status = 1
+  @SerialName("img")
+  var imgBase64 = ""
   var members: ArrayList<String> = arrayListOf()
   var banlist: ArrayList<String> = arrayListOf()
   var messages: ArrayList<String> = arrayListOf()

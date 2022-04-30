@@ -250,7 +250,8 @@ data class MockingbirdConfig(
 
 @Serializable
 data class UniChatroomCreateChatroom(
-  val title: String
+  val title: String,
+  val imgBase64: String = ""
 )
 
 @Serializable
@@ -267,6 +268,11 @@ data class UniChatroomAddMember(
 )
 
 @Serializable
+data class UniChatroomRemoveMember(
+  val member: String
+)
+
+@Serializable
 data class UniChatroomMemberRole(
   val member: String,
   val role: String
@@ -275,4 +281,9 @@ data class UniChatroomMemberRole(
 @Serializable
 data class FirebaseCloudMessagingSubscription(
   val fcmToken: String
+)
+
+@Serializable
+data class UniChatroomImage(
+  val imageBase64: String
 )

@@ -74,4 +74,5 @@ tasks.jar {
 
 tasks.withType<KotlinCompile> {
   kotlinOptions.jvmTarget = "1.8"
+  kotlinOptions.freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
 }

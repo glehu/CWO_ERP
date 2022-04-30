@@ -15,7 +15,9 @@ import api.misc.json.TwoIntOneDoubleJson
 import api.misc.json.UniChatroomAddMember
 import api.misc.json.UniChatroomAddMessage
 import api.misc.json.UniChatroomCreateChatroom
+import api.misc.json.UniChatroomImage
 import api.misc.json.UniChatroomMemberRole
+import api.misc.json.UniChatroomRemoveMember
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
@@ -60,6 +62,7 @@ import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
 import modules.mx.programPath
 import modules.mx.serverJobGlobal
+import modules.mx.uniChatroomIndexManager
 import modules.mx.usageTracker
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -146,10 +149,11 @@ class Server : IModule {
       anyHost()
       header(HttpHeaders.ContentType)
       header(HttpHeaders.Authorization)
+
     }
     install(WebSockets) {
-      pingPeriod = Duration.ofSeconds(2)
-      timeout = Duration.ofSeconds(2)
+      pingPeriod = Duration.ofSeconds(5)
+      timeout = Duration.ofSeconds(20)
       maxFrameSize = Long.MAX_VALUE
       masking = false
     }
@@ -214,35 +218,40 @@ class Server : IModule {
             contactIndexManager!!,
             invoiceIndexManager!!,
             itemIndexManager!!,
-            itemStockPostingIndexManager!!
+            itemStockPostingIndexManager!!,
+            uniChatroomIndexManager!!
           )
           getEntry(
             discographyIndexManager!!,
             contactIndexManager!!,
             invoiceIndexManager!!,
             itemIndexManager!!,
-            itemStockPostingIndexManager!!
+            itemStockPostingIndexManager!!,
+            uniChatroomIndexManager!!
           )
           saveEntry(
             discographyIndexManager!!,
             contactIndexManager!!,
             invoiceIndexManager!!,
             itemIndexManager!!,
-            itemStockPostingIndexManager!!
+            itemStockPostingIndexManager!!,
+            uniChatroomIndexManager!!
           )
           getEntryLock(
             discographyIndexManager!!,
             contactIndexManager!!,
             invoiceIndexManager!!,
             itemIndexManager!!,
-            itemStockPostingIndexManager!!
+            itemStockPostingIndexManager!!,
+            uniChatroomIndexManager!!
           )
           setEntryLock(
             discographyIndexManager!!,
             contactIndexManager!!,
             invoiceIndexManager!!,
             itemIndexManager!!,
-            itemStockPostingIndexManager!!
+            itemStockPostingIndexManager!!,
+            uniChatroomIndexManager!!
           )
           sendEMail()
           getSettingsFileText()
@@ -272,14 +281,22 @@ class Server : IModule {
           /*
            * M5 Endpoints (UniChatroom)
            */
+          // Creation and Modification
           createUniChatroom()
           getUniChatroom()
+          setImageOfUniChatroom()
+          // Messages
           addMessageToUniChatroom()
           getMessagesOfUniChatroom()
+          // Members
           addMemberToUniChatroom()
+          removeMemberOfUniChatroom()
+          banMemberOfUniChatroom()
           getMembersOfUniChatroom()
+          // Roles
           addRoleToMemberOfUniChatroom()
           removeRoleOfMemberOfUniChatroom()
+          // Notifications
           setFirebaseCloudMessagingSubscription()
 
           /*
@@ -678,6 +695,20 @@ class Server : IModule {
     }
   }
 
+  private fun Route.removeMemberOfUniChatroom() {
+    post("m5/removemember/{uniChatroomGUID}") {
+      val config: UniChatroomRemoveMember = Json.decodeFromString(call.receive())
+      ServerController.removeMemberOfUniChatroom(call, config)
+    }
+  }
+
+  private fun Route.banMemberOfUniChatroom() {
+    post("m5/banmember/{uniChatroomGUID}") {
+      val config: UniChatroomRemoveMember = Json.decodeFromString(call.receive())
+      ServerController.banMemberOfUniChatroom(call, config)
+    }
+  }
+
   private fun Route.getMembersOfUniChatroom() {
     get("m5/getmembers/{uniChatroomGUID}") {
       ServerController.getMembersOfUniChatroom(call)
@@ -702,6 +733,13 @@ class Server : IModule {
     post("m5/subscribe/{uniChatroomGUID}") {
       val config: FirebaseCloudMessagingSubscription = Json.decodeFromString(call.receive())
       ServerController.setFirebaseCloudMessagingSubscription(call, config)
+    }
+  }
+
+  private fun Route.setImageOfUniChatroom() {
+    post("m5/setimage/{uniChatroomGUID}") {
+      val config: UniChatroomImage = Json.decodeFromString(call.receive())
+      ServerController.setUniChatroomImage(call, config)
     }
   }
 }
