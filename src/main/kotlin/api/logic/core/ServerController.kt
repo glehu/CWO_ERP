@@ -12,6 +12,7 @@ import api.misc.json.UniChatroomAddMessage
 import api.misc.json.UniChatroomCreateChatroom
 import api.misc.json.UniChatroomImage
 import api.misc.json.UniChatroomMemberRole
+import api.misc.json.UniChatroomMessages
 import api.misc.json.UniChatroomRemoveMember
 import api.misc.json.ValidationContainerJson
 import api.misc.json.WebshopOrder
@@ -47,9 +48,9 @@ import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.logic.ItemStorageManager
 import modules.m5.UniChatroom
 import modules.m5.UniMember
-import modules.m5.UniMessage
 import modules.m5.UniRole
 import modules.m5.logic.UniChatroomController
+import modules.m5messages.UniMessage
 import modules.mx.Ini
 import modules.mx.User
 import modules.mx.contactIndexManager
@@ -62,6 +63,7 @@ import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
 import modules.mx.logic.encryptAES
 import modules.mx.logic.encryptKeccak
+import modules.mx.uniMessagesIndexManager
 import java.io.File
 import java.nio.file.Paths
 import java.time.LocalDate
@@ -201,7 +203,8 @@ class ServerController {
           accessM2 = user.canAccessContacts,
           accessM3 = user.canAccessInvoices,
           accessM4 = user.canAccessInventory,
-          accessM5 = user.canAccessClarifier
+          accessM5 = user.canAccessClarifier,
+          accessM6 = user.canAccessSnippetBase
         )
       )
       return ValidationContainerJson(
@@ -403,19 +406,19 @@ class ServerController {
       with(UniChatroomController()) {
         // Create Chatroom and populate it
         uniChatroom = createChatroom(config.title)
-        uniChatroom.addOrUpdateMember(owner, UniRole("owner"))
-        uniChatroom.addMessage(
-          "_server",
-          UniMessage(
-            from = "_server",
-            message = "[s:RegistrationNotification]$owner has created ${config.title}!",
-          )
+        uniChatroom.addOrUpdateMember(
+          username = owner,
+          role = UniRole("Owner")
         )
         // Set Chatroom Image if provided
         if (config.imgBase64.isNotEmpty()) uniChatroom.imgBase64 = config.imgBase64
         mutex.withLock {
           saveChatroom(uniChatroom)
         }
+        uniChatroom.addMessage(
+          member = "_server",
+          message = "[s:RegistrationNotification]$owner has created ${config.title}!"
+        )
       }
       return uniChatroom
     }
@@ -451,7 +454,6 @@ class ServerController {
             appCall.respond(HttpStatusCode.BadRequest)
             return
           }
-          saveChatroom(uniChatroom)
         }
         appCall.respond(HttpStatusCode.OK)
       }
@@ -468,7 +470,17 @@ class ServerController {
         if (uniChatroom == null) {
           appCall.respond(HttpStatusCode.NotFound)
         } else {
-          appCall.respond(uniChatroom.messages)
+          //Get Messages from index
+          val messages = arrayListOf<String>()
+          uniMessagesIndexManager!!.getEntriesFromIndexSearch(
+            searchText = uniChatroom.uID.toString(),
+            ixNr = 1,
+            showAll = true
+          ) {
+            it as UniMessage
+            messages.add(uniMessagesIndexManager!!.encodeToJsonString(it))
+          }
+          appCall.respond(UniChatroomMessages(messages))
         }
       }
     }
@@ -656,9 +668,7 @@ class ServerController {
             return
           }
           val username = getJWTUsername(appCall)
-          if (uniChatroom.addOrUpdateMember(username, fcmToken = config.fcmToken)) {
-            log(Log.LogType.COM, "User $username Subscribed to FCM Push Notifications")
-          }
+          uniChatroom.addOrUpdateMember(username, fcmToken = config.fcmToken)
           saveChatroom(uniChatroom)
         }
         appCall.respond(HttpStatusCode.OK)

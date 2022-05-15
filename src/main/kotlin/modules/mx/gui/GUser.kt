@@ -43,6 +43,8 @@ class GUser(user: User, credentials: Credentials) : Fragment("User") {
         field("Contacts") { checkbox("", userModel.canAccessContacts) }
         field("Invoices") { checkbox("", userModel.canAccessInvoices) }
         field("Inventory") { checkbox("", userModel.canAccessInventory) }
+        field("Clarifier") { checkbox("", userModel.canAccessClarifier) }
+        field("SnippetBase") { checkbox("", userModel.canAccessSnippetBase) }
       }
     }
     button("Save") {

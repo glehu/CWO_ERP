@@ -28,6 +28,9 @@ data class User(
   @SerialName("rM5")
   var canAccessClarifier: Boolean = true
 
+  @SerialName("rM6")
+  var canAccessSnippetBase: Boolean = true
+
   @SerialName("ol")
   var online: Boolean = false
 

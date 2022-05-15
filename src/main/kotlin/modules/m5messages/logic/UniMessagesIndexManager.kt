@@ -1,4 +1,4 @@
-package modules.m5.logic
+package modules.m5messages.logic
 
 import db.Index
 import interfaces.IEntry
@@ -6,17 +6,17 @@ import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
-import modules.m5.UniChatroom
-import modules.mx.uniChatroomIndexManager
+import modules.m5messages.UniMessage
+import modules.mx.uniMessagesIndexManager
 import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
 @InternalAPI
-class UniChatroomIndexManager : IIndexManager {
-  override val moduleNameLong = "UniChatroomIndexManager"
-  override val module = "M5"
+class UniMessagesIndexManager : IIndexManager {
+  override val moduleNameLong = "UniMessagesIndexManager"
+  override val module = "M5MSG"
   override fun getIndexManager(): IIndexManager {
-    return uniChatroomIndexManager!!
+    return uniMessagesIndexManager!!
   }
 
   override var lastChangeDateHex: String = ""
@@ -36,19 +36,13 @@ class UniChatroomIndexManager : IIndexManager {
 
   init {
     initialize(
-      1, //Title
-      2, //ChatroomGUID
-      3, //Date Created
-      4, //Status
+      1 //ChatroomUID
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-      "1-Title",
-      "2-ChatroomGUID",
-      "3-Date Created",
-      "4-Status",
+      "1-ChatroomUID",
     )
   }
 
@@ -59,21 +53,18 @@ class UniChatroomIndexManager : IIndexManager {
     writeToDisk: Boolean,
     userName: String
   ) {
-    entry as UniChatroom
+    entry as UniMessage
     buildIndices(
       entry.uID,
       posDB,
       byteSize,
       writeToDisk,
       userName,
-      Pair(1, entry.title),
-      Pair(2, entry.chatroomGUID),
-      Pair(3, entry.dateCreated),
-      Pair(4, entry.status.toString()),
+      Pair(1, entry.uniChatroomUID.toString()),
     )
   }
 
   override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
-    return json(prettyPrint).encodeToString(entry as UniChatroom)
+    return json(prettyPrint).encodeToString(entry as UniMessage)
   }
 }

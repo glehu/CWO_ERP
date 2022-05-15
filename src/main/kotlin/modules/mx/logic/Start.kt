@@ -15,6 +15,8 @@ import modules.m3.logic.InvoiceIndexManager
 import modules.m4.logic.ItemIndexManager
 import modules.m4stockposting.logic.ItemStockPostingIndexManager
 import modules.m5.logic.UniChatroomIndexManager
+import modules.m5messages.logic.UniMessagesIndexManager
+import modules.m6.logic.SnippetBaseIndexManager
 import modules.mx.Ini
 import modules.mx.activeUser
 import modules.mx.cliMode
@@ -34,12 +36,14 @@ import modules.mx.maxSearchResultsGlobal
 import modules.mx.server
 import modules.mx.serverIPAddressGlobal
 import modules.mx.serverJobGlobal
+import modules.mx.snippetBaseIndexManager
 import modules.mx.taskJobGlobal
 import modules.mx.telnetServer
 import modules.mx.telnetServerJobGlobal
 import modules.mx.titleGlobal
 import modules.mx.tokenGlobal
 import modules.mx.uniChatroomIndexManager
+import modules.mx.uniMessagesIndexManager
 import modules.mx.usageTracker
 import tornadofx.launch
 import java.io.File
@@ -88,6 +92,8 @@ fun checkLogFiles() {
   Log.checkLogFile("M4", true)
   Log.checkLogFile("M4SP", true)
   Log.checkLogFile("M5", true)
+  Log.checkLogFile("M5MSG", true)
+  Log.checkLogFile("M6", true)
 }
 
 fun checkModules() {
@@ -98,6 +104,8 @@ fun checkModules() {
   checkModuleDir("M4")
   checkModuleDir("M4SP")
   checkModuleDir("M5")
+  checkModuleDir("M5MSG")
+  checkModuleDir("M6")
 }
 
 fun checkModuleDir(module: String) {
@@ -154,6 +162,8 @@ fun loadIndex(module: String = "") {
       "m4" -> itemIndexManager = ItemIndexManager()
       "m4sp" -> itemStockPostingIndexManager = ItemStockPostingIndexManager()
       "m5" -> uniChatroomIndexManager = UniChatroomIndexManager()
+      "m5msg" -> uniMessagesIndexManager = UniMessagesIndexManager()
+      "m6" -> snippetBaseIndexManager = SnippetBaseIndexManager()
     }
   } else {
     discographyIndexManager = DiscographyIndexManager()
@@ -162,6 +172,8 @@ fun loadIndex(module: String = "") {
     itemIndexManager = ItemIndexManager()
     itemStockPostingIndexManager = ItemStockPostingIndexManager()
     uniChatroomIndexManager = UniChatroomIndexManager()
+    uniMessagesIndexManager = UniMessagesIndexManager()
+    snippetBaseIndexManager = SnippetBaseIndexManager()
   }
 }
 

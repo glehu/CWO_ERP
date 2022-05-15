@@ -1,4 +1,4 @@
-package modules.m5.logic
+package modules.m6.logic
 
 import db.Index
 import interfaces.IEntry
@@ -6,17 +6,18 @@ import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
-import modules.m5.UniChatroom
-import modules.mx.uniChatroomIndexManager
+import modules.m4.Item
+import modules.m6.Snippet
+import modules.mx.snippetBaseIndexManager
 import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
 @InternalAPI
-class UniChatroomIndexManager : IIndexManager {
-  override val moduleNameLong = "UniChatroomIndexManager"
-  override val module = "M5"
+class SnippetBaseIndexManager : IIndexManager {
+  override val moduleNameLong = "SnippetBaseIndexManager"
+  override val module = "M6"
   override fun getIndexManager(): IIndexManager {
-    return uniChatroomIndexManager!!
+    return snippetBaseIndexManager!!
   }
 
   override var lastChangeDateHex: String = ""
@@ -36,19 +37,13 @@ class UniChatroomIndexManager : IIndexManager {
 
   init {
     initialize(
-      1, //Title
-      2, //ChatroomGUID
-      3, //Date Created
-      4, //Status
+      1, //ChatroomGUID
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-      "1-Title",
-      "2-ChatroomGUID",
-      "3-Date Created",
-      "4-Status",
+      "1-ChatroomGUID",
     )
   }
 
@@ -59,21 +54,18 @@ class UniChatroomIndexManager : IIndexManager {
     writeToDisk: Boolean,
     userName: String
   ) {
-    entry as UniChatroom
+    entry as Snippet
     buildIndices(
       entry.uID,
       posDB,
       byteSize,
       writeToDisk,
       userName,
-      Pair(1, entry.title),
-      Pair(2, entry.chatroomGUID),
-      Pair(3, entry.dateCreated),
-      Pair(4, entry.status.toString()),
+      Pair(1, entry.gUID)
     )
   }
 
   override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
-    return json(prettyPrint).encodeToString(entry as UniChatroom)
+    return json(prettyPrint).encodeToString(entry as Item)
   }
 }

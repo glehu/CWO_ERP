@@ -31,6 +31,10 @@ import modules.m5.IUniRole
 import modules.m5.UniChatroom
 import modules.m5.UniRole
 import modules.m5.logic.UniChatroomIndexManager
+import modules.m5messages.UniMessage
+import modules.m5messages.logic.UniMessagesIndexManager
+import modules.m6.Snippet
+import modules.m6.logic.SnippetBaseIndexManager
 import java.io.File
 import java.nio.file.Paths
 
@@ -49,6 +53,8 @@ val serializersModuleGlobal = SerializersModule {
     subclass(Item::class, serializer())
     subclass(ItemStockPosting::class, serializer())
     subclass(UniChatroom::class, serializer())
+    subclass(UniMessage::class, serializer())
+    subclass(Snippet::class, serializer())
   }
   polymorphic(IUniRole::class) {
     subclass(UniRole::class, serializer())
@@ -101,11 +107,26 @@ var itemIndexManager: ItemIndexManager? = null
 var itemStockPostingIndexManager: ItemStockPostingIndexManager? = null
 
 /**
- * The global index for messages
+ * The global index for UniChatrooms
  */
 @InternalAPI
 @ExperimentalSerializationApi
 var uniChatroomIndexManager: UniChatroomIndexManager? = null
+
+
+/**
+ * The global index for UniMessages
+ */
+@InternalAPI
+@ExperimentalSerializationApi
+var uniMessagesIndexManager: UniMessagesIndexManager? = null
+
+/**
+ * The global index for Snippets
+ */
+@InternalAPI
+@ExperimentalSerializationApi
+var snippetBaseIndexManager: SnippetBaseIndexManager? = null
 
 //*************************************************
 //********************** TRACKER ******************

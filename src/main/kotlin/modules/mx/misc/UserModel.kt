@@ -25,6 +25,10 @@ class UserModelProperty {
   var canAccessInvoices by canAccessInvoicesProperty
   val canAccessInventoryProperty = SimpleBooleanProperty(true)
   var canAccessInventory by canAccessInventoryProperty
+  val canAccessClarifierProperty = SimpleBooleanProperty(true)
+  var canAccessClarifier by canAccessClarifierProperty
+  val canAccessSnippetBaseProperty = SimpleBooleanProperty(true)
+  var canAccessSnippetBase by canAccessSnippetBaseProperty
 }
 
 class UserModel(user: UserModelProperty) : ItemViewModel<UserModelProperty>(user) {
@@ -35,6 +39,8 @@ class UserModel(user: UserModelProperty) : ItemViewModel<UserModelProperty>(user
   val canAccessContacts = bind(UserModelProperty::canAccessContactsProperty)
   val canAccessInvoices = bind(UserModelProperty::canAccessInvoicesProperty)
   val canAccessInventory = bind(UserModelProperty::canAccessInventoryProperty)
+  val canAccessClarifier = bind(UserModelProperty::canAccessClarifierProperty)
+  val canAccessSnippetBase = bind(UserModelProperty::canAccessSnippetBaseProperty)
 }
 
 fun getUserPropertyFromUser(user: User): UserModelProperty {
@@ -46,6 +52,8 @@ fun getUserPropertyFromUser(user: User): UserModelProperty {
   userProperty.canAccessContacts = user.canAccessContacts
   userProperty.canAccessInvoices = user.canAccessInvoices
   userProperty.canAccessInventory = user.canAccessInventory
+  userProperty.canAccessClarifier = user.canAccessClarifier
+  userProperty.canAccessSnippetBase = user.canAccessSnippetBase
   return userProperty
 }
 
@@ -56,5 +64,7 @@ fun getUserFromUserProperty(userProperty: UserModelProperty): User {
   user.canAccessContacts = userProperty.canAccessContacts
   user.canAccessInvoices = userProperty.canAccessInvoices
   user.canAccessInventory = userProperty.canAccessInventory
+  user.canAccessClarifier = userProperty.canAccessClarifier
+  user.canAccessSnippetBase = userProperty.canAccessSnippetBase
   return user
 }

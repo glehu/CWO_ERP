@@ -1,4 +1,4 @@
-package modules.m5
+package modules.m6
 
 import com.benasher44.uuid.Uuid
 import interfaces.IEntry
@@ -11,30 +11,19 @@ import modules.mx.uniChatroomIndexManager
 @InternalAPI
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
-data class UniChatroom(
-  override var uID: Int,
-  @SerialName("t")
-  var title: String,
+data class Snippet(
+  override var uID: Int = -1,
 ) : IEntry {
   override fun initialize() {
     if (uID == -1) uID = uniChatroomIndexManager!!.getUID()
-    if (chatroomGUID.isEmpty()) chatroomGUID = Uuid.randomUUID().toString()
+    if (gUID.isEmpty()) gUID = "snip@" + Uuid.randomUUID().toString()
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
-    // Always keep this up to date
-    dateChangedUnix = Timestamp.getUnixTimestamp()
   }
 
   @SerialName("guid")
-  var chatroomGUID = ""
+  var gUID = ""
+
   @SerialName("cdate")
   var dateCreated = ""
-  @SerialName("ts")
-  var dateChangedUnix = -1L
-  @SerialName("s")
-  var status = 1
-  @SerialName("img")
-  var imgBase64 = ""
-  var members: ArrayList<String> = arrayListOf()
-  var banlist: ArrayList<String> = arrayListOf()
-  var subChatrooms: ArrayList<String> = arrayListOf()
+  var payload = ""
 }

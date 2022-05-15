@@ -72,6 +72,7 @@ class UserCLIManager : IModule {
       "M3" -> return user.canAccessInvoices
       "M4" -> return user.canAccessInventory
       "M5" -> return user.canAccessClarifier
+      "M6" -> return user.canAccessSnippetBase
       "M*" -> {
         var flag = 0
         if (user.canAccessManagement) flag++
@@ -80,6 +81,7 @@ class UserCLIManager : IModule {
         if (user.canAccessInvoices) flag++
         if (user.canAccessInventory) flag++
         if (user.canAccessClarifier) flag++
+        if (user.canAccessSnippetBase) flag++
         return (flag > 0)
       }
       else -> return false
@@ -175,8 +177,8 @@ class UserCLIManager : IModule {
             activeUser.canAccessInvoices = loginResponse.accessM3
             activeUser.canAccessInventory = loginResponse.accessM4
             activeUser.canAccessClarifier = loginResponse.accessM5
-            val resp: String = getTokenClient().get("${getServerUrl()}tokenremainingtime")
-            println(resp)
+            activeUser.canAccessSnippetBase = loginResponse.accessM6
+            getTokenClient().get("${getServerUrl()}tokenremainingtime")
           } else validResponse = false
         }
       }

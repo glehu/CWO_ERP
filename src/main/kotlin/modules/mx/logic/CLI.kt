@@ -29,8 +29,11 @@ import modules.mx.itemIndexManager
 import modules.mx.itemStockPostingIndexManager
 import modules.mx.programPath
 import modules.mx.server
+import modules.mx.snippetBaseIndexManager
 import modules.mx.telnetServer
 import modules.mx.terminal
+import modules.mx.uniChatroomIndexManager
+import modules.mx.uniMessagesIndexManager
 import tornadofx.observableListOf
 import kotlin.system.exitProcess
 
@@ -172,16 +175,14 @@ class CLI : IModule {
         "dbstat" -> {
           val header = arrayOf("DB", "Desc", "#", "DB MiB", "IX MiB", "Date", "User")
           val ix = listOf(
-            //M1
             discographyIndexManager,
-            //M2
             contactIndexManager,
-            //M3
             invoiceIndexManager,
-            //M4
             itemIndexManager,
-            //M4SP
-            itemStockPostingIndexManager
+            itemStockPostingIndexManager,
+            uniChatroomIndexManager,
+            uniMessagesIndexManager,
+            snippetBaseIndexManager
           )
           val data = d2Array(ix.size, header.size)
           for (i in ix.indices) {

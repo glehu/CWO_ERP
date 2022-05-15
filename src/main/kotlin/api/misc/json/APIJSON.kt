@@ -43,7 +43,8 @@ data class LoginResponseJson(
   val accessM2: Boolean,
   val accessM3: Boolean,
   val accessM4: Boolean,
-  val accessM5: Boolean
+  val accessM5: Boolean,
+  val accessM6: Boolean
 )
 
 @Serializable
@@ -286,4 +287,9 @@ data class FirebaseCloudMessagingSubscription(
 @Serializable
 data class UniChatroomImage(
   val imageBase64: String
+)
+
+@Serializable
+data class UniChatroomMessages(
+  var messages: ArrayList<String>
 )

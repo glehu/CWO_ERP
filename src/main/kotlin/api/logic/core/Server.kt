@@ -742,4 +742,8 @@ class Server : IModule {
       ServerController.setUniChatroomImage(call, config)
     }
   }
+
+  private fun Route.createResource() {
+
+  }
 }
