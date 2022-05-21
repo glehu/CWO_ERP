@@ -465,6 +465,9 @@ class ServerController {
         appCall.respond(HttpStatusCode.BadRequest)
         return
       }
+      val pageIndex: Int = appCall.request.queryParameters["pageIndex"]?.toInt() ?: 0
+      val pageSize: Int = appCall.request.queryParameters["pageSize"]?.toInt() ?: 50
+      val skipCount: Int = appCall.request.queryParameters["skip"]?.toInt() ?: 0
       with(UniChatroomController()) {
         val uniChatroom = getChatroom(uniChatroomGUID)
         if (uniChatroom == null) {
@@ -473,9 +476,12 @@ class ServerController {
           //Get Messages from index
           val messages = arrayListOf<String>()
           uniMessagesIndexManager!!.getEntriesFromIndexSearch(
-            searchText = uniChatroom.uID.toString(),
+            searchText = "^${uniChatroom.uID}$",
             ixNr = 1,
-            showAll = true
+            showAll = false,
+            paginationIndex = pageIndex,
+            pageSize = pageSize,
+            skip = skipCount
           ) {
             it as UniMessage
             messages.add(uniMessagesIndexManager!!.encodeToJsonString(it))

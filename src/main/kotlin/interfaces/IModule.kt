@@ -378,10 +378,18 @@ interface IModule {
     return success
   }
 
+  /**
+   * Retrieves, if present, entries that fit the provided search text.
+   * The search can be done for a specific index, or using all available indices.
+   * @return IEntry
+   */
   fun getEntriesFromIndexSearch(
     searchText: String,
     ixNr: Int,
     showAll: Boolean,
+    paginationIndex: Int = 0,
+    pageSize: Int = maxSearchResultsGlobal,
+    skip: Int = 0,
     format: Boolean = true,
     numberComparison: Boolean = false,
     entryOut: (IEntry) -> Unit
@@ -393,8 +401,10 @@ interface IModule {
         ixNr = ixNr,
         exactSearch = true,
         indexManager = getIndexManager()!!,
-        maxSearchResults = if (showAll) -1 else maxSearchResultsGlobal,
-        numberComparison = numberComparison
+        maxSearchResults = if (showAll) -1 else pageSize,
+        numberComparison = numberComparison,
+        paginationIndex = paginationIndex,
+        skip = skip
       ) { _, bytes ->
         try {
           entryOut(decode(bytes))

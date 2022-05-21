@@ -70,6 +70,8 @@ class CwODB {
       indexManager: IIndexManager,
       module: String = indexManager.module,
       numberComparison: Boolean = false,
+      paginationIndex: Int = 0,
+      skip: Int = 0,
       updateProgress: (Int, ByteArray) -> Unit
     ) {
       var counter = 0
@@ -109,7 +111,14 @@ class CwODB {
             //No search text -> Show all entries
             filteredMap = indexManager.indexList[0]!!.indexMap
           }
-          for (uID in filteredMap.keys) {
+          var toSkip = skip
+          if (maxSearchResults > 0 && paginationIndex >= 0) toSkip += maxSearchResults * paginationIndex
+          //Process filtered map, reading all entries and returning their bytes
+          for (uID in filteredMap.keys.reversed()) {
+            if (toSkip > 0) {
+              toSkip--
+              continue
+            }
             val baseIndex = indexManager.getBaseIndex(uID)
             entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
             if (entryBytes.isEmpty()) continue

@@ -408,8 +408,14 @@ class UniChatroomController : IModule {
       this.unsubscribeFCM()
       return
     }
+    if (this.firebaseCloudMessagingToken.isEmpty()) {
+      log(Log.LogType.SYS, "User ${this.username} subscribed to FCM Push Notifications")
+    } else {
+      if (this.firebaseCloudMessagingToken != fcmToken) {
+        log(Log.LogType.SYS, "User ${this.username} updated FCM Push Notifications subscription")
+      }
+    }
     this.firebaseCloudMessagingToken = fcmToken
-    log(Log.LogType.SYS, "User ${this.username} subscribed to FCM Push Notifications")
   }
 
   /**
