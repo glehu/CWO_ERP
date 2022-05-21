@@ -76,6 +76,8 @@ class CwODB {
     ) {
       var counter = 0
       var entryBytes: ByteArray
+      var toSkip = skip
+      if (maxSearchResults > 0 && paginationIndex >= 0) toSkip += maxSearchResults * paginationIndex
       try {
         if (getDatabaseFile(module).isFile) {
           val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
@@ -85,6 +87,10 @@ class CwODB {
               //Searches in all available indices
               returnFromAllIndices(indexManager, searchText) { indexResult ->
                 for (uID in indexResult.keys) {
+                  if (toSkip > 0) {
+                    toSkip--
+                    continue
+                  }
                   val baseIndex = indexManager.getBaseIndex(uID)
                   entryBytes = readDBEntry(baseIndex.pos, baseIndex.byteSize, raf)
                   if (entryBytes.isEmpty()) continue
@@ -111,8 +117,6 @@ class CwODB {
             //No search text -> Show all entries
             filteredMap = indexManager.indexList[0]!!.indexMap
           }
-          var toSkip = skip
-          if (maxSearchResults > 0 && paginationIndex >= 0) toSkip += maxSearchResults * paginationIndex
           //Process filtered map, reading all entries and returning their bytes
           for (uID in filteredMap.keys.reversed()) {
             if (toSkip > 0) {
