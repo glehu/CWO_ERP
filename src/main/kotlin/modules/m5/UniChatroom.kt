@@ -37,4 +37,5 @@ data class UniChatroom(
   var members: ArrayList<String> = arrayListOf()
   var banlist: ArrayList<String> = arrayListOf()
   var subChatrooms: ArrayList<String> = arrayListOf()
+  var parentGUID = ""
 }

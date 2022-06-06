@@ -6,6 +6,8 @@ import api.misc.json.LoginResponseJson
 import api.misc.json.PairIntJson
 import api.misc.json.RegistrationPayload
 import api.misc.json.RegistrationResponse
+import api.misc.json.SnippetPayload
+import api.misc.json.SnippetResponse
 import api.misc.json.TwoIntOneDoubleJson
 import api.misc.json.UniChatroomAddMember
 import api.misc.json.UniChatroomAddMessage
@@ -51,6 +53,7 @@ import modules.m5.UniMember
 import modules.m5.UniRole
 import modules.m5.logic.UniChatroomController
 import modules.m5messages.UniMessage
+import modules.m6.logic.SnippetBaseController
 import modules.mx.Ini
 import modules.mx.User
 import modules.mx.contactIndexManager
@@ -63,6 +66,7 @@ import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
 import modules.mx.logic.encryptAES
 import modules.mx.logic.encryptKeccak
+import modules.mx.maxSearchResultsGlobal
 import modules.mx.uniMessagesIndexManager
 import java.io.File
 import java.nio.file.Paths
@@ -92,7 +96,7 @@ class ServerController {
       val uID: Int
       mutex.withLock {
         log(
-          logType = Log.LogType.COM,
+          type = Log.Type.COM,
           text = "API ${indexManager.module} entry save",
           apiEndpoint = "/api/${indexManager.module}/save",
           moduleAlt = indexManager.module
@@ -193,7 +197,7 @@ class ServerController {
         .withClaim("username", user.username)
         .withExpiresAt(expiresAt)
         .sign(Algorithm.HMAC256(iniVal.token))
-      log(Log.LogType.COM, "Token generated for ${user.username}", "/login")
+      log(Log.Type.COM, "Token generated for ${user.username}", "/login")
       val loginResponse = Json.encodeToString(
         LoginResponseJson(
           httpCode = 200,
@@ -285,7 +289,7 @@ class ServerController {
         }
       }
       order.customerNote = body.customerNote
-      /**
+      /*
        * Finalize the order and save it
        */
       val userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
@@ -324,7 +328,7 @@ class ServerController {
       }
       mutex.withLock {
         log(
-          logType = Log.LogType.COM,
+          type = Log.Type.COM,
           text = "web shop order #${order.uID} from ${order.buyer}",
           apiEndpoint = appCall.request.uri,
           moduleAlt = invoiceIndexManager!!.module
@@ -361,7 +365,7 @@ class ServerController {
         } else {
           val user = User(registrationPayload.username, encryptAES(registrationPayload.password))
           userManager.updateUser(user, user, credentials)
-          log(Log.LogType.COM, "User ${registrationPayload.username} registered.", appCall.request.uri)
+          log(Log.Type.COM, "User ${registrationPayload.username} registered.", appCall.request.uri)
         }
       }
       return RegistrationResponse(isSuccess, message)
@@ -396,12 +400,17 @@ class ServerController {
      * Introduce delay avoiding having to deal with this load heavy operation too often
      */
     suspend fun pauseRequest(durationMs: Long) {
-      log(Log.LogType.COM, "Pausing request for $durationMs ms...")
+      log(Log.Type.COM, "Pausing request for $durationMs ms...")
       delay(durationMs)
-      log(Log.LogType.COM, "Resuming request that waited for $durationMs ms...")
+      log(Log.Type.COM, "Resuming request that waited for $durationMs ms...")
     }
 
-    suspend fun createUniChatroom(config: UniChatroomCreateChatroom, owner: String): UniChatroom {
+    suspend fun createUniChatroom(
+      appCall: ApplicationCall,
+      config: UniChatroomCreateChatroom,
+      owner: String,
+    ) {
+      val parentUniChatroomGUID: String = appCall.request.queryParameters["parent"] ?: ""
       val uniChatroom: UniChatroom
       with(UniChatroomController()) {
         // Create Chatroom and populate it
@@ -412,6 +421,33 @@ class ServerController {
         )
         // Set Chatroom Image if provided
         if (config.imgBase64.isNotEmpty()) uniChatroom.imgBase64 = config.imgBase64
+        // Update parent chatroom with this chatroom's GUID if needed
+        if (parentUniChatroomGUID.isNotEmpty()) {
+          val parent: UniChatroom?
+          mutex.withLock {
+            parent = getChatroom(parentUniChatroomGUID)
+            if (parent == null) {
+              appCall.respond(HttpStatusCode.NotFound)
+              return
+            }
+            // We initialize here since we didn't save yet, thus having no GUID to reference etc.
+            uniChatroom.uID = -2 // Little bypass
+            uniChatroom.initialize()
+            uniChatroom.uID = -1
+            // Create a copy since we want to remove unnecessary stuff before saving it into the parent
+            val copy = uniChatroom.copy()
+            copy.imgBase64 = ""
+            copy.members.clear()
+            // Copy other values
+            copy.chatroomGUID = uniChatroom.chatroomGUID
+            copy.parentGUID = uniChatroom.parentGUID
+            // Create reference
+            parent.subChatrooms.add(Json.encodeToString(copy))
+            // Reference the parent also
+            uniChatroom.parentGUID = parent.chatroomGUID
+            saveChatroom(parent)
+          }
+        }
         mutex.withLock {
           saveChatroom(uniChatroom)
         }
@@ -420,7 +456,7 @@ class ServerController {
           message = "[s:RegistrationNotification]$owner has created ${config.title}!"
         )
       }
-      return uniChatroom
+      appCall.respond(uniChatroom)
     }
 
     suspend fun getUniChatroom(appCall: ApplicationCall) {
@@ -466,7 +502,7 @@ class ServerController {
         return
       }
       val pageIndex: Int = appCall.request.queryParameters["pageIndex"]?.toInt() ?: 0
-      val pageSize: Int = appCall.request.queryParameters["pageSize"]?.toInt() ?: 50
+      val pageSize: Int = appCall.request.queryParameters["pageSize"]?.toInt() ?: maxSearchResultsGlobal
       val skipCount: Int = appCall.request.queryParameters["skip"]?.toInt() ?: 0
       with(UniChatroomController()) {
         val uniChatroom = getChatroom(uniChatroomGUID)
@@ -608,7 +644,7 @@ class ServerController {
             return
           }
           if (uniChatroom.addOrUpdateMember(config.member, UniRole(config.role))) {
-            log(Log.LogType.COM, "Role ${config.role} added to ${config.member}")
+            log(Log.Type.COM, "Role ${config.role} added to ${config.member}")
           }
           saveChatroom(uniChatroom)
         }
@@ -659,7 +695,7 @@ class ServerController {
 
     suspend fun setFirebaseCloudMessagingSubscription(
       appCall: ApplicationCall,
-      config: FirebaseCloudMessagingSubscription
+      config: FirebaseCloudMessagingSubscription,
     ) {
       val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
       if (uniChatroomGUID.isNullOrEmpty()) {
@@ -698,6 +734,45 @@ class ServerController {
           saveChatroom(uniChatroom)
         }
         appCall.respond(HttpStatusCode.OK)
+      }
+    }
+
+    suspend fun createSnippetImage(appCall: ApplicationCall, payload: SnippetPayload) {
+      if (!UserCLIManager().checkModuleRight(getJWTUsername(appCall), "M6")) {
+        appCall.respond(HttpStatusCode.Forbidden)
+        return
+      }
+      with(SnippetBaseController()) {
+        val snippet = saveImage(payload.payload, payload.type, createSnippet())
+        if (snippet == null) {
+          appCall.respond(HttpStatusCode.InternalServerError)
+          return
+        }
+        saveResource(snippet)
+        appCall.respond(Json.encodeToString(SnippetResponse(HttpStatusCode.Created.value, snippet.gUID)))
+        log(Log.Type.COM, "")
+      }
+    }
+
+    suspend fun getSnippetImage(appCall: ApplicationCall) {
+      val snippetGUID = appCall.parameters["snippetGUID"]
+      if (snippetGUID.isNullOrEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      with(SnippetBaseController()) {
+        val snippet = getSnippet(snippetGUID)
+        if (snippet == null) {
+          appCall.respond(HttpStatusCode.NotFound)
+          return
+        }
+        if (snippet.payloadType.contains("file")) {
+          appCall.respondFile(File(Paths.get(snippet.payload).toString()))
+          return
+        } else {
+          appCall.respond(HttpStatusCode.BadRequest)
+          return
+        }
       }
     }
   }

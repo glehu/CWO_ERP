@@ -32,7 +32,7 @@ class DiscographyAnalytics : IModule, Controller() {
     var songCount = 0.0
     val map = mutableMapOf<String, Double>()
     var distTypeData: String
-    log(Log.LogType.INFO, "Distribution analysis start")
+    log(Log.Type.INFO, "Distribution analysis start")
     val timeInMS = measureTimeMillis {
       CwODB.getEntriesFromSearchString(
         searchText = "*",
@@ -66,7 +66,7 @@ class DiscographyAnalytics : IModule, Controller() {
       }
       map["[amount]"] = songCount
     }
-    log(Log.LogType.INFO, "Distribution analysis end (${timeInMS / 1000} sec)")
+    log(Log.Type.INFO, "Distribution analysis end (${timeInMS / 1000} sec)")
     return map.toSortedMap()
   }
 }

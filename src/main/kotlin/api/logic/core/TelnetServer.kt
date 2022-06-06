@@ -40,19 +40,19 @@ class TelnetServer : IModule {
 
   init {
     log(
-      logType = Log.LogType.SYS,
+      type = Log.Type.SYS,
       text = "TELNET SERVE ${telnetServer.localAddress}"
     )
     telnetServerJobGlobal = GlobalScope.launch {
       while (true) {
         log(
-          logType = Log.LogType.INFO,
+          type = Log.Type.INFO,
           text = "TELNET READY"
         )
         val socket = telnetServer.accept()
         launch {
           log(
-            logType = Log.LogType.COM,
+            type = Log.Type.COM,
             text = "TELNET OPEN ${socket.remoteAddress}",
             apiEndpoint = "TELNET ${socket.localAddress}"
           )

@@ -52,7 +52,7 @@ class UniChatroomController : IModule {
   }
 
   fun createChatroom(title: String): UniChatroom {
-    log(Log.LogType.COM, "Chatroom created")
+    log(Log.Type.COM, "Chatroom created")
     return UniChatroom(-1, title)
   }
 
@@ -67,8 +67,8 @@ class UniChatroomController : IModule {
     return uniChatroom
   }
 
-  suspend fun saveChatroom(uniChatroom: UniChatroom) {
-    save(uniChatroom)
+  suspend fun saveChatroom(uniChatroom: UniChatroom): Int {
+    return save(uniChatroom)
   }
 
   private fun createMember(username: String, role: String): UniMember {
@@ -78,7 +78,7 @@ class UniChatroomController : IModule {
   fun UniChatroom.addOrUpdateMember(
     username: String,
     role: UniRole? = null,
-    fcmToken: String? = null
+    fcmToken: String? = null,
   ): Boolean {
     if (username.isEmpty()) return false
     // Does the member already exist in the Clarifier Session?
@@ -157,7 +157,7 @@ class UniChatroomController : IModule {
    * Bans a member by putting him in the ban list
    */
   fun UniChatroom.banMember(
-    username: String
+    username: String,
   ): Boolean {
     if (username.isEmpty()) return false
     // Does the member already exist in the Clarifier's ban list'?
@@ -176,11 +176,11 @@ class UniChatroomController : IModule {
 
   suspend fun UniChatroom.addMessage(member: String, message: String): Boolean {
     if (!checkMessage(message)) {
-      log(Log.LogType.ERROR, "Message invalid (checkMessage)")
+      log(Log.Type.ERROR, "Message invalid (checkMessage)")
       return false
     }
     if (!this.checkIsMember(member) or this.checkIsMemberBanned(member)) {
-      log(Log.LogType.ERROR, "Message invalid (checkMember)")
+      log(Log.Type.ERROR, "Message invalid (checkMember)")
       return false
     }
     val uniMessage = UniMessage(
@@ -352,6 +352,19 @@ class UniChatroomController : IModule {
                 fcmTokens.add(member.firebaseCloudMessagingToken)
               }
               if (fcmTokens.isNotEmpty()) {
+                /*
+                 Build the notification
+                 If there's a parentGUID, then this chatroom must be a subchat
+                 */
+                lateinit var destination: String
+                lateinit var subchatGUID: String
+                if (uniChatroom.parentGUID.isNotEmpty()) {
+                  destination = uniChatroom.parentGUID
+                  subchatGUID = uniChatroomGUID
+                } else {
+                  destination = uniChatroomGUID
+                  subchatGUID = ""
+                }
                 val message = MulticastMessage.builder()
                   .setWebpushConfig(
                     WebpushConfig.builder()
@@ -363,10 +376,11 @@ class UniChatroomController : IModule {
                       )
                       .setFcmOptions(
                         WebpushFcmOptions
-                          .withLink("/apps/clarifier/wss/$uniChatroomGUID")
+                          .withLink("/apps/clarifier/wss/$destination")
                       )
-                      .putData("dlType", "router")
-                      .putData("dlDest", "/apps/clarifier/wss/$uniChatroomGUID")
+                      .putData("dlType", "clarifier")
+                      .putData("dlDest", "/apps/clarifier/wss/$destination")
+                      .putData("subchatGUID", subchatGUID)
                       .build()
                   )
                   .addAllTokens(fcmTokens)
@@ -409,11 +423,11 @@ class UniChatroomController : IModule {
       return
     }
     if (this.firebaseCloudMessagingToken.isEmpty()) {
-      log(Log.LogType.SYS, "User ${this.username} subscribed to FCM Push Notifications")
+      log(Log.Type.SYS, "User ${this.username} subscribed to FCM Push Notifications")
     } else {
       if (this.firebaseCloudMessagingToken != fcmToken) {
-        log(Log.LogType.SYS, "User ${this.username} updated FCM Push Notifications subscription")
-      }
+        log(Log.Type.SYS, "User ${this.username} updated FCM Push Notifications subscription")
+      } else return
     }
     this.firebaseCloudMessagingToken = fcmToken
   }
@@ -423,6 +437,6 @@ class UniChatroomController : IModule {
    */
   private fun UniMember.unsubscribeFCM() {
     this.firebaseCloudMessagingToken = ""
-    log(Log.LogType.SYS, "User ${this.username} unsubscribed from FCM Push Notifications")
+    log(Log.Type.SYS, "User ${this.username} unsubscribed from FCM Push Notifications")
   }
 }

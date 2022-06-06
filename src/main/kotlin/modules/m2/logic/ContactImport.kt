@@ -32,7 +32,7 @@ class ContactImport : IModule, Controller() {
     birthdayHeaderName: String,
     updateProgress: (Pair<Int, String>) -> Unit
   ) {
-    log(Log.LogType.INFO, "Data import start")
+    log(Log.Type.INFO, "Data import start")
     val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
     var counter = 0
     val timeInMillis = measureTimeMillis {
@@ -61,16 +61,16 @@ class ContactImport : IModule, Controller() {
           }
           updateProgress(Pair(counter, "Importing data..."))
           if (counter % 10_000 == 0) {
-            log(Log.LogType.INFO, "Data Insertion uID ${contact.uID}")
+            log(Log.Type.INFO, "Data Insertion uID ${contact.uID}")
             runBlocking { launch { contactIndexManager!!.writeIndexData() } }
           }
         }
       }
-      log(Log.LogType.INFO, "Data Insertion uID ${contactIndexManager!!.getLastUniqueID()}")
+      log(Log.Type.INFO, "Data Insertion uID ${contactIndexManager!!.getLastUniqueID()}")
       coroutineScope { launch { contactIndexManager!!.writeIndexData() } }
     }
     CwODB.closeRandomFileAccess(raf)
-    log(Log.LogType.INFO, "Data Import end (${timeInMillis / 1000} sec)")
+    log(Log.Type.INFO, "Data Import end (${timeInMillis / 1000} sec)")
   }
 
   private fun import(from: String, default: String = "?"): String {

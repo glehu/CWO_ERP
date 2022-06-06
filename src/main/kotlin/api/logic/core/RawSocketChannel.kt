@@ -51,7 +51,7 @@ class RawSocketChannel(
         outputChannel = socket.openWriteChannel(autoFlush = true)
         outputChannel.writeStringUtf8("HEY\r\n")
         log(
-          logType = Log.LogType.SYS,
+          type = Log.Type.SYS,
           text = "RAW SOCKET $remoteAddress"
         )
         while (connected) {
@@ -82,7 +82,7 @@ class RawSocketChannel(
       outputChannel.writeStringUtf8("$reason\r\n")
     }
     log(
-      logType = Log.LogType.SYS,
+      type = Log.Type.SYS,
       text = "TELNET CLOSE $remoteAddress REASON $reason"
     )
     connected = false
@@ -109,7 +109,7 @@ class RawSocketChannel(
   private fun indexSearch(args: List<String>) {
     // 0    1        2       3                     4          5
     // IXS <MODULE> <IX_NR> <ALL(FULL)/SPE(FULL)> <NAME/UID> <SEARCH_TEXT>
-    log(logType = Log.LogType.COM, text = args.toString(), apiEndpoint = "telnet ixs")
+    log(type = Log.Type.COM, text = args.toString(), apiEndpoint = "telnet ixs")
     val indexManager = when (args[1]) {
       "M1" -> discographyIndexManager!!
       "M2" -> contactIndexManager!!
@@ -143,7 +143,7 @@ class RawSocketChannel(
             outputChannel.writeStringUtf8("$jsonBody\r\n")
           }
         } catch (e: Exception) {
-          log(Log.LogType.ERROR, "IXLOOK-ERR-${e.message}", "telnet ixs")
+          log(Log.Type.ERROR, "IXLOOK-ERR-${e.message}", "telnet ixs")
         }
       }
     } else {

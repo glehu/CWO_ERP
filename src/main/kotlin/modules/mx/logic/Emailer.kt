@@ -33,7 +33,7 @@ class Emailer : IModule {
       username = iniVal.emailUsername,
       password = iniVal.emailPassword
     )
-    log(Log.LogType.SYS, "Email Server ${iniVal.emailUsername} created.")
+    log(Log.Type.SYS, "Email Server ${iniVal.emailUsername} created.")
   }
 
   fun sendEmailOverMailServer(
@@ -49,6 +49,6 @@ class Emailer : IModule {
         recipient = recipient
       )
     )
-    log(Log.LogType.COM, "Email $subject sent to $recipient")
+    log(Log.Type.COM, "Email $subject sent to $recipient")
   }
 }

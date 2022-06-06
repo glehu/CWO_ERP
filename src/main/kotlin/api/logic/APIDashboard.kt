@@ -41,7 +41,7 @@ class APIDashboard : IModule, Controller() {
   ): MutableMap<String, MutableMap<String, Int>> {
     counter = 0
     val inputStream = getInputStream()
-    log(Log.LogType.INFO, "Web module usage analysis start")
+    log(Log.Type.INFO, "Web module usage analysis start")
     inputStream.bufferedReader().forEachLine {
       updateProgress(Pair(++counter, "Mapping data..."))
       //Get Timestamp
@@ -88,7 +88,7 @@ class APIDashboard : IModule, Controller() {
     val datTmp = LocalDate.now()
     val today = "${datTmp.monthValue.toString().padStart(2, '0')}-" +
             datTmp.dayOfMonth.toString().padStart(2, '0')
-    log(Log.LogType.INFO, "Web module usage analysis start")
+    log(Log.Type.INFO, "Web module usage analysis start")
     inputStream.bufferedReader().forEachLine {
       updateProgress(Pair(++counter, "Mapping data..."))
       //Get Timestamp

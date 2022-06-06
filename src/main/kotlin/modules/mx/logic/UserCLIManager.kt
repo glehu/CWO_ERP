@@ -120,7 +120,7 @@ class UserCLIManager : IModule {
 
   private fun writeCredentials(credentials: Credentials) {
     getCredentialsFile().writeText(json(true).encodeToString(credentials))
-    log(Log.LogType.INFO, "Credentials updated")
+    log(Log.Type.INFO, "Credentials updated")
   }
 
   private fun getCredentialsFile() = File(Paths.get(getModulePath(module), "credentials.dat").toString())
@@ -135,14 +135,14 @@ class UserCLIManager : IModule {
     val user = credentials.credentials[username]
     if (user == null) {
       successful = false
-      if (doLog) log(Log.LogType.ERROR, "No such user found")
+      if (doLog) log(Log.Type.ERROR, "No such user found")
     } else {
       if (user.password == encryptAES(password)) {
         successful = true
         if (activeUser.username.isEmpty()) activeUser = user
-        if (doLog) log(Log.LogType.INFO, "User \"$username\" login successful")
+        if (doLog) log(Log.Type.INFO, "User \"$username\" login successful")
       } else {
-        if (doLog) log(Log.LogType.ERROR, "User \"$username\" login failed: wrong credentials")
+        if (doLog) log(Log.Type.ERROR, "User \"$username\" login failed: wrong credentials")
       }
     }
     return successful

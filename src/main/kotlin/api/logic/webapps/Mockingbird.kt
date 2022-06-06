@@ -91,7 +91,7 @@ class Mockingbird {
     }
 
     private suspend fun handleSubmitConfig(appCall: ApplicationCall) {
-      log(Log.LogType.COM, "Mock Config Submission", "/mockingbird/submit")
+      log(Log.Type.COM, "Mock Config Submission", "/mockingbird/submit")
       val config: WebMockingbirdConfig = appCall.receive()
       // Check Config
       // ...

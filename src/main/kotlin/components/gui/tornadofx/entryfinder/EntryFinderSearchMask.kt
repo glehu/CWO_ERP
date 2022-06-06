@@ -93,7 +93,7 @@ class EntryFinderSearchMask(
             origin.table.requestResize()
           }
         } catch (e: CancellationException) {
-          log(Log.LogType.ERROR, e.message ?: "LOOKUP ERR")
+          log(Log.Type.ERROR, e.message ?: "LOOKUP ERR")
         }
       }
     }

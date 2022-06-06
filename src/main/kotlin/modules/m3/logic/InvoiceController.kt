@@ -237,7 +237,7 @@ class InvoiceController : IController, Controller() {
         wizard.invoice.item.statusText = InvoiceCLIController().getStatusText(wizard.invoice.item.status)
         wizard.invoice.item.finished = true
         saveEntry()
-        log(Log.LogType.INFO, "Invoice ${wizard.invoice.item.uID} cancelled.")
+        log(Log.Type.INFO, "Invoice ${wizard.invoice.item.uID} cancelled.")
       }
     }
   }
@@ -247,7 +247,7 @@ class InvoiceController : IController, Controller() {
       wizard.invoice.item.status = 1
       wizard.invoice.item.statusText = InvoiceCLIController().getStatusText(wizard.invoice.item.status)
       saveEntry()
-      log(Log.LogType.INFO, "Invoice ${wizard.invoice.item.uID} commissioned.")
+      log(Log.Type.INFO, "Invoice ${wizard.invoice.item.uID} commissioned.")
       Emailer().sendEmail(
         subject = "Web Shop Order #${wizard.invoice.item.uID}",
         body = "Hey, we're confirming your order over ${wizard.invoice.item.grossTotal} Euro.\n" + "Order Number: #${wizard.invoice.item.uID}\n" + "Date: ${wizard.invoice.item.date}",

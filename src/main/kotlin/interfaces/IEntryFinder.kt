@@ -48,7 +48,7 @@ interface IEntryFinder : IModule {
       try {
         this@IEntryFinder.entriesFound.clear()
       } catch (e: Exception) {
-        log(Log.LogType.ERROR, e.message ?: "CLEAR ERR")
+        log(Log.Type.ERROR, e.message ?: "CLEAR ERR")
       }
       return
     }
@@ -65,7 +65,7 @@ interface IEntryFinder : IModule {
           this.entriesFound.add(decode(bytes))
           entriesFound++
         } catch (e: Exception) {
-          log(Log.LogType.ERROR, "IXLOOK-ERR-${e.message}")
+          log(Log.Type.ERROR, "IXLOOK-ERR-${e.message}")
         }
       }
     } else {

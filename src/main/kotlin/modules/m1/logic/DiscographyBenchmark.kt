@@ -25,7 +25,7 @@ class DiscographyBenchmark : IModule, Controller() {
   }
 
   suspend fun insertRandomEntries(amount: Int) {
-    log(Log.LogType.INFO, "Benchmark entry insertion start")
+    log(Log.Type.INFO, "Benchmark entry insertion start")
     val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
     val timeInMillis = measureTimeMillis {
       for (i in 1..amount) {
@@ -41,13 +41,13 @@ class DiscographyBenchmark : IModule, Controller() {
           indexWriteToDisk = false,
         )
         if (i % 10_000 == 0) {
-          log(Log.LogType.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
+          log(Log.Type.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
           coroutineScope { launch { discographyIndexManager!!.writeIndexData() } }
         }
       }
     }
     CwODB.closeRandomFileAccess(raf)
-    log(Log.LogType.INFO, "Benchmark entry insertion end (${timeInMillis / 1000} sec)")
+    log(Log.Type.INFO, "Benchmark entry insertion end (${timeInMillis / 1000} sec)")
   }
 
   private fun getRandomGenre(): String {

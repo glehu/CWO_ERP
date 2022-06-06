@@ -13,7 +13,7 @@ data class LogMessage(
   @SerialName("md")
   val module: String,
   @SerialName("tp")
-  val type: Log.LogType,
+  val type: Log.Type,
   @SerialName("tx")
   val text: String,
   @SerialName("cl")

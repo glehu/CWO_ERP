@@ -186,7 +186,7 @@ fun exitMain() {
   UserCLIManager().logout(activeUser.username, activeUser.password)
   if (!isClientGlobal) {
     if (serverJobGlobal != null && serverJobGlobal!!.isActive) {
-      Log.log(Log.LogType.SYS, "Shutting down server...")
+      Log.log(Log.Type.SYS, "Shutting down server...")
       try {
         server.serverEngine.stop(100L, 100L)
       } catch (_: IOException) {
@@ -195,7 +195,7 @@ fun exitMain() {
       }
     }
     if (telnetServerJobGlobal != null && telnetServerJobGlobal!!.isActive) {
-      Log.log(Log.LogType.SYS, "Shutting down telnet server...")
+      Log.log(Log.Type.SYS, "Shutting down telnet server...")
       try {
         telnetServer.telnetServer.close()
       } catch (_: IOException) {
@@ -205,7 +205,7 @@ fun exitMain() {
     }
   }
   if (taskJobGlobal != null && taskJobGlobal!!.isActive) {
-    Log.log(Log.LogType.SYS, "Shutting down ticker...")
+    Log.log(Log.Type.SYS, "Shutting down ticker...")
     taskJobGlobal!!.cancel()
   }
 }

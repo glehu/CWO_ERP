@@ -251,10 +251,10 @@ interface IModule {
   /**
    * Displays text on the console and writes it to the module's log file.
    */
-  fun log(logType: Log.LogType, text: String, apiEndpoint: String = "", moduleAlt: String? = null) {
+  fun log(type: Log.Type, text: String, apiEndpoint: String = "", moduleAlt: String? = null) {
     Log.log(
       module = moduleAlt ?: module,
-      type = logType,
+      type = type,
       text = text,
       caller = moduleNameLong,
       apiEndpoint = apiEndpoint
@@ -409,7 +409,7 @@ interface IModule {
         try {
           entryOut(decode(bytes))
         } catch (e: Exception) {
-          log(Log.LogType.ERROR, "IXLOOK-ERR-${e.message}")
+          log(Log.Type.ERROR, "IXLOOK-ERR-${e.message}")
         }
       }
     } else {

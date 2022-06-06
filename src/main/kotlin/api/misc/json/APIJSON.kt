@@ -293,3 +293,15 @@ data class UniChatroomImage(
 data class UniChatroomMessages(
   var messages: ArrayList<String>
 )
+
+@Serializable
+data class SnippetPayload(
+  val type: String,
+  val payload: String = ""
+)
+
+@Serializable
+data class SnippetResponse(
+  val httpCode: Int,
+  val guid: String
+)

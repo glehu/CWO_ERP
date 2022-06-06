@@ -31,7 +31,7 @@ class ContactAnalytics : IModule, Controller() {
     var contactCount = 0.0
     var amountCount = 0
     var city: String
-    log(Log.LogType.INFO, "City distribution analysis start")
+    log(Log.Type.INFO, "City distribution analysis start")
     val timeInMS = measureTimeMillis {
       CwODB.getEntriesFromSearchString(
         searchText = "",
@@ -77,7 +77,7 @@ class ContactAnalytics : IModule, Controller() {
       }
       map["[amount]"] = contactCount
     }
-    log(Log.LogType.INFO, "City distribution analysis end (${timeInMS / 1000} sec)")
+    log(Log.Type.INFO, "City distribution analysis end (${timeInMS / 1000} sec)")
     return map.toSortedMap()
   }
 }

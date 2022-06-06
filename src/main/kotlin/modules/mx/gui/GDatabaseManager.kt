@@ -113,12 +113,12 @@ class GDatabaseManager : View("Databases") {
                   indexManager.setLastChangeData(-1, activeUser.username)
                   updateDatabases()
                   indexManager.log(
-                    logType = Log.LogType.INFO,
+                    type = Log.Type.INFO,
                     text = "Database $ixModule reset",
                     moduleAlt = ixModule
                   )
                   indexManager.log(
-                    logType = Log.LogType.INFO,
+                    type = Log.Type.INFO,
                     text = "Database $ixModule reset",
                     moduleAlt = "MX"
                   )

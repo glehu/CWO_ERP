@@ -10,6 +10,7 @@ import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.ListDeltaJson
 import api.misc.json.PairIntJson
 import api.misc.json.SettingsRequestJson
+import api.misc.json.SnippetPayload
 import api.misc.json.SpotifyAuthCallbackJson
 import api.misc.json.TwoIntOneDoubleJson
 import api.misc.json.UniChatroomAddMember
@@ -109,6 +110,9 @@ class Server : IModule {
   val serverEngine = embeddedServer(Netty, environment)
 
   fun Application.module() {
+    /*
+     * #### Plugins ####
+     */
     install(HttpsRedirect) {
       sslPort = 443
       permanentRedirect = true
@@ -149,7 +153,6 @@ class Server : IModule {
       anyHost()
       header(HttpHeaders.ContentType)
       header(HttpHeaders.Authorization)
-
     }
     install(WebSockets) {
       pingPeriod = Duration.ofSeconds(5)
@@ -158,25 +161,30 @@ class Server : IModule {
       masking = false
     }
     install(DoubleReceive)
+    /*
+     * #### Routing ####
+     */
     routing {
       route("/") {
+        get {
+          call.respondRedirect("https://wikiric.netlify.app/")
+        }
+      }
+      route("/status") {
         get {
           call.respondFile(File(Paths.get(dataPath, "data", "web", "home.html").toString()))
         }
       }
-      route("/web") {
-        get {
-          call.respondRedirect("https://orochi.netlify.app/")
-        }
-      }
       route("/mockingbird") {
-        // Mock Requests
         post {
           Mockingbird.handleRequest(call)
         }
       }
       register()
       spotifyAuthCallback()
+
+      // SnippetBase e
+      getSnippetImage()
 
       /*
        * Clarifier WebSocket Session
@@ -300,6 +308,11 @@ class Server : IModule {
           setFirebaseCloudMessagingSubscription()
 
           /*
+           * M6 Endpoints (SnippetBase)
+           */
+          saveSnippetImage()
+
+          /*
            * Web Solution Endpoints
            */
           addWebshopOrder()
@@ -338,7 +351,7 @@ class Server : IModule {
         online = false
       )
       log(
-        Log.LogType.COM,
+        Log.Type.COM,
         "User ${call.principal<UserIdPrincipal>()?.name} logout",
         call.request.uri
       )
@@ -351,7 +364,7 @@ class Server : IModule {
   private fun Route.login() {
     get("/login") {
       log(
-        Log.LogType.COM,
+        Log.Type.COM,
         "User ${call.principal<UserIdPrincipal>()?.name} login",
         call.request.uri
       )
@@ -377,7 +390,7 @@ class Server : IModule {
       val code: String? = call.request.queryParameters["code"]
       if (code != null) {
         call.respondFile(File(Paths.get(dataPath, "data", "web", "spotifyCallback.html").toString()))
-        log(Log.LogType.COM, "Spotify Auth Callback received")
+        log(Log.Type.COM, "Spotify Auth Callback received")
         val spotifyAPI = GSpotify()
         spotifyAPI.authCodeProperty.value = code
         spotifyAPI.showTokenData(
@@ -665,7 +678,7 @@ class Server : IModule {
   private fun Route.createUniChatroom() {
     post("m5/createchatroom") {
       val config: UniChatroomCreateChatroom = Json.decodeFromString(call.receive())
-      call.respond(ServerController.createUniChatroom(config, ServerController.getJWTUsername(call)))
+      ServerController.createUniChatroom(call, config, ServerController.getJWTUsername(call))
     }
   }
 
@@ -743,7 +756,16 @@ class Server : IModule {
     }
   }
 
-  private fun Route.createResource() {
+  private fun Route.saveSnippetImage() {
+    post("m6/create") {
+      val payload: SnippetPayload = Json.decodeFromString(call.receive())
+      ServerController.createSnippetImage(call, payload)
+    }
+  }
 
+  private fun Route.getSnippetImage() {
+    get("m6/get/{snippetGUID}") {
+      ServerController.getSnippetImage(call)
+    }
   }
 }

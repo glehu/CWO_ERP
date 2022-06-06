@@ -14,7 +14,7 @@ import java.io.File
 import java.nio.file.Paths
 
 class Log {
-  enum class LogType {
+  enum class Type {
     INFO, WARNING, ERROR, COM, SYS
   }
 
@@ -35,7 +35,7 @@ class Log {
      */
     fun log(
       module: String,
-      type: LogType,
+      type: Type,
       text: String,
       caller: String,
       write: Boolean = true,
@@ -72,7 +72,7 @@ class Log {
         if (createIfMissing) {
           logFile.createNewFile()
           if (logFile.isFile) {
-            if (log) log(LogType.INFO, "Log file created: $module")
+            if (log) log(Type.INFO, "Log file created: $module")
             return true
           }
         } else return false
@@ -93,7 +93,7 @@ class Log {
           if (!prompt.confirmed.value) return
         }
         getLogFile(module).delete()
-        log(LogType.INFO, "Log file cleared: $module")
+        log(Type.INFO, "Log file cleared: $module")
         checkLogFile(module, createIfMissing = true, log = false)
       }
     }

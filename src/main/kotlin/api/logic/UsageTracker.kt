@@ -70,7 +70,7 @@ class UsageTracker {
     if (!fileToCheck.isFile) {
       fileToCheck.createNewFile()
       if (fileToCheck.isFile) {
-        Log.log(Log.LogType.SYS, "Usage Tracker file created.")
+        Log.log(Log.Type.SYS, "Usage Tracker file created.")
         return true
       }
     } else return true

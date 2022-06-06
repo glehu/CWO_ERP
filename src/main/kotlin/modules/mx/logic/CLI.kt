@@ -56,28 +56,28 @@ class CLI : IModule {
     cliClearTerminal()
     cliMode = true
     cliCheckIni()
-    log(Log.LogType.INFO, "BOOTING CWO ERP CLI MODE")
+    log(Log.Type.INFO, "BOOTING CWO ERP CLI MODE")
     if (args.contains("-env")) {
-      log(Log.LogType.SYS, "LOADING ENVIRONMENT VARIABLES")
+      log(Log.Type.SYS, "LOADING ENVIRONMENT VARIABLES")
       // Get User and Password from the system's environment variables
       val envUser: String = System.getenv("CWOERPUSER") ?: "?"
       val envPass: String = System.getenv("CWOERPPASS") ?: "?"
       if (envUser != "?" && envPass != "?") {
         // Attempt to log in the user
-        log(Log.LogType.SYS, "LOGGING IN")
+        log(Log.Type.SYS, "LOGGING IN")
         if (!UserCLIManager().login(envUser, envPass, doLog = true)) {
-          log(Log.LogType.ERROR, "TERMINATED PROCESS REASON wrong-credentials")
+          log(Log.Type.ERROR, "TERMINATED PROCESS REASON wrong-credentials")
           cliExit()
         }
       } else {
         log(
-          Log.LogType.WARNING,
+          Log.Type.WARNING,
           "REMOVED FLAG -env REASON incomplete-env-variables HELP check CWOERPUSER and CWOERPPASS"
         )
       }
     }
     if (args.contains("-server")) {
-      log(Log.LogType.SYS, "STARTING SERVER MODE")
+      log(Log.Type.SYS, "STARTING SERVER MODE")
       try {
         cliQuickStart()
         val terminated = false
@@ -85,7 +85,7 @@ class CLI : IModule {
           delay(1000)
         }
       } catch (e: Exception) {
-        log(Log.LogType.ERROR, "ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
+        log(Log.Type.ERROR, "ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
         terminal.println(
           red("ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
         )
@@ -248,7 +248,7 @@ class CLI : IModule {
 
   private fun cliExit(clearTerminal: Boolean = true) {
     if (clearTerminal) cliClearTerminal()
-    log(Log.LogType.SYS, "Terminating System...")
+    log(Log.Type.SYS, "Terminating System...")
     exitMain()
     terminal.println(
       "${gray("CWO:>")} ${green("System successfully terminated.")}"

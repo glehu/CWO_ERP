@@ -41,7 +41,7 @@ class DiscographyImport : IModule, Controller() {
     entriesAdded: Int = 0,
     updateProgress: (Pair<Int, String>) -> Unit
   ) {
-    log(Log.LogType.INFO, "Spotify album list import start")
+    log(Log.Type.INFO, "Spotify album list import start")
 
     var albumEntry: Song
     val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
@@ -66,7 +66,7 @@ class DiscographyImport : IModule, Controller() {
     }
     CwODB.closeRandomFileAccess(raf)
     CwODB.closeRandomFileAccess(m2raf)
-    log(Log.LogType.INFO, "Spotify album list import end (${timeInMillis / 1000} sec)")
+    log(Log.Type.INFO, "Spotify album list import end (${timeInMillis / 1000} sec)")
   }
 
   @ExperimentalSerializationApi

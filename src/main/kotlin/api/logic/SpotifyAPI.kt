@@ -36,7 +36,7 @@ class SpotifyAPI : IModule, IAPI {
     runBlocking {
       launch {
         userData = client.get("https://api.spotify.com/v1/me")
-        log(Log.LogType.COM, "Spotify account data received")
+        log(Log.Type.COM, "Spotify account data received")
         controller.saveUserData(userData)
         client.close()
       }
@@ -56,7 +56,7 @@ class SpotifyAPI : IModule, IAPI {
           while (!finished) {
             albumList = client.get(url)
             albumListTotal.add(albumList)
-            log(Log.LogType.COM, "Spotify album list received")
+            log(Log.Type.COM, "Spotify album list received")
             if (albumList.next == null) {
               finished = true
             } else {
@@ -76,7 +76,7 @@ class SpotifyAPI : IModule, IAPI {
     runBlocking {
       launch {
         artistData = client.get("https://api.spotify.com/v1/artists/$artistSpotifyID")
-        log(Log.LogType.COM, "Spotify artist data received")
+        log(Log.Type.COM, "Spotify artist data received")
         client.close()
       }
     }
@@ -94,7 +94,7 @@ class SpotifyAPI : IModule, IAPI {
     runBlocking {
       launch {
         artistDataList = client.get("https://api.spotify.com/v1/artists/${separatedIDs}")
-        log(Log.LogType.COM, "Spotify artist data received")
+        log(Log.Type.COM, "Spotify artist data received")
         client.close()
       }
     }
@@ -113,7 +113,7 @@ class SpotifyAPI : IModule, IAPI {
           while (!finished) {
             songList = client.get(url)
             songListTotal.add(songList)
-            log(Log.LogType.COM, "Spotify song list received")
+            log(Log.Type.COM, "Spotify song list received")
             if (songList.next == null) {
               finished = true
             } else {
