@@ -19,7 +19,7 @@ class ContactAnalytics : IModule {
     return contactIndexManager!!
   }
 
-  fun getChartDataOnCityDistribution(
+  suspend fun getChartDataOnCityDistribution(
     indexManager: ContactIndexManager,
     amount: Int = -1,
     updateProgress: (Pair<Int, String>) -> Unit

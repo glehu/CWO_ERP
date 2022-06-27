@@ -33,10 +33,9 @@ class Emailer : IModule {
       username = iniVal.emailUsername,
       password = iniVal.emailPassword
     )
-    log(Log.Type.SYS, "Email Server ${iniVal.emailUsername} created.")
   }
 
-  fun sendEmailOverMailServer(
+  suspend fun sendEmailOverMailServer(
     subject: String,
     body: String,
     recipient: String

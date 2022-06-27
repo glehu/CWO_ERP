@@ -11,12 +11,14 @@ import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import io.ktor.server.websocket.*
 import io.ktor.util.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -33,7 +35,6 @@ import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
 import modules.mx.uniChatroomIndexManager
 import java.util.*
-import java.util.concurrent.atomic.AtomicInteger
 
 @DelicateCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -53,7 +54,7 @@ class UniChatroomController : IModule {
     val mutexMessages = Mutex()
   }
 
-  fun createChatroom(title: String): UniChatroom {
+  suspend fun createChatroom(title: String): UniChatroom {
     log(Log.Type.COM, "Chatroom created")
     return UniChatroom(-1, title)
   }
@@ -77,7 +78,7 @@ class UniChatroomController : IModule {
     return UniMember(username, arrayListOf(role))
   }
 
-  fun UniChatroom.addOrUpdateMember(
+  suspend fun UniChatroom.addOrUpdateMember(
     username: String,
     role: UniRole? = null,
     fcmToken: String? = null,
@@ -219,10 +220,9 @@ class UniChatroomController : IModule {
 
   class Connection(val session: DefaultWebSocketSession, val email: String, val username: String) {
     companion object {
-      var lastId = AtomicInteger(0)
+      // var lastId = AtomicInteger(0)
     }
-
-    val id = "u${lastId.getAndIncrement()}"
+    // val id = "u${lastId.getAndIncrement()}"
   }
 
   class ClarifierSession(val chatroomGUID: String) {
@@ -245,12 +245,10 @@ class UniChatroomController : IModule {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
-    var authSuccess = false
-    var terminated = false
     var email = ""
     var username = ""
     // Wait for bearer token then authorize with provided JWT Token
-    while (!authSuccess || terminated) {
+    try {
       for (frame in incoming) {
         when (frame) {
           is Frame.Text -> {
@@ -264,20 +262,26 @@ class UniChatroomController : IModule {
             if (
               UserCLIManager.checkModuleRight(email = email, module = "M5")
             ) {
-              authSuccess = true
               username = UserCLIManager.getUserFromEmail(email)!!.username
               break
             } else {
               this.close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Unauthorized"))
-              terminated = true
-              break
+              return
             }
           }
           else -> {}
         }
       }
+    } catch (e: ClosedReceiveChannelException) {
+      println("onClose ${closeReason.await()}")
+    } catch (e: Throwable) {
+      println("onError ${closeReason.await()}")
+      e.printStackTrace()
     }
-    if (!authSuccess) return
+    if (username.isEmpty()) {
+      this.close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Unauthorized"))
+      return
+    }
     // Does this Clarifier Session exist?
     var found = false
     var clarifierSession: ClarifierSession? = null
@@ -353,6 +357,7 @@ class UniChatroomController : IModule {
           }
         }
         is Frame.Close -> {
+          log(Log.Type.COM, "WS CLOSE FRAME RECEIVED ${call.request.origin.remoteHost}")
           clarifierSession!!.connections.remove(thisConnection)
         }
         else -> {}
@@ -494,7 +499,7 @@ class UniChatroomController : IModule {
   /**
    * Adds a Firebase Cloud Messaging Token to this member
    */
-  private fun UniMember.subscribeFCM(fcmToken: String) {
+  private suspend fun UniMember.subscribeFCM(fcmToken: String) {
     if (fcmToken.isEmpty()) {
       this.unsubscribeFCM()
       return
@@ -512,7 +517,7 @@ class UniChatroomController : IModule {
   /**
    * Removes the Firebase Cloud Messaging Token from this member
    */
-  private fun UniMember.unsubscribeFCM() {
+  private suspend fun UniMember.unsubscribeFCM() {
     this.firebaseCloudMessagingToken = ""
     log(Log.Type.SYS, "User ${this.username} unsubscribed from FCM Push Notifications")
   }

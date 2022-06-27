@@ -4,6 +4,7 @@ import api.misc.json.EntryBytesListJson
 import api.misc.json.EntryListJson
 import db.CwODB
 import io.ktor.util.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
@@ -201,7 +202,7 @@ interface IModule {
   /**
    * Displays text on the console and writes it to the module's log file.
    */
-  fun log(type: Log.Type, text: String, apiEndpoint: String = "", moduleAlt: String? = null) {
+  suspend fun log(type: Log.Type, text: String, apiEndpoint: String = "", moduleAlt: String? = null) {
     Log.log(
       module = moduleAlt ?: module,
       type = type,
@@ -275,7 +276,7 @@ interface IModule {
     return ok
   }
 
-  fun sendEmail(
+  suspend fun sendEmail(
     subject: String,
     body: String,
     recipient: String
@@ -314,7 +315,9 @@ interface IModule {
       try {
         entryOut(decode(bytes))
       } catch (e: Exception) {
-        log(Log.Type.ERROR, "IXLOOK-ERR-${e.message}")
+        runBlocking {
+          log(Log.Type.ERROR, "IXLOOK-ERR-${e.message}")
+        }
       }
     }
   }

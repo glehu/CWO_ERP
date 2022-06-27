@@ -55,7 +55,7 @@ suspend fun main(args: Array<String>) {
 
 @InternalAPI
 @ExperimentalSerializationApi
-fun checkInstallation() {
+suspend fun checkInstallation() {
   //Search for the .ini file to set up the software
   if (!getIniFile().isFile) {
     //TODO
@@ -68,7 +68,7 @@ fun checkInstallation() {
 
 @ExperimentalSerializationApi
 @InternalAPI
-fun checkLogFiles() {
+suspend fun checkLogFiles() {
   Log.checkLogFile("MX", true)
   Log.checkLogFile("M1", true)
   Log.checkLogFile("M2", true)
@@ -161,7 +161,7 @@ fun loadIndex(module: String = "") {
 @DelicateCoroutinesApi
 @ExperimentalSerializationApi
 @InternalAPI
-fun exitMain() {
+suspend fun exitMain() {
   if (serverJobGlobal != null && serverJobGlobal!!.isActive) {
     Log.log(Log.Type.SYS, "Shutting down server...")
     try {

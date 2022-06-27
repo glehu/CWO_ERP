@@ -24,7 +24,7 @@ class DiscographyAnalytics : IModule {
   }
 
   @ExperimentalSerializationApi
-  fun getDistributionChartData(
+  suspend fun getDistributionChartData(
     distType: DistType,
     updateProgress: (Pair<Int, String>) -> Unit
   ): MutableMap<String, Double> {

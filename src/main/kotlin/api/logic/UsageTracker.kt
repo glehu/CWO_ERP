@@ -5,8 +5,11 @@ import api.misc.json.UsageTrackerStats
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -25,7 +28,7 @@ class UsageTracker {
   private val mutex = Mutex()
 
   init {
-    readUsageStats()
+    runBlocking { readUsageStats() }
   }
 
   suspend fun writeUsageTrackingData(appCall: ApplicationCall) {
@@ -35,7 +38,7 @@ class UsageTracker {
     mutex.withLock { writeUsageStats() }
   }
 
-  private fun readUsageStats() {
+  private suspend fun readUsageStats() {
     val usageStatsFile = getUsageStatsFile()
     val statsTxt = usageStatsFile.readText()
     if (statsTxt.isNotEmpty()) {
@@ -44,16 +47,16 @@ class UsageTracker {
     }
   }
 
-  private fun writeUsageStats() {
+  private suspend fun writeUsageStats() {
     getUsageStatsFile().writeText(Json.encodeToString(UsageTrackerStats(totalAPICalls.incrementAndGet())))
   }
 
-  fun getUsageLogFile(check: Boolean = true): File {
+  private suspend fun getUsageLogFile(check: Boolean = true): File {
     if (check) checkFile(getUsageLogFile(false))
     return File(Paths.get(getPath(), "utrLog.txt").toString())
   }
 
-  private fun getUsageStatsFile(check: Boolean = true): File {
+  private suspend fun getUsageStatsFile(check: Boolean = true): File {
     if (check) checkFile(getUsageStatsFile(false))
     return File(Paths.get(getPath(), "utrStats.txt").toString())
   }
@@ -62,13 +65,15 @@ class UsageTracker {
     return getModulePath("MX")
   }
 
-  private fun checkFile(fileToCheck: File): Boolean {
+  private suspend fun checkFile(fileToCheck: File): Boolean {
     val usageFilePath = File(getPath())
     if (!usageFilePath.isDirectory) {
       usageFilePath.mkdirs()
     }
     if (!fileToCheck.isFile) {
-      fileToCheck.createNewFile()
+      withContext(Dispatchers.IO) {
+        fileToCheck.createNewFile()
+      }
       if (fileToCheck.isFile) {
         Log.log(Log.Type.SYS, "Usage Tracker file created.")
         return true

@@ -3,6 +3,10 @@ package modules.mx.logic
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -25,13 +29,15 @@ class Log {
       return null
     }
 
+    private val mutex = Mutex()
+
     private fun getLogPath(module: String) = Paths.get(getModulePath(module), "log").toString()
     private fun getLogFile(module: String) = File(Paths.get(getLogPath(module), "${module}_log.txt").toString())
 
     /**
      * Writes a log message to the disk.
      */
-    fun log(
+    suspend fun log(
       module: String,
       type: Type,
       text: String,
@@ -50,13 +56,17 @@ class Log {
         )
       ) + "\n"
       print(logMessageSerialized)
-      if (write) getLogFile(module).appendText(logMessageSerialized)
+      if (write) {
+        mutex.withLock {
+          getLogFile(module).appendText(logMessageSerialized)
+        }
+      }
     }
 
     /**
      * Checks a log file and creates it if it's missing and createIfMissing is set to true.
      */
-    fun checkLogFile(module: String, createIfMissing: Boolean, log: Boolean = true): Boolean {
+    suspend fun checkLogFile(module: String, createIfMissing: Boolean, log: Boolean = true): Boolean {
       val logPath = File(getLogPath(module))
       if (!logPath.isDirectory) {
         if (createIfMissing) {
@@ -66,7 +76,9 @@ class Log {
       val logFile = getLogFile(module)
       if (!logFile.isFile) {
         if (createIfMissing) {
-          logFile.createNewFile()
+          withContext(Dispatchers.IO) {
+            logFile.createNewFile()
+          }
           if (logFile.isFile) {
             if (log) log(Type.INFO, "Log file created: $module")
             return true
@@ -74,28 +86,6 @@ class Log {
         } else return false
       } else return true
       return false //Default no
-    }
-
-    /**
-     * Deletes a single log file of a provided module.
-     */
-    private fun deleteLogFile(module: String) {
-      if (checkLogFile(module, false)) {
-        getLogFile(module).delete()
-        log(Type.INFO, "Log file cleared: $module")
-        checkLogFile(module, createIfMissing = true, log = false)
-      }
-    }
-
-    /**
-     * Deletes all log files across all modules.
-     */
-    fun deleteLogFiles() {
-      for (moduleNr in 1..99) {
-        deleteLogFile("M$moduleNr")
-      }
-      deleteLogFile("M4SP")
-      deleteLogFile("MX")
     }
   }
 }
