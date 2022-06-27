@@ -6,7 +6,7 @@ plugins {
   application
 }
 group = "me.duffy"
-version = "1.2.8-Clarifier"
+version = "1.4.0"
 
 repositories {
   mavenCentral()
@@ -24,7 +24,7 @@ repositories {
 }
 
 application {
-  mainClassName = "modules.mx.logic.StartKt"
+  mainClass.set("modules.mx.logic.StartKt")
 }
 
 dependencies {
