@@ -8,12 +8,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.mx.discographyIndexManager
 import modules.mx.logic.Log
-import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
 @InternalAPI
 @ExperimentalSerializationApi
-class DiscographyAnalytics : IModule, Controller() {
+class DiscographyAnalytics : IModule {
   override val moduleNameLong = "DiscographyAnalytics"
   override val module = "M1"
   override fun getIndexManager(): IIndexManager {

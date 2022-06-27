@@ -1,6 +1,7 @@
 package modules.m5.logic
 
 import api.logic.core.ServerController
+import api.misc.json.UniChatroomEditMessage
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.MulticastMessage
 import com.google.firebase.messaging.WebpushConfig
@@ -8,10 +9,10 @@ import com.google.firebase.messaging.WebpushFcmOptions
 import com.google.firebase.messaging.WebpushNotification
 import interfaces.IIndexManager
 import interfaces.IModule
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.http.cio.websocket.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
+import io.ktor.server.websocket.*
 import io.ktor.util.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -48,7 +49,8 @@ class UniChatroomController : IModule {
   companion object {
     val uniMessagesController = UniMessagesController()
     val clarifierSessions: MutableSet<ClarifierSession> = Collections.synchronizedSet(LinkedHashSet())
-    val mutex = Mutex()
+    val mutexChatroom = Mutex()
+    val mutexMessages = Mutex()
   }
 
   fun createChatroom(title: String): UniChatroom {
@@ -174,7 +176,7 @@ class UniChatroomController : IModule {
     } else false
   }
 
-  suspend fun UniChatroom.addMessage(member: String, message: String): Boolean {
+  suspend fun UniChatroom.addMessage(member: String, message: String, gUID: String = ""): Boolean {
     if (!checkMessage(message)) {
       log(Log.Type.ERROR, "Message invalid (checkMessage)")
       return false
@@ -188,6 +190,7 @@ class UniChatroomController : IModule {
       from = member,
       message = message
     )
+    if (gUID.isNotEmpty()) uniMessage.gUID = gUID
     uniMessagesController.save(uniMessage)
     return true
   }
@@ -214,7 +217,7 @@ class UniChatroomController : IModule {
     return isBanned
   }
 
-  class Connection(val session: DefaultWebSocketSession, val username: String) {
+  class Connection(val session: DefaultWebSocketSession, val email: String, val username: String) {
     companion object {
       var lastId = AtomicInteger(0)
     }
@@ -244,6 +247,7 @@ class UniChatroomController : IModule {
     }
     var authSuccess = false
     var terminated = false
+    var email = ""
     var username = ""
     // Wait for bearer token then authorize with provided JWT Token
     while (!authSuccess || terminated) {
@@ -251,20 +255,17 @@ class UniChatroomController : IModule {
         when (frame) {
           is Frame.Text -> {
             // Retrieve username from validated token
-            username = ServerController
+            email = ServerController
               .buildJWTVerifier(ServerController.iniVal)
               .verify(frame.readText())
               .getClaim("username")
               .asString()
             // Further, check user rights
             if (
-              UserCLIManager()
-                .checkModuleRight(
-                  username = username,
-                  module = "M5"
-                )
+              UserCLIManager.checkModuleRight(email = email, module = "M5")
             ) {
               authSuccess = true
+              username = UserCLIManager.getUserFromEmail(email)!!.username
               break
             } else {
               this.close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Unauthorized"))
@@ -292,17 +293,19 @@ class UniChatroomController : IModule {
       clarifierSessions.add(clarifierSession!!)
     }
     // Add this new WebSocket connection
-    val thisConnection = Connection(this, username)
+    val thisConnection = Connection(this, email, username)
     clarifierSession!!.connections += thisConnection
     // Retrieve Clarifier Session
     val uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, username)
     if (!uniChatroom.checkIsMember(thisConnection.username)) {
       // Notify members of new registration
+      val serverNotification =
+        "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!"
       val msg = Json.encodeToString(
         UniMessage(
           uniChatroomUID = uniChatroom.uID,
           from = "_server",
-          message = "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!"
+          message = serverNotification
         )
       )
       clarifierSession!!.connections.forEach {
@@ -312,83 +315,41 @@ class UniChatroomController : IModule {
       }
       // Register new member
       uniChatroom.addOrUpdateMember(username, UniRole("Member"))
-      mutex.withLock {
+      mutexMessages.withLock {
         uniChatroom.addMessage(
           member = "_server",
-          message = "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!"
+          message = serverNotification
         )
+      }
+      mutexChatroom.withLock {
         saveChatroom(uniChatroom)
       }
     }
     // *****************************************
     // Wait for new messages and distribute them
     // *****************************************
-    var uniMessage: UniMessage
     for (frame in incoming) {
       when (frame) {
         is Frame.Text -> {
           // Add new message to the chatroom
           launch {
-            uniMessage = UniMessage(
-              uniChatroomUID = uniChatroom.uID,
-              from = thisConnection.username,
-              message = frame.readText()
-            )
-            val msg = Json.encodeToString(uniMessage)
-            clarifierSession!!.connections.forEach {
-              if (!it.session.outgoing.isClosedForSend) {
-                it.session.send(msg)
-              } else {
-                clarifierSession!!.connectionsToDelete.add(it)
-              }
+            val frameText = frame.readText()
+            // What's happening?
+            val prefix = "[c:EDIT<JSON]"
+            if (frameText.startsWith(prefix)) {
+              clarifierSession!!.connectionsToDelete.addAll(
+                handleReceivedEditMessage(
+                  frameText, prefix, thisConnection, clarifierSession!!
+                ).connectionsToDelete
+              )
+            } else {
+              clarifierSession!!.connectionsToDelete.addAll(
+                handleReceivedMessage(
+                  frameText, uniChatroom, thisConnection, clarifierSession!!
+                ).connectionsToDelete
+              )
             }
-            mutex.withLock {
-              uniChatroom.addMessage(thisConnection.username, uniMessage.message)
-              // Send notification to all members
-              val fcmTokens: ArrayList<String> = arrayListOf()
-              for (memberJson in uniChatroom.members) {
-                val member: UniMember = Json.decodeFromString(memberJson)
-                if (member.firebaseCloudMessagingToken.isEmpty()) continue
-                fcmTokens.add(member.firebaseCloudMessagingToken)
-              }
-              if (fcmTokens.isNotEmpty()) {
-                /*
-                 Build the notification
-                 If there's a parentGUID, then this chatroom must be a subchat
-                 */
-                lateinit var destination: String
-                lateinit var subchatGUID: String
-                if (uniChatroom.parentGUID.isNotEmpty()) {
-                  destination = uniChatroom.parentGUID
-                  subchatGUID = uniChatroomGUID
-                } else {
-                  destination = uniChatroomGUID
-                  subchatGUID = ""
-                }
-                val message = MulticastMessage.builder()
-                  .setWebpushConfig(
-                    WebpushConfig.builder()
-                      .setNotification(
-                        WebpushNotification(
-                          uniChatroom.title,
-                          "${thisConnection.username} has sent a message."
-                        )
-                      )
-                      .setFcmOptions(
-                        WebpushFcmOptions
-                          .withLink("/apps/clarifier/wss/$destination")
-                      )
-                      .putData("dlType", "clarifier")
-                      .putData("dlDest", "/apps/clarifier/wss/$destination")
-                      .putData("subchatGUID", subchatGUID)
-                      .build()
-                  )
-                  .addAllTokens(fcmTokens)
-                  .build()
-                FirebaseMessaging.getInstance().sendMulticast(message)
-              }
-              clarifierSession!!.cleanup()
-            }
+            clarifierSession!!.cleanup()
           }
         }
         is Frame.Close -> {
@@ -397,6 +358,122 @@ class UniChatroomController : IModule {
         else -> {}
       }
     }
+  }
+
+  private suspend fun handleReceivedEditMessage(
+    frameText: String,
+    prefix: String,
+    thisConnection: Connection,
+    clarifierSession: ClarifierSession
+  ): ClarifierSession {
+    val configJson = frameText.substring(prefix.length)
+    // Get payload
+    val editMessageConfig: UniChatroomEditMessage =
+      Json.decodeFromString(configJson)
+    // Valid?
+    if (editMessageConfig.uniMessageGUID.isEmpty()) return clarifierSession
+    // Edit message from database
+    with(UniMessagesController()) {
+      var message: UniMessage? = null
+      var chatroomUID = -1
+      mutexMessages.withLock {
+        getEntriesFromIndexSearch(editMessageConfig.uniMessageGUID, 2, true) {
+          message = it as UniMessage
+        }
+        if (message == null) return clarifierSession
+        if (message!!.from != thisConnection.username) return clarifierSession
+        chatroomUID = message!!.uniChatroomUID
+        message!!.message = editMessageConfig.newContent
+        // Did the message get deleted?
+        if (message!!.message.isEmpty()) {
+          message!!.uniChatroomUID = -1
+          message!!.gUID = "?"
+        }
+        save(message!!)
+      }
+      val uniMessage = UniMessage(
+        uniChatroomUID = chatroomUID,
+        from = "_server",
+        message = "[s:EditNotification]$configJson"
+      )
+      val msg = Json.encodeToString(uniMessage)
+      clarifierSession.connections.forEach {
+        if (!it.session.outgoing.isClosedForSend) {
+          it.session.send(msg)
+        } else {
+          clarifierSession.connectionsToDelete.add(it)
+        }
+      }
+    }
+    return clarifierSession
+  }
+
+  private suspend fun handleReceivedMessage(
+    frameText: String,
+    uniChatroom: UniChatroom,
+    thisConnection: Connection,
+    clarifierSession: ClarifierSession
+  ): ClarifierSession {
+    val uniMessage = UniMessage(
+      uniChatroomUID = uniChatroom.uID,
+      from = thisConnection.username,
+      message = frameText
+    )
+    val msg = Json.encodeToString(uniMessage)
+    clarifierSession.connections.forEach {
+      if (!it.session.outgoing.isClosedForSend) {
+        it.session.send(msg)
+      } else {
+        clarifierSession.connectionsToDelete.add(it)
+      }
+    }
+    mutexMessages.withLock {
+      uniChatroom.addMessage(thisConnection.username, uniMessage.message, uniMessage.gUID)
+    }
+    // Send notification to all members
+    val fcmTokens: ArrayList<String> = arrayListOf()
+    for (memberJson in uniChatroom.members) {
+      val member: UniMember = Json.decodeFromString(memberJson)
+      if (member.firebaseCloudMessagingToken.isEmpty()) continue
+      fcmTokens.add(member.firebaseCloudMessagingToken)
+    }
+    if (fcmTokens.isNotEmpty()) {
+      /*
+       Build the notification
+       If there's a parentGUID, then this chatroom must be a subchat
+       */
+      lateinit var destination: String
+      lateinit var subchatGUID: String
+      if (uniChatroom.parentGUID.isNotEmpty()) {
+        destination = uniChatroom.parentGUID
+        subchatGUID = uniChatroom.chatroomGUID
+      } else {
+        destination = uniChatroom.chatroomGUID
+        subchatGUID = ""
+      }
+      val message = MulticastMessage.builder()
+        .setWebpushConfig(
+          WebpushConfig.builder()
+            .setNotification(
+              WebpushNotification(
+                uniChatroom.title,
+                "${thisConnection.username} has sent a message."
+              )
+            )
+            .setFcmOptions(
+              WebpushFcmOptions
+                .withLink("/apps/clarifier/wss/$destination")
+            )
+            .putData("dlType", "clarifier")
+            .putData("dlDest", "/apps/clarifier/wss/$destination")
+            .putData("subchatGUID", subchatGUID)
+            .build()
+        )
+        .addAllTokens(fcmTokens)
+        .build()
+      FirebaseMessaging.getInstance().sendMulticast(message)
+    }
+    return clarifierSession
   }
 
   private suspend fun getOrCreateUniChatroom(

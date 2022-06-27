@@ -1,5 +1,6 @@
 package modules.m5messages
 
+import com.benasher44.uuid.Uuid
 import interfaces.IEntry
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -13,17 +14,20 @@ import modules.mx.uniMessagesIndexManager
 data class UniMessage(
   override var uID: Int = -1,
   @SerialName("cid")
-  val uniChatroomUID: Int,
+  var uniChatroomUID: Int,
   @SerialName("src")
   val from: String,
   @SerialName("msg")
-  val message: String,
+  var message: String,
 ) : IEntry {
   @SerialName("ts")
   var timestamp: String = ""
 
+  var gUID: String = ""
+
   init {
     if (timestamp.isEmpty()) timestamp = Timestamp.now()
+    if (gUID.isEmpty()) gUID = Uuid.randomUUID().toString()
   }
 
   override fun initialize() {

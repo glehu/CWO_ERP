@@ -6,10 +6,10 @@ import api.misc.json.WebMockingbirdConfig
 import interfaces.IIndexManager
 import interfaces.IModule
 import interfaces.IWebApp
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,7 +43,7 @@ class Mockingbird {
       // Measure time to stay as close as possible to the defined delay time by calculate the delta
       val elapsed = measureTimeMillis {
         config =
-          Json.decodeFromString<WebMockingbirdConfig>(getProjectJsonFile(who).readText()).config
+          Json.decodeFromString<WebMockingbirdConfig>(getProjectJsonFile(who, who).readText()).config
       }
       when (config.return_type) {
         "Message" -> respondWithMessage(appCall, config, elapsed)
@@ -87,15 +87,16 @@ class Mockingbird {
     }
 
     private suspend fun handleLoadConfig(appCall: ApplicationCall) {
-      appCall.respond(getProjectJsonFile(getUsernameReversedBase(appCall)).readText())
+      val userString = getUsernameReversedBase(appCall)
+      appCall.respond(getProjectJsonFile(userString, userString).readText())
     }
 
     private suspend fun handleSubmitConfig(appCall: ApplicationCall) {
       log(Log.Type.COM, "Mock Config Submission", "/mockingbird/submit")
       val config: WebMockingbirdConfig = appCall.receive()
       // Check Config
-      // ...
-      getProjectJsonFile(getUsernameReversedBase(appCall)).writeText(Json.encodeToString(config))
+      val userString = getUsernameReversedBase(appCall)
+      getProjectJsonFile(userString, userString).writeText(Json.encodeToString(config))
       appCall.respond(HttpStatusCode.OK)
     }
   }

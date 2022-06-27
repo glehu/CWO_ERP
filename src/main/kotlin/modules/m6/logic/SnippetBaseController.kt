@@ -14,9 +14,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m6.Snippet
 import modules.mx.logic.Log
 import modules.mx.snippetBaseIndexManager
-import sun.misc.BASE64Decoder
+import org.imgscalr.Scalr
 import java.io.ByteArrayInputStream
 import java.io.FileOutputStream
+import java.util.*
+import javax.imageio.ImageIO
 
 @DelicateCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -56,40 +58,97 @@ class SnippetBaseController : IModule, IWebApp {
   }
 
   /**
-   * Saves a Base64 encoded Image to an Image File on the Server.
-   * Updates the provided snippet, saving all necessary info like link and type.
+   * Saves a Base64 [String] to a file on the disk.
+   *
+   * Accepts:
+   * + Images: JPEG, PNG
+   * + Audio: MP3, WAV
+   *
+   * In case an Image is provided, there is the option to pass two optional values:
+   *
+   * + maxWidth: [Int]
+   * + maxHeight: [Int] (maxWidth if no valid value provided)
+   *
+   * If maxWidth (with or without maxHeight) is provided, the image will be resized (Imgscalr)
+   * accordingly, respecting the images original aspect ratio.
+   *
+   * Also updates the provided [Snippet], saving all necessary info like link and type.
+   * @return the updated [Snippet]
+   *
    */
-  suspend fun saveImage(base64: String, type: String, snippet: Snippet): Snippet? {
-    //Get Bytes from Base64 String
+  suspend fun saveFile(
+    base64: String,
+    snippet: Snippet,
+    owner: String,
+    maxWidth: Int? = null,
+    maxHeight: Int? = null
+  ): Snippet? {
+    // Get Bytes from Base64 String
     val strings: List<String> = base64.split(",")
-    val decoder = BASE64Decoder()
-    val decodedBytes: ByteArray = decoder.decodeBuffer(strings[1])
-    val bis = ByteArrayInputStream(decodedBytes)
-    withContext(Dispatchers.IO) {
-      bis.close()
+    val decoder = Base64.getDecoder()
+    val decodedBytes: ByteArray = decoder.decode(strings[1])
+    var image = withContext(Dispatchers.IO) {
+      ImageIO.read(ByteArrayInputStream(decodedBytes))
     }
-    //Write Bytes to File
-    var imgType: String? = null
-    if (type.contains("jpeg")) {
-      imgType = "jpg"
-    } else if (type.contains("png")) {
-      imgType = "png"
+
+    // Get the file extension
+    var fileExtension: String? = null
+    if (strings[0].contains("image")) {
+      // Image types
+      if (strings[0].contains("jpeg")) {
+        fileExtension = "jpg"
+      } else if (strings[0].contains("png")) {
+        fileExtension = "png"
+      }
+    } else if (strings[0].contains("audio")) {
+      // Audio types
+      if (strings[0].contains("mpeg")) {
+        fileExtension = "mp3"
+      } else if (strings[0].contains("wav")) {
+        fileExtension = "wav"
+      }
     }
-    if (imgType == null) return null
-    val file = getProjectJsonFile(snippet.gUID, extension = imgType)
-    withContext(Dispatchers.IO) {
-      val fos = FileOutputStream(file)
-      fos.write(decodedBytes)
-      fos.flush()
-      fos.close()
+    // Exit upon reaching this point without having found a supported media type
+    if (fileExtension == null) return null
+    val file = getProjectJsonFile(owner, snippet.gUID, extension = fileExtension)
+    // Create the resource and save it to the disk
+    if (strings[0].contains("image")) {
+      // Resizing necessary?
+      if (maxWidth != null && maxWidth > 0) {
+        val maxTrueHeight = if (maxHeight == null || maxHeight < 1) {
+          maxWidth
+        } else maxHeight
+        image = Scalr.resize(
+          image,
+          Scalr.Method.AUTOMATIC,
+          Scalr.Mode.AUTOMATIC,
+          maxWidth,
+          maxTrueHeight,
+          Scalr.OP_ANTIALIAS
+        )
+      }
+      withContext(Dispatchers.IO) {
+        ImageIO.write(image, fileExtension, file)
+      }
+    } else if (strings[0].contains("audio")) {
+      // Write Bytes to File
+      withContext(Dispatchers.IO)
+      {
+        val fos = FileOutputStream(file)
+        fos.write(decodedBytes)
+        fos.flush()
+        fos.close()
+      }
     }
     //Update Snippet
     snippet.payloadType = "url:file"
     snippet.payload = file.absolutePath
+    // Save and return
+    saveResource(snippet)
     return snippet
   }
 
-  suspend fun saveResource(snippet: Snippet) {
+  private suspend fun saveResource(snippet: Snippet) {
     mutex.withLock {
       save(snippet)
     }

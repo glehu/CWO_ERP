@@ -38,6 +38,7 @@ data class EntryJson(
 data class LoginResponseJson(
   val httpCode: Int,
   val token: String,
+  val username: String,
   val expiresInMs: Int,
   val accessM1: Boolean,
   val accessM2: Boolean,
@@ -112,6 +113,7 @@ data class WebshopCartItem(
 
 @Serializable
 data class RegistrationPayload(
+  val email: String,
   val username: String,
   val password: String
 )
@@ -262,6 +264,12 @@ data class UniChatroomAddMessage(
 )
 
 @Serializable
+data class UniChatroomEditMessage(
+  val uniMessageGUID: String,
+  val newContent: String
+)
+
+@Serializable
 data class UniChatroomAddMember(
   val uniChatroomGUID: String,
   val member: String,
@@ -304,4 +312,17 @@ data class SnippetPayload(
 data class SnippetResponse(
   val httpCode: Int,
   val guid: String
+)
+
+@Serializable
+data class UsernameChange(
+  val username: String,
+  val newUsername: String
+)
+
+@Serializable
+data class PasswordChange(
+  val username: String,
+  val password: String,
+  val newPassword: String
 )

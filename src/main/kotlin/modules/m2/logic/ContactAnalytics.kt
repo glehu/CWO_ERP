@@ -8,12 +8,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m2.Contact
 import modules.mx.contactIndexManager
 import modules.mx.logic.Log
-import tornadofx.Controller
 import kotlin.system.measureTimeMillis
 
 @InternalAPI
 @ExperimentalSerializationApi
-class ContactAnalytics : IModule, Controller() {
+class ContactAnalytics : IModule {
   override val moduleNameLong = "ContactAnalytics"
   override val module = "M2"
   override fun getIndexManager(): IIndexManager {

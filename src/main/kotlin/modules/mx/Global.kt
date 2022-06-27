@@ -2,12 +2,10 @@ package modules.mx
 
 import api.logic.UsageTracker
 import api.logic.core.Server
-import api.logic.core.TelnetServer
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
 import interfaces.IEntry
 import io.ktor.util.*
-import javafx.scene.image.Image
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -143,9 +141,6 @@ var usageTracker: UsageTracker? = null
 //Instance title
 var titleGlobal: String = "CWO ERP"
 
-//Active user
-var activeUser: User = User("", "")
-
 //Token for encryption/decryption
 var tokenGlobal: String = ""
 
@@ -158,8 +153,6 @@ var dataPath: String = ""
 fun getModulePath(module: String) = Paths.get(dataPath, "data", module).toString()
 fun getIniFile() = File(Paths.get(programPath, "cwo_erp.ini").toString())
 fun getClientSecretFile(api: String) = File(Paths.get(dataPath, "data", "api", "${api}_cs.txt").toString())
-fun getIcon() = Image("file:///" + Paths.get(dataPath, "data", "img", "orochi_logo_red_200x200.png").toString())
-fun getLogo() = Image("file:///" + Paths.get(dataPath, "data", "img", "orochi_logo_red_500x500.png").toString())
 
 //Search settings
 var maxSearchResultsGlobal: Int = 2000
@@ -177,20 +170,9 @@ var differenceFromUTC: Int = 0
 @ExperimentalSerializationApi
 lateinit var server: Server
 
-@DelicateCoroutinesApi
-@ExperimentalSerializationApi
-@InternalAPI
-lateinit var telnetServer: TelnetServer
-
 var serverJobGlobal: Job? = null
 var telnetServerJobGlobal: Job? = null
-var isClientGlobal: Boolean = false
 var serverIPAddressGlobal: String = "?"
-
-/**
- * CLI mode
- */
-var cliMode = false
 
 /**
  * Terminal supporting colors, animations etc.

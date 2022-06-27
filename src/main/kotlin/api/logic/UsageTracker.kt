@@ -2,8 +2,8 @@ package api.logic
 
 import api.misc.json.UsageTrackerData
 import api.misc.json.UsageTrackerStats
-import io.ktor.application.*
-import io.ktor.request.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.util.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

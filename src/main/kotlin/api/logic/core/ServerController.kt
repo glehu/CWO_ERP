@@ -4,6 +4,7 @@ import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.ListDeltaJson
 import api.misc.json.LoginResponseJson
 import api.misc.json.PairIntJson
+import api.misc.json.PasswordChange
 import api.misc.json.RegistrationPayload
 import api.misc.json.RegistrationResponse
 import api.misc.json.SnippetPayload
@@ -16,6 +17,7 @@ import api.misc.json.UniChatroomImage
 import api.misc.json.UniChatroomMemberRole
 import api.misc.json.UniChatroomMessages
 import api.misc.json.UniChatroomRemoveMember
+import api.misc.json.UsernameChange
 import api.misc.json.ValidationContainerJson
 import api.misc.json.WebshopOrder
 import com.auth0.jwt.JWT
@@ -23,12 +25,12 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import interfaces.IIndexManager
 import interfaces.IModule
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.auth.jwt.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,7 +57,6 @@ import modules.m5.logic.UniChatroomController
 import modules.m5messages.UniMessage
 import modules.m6.logic.SnippetBaseController
 import modules.mx.Ini
-import modules.mx.User
 import modules.mx.contactIndexManager
 import modules.mx.dataPath
 import modules.mx.getIniFile
@@ -186,39 +187,41 @@ class ServerController {
     }
 
     @InternalAPI
-    fun generateLoginResponse(user: User): ValidationContainerJson {
-      val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
-      //                 h   min  sec  ms
-      val expiresInMs = (1 * 60 * 60 * 1000)
-      val expiresAt = Date(System.currentTimeMillis() + expiresInMs)
-      val token = JWT.create()
-        .withAudience("https://${iniVal.serverIPAddress}/")
-        .withIssuer("https://${iniVal.serverIPAddress}/")
-        .withClaim("username", user.username)
-        .withExpiresAt(expiresAt)
-        .sign(Algorithm.HMAC256(iniVal.token))
-      log(Log.Type.COM, "Token generated for ${user.username}", "/login")
-      val loginResponse = Json.encodeToString(
-        LoginResponseJson(
-          httpCode = 200,
-          token = token,
-          expiresInMs = expiresInMs,
-          accessM1 = user.canAccessDiscography,
-          accessM2 = user.canAccessContacts,
-          accessM3 = user.canAccessInvoices,
-          accessM4 = user.canAccessInventory,
-          accessM5 = user.canAccessClarifier,
-          accessM6 = user.canAccessSnippetBase
+    suspend fun generateLoginResponse(user: Contact): ValidationContainerJson {
+      mutex.withLock {
+        val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
+        //                 h   min  sec  ms
+        val expiresInMs = (1 * 60 * 60 * 1000)
+        val expiresAt = Date(System.currentTimeMillis() + expiresInMs)
+        val token = JWT.create()
+          .withAudience("https://${iniVal.serverIPAddress}/")
+          .withIssuer("https://${iniVal.serverIPAddress}/")
+          .withClaim("username", user.email)
+          .withExpiresAt(expiresAt)
+          .sign(Algorithm.HMAC256(iniVal.token))
+        val loginResponse = Json.encodeToString(
+          LoginResponseJson(
+            httpCode = 200,
+            username = user.username,
+            token = token,
+            expiresInMs = expiresInMs,
+            accessM1 = user.canAccessDiscography,
+            accessM2 = user.canAccessContacts,
+            accessM3 = user.canAccessInvoices,
+            accessM4 = user.canAccessInventory,
+            accessM5 = user.canAccessClarifier,
+            accessM6 = user.canAccessSnippetBase
+          )
         )
-      )
-      return ValidationContainerJson(
-        contentJson = loginResponse,
-        hash = encryptKeccak(
-          input = loginResponse,
-          salt = encryptKeccak(user.username),
-          pepper = encryptKeccak("CWO_ERP LoginValidation")
+        return ValidationContainerJson(
+          contentJson = loginResponse,
+          hash = encryptKeccak(
+            input = loginResponse,
+            salt = encryptKeccak(user.email),
+            pepper = encryptKeccak("CWO_ERP LoginValidation")
+          )
         )
-      )
+      }
     }
 
     fun buildJWTVerifier(iniVal: Ini): JWTVerifier {
@@ -348,23 +351,26 @@ class ServerController {
 
     suspend fun registerUser(appCall: ApplicationCall): RegistrationResponse {
       val registrationPayload = appCall.receive<RegistrationPayload>()
-      val userManager = UserCLIManager()
       var exists = false
       var isSuccess = true
       var message = ""
       mutex.withLock {
-        val credentials = userManager.getCredentials()
-        for (user in credentials.credentials) {
-          if (user.value.username.uppercase() == registrationPayload.username.uppercase()) {
-            exists = true
-          }
-        }
+        // Check if email is registered already
+        contactIndexManager!!.getEntriesFromIndexSearch(
+          searchText = "^${registrationPayload.email}$",
+          ixNr = 1,
+          showAll = true
+        ) { exists = true } // Set 'exists' to true if anything was found
         if (exists) {
           isSuccess = false
           message = "User already exists"
         } else {
-          val user = User(registrationPayload.username, encryptAES(registrationPayload.password))
-          userManager.updateUser(user, user, credentials)
+          // Create a new user
+          val newUser = Contact(-1, registrationPayload.username)
+          newUser.email = registrationPayload.email
+          newUser.username = registrationPayload.username
+          newUser.password = encryptAES(registrationPayload.password)
+          contactIndexManager!!.save(newUser)
           log(Log.Type.COM, "User ${registrationPayload.username} registered.", appCall.request.uri)
         }
       }
@@ -420,7 +426,7 @@ class ServerController {
           role = UniRole("Owner")
         )
         // Set Chatroom Image if provided
-        if (config.imgBase64.isNotEmpty()) uniChatroom.imgBase64 = config.imgBase64
+        if (config.imgBase64.isNotEmpty()) uniChatroom.imgGUID = config.imgBase64
         // Update parent chatroom with this chatroom's GUID if needed
         if (parentUniChatroomGUID.isNotEmpty()) {
           val parent: UniChatroom?
@@ -436,7 +442,7 @@ class ServerController {
             uniChatroom.uID = -1
             // Create a copy since we want to remove unnecessary stuff before saving it into the parent
             val copy = uniChatroom.copy()
-            copy.imgBase64 = ""
+            copy.imgGUID = ""
             copy.members.clear()
             // Copy other values
             copy.chatroomGUID = uniChatroom.chatroomGUID
@@ -453,7 +459,7 @@ class ServerController {
         }
         uniChatroom.addMessage(
           member = "_server",
-          message = "[s:RegistrationNotification]$owner has created ${config.title}!"
+          message = "[s:RegistrationNotification]${owner} has created ${config.title}!"
         )
       }
       appCall.respond(uniChatroom)
@@ -709,8 +715,10 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
-          val username = getJWTUsername(appCall)
-          uniChatroom.addOrUpdateMember(username, fcmToken = config.fcmToken)
+          uniChatroom.addOrUpdateMember(
+            username = UserCLIManager.getUserFromEmail(getJWTUsername(appCall))!!.username,
+            fcmToken = config.fcmToken
+          )
           saveChatroom(uniChatroom)
         }
         appCall.respond(HttpStatusCode.OK)
@@ -730,31 +738,48 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
-          uniChatroom.imgBase64 = config.imageBase64
+          with(SnippetBaseController()) {
+            val snippet = saveFile(
+              base64 = config.imageBase64,
+              snippet = createSnippet(),
+              owner = "clarifier-$uniChatroomGUID",
+              maxWidth = 300,
+              maxHeight = 300
+            )
+            if (snippet == null) {
+              appCall.respond(HttpStatusCode.InternalServerError)
+              return
+            }
+            uniChatroom.imgGUID = snippet.gUID
+          }
           saveChatroom(uniChatroom)
         }
         appCall.respond(HttpStatusCode.OK)
       }
     }
 
-    suspend fun createSnippetImage(appCall: ApplicationCall, payload: SnippetPayload) {
-      if (!UserCLIManager().checkModuleRight(getJWTUsername(appCall), "M6")) {
+    suspend fun createSnippetResource(appCall: ApplicationCall, payload: SnippetPayload) {
+      if (!UserCLIManager.checkModuleRight(getJWTUsername(appCall), "M6")) {
         appCall.respond(HttpStatusCode.Forbidden)
         return
       }
       with(SnippetBaseController()) {
-        val snippet = saveImage(payload.payload, payload.type, createSnippet())
+        val snippet = saveFile(
+          base64 = payload.payload,
+          snippet = createSnippet(),
+          owner = getUsernameReversedBase(appCall),
+          maxWidth = 1920,
+          maxHeight = 1920
+        )
         if (snippet == null) {
           appCall.respond(HttpStatusCode.InternalServerError)
           return
         }
-        saveResource(snippet)
         appCall.respond(Json.encodeToString(SnippetResponse(HttpStatusCode.Created.value, snippet.gUID)))
-        log(Log.Type.COM, "")
       }
     }
 
-    suspend fun getSnippetImage(appCall: ApplicationCall) {
+    suspend fun getSnippetResource(appCall: ApplicationCall) {
       val snippetGUID = appCall.parameters["snippetGUID"]
       if (snippetGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
@@ -773,6 +798,30 @@ class ServerController {
           appCall.respond(HttpStatusCode.BadRequest)
           return
         }
+      }
+    }
+
+    suspend fun changeUsername(appCall: ApplicationCall, payload: UsernameChange) {
+      if (payload.username.isEmpty() || payload.newUsername.isEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      if (UserCLIManager.changeUsername(getJWTUsername(appCall), payload)) {
+        appCall.respond(HttpStatusCode.OK)
+      } else {
+        appCall.respond((HttpStatusCode.BadRequest))
+      }
+    }
+
+    suspend fun changePassword(appCall: ApplicationCall, payload: PasswordChange) {
+      if (payload.username.isEmpty() || payload.password.isEmpty() || payload.newPassword.isEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      if (UserCLIManager.changePassword(getJWTUsername(appCall), payload)) {
+        appCall.respond(HttpStatusCode.OK)
+      } else {
+        appCall.respond((HttpStatusCode.BadRequest))
       }
     }
   }

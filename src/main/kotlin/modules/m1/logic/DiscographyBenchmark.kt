@@ -11,13 +11,12 @@ import modules.m1.Song
 import modules.m1.misc.getGenreList
 import modules.mx.discographyIndexManager
 import modules.mx.logic.Log
-import tornadofx.Controller
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 
 @InternalAPI
 @ExperimentalSerializationApi
-class DiscographyBenchmark : IModule, Controller() {
+class DiscographyBenchmark : IModule {
   override val moduleNameLong = "DiscographyBenchmark"
   override val module = "M1"
   override fun getIndexManager(): IIndexManager {

@@ -6,8 +6,8 @@ import api.misc.json.WebPlannerResponse
 import interfaces.IIndexManager
 import interfaces.IModule
 import interfaces.IWebApp
-import io.ktor.application.*
-import io.ktor.request.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
@@ -29,7 +29,7 @@ class WebPlanner : IWebApp, IModule {
     val commit = call.receive<WebPlannerCommit>()
     if (commit.action != "save") return
     if (commit.project.isEmpty()) return
-    getProjectJsonFile(commit.project).writeText(Json.encodeToString(commit.cells))
+    getProjectJsonFile(commit.project, commit.project).writeText(Json.encodeToString(commit.cells))
   }
 
   suspend fun load(call: ApplicationCall): WebPlannerResponse {
@@ -38,6 +38,9 @@ class WebPlanner : IWebApp, IModule {
       "load",
       arrayOf()
     ) //Return an empty array
-    return WebPlannerResponse("load", Json.decodeFromString(getProjectJsonFile(request.project).readText()))
+    return WebPlannerResponse(
+      "load",
+      Json.decodeFromString(getProjectJsonFile(request.project, request.project).readText())
+    )
   }
 }

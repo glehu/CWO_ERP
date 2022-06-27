@@ -1,33 +1,14 @@
 package interfaces
 
-import api.logic.getTokenClient
-import api.misc.json.EMailJson
 import api.misc.json.EntryBytesListJson
-import api.misc.json.EntryJson
 import api.misc.json.EntryListJson
-import api.misc.json.SettingsRequestJson
 import db.CwODB
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.network.selector.*
-import io.ktor.network.sockets.*
 import io.ktor.util.*
-import io.ktor.utils.io.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.json.Json
-import modules.mx.Ini
-import modules.mx.activeUser
-import modules.mx.getIniFile
 import modules.mx.getModulePath
-import modules.mx.isClientGlobal
 import modules.mx.logic.Emailer
 import modules.mx.logic.Log
 import modules.mx.logic.indexFormat
@@ -36,7 +17,6 @@ import modules.mx.protoBufGlobal
 import modules.mx.serverIPAddressGlobal
 import java.io.File
 import java.io.RandomAccessFile
-import java.net.InetSocketAddress
 import java.nio.file.Paths
 
 @InternalAPI
@@ -56,62 +36,50 @@ interface IModule {
   }
 
   /**
-   * Saves the entry to the database.
+   * Saves the [IEntry] to the database.
    * @return the uID of the entry.
    */
   suspend fun save(
     entry: IEntry,
     raf: RandomAccessFile? = null,
     indexWriteToDisk: Boolean = true,
-    userName: String = activeUser.username,
+    userName: String = "",
     unlock: Boolean = true
   ): Int {
-    var uID = -1
-    if (!isClientGlobal) {
-      val indexManager = getIndexManager()!!
-      val rafLocal = raf ?: CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
-      var posDB: Long = -1L
-      var byteSize: Int = -1
-      if (entry.uID != -1) {
-        val index = indexManager.getBaseIndex(entry.uID)
-        posDB = index.pos
-        byteSize = index.byteSize
-      }
-      entry.initialize()
-      val (posDBXt, byteSizeXt) = CwODB.saveEntry(
-        entryBytes = encode(entry),
-        posDB = posDB,
-        byteSize = byteSize,
-        module = indexManager.module,
-        raf = rafLocal
-      )
-      val posDBX: Long = posDBXt
-      val byteSizeX: Int = byteSizeXt
-      indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, userName)
-      if (raf == null) CwODB.closeRandomFileAccess(rafLocal)
-      uID = entry.uID
-      //Unlock the entry
-      if (unlock) getIndexManager()!!.setEntryLock(uID, false)
-    } else {
-      coroutineScope {
-        launch {
-          uID = getTokenClient().post("${getApiUrl()}saveentry") {
-            contentType(ContentType.Application.Json)
-            body = EntryJson(entry.uID, encode(entry))
-          }
-        }
-      }
+    val indexManager = getIndexManager()!!
+    val rafLocal = raf ?: CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
+    var posDB: Long = -1L
+    var byteSize: Int = -1
+    if (entry.uID != -1) {
+      val index = indexManager.getBaseIndex(entry.uID)
+      posDB = index.pos
+      byteSize = index.byteSize
     }
+    entry.initialize()
+    val (posDBXt, byteSizeXt) = CwODB.saveEntry(
+      entryBytes = encode(entry),
+      posDB = posDB,
+      byteSize = byteSize,
+      module = indexManager.module,
+      raf = rafLocal
+    )
+    val posDBX: Long = posDBXt
+    val byteSizeX: Int = byteSizeXt
+    indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, "")
+    if (raf == null) CwODB.closeRandomFileAccess(rafLocal)
+    val uID: Int = entry.uID
+    //Unlock the entry
+    if (unlock) getIndexManager()!!.setEntryLock(uID, false)
     return uID
   }
 
   /**
-   * Used to retrieve an entry from the database using the provided uID.
+   * Used to retrieve an [IEntry] from the database using the provided uID.
    *
    * This function also locks the entry, making it uneditable for others. If this is not wanted,
-   * use the load() function instead.
-   * If an entry of another module needs to be retrieved, call this function with the controller of that module.
-   * @return an entry with the provided unique identifier.
+   * use the [load] function instead.
+   * If an [IEntry] of another module needs to be retrieved, call this function with the controller of that module.
+   * @return an [IEntry] with the provided unique identifier.
    */
   @ExperimentalSerializationApi
   fun get(uID: Int): IEntry {
@@ -119,11 +87,11 @@ interface IModule {
   }
 
   /**
-   * Used to retrieve an entry from the database using the provided uID.
+   * Used to retrieve an [IEntry] from the database using the provided uID.
    *
    * This function doesn't lock the entry, which means it cannot be saved.
    * If an entry of another module needs to be retrieved, call this function with the controller of that module.
-   * @return an entry with the provided unique identifier.
+   * @return an [IEntry] with the provided unique identifier.
    */
   @ExperimentalSerializationApi
   fun load(uID: Int): IEntry {
@@ -131,27 +99,19 @@ interface IModule {
   }
 
   /**
-   * Used to retrieve a byte array of an entry from the database using the provided uID.
-   * It is possible to retrieve an entry of another module if that module gets passed into the function.
-   * @return the byte array of an entry with the provided unique identifier.
+   * Used to retrieve a [ByteArray] of an [IEntry] from the database using the provided uID.
+   * It is possible to retrieve an [IEntry] of another module if that module gets passed into the function.
+   * @return the [ByteArray] of an [IEntry] with the provided unique identifier.
    */
-  fun getBytes(uID: Int, lock: Boolean = false, userName: String = activeUser.username): ByteArray {
+  fun getBytes(uID: Int, lock: Boolean = false, userName: String = ""): ByteArray {
     var entryBytes: ByteArray = byteArrayOf()
     if (uID != -1) {
-      if (!isClientGlobal) {
-        entryBytes = CwODB.getEntryByteArrayFromUID(
-          uID = uID,
-          indexManager = getIndexManager()!!
-        )
-        //Lock the entry (if: GET)
-        getIndexManager()!!.setEntryLock(uID, lock, userName)
-      } else {
-        runBlocking {
-          launch {
-            entryBytes = getTokenClient().get("${getApiUrl()}entry/$uID?type=uid&lock=$lock")
-          }
-        }
-      }
+      entryBytes = CwODB.getEntryByteArrayFromUID(
+        uID = uID,
+        indexManager = getIndexManager()!!
+      )
+      //Lock the entry (if: GET)
+      getIndexManager()!!.setEntryLock(uID, lock, userName)
     }
     return entryBytes
   }
@@ -235,17 +195,7 @@ interface IModule {
    */
   @ExperimentalSerializationApi
   fun getIndexUserSelection(): ArrayList<String> {
-    lateinit var indexUserSelection: ArrayList<String>
-    if (!isClientGlobal) {
-      indexUserSelection = getIndexManager()!!.getIndicesList()
-    } else {
-      runBlocking {
-        launch {
-          indexUserSelection = getTokenClient().get("${getApiUrl()}indexselection")
-        }
-      }
-    }
-    return indexUserSelection
+    return getIndexManager()!!.getIndicesList()
   }
 
   /**
@@ -261,43 +211,25 @@ interface IModule {
     )
   }
 
-  fun getEntryLock(uID: Int, userName: String = activeUser.username): Boolean {
-    var locked = false
-    if (!isClientGlobal) {
-      val content = getIndexManager()!!.getBaseIndex(uID).content
-      locked = (content != "?" && content != userName)
-    } else {
-      runBlocking {
-        launch {
-          locked = getTokenClient().get("${getApiUrl()}/getentrylock/$uID")
-        }
-      }
-    }
-    return locked
+  fun getEntryLock(uID: Int, userName: String = ""): Boolean {
+    val content = getIndexManager()!!.getBaseIndex(uID).content
+    return (content != "?" && content != userName)
   }
 
-  fun setEntryLock(uID: Int, doLock: Boolean, userName: String = activeUser.username): Boolean {
+  fun setEntryLock(uID: Int, doLock: Boolean, userName: String = ""): Boolean {
     var success = false
-    if (!isClientGlobal) {
-      val indexManager = getIndexManager()!!
-      val entryLocked = indexManager.getEntryLock(uID, userName)
-      if (doLock) {
-        if (!entryLocked) {
-          indexManager.getBaseIndex(uID).content = userName
-          success = true
-        }
-      } else {
-        //If the entry is locked by the user that is trying to unlock -> unlock
-        if (indexManager.getBaseIndex(uID).content == userName) {
-          indexManager.getBaseIndex(uID).content = "?"
-          success = true
-        }
+    val indexManager = getIndexManager()!!
+    val entryLocked = indexManager.getEntryLock(uID, userName)
+    if (doLock) {
+      if (!entryLocked) {
+        indexManager.getBaseIndex(uID).content = userName
+        success = true
       }
     } else {
-      runBlocking {
-        launch {
-          success = getTokenClient().get("${getApiUrl()}setentrylock/$uID?type=$doLock")
-        }
+      //If the entry is locked by the user that is trying to unlock -> unlock
+      if (indexManager.getBaseIndex(uID).content == userName) {
+        indexManager.getBaseIndex(uID).content = "?"
+        success = true
       }
     }
     return success
@@ -319,20 +251,7 @@ interface IModule {
     subSetting: String = "",
     check: Boolean = true
   ): String {
-    var iniTxt = ""
-    if (!isClientGlobal) {
-      iniTxt = getSettingsFile(moduleShort = moduleShort, subSetting = subSetting).readText()
-    } else {
-      runBlocking {
-        launch {
-          iniTxt = getTokenClient().post("${getServerUrl()}api/getsettingsfiletext") {
-            contentType(ContentType.Application.Json)
-            this.body = SettingsRequestJson(moduleShort, subSetting)
-          }
-        }
-      }
-    }
-    return iniTxt
+    return getSettingsFile(moduleShort = moduleShort, subSetting = subSetting).readText()
   }
 
   fun getSettingsFile(moduleShort: String = module, subSetting: String = "", check: Boolean = true): File {
@@ -361,21 +280,8 @@ interface IModule {
     body: String,
     recipient: String
   ): Boolean {
-    var success = false
-    if (!isClientGlobal) {
-      Emailer().sendEmailOverMailServer(subject, body, recipient)
-      success = true
-    } else {
-      runBlocking {
-        launch {
-          success = getTokenClient().post("${getServerUrl()}api/sendemail") {
-            contentType(ContentType.Application.Json)
-            this.body = EMailJson(subject, body, recipient)
-          }
-        }
-      }
-    }
-    return success
+    Emailer().sendEmailOverMailServer(subject, body, recipient)
+    return true
   }
 
   /**
@@ -395,71 +301,20 @@ interface IModule {
     entryOut: (IEntry) -> Unit
   ) {
     val searchTextFormatted = if (format) indexFormat(searchText) else searchText
-    if (!isClientGlobal) {
-      CwODB.getEntriesFromSearchString(
-        searchText = searchTextFormatted,
-        ixNr = ixNr,
-        exactSearch = true,
-        indexManager = getIndexManager()!!,
-        maxSearchResults = if (showAll) -1 else pageSize,
-        numberComparison = numberComparison,
-        paginationIndex = paginationIndex,
-        skip = skip
-      ) { _, bytes ->
-        try {
-          entryOut(decode(bytes))
-        } catch (e: Exception) {
-          log(Log.Type.ERROR, "IXLOOK-ERR-${e.message}")
-        }
-      }
-    } else {
-      // ########## RAW SOCKET TCP DATA TRANSFER ##########
-      runBlocking {
-        val iniVal = Json.decodeFromString<Ini>(getIniFile().readText())
-        val socket =
-          aSocket(ActorSelectorManager(Dispatchers.IO)).tcp().connect(
-            InetSocketAddress(
-              iniVal.telnetServerIPAddress.substringBefore(':'),
-              iniVal.telnetServerIPAddress.substringAfter(':').toInt()
-            )
-          )
-        val sockIn = socket.openReadChannel()
-        val sockOut = socket.openWriteChannel(autoFlush = true)
-        var exact = "SPE"
-        if (showAll) exact += "FULL"
-        val inputType = if (!numberComparison) "NAME" else "NMBR"
-        sockOut.writeStringUtf8(
-          "IXS $module $ixNr $exact $inputType $searchTextFormatted\r\n"
-        )
-        var response: String? = ""
-        // Remove the HEY welcome message
-        for (i in 0..2) {
-          response = sockIn.readUTF8Line()
-          println(response)
-          if (response == "HEY") {
-            response = sockIn.readUTF8Line()
-            println(response)
-            break
-          }
-        }
-        // Continue with results
-        if (response == "RESULTS") {
-          var done = false
-          var inputLine = ""
-          while (!done) {
-            withTimeoutOrNull(5000) {
-              inputLine = sockIn.readUTF8Line()!!
-            }
-            if (inputLine != "DONE") {
-              try {
-                val entryJson = Json.decodeFromString<EntryJson>(inputLine)
-                entryOut(decode(entryJson.entry))
-              } catch (e: Exception) {
-                println("IXLOOK-ERR-${e.message} FOR $inputLine")
-              }
-            } else done = true
-          }
-        }
+    CwODB.getEntriesFromSearchString(
+      searchText = searchTextFormatted,
+      ixNr = ixNr,
+      exactSearch = true,
+      indexManager = getIndexManager()!!,
+      maxSearchResults = if (showAll) -1 else pageSize,
+      numberComparison = numberComparison,
+      paginationIndex = paginationIndex,
+      skip = skip
+    ) { _, bytes ->
+      try {
+        entryOut(decode(bytes))
+      } catch (e: Exception) {
+        log(Log.Type.ERROR, "IXLOOK-ERR-${e.message}")
       }
     }
   }

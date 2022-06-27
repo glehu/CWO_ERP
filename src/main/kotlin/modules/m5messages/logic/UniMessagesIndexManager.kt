@@ -36,13 +36,15 @@ class UniMessagesIndexManager : IIndexManager {
 
   init {
     initialize(
-      1 //ChatroomUID
+      1, // ChatroomUID
+      2 // GUID
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
       "1-ChatroomUID",
+      "2-GUID"
     )
   }
 
@@ -54,13 +56,15 @@ class UniMessagesIndexManager : IIndexManager {
     userName: String
   ) {
     entry as UniMessage
+    val chatUID = entry.uniChatroomUID.toString()
     buildIndices(
       entry.uID,
       posDB,
       byteSize,
       writeToDisk,
       userName,
-      Pair(1, entry.uniChatroomUID.toString()),
+      Pair(1, if (chatUID != "-1") chatUID else "?"),
+      Pair(2, entry.gUID)
     )
   }
 

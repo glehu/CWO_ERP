@@ -1,26 +1,20 @@
 package modules.mx.logic
 
 import api.logic.core.Server
-import api.logic.core.TelnetServer
 import com.github.ajalt.mordant.animation.progressAnimation
 import com.github.ajalt.mordant.rendering.TextColors.gray
 import com.github.ajalt.mordant.rendering.TextColors.green
-import com.github.ajalt.mordant.rendering.TextColors.magenta
 import com.github.ajalt.mordant.rendering.TextColors.red
 import com.github.ajalt.mordant.rendering.TextColors.white
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
-import javafx.collections.ObservableList
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.mx.User
-import modules.mx.activeUser
-import modules.mx.cliMode
 import modules.mx.contactIndexManager
 import modules.mx.discographyIndexManager
 import modules.mx.getIniFile
@@ -30,11 +24,9 @@ import modules.mx.itemStockPostingIndexManager
 import modules.mx.programPath
 import modules.mx.server
 import modules.mx.snippetBaseIndexManager
-import modules.mx.telnetServer
 import modules.mx.terminal
 import modules.mx.uniChatroomIndexManager
 import modules.mx.uniMessagesIndexManager
-import tornadofx.observableListOf
 import kotlin.system.exitProcess
 
 @ExperimentalCoroutinesApi
@@ -54,7 +46,6 @@ class CLI : IModule {
    */
   suspend fun runCLI(args: Array<String>) {
     cliClearTerminal()
-    cliMode = true
     cliCheckIni()
     log(Log.Type.INFO, "BOOTING CWO ERP CLI MODE")
     if (args.contains("-env")) {
@@ -65,10 +56,12 @@ class CLI : IModule {
       if (envUser != "?" && envPass != "?") {
         // Attempt to log in the user
         log(Log.Type.SYS, "LOGGING IN")
+        /*
         if (!UserCLIManager().login(envUser, envPass, doLog = true)) {
           log(Log.Type.ERROR, "TERMINATED PROCESS REASON wrong-credentials")
           cliExit()
         }
+        */
       } else {
         log(
           Log.Type.WARNING,
@@ -92,6 +85,7 @@ class CLI : IModule {
         cliExit(false)
       }
     } else {
+      /*
       // Prompts the user to log in if there is no active user
       val login: Boolean = if (activeUser.username.isEmpty()) cliLogin() else true
       cliClearTerminal()
@@ -103,6 +97,7 @@ class CLI : IModule {
         terminated = cliHandleInput((readLine() ?: "").split(" "))
       }
       cliExit()
+       */
     }
   }
 
@@ -142,10 +137,12 @@ class CLI : IModule {
     var terminated = false
     when (inputArgs[0]) {
       "exit" -> terminated = true
+      /*
       "chuser" -> {
         activeUser = User("", "")
         cliLogin()
       }
+      */
       "help" -> cliHelp(inputArgs)
       "start" -> cliStart(inputArgs)
       "load" -> cliLoad(inputArgs)
@@ -164,7 +161,6 @@ class CLI : IModule {
       }
     }
     server = Server()
-    telnetServer = TelnetServer()
   }
 
   private fun cliShow(args: List<String>) {
@@ -201,6 +197,7 @@ class CLI : IModule {
           }
           cliPrintTable(header, data)
         }
+        /*
         "users" -> {
           val userManager = UserManager()
           val users: ObservableList<User> = if (args.size > 2 && args[2] == "-active") {
@@ -224,6 +221,7 @@ class CLI : IModule {
           }
           cliPrintTable(header, data)
         }
+         */
         "config" -> print(getIniFile().readText())
       }
     }
@@ -235,7 +233,6 @@ class CLI : IModule {
     } else {
       when (args[1]) {
         "server" -> server = Server()
-        "telnet" -> telnetServer = TelnetServer()
       }
     }
   }
@@ -336,7 +333,7 @@ class CLI : IModule {
    * Forces the user to log in by providing credentials.
    * @return true if the user is logged in now.
    */
-  private fun cliLogin(): Boolean {
+  private suspend fun cliLogin(): Boolean {
     var loggedIn = false
     while (!loggedIn) {
       var username = ""
@@ -355,7 +352,7 @@ class CLI : IModule {
         print("${gray("CWO:>")} Password: ")
         password = System.console().readPassword().concatToString()
       }
-      loggedIn = UserCLIManager().login(username, password, doLog = true)
+      loggedIn = UserCLIManager.login(username, password, doLog = true)
     }
     return true
   }

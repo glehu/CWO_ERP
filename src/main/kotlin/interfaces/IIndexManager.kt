@@ -14,7 +14,6 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.LastChange
-import modules.mx.activeUser
 import modules.mx.getModulePath
 import modules.mx.logic.Timestamp.Timestamp.convUnixHexToUnixTimestamp
 import modules.mx.logic.Timestamp.Timestamp.getLocalTimestamp
@@ -56,13 +55,13 @@ interface IIndexManager : IModule {
     }
     terminal.info.updateTerminalSize()
     progress.start()
-    progress.updateTotal(ixNumbers.size.toLong() + 1L); Thread.sleep(100)
+    progress.updateTotal(ixNumbers.size.toLong() + 1L)
     //Perform actions
     addIndex(0)
-    progress.advance(1L); Thread.sleep(100)
+    progress.advance(1L)
     getIndicesFromArray(ixNumbers, progress)
     //Stop progress animation
-    Thread.sleep(100); progress.stop()
+    progress.stop()
     progress.clear()
     terminal.println("\n${TextColors.green("Success!")}")
     getFileSizes()
@@ -156,6 +155,7 @@ interface IIndexManager : IModule {
           )
         }
       } else {
+        // Remove "empty" indices to save lots of space
         synchronized(this) {
           indexList[ixNr]!!.indexMap.remove(uID)
         }
@@ -192,14 +192,13 @@ interface IIndexManager : IModule {
           Json.encodeToString(indexList[index.key])
         )
       }
-      getFileSizes()
     }
   }
 
   fun getIndicesFromArray(ixNumbers: IntArray, progress: ProgressAnimation) {
     for (ixNr in ixNumbers) {
       addIndex(ixNr)
-      progress.advance(1L); Thread.sleep(100)
+      progress.advance(1L)
     }
   }
 
@@ -255,9 +254,7 @@ interface IIndexManager : IModule {
     val lastChange: LastChange
     if (!lastChangeFile.isFile) {
       lastChangeFile.createNewFile()
-      lastChange = LastChange(
-        -1, getUnixTimestampHex(), activeUser.username
-      )
+      lastChange = LastChange(-1, getUnixTimestampHex(), "")
       setLastChangeValues(lastChange)
     } else {
       lastChange = Json.decodeFromString(lastChangeFile.readText())

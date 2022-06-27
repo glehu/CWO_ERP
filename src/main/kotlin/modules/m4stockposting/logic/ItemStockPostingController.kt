@@ -1,21 +1,13 @@
 package modules.m4stockposting.logic
 
-import api.logic.getTokenClient
-import api.misc.json.PairIntJson
-import api.misc.json.TwoIntOneDoubleJson
 import interfaces.IIndexManager
 import interfaces.IModule
-import io.ktor.client.request.*
-import io.ktor.http.*
 import io.ktor.util.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m3.logic.InvoiceCLIController
 import modules.m3.misc.AutoStorageSelectionOrderType
 import modules.m4stockposting.ItemStockPosting
 import modules.m4storage.logic.ItemStorageManager
-import modules.mx.isClientGlobal
 import modules.mx.itemStockPostingIndexManager
 
 @ExperimentalSerializationApi
@@ -29,29 +21,18 @@ class ItemStockPostingController : IModule {
 
   fun getAvailableStock(storageUnitUID: Int, storageUID: Int): Double {
     var availableStock = 0.0
-    if (!isClientGlobal) {
-      val ixSearchText = "<${storageUID}><${storageUnitUID}>"
-      //Find stock taken from this storage unit
-      getEntriesFromIndexSearch(searchText = ixSearchText, ixNr = 2, showAll = true) {
-        it as ItemStockPosting
-        //If finished and booked take stock away
-        if (it.isFinished && it.status == 9) availableStock -= it.amount
-      }
-      //Find stock booked to this storage unit
-      getEntriesFromIndexSearch(searchText = ixSearchText, ixNr = 3, showAll = true) {
-        it as ItemStockPosting
-        //If finished and booked add stock
-        if (it.isFinished && it.status == 9) availableStock += it.amount
-      }
-    } else {
-      runBlocking {
-        launch {
-          availableStock = getTokenClient().post("${getServerUrl()}api/m4sp/avail") {
-            contentType(ContentType.Application.Json)
-            this.body = PairIntJson(storageUID, storageUnitUID)
-          }
-        }
-      }
+    val ixSearchText = "<${storageUID}><${storageUnitUID}>"
+    //Find stock taken from this storage unit
+    getEntriesFromIndexSearch(searchText = ixSearchText, ixNr = 2, showAll = true) {
+      it as ItemStockPosting
+      //If finished and booked take stock away
+      if (it.isFinished && it.status == 9) availableStock -= it.amount
+    }
+    //Find stock booked to this storage unit
+    getEntriesFromIndexSearch(searchText = ixSearchText, ixNr = 3, showAll = true) {
+      it as ItemStockPosting
+      //If finished and booked add stock
+      if (it.isFinished && it.status == 9) availableStock += it.amount
     }
     return availableStock
   }
@@ -179,32 +160,19 @@ class ItemStockPostingController : IModule {
   }
 
   fun check(storageFromUID: Int, storageUnitFromUID: Int, amount: Double? = null): Boolean {
-    var valid = false
-    if (!isClientGlobal) {
-      //Check if the storage exists
-      if (storageFromUID == -1) return false
-      if (storageUnitFromUID == -1) return false
-      //Check details...
-      val storage = ItemStorageManager().getStorages().storages[storageFromUID]!!
-      //Check if storage or storage unit is locked
-      if (storage.locked) return false
-      if (storage.storageUnits[storageUnitFromUID].locked) return false
-      //Check if the selected storage unit suits the position's amount
-      if (amount != null) {
-        val available = ItemStockPostingController().getAvailableStock(storageUnitFromUID, storageFromUID)
-        if (available < amount) return false
-      }
-      valid = true
-    } else {
-      runBlocking {
-        launch {
-          valid = getTokenClient().post("${getServerUrl()}api/m4sp/check") {
-            contentType(ContentType.Application.Json)
-            this.body = TwoIntOneDoubleJson(storageFromUID, storageUnitFromUID, amount!!)
-          }
-        }
-      }
+    //Check if the storage exists
+    if (storageFromUID == -1) return false
+    if (storageUnitFromUID == -1) return false
+    //Check details...
+    val storage = ItemStorageManager().getStorages().storages[storageFromUID]!!
+    //Check if storage or storage unit is locked
+    if (storage.locked) return false
+    if (storage.storageUnits[storageUnitFromUID].locked) return false
+    //Check if the selected storage unit suits the position's amount
+    if (amount != null) {
+      val available = ItemStockPostingController().getAvailableStock(storageUnitFromUID, storageFromUID)
+      if (available < amount) return false
     }
-    return valid
+    return true
   }
 }

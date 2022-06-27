@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "1.6.10"
-  kotlin("plugin.serialization") version "1.6.10"
+  kotlin("jvm") version "1.7.0"
+  kotlin("plugin.serialization") version "1.7.0"
   application
 }
 group = "me.duffy"
@@ -28,37 +28,33 @@ application {
 }
 
 dependencies {
+  implementation("ch.qos.logback:logback-classic:1.2.11")
+  implementation("com.benasher44:uuid:0.4.1")
+  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
+  implementation("com.github.ajalt.mordant:mordant:2.0.0-beta4")
+  implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.3.0")
+  implementation("com.github.komputing.khash:keccak:1.1.1")
+  implementation("com.google.firebase:firebase-admin:8.2.0")
+  implementation("com.ionspin.kotlin:bignum:0.3.6")
+  implementation("com.sultanofcardio:mailman:3.1.2")
+  implementation("io.ktor:ktor-server-auth-jwt:2.0.2")
+  implementation("io.ktor:ktor-server-auth:2.0.2")
+  implementation("io.ktor:ktor-server-freemarker:2.0.2")
+  implementation("io.ktor:ktor-server-html-builder:2.0.2")
+  implementation("io.ktor:ktor-server-content-negotiation:2.0.2")
+  implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.2")
+  implementation("io.ktor:ktor-server-core:2.0.2")
+  implementation("io.ktor:ktor-server-netty:2.0.2")
+  implementation("io.ktor:ktor-server-double-receive:2.0.2")
+  implementation("io.ktor:ktor-server-http-redirect:2.0.2")
+  implementation("io.ktor:ktor-server-websockets:2.0.2")
+  implementation("io.ktor:ktor-server-cors:2.0.2")
+  implementation("org.imgscalr:imgscalr-lib:4.2")
   implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
   implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.3.2")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt")
-  implementation("no.tornado:tornadofx:1.7.20")
-  implementation("io.ktor:ktor-network-tls-certificates:1.6.4")
-  implementation("io.ktor:ktor-server-core:1.6.4")
-  implementation("io.ktor:ktor-server-netty:1.6.4")
-  implementation("io.ktor:ktor-client-core:1.6.4")
-  implementation("io.ktor:ktor-client-cio:1.6.4")
-  implementation("io.ktor:ktor-client-apache:1.6.4")
-  implementation("io.ktor:ktor-client-auth:1.6.4")
-  implementation("io.ktor:ktor-client-serialization:1.6.4")
-  implementation("io.ktor:ktor-html-builder:1.6.4")
-  implementation("io.ktor:ktor-freemarker:1.6.4")
-  implementation("io.ktor:ktor-auth:1.6.4")
-  implementation("io.ktor:ktor-auth-jwt:1.6.4")
-  implementation("io.ktor:ktor-client-auth:1.6.4")
-  implementation("io.ktor:ktor-serialization:1.6.4")
-  implementation("io.ktor:ktor-websockets:1.6.4")
-  implementation("io.ktor:ktor-network:1.6.4")
-  implementation("ch.qos.logback:logback-classic:1.2.11")
-  implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.2.0")
-  implementation("com.github.komputing.khash:keccak:1.1.1")
-  implementation("com.benasher44:uuid:0.4.0")
-  implementation("com.sultanofcardio:mailman:3.1.2")
-  implementation("com.github.ajalt.mordant:mordant:2.0.0-beta4")
-  implementation("com.google.firebase:firebase-admin:8.1.0")
-  implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
-  implementation("com.ionspin.kotlin:bignum:0.3.4")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.3.3")
 }
 
 val mainClassName = "modules.mx.logic.StartKt"
@@ -73,6 +69,6 @@ tasks.jar {
 }
 
 tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = "1.8"
+  kotlinOptions.jvmTarget = "17"
   kotlinOptions.freeCompilerArgs = listOf("-opt-in=kotlin.RequiresOptIn")
 }

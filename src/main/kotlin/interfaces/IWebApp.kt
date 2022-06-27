@@ -14,15 +14,25 @@ interface IWebApp : IModule {
     return getModulePath(Paths.get("webapp", webAppName.lowercase(), path).toString())
   }
 
-  fun getProjectJsonFile(project: String, check: Boolean = true, extension: String = "json"): File {
-    if (check) checkProjectJsonFile(project, extension = extension)
-    return File(Paths.get(getWebAppPath(project), "$project.$extension").toString())
+  fun getProjectJsonFile(
+    project: String,
+    filename: String,
+    extension: String = "json",
+    check: Boolean = true
+  ): File {
+    if (check) checkProjectJsonFile(project, filename, extension = extension)
+    return File(Paths.get(getWebAppPath(project), "$filename.$extension").toString())
   }
 
-  private fun checkProjectJsonFile(project: String, createIfMissing: Boolean = true, extension: String = "json") {
+  private fun checkProjectJsonFile(
+    project: String,
+    filename: String,
+    extension: String = "json",
+    createIfMissing: Boolean = true
+  ) {
     if (project.isEmpty()) return
     checkProjectDir(project)
-    val projectFile = getProjectJsonFile(project, false, extension)
+    val projectFile = getProjectJsonFile(project, filename, extension, false)
     if (!projectFile.isFile && createIfMissing) projectFile.createNewFile()
   }
 

@@ -8,8 +8,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.LogMessage
 import modules.mx.getModulePath
-import modules.mx.gui.userAlerts.GAlert
-import modules.mx.isClientGlobal
 import java.io.File
 import java.nio.file.Paths
 
@@ -28,7 +26,7 @@ class Log {
     }
 
     private fun getLogPath(module: String) = Paths.get(getModulePath(module), "log").toString()
-    fun getLogFile(module: String) = File(Paths.get(getLogPath(module), "${module}_log.txt").toString())
+    private fun getLogFile(module: String) = File(Paths.get(getLogPath(module), "${module}_log.txt").toString())
 
     /**
      * Writes a log message to the disk.
@@ -41,20 +39,18 @@ class Log {
       write: Boolean = true,
       apiEndpoint: String = ""
     ) {
-      if (!isClientGlobal) {
-        val logMessageSerialized = Json.encodeToString(
-          LogMessage(
-            Timestamp.getUnixTimestampHex(),
-            module,
-            type,
-            text,
-            caller,
-            apiEndpoint
-          )
-        ) + "\n"
-        print(logMessageSerialized)
-        if (write) getLogFile(module).appendText(logMessageSerialized)
-      }
+      val logMessageSerialized = Json.encodeToString(
+        LogMessage(
+          Timestamp.getUnixTimestampHex(),
+          module,
+          type,
+          text,
+          caller,
+          apiEndpoint
+        )
+      ) + "\n"
+      print(logMessageSerialized)
+      if (write) getLogFile(module).appendText(logMessageSerialized)
     }
 
     /**
@@ -83,15 +79,8 @@ class Log {
     /**
      * Deletes a single log file of a provided module.
      */
-    fun deleteLogFile(module: String, askConfirm: Boolean = false) {
+    private fun deleteLogFile(module: String) {
       if (checkLogFile(module, false)) {
-        if (askConfirm) {
-          val prompt = GAlert(
-            "This action will erase the log files for $module. Continue?", true
-          )
-          prompt.openModal(block = true)
-          if (!prompt.confirmed.value) return
-        }
         getLogFile(module).delete()
         log(Type.INFO, "Log file cleared: $module")
         checkLogFile(module, createIfMissing = true, log = false)
@@ -101,14 +90,7 @@ class Log {
     /**
      * Deletes all log files across all modules.
      */
-    fun deleteLogFiles(askConfirm: Boolean = false) {
-      if (askConfirm) {
-        val prompt = GAlert(
-          "This action will erase all existing log files. Continue?", true
-        )
-        prompt.openModal(block = true)
-        if (!prompt.confirmed.value) return
-      }
+    fun deleteLogFiles() {
       for (moduleNr in 1..99) {
         deleteLogFile("M$moduleNr")
       }
