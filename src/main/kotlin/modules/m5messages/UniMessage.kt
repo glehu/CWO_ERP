@@ -25,6 +25,8 @@ data class UniMessage(
 
   var gUID: String = ""
 
+  var isEncrypted = false
+
   init {
     if (timestamp.isEmpty()) timestamp = Timestamp.now()
     if (gUID.isEmpty()) gUID = Uuid.randomUUID().toString()

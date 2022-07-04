@@ -82,6 +82,7 @@ class UniChatroomController : IModule {
     username: String,
     role: UniRole? = null,
     fcmToken: String? = null,
+    pubKeyPEM: String? = null
   ): Boolean {
     if (username.isEmpty()) return false
     // Does the member already exist in the Clarifier Session?
@@ -99,6 +100,7 @@ class UniChatroomController : IModule {
       val member: UniMember = Json.decodeFromString(this.members[indexAt])
       if (role != null) member.addRole(role)
       if (!fcmToken.isNullOrEmpty()) member.subscribeFCM(fcmToken)
+      if (!pubKeyPEM.isNullOrEmpty()) member.addRSAPubKeyPEM(pubKeyPEM)
       // Save
       this.members[indexAt] = Json.encodeToString(member)
     } else {
@@ -106,6 +108,7 @@ class UniChatroomController : IModule {
       val member = createMember(username, Json.encodeToString(UniRole("Member")))
       if (role != null) member.addRole(role)
       if (!fcmToken.isNullOrEmpty()) member.subscribeFCM(fcmToken)
+      if (!pubKeyPEM.isNullOrEmpty()) member.addRSAPubKeyPEM(pubKeyPEM)
       // Save
       this.members.add(Json.encodeToString(member))
     }
@@ -302,6 +305,11 @@ class UniChatroomController : IModule {
     // Retrieve Clarifier Session
     val uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, username)
     if (!uniChatroom.checkIsMember(thisConnection.username)) {
+      // Register new member
+      uniChatroom.addOrUpdateMember(username, UniRole("Member"))
+      mutexChatroom.withLock {
+        saveChatroom(uniChatroom)
+      }
       // Notify members of new registration
       val serverNotification =
         "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!"
@@ -317,16 +325,11 @@ class UniChatroomController : IModule {
           it.session.send(msg)
         }
       }
-      // Register new member
-      uniChatroom.addOrUpdateMember(username, UniRole("Member"))
       mutexMessages.withLock {
         uniChatroom.addMessage(
           member = "_server",
           message = serverNotification
         )
-      }
-      mutexChatroom.withLock {
-        saveChatroom(uniChatroom)
       }
     }
     // *****************************************
@@ -419,11 +422,15 @@ class UniChatroomController : IModule {
     thisConnection: Connection,
     clarifierSession: ClarifierSession
   ): ClarifierSession {
+    val prefix = "[c:MSG<ENCR]"
+    var isEncrypted = false
+    if (frameText.startsWith(prefix)) isEncrypted = true
     val uniMessage = UniMessage(
       uniChatroomUID = uniChatroom.uID,
       from = thisConnection.username,
       message = frameText
     )
+    uniMessage.isEncrypted = isEncrypted
     val msg = Json.encodeToString(uniMessage)
     clarifierSession.connections.forEach {
       if (!it.session.outgoing.isClosedForSend) {
@@ -520,5 +527,12 @@ class UniChatroomController : IModule {
   private suspend fun UniMember.unsubscribeFCM() {
     this.firebaseCloudMessagingToken = ""
     log(Log.Type.SYS, "User ${this.username} unsubscribed from FCM Push Notifications")
+  }
+
+  /**
+   * Adds an RSA Public Key in the PEM format to this member
+   */
+  private fun UniMember.addRSAPubKeyPEM(pubKeyPEM: String) {
+    this.pubKeyPEM = pubKeyPEM
   }
 }

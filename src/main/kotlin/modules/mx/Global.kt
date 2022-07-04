@@ -111,7 +111,6 @@ var itemStockPostingIndexManager: ItemStockPostingIndexManager? = null
 @ExperimentalSerializationApi
 var uniChatroomIndexManager: UniChatroomIndexManager? = null
 
-
 /**
  * The global index for UniMessages
  */

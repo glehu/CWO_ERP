@@ -5,6 +5,7 @@ import api.misc.json.ListDeltaJson
 import api.misc.json.LoginResponseJson
 import api.misc.json.PairIntJson
 import api.misc.json.PasswordChange
+import api.misc.json.PubKeyPEMContainer
 import api.misc.json.RegistrationPayload
 import api.misc.json.RegistrationResponse
 import api.misc.json.SnippetPayload
@@ -352,8 +353,11 @@ class ServerController {
     suspend fun registerUser(appCall: ApplicationCall): RegistrationResponse {
       val registrationPayload = appCall.receive<RegistrationPayload>()
       var exists = false
-      var isSuccess = true
       var message = ""
+      if (registrationPayload.username == "_server") {
+        message = "Entered Username not allowed"
+        return RegistrationResponse(false, message)
+      }
       mutex.withLock {
         // Check if email is registered already
         contactIndexManager!!.getEntriesFromIndexSearch(
@@ -362,19 +366,28 @@ class ServerController {
           showAll = true
         ) { exists = true } // Set 'exists' to true if anything was found
         if (exists) {
-          isSuccess = false
-          message = "User already exists"
-        } else {
-          // Create a new user
-          val newUser = Contact(-1, registrationPayload.username)
-          newUser.email = registrationPayload.email
-          newUser.username = registrationPayload.username
-          newUser.password = encryptAES(registrationPayload.password)
-          contactIndexManager!!.save(newUser)
-          log(Log.Type.COM, "User ${registrationPayload.username} registered.", appCall.request.uri)
+          message = "User with entered Email already exists"
+          return RegistrationResponse(false, message)
         }
+        // Check if username is registered already
+        contactIndexManager!!.getEntriesFromIndexSearch(
+          searchText = "^${registrationPayload.username}$",
+          ixNr = 2,
+          showAll = true
+        ) { exists = true } // Set 'exists' to true if anything was found
+        if (exists) {
+          message = "User with entered Username already exists"
+          return RegistrationResponse(false, message)
+        }
+        // Create a new user
+        val newUser = Contact(-1, registrationPayload.username)
+        newUser.email = registrationPayload.email
+        newUser.username = registrationPayload.username
+        newUser.password = encryptAES(registrationPayload.password)
+        contactIndexManager!!.save(newUser)
+        log(Log.Type.COM, "User ${registrationPayload.username} registered.", appCall.request.uri)
       }
-      return RegistrationResponse(isSuccess, message)
+      return RegistrationResponse(true, message)
     }
 
     fun getItemImage(): String {
@@ -718,6 +731,32 @@ class ServerController {
           uniChatroom.addOrUpdateMember(
             username = UserCLIManager.getUserFromEmail(getJWTUsername(appCall))!!.username,
             fcmToken = config.fcmToken
+          )
+          saveChatroom(uniChatroom)
+        }
+        appCall.respond(HttpStatusCode.OK)
+      }
+    }
+
+    suspend fun setPubKeyPEM(
+      appCall: ApplicationCall,
+      config: PubKeyPEMContainer,
+    ) {
+      val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      with(UniChatroomController()) {
+        mutex.withLock {
+          val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
+          if (uniChatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          uniChatroom.addOrUpdateMember(
+            username = UserCLIManager.getUserFromEmail(getJWTUsername(appCall))!!.username,
+            pubKeyPEM = config.pubKeyPEM
           )
           saveChatroom(uniChatroom)
         }

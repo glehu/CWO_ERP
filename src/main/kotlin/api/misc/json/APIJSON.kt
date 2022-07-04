@@ -293,6 +293,11 @@ data class FirebaseCloudMessagingSubscription(
 )
 
 @Serializable
+data class PubKeyPEMContainer(
+  val pubKeyPEM: String
+)
+
+@Serializable
 data class UniChatroomImage(
   val imageBase64: String
 )

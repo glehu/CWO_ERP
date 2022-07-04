@@ -1,5 +1,6 @@
 package modules.m5
 
+import com.benasher44.uuid.Uuid
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,6 +17,16 @@ data class UniMember(
   var username: String,
   var roles: ArrayList<String>,
 ) {
+  @SerialName("id")
+  var id: String = ""
+
   @SerialName("fcm")
   var firebaseCloudMessagingToken = ""
+
+  @SerialName("pem")
+  var pubKeyPEM = ""
+
+  init {
+    if (id.isEmpty()) id = Uuid.randomUUID().toString()
+  }
 }

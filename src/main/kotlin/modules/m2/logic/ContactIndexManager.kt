@@ -37,11 +37,12 @@ class ContactIndexManager : IIndexManager {
   init {
     initialize(
       1, //email
+      2 //username
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
-    return arrayListOf("1-Email")
+    return arrayListOf("1-Email", "2-Username")
   }
 
   override suspend fun indexEntry(
@@ -58,7 +59,8 @@ class ContactIndexManager : IIndexManager {
       byteSize,
       writeToDisk,
       userName,
-      Pair(1, entry.email)
+      Pair(1, entry.email),
+      Pair(2, entry.username)
     )
   }
 

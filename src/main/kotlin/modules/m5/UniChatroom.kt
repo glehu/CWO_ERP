@@ -26,10 +26,13 @@ data class UniChatroom(
 
   @SerialName("guid")
   var chatroomGUID = ""
+
   @SerialName("cdate")
   var dateCreated = ""
+
   @SerialName("ts")
   var dateChangedUnix = -1L
+
   @SerialName("s")
   var status = 1
   var imgGUID = ""

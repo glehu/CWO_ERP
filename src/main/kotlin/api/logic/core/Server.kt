@@ -8,6 +8,7 @@ import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.ListDeltaJson
 import api.misc.json.PairIntJson
 import api.misc.json.PasswordChange
+import api.misc.json.PubKeyPEMContainer
 import api.misc.json.SettingsRequestJson
 import api.misc.json.SnippetPayload
 import api.misc.json.TwoIntOneDoubleJson
@@ -317,7 +318,7 @@ class Server : IModule {
           getMessagesOfUniChatroom()
           // Members
           addMemberToUniChatroom()
-          removeMemberOfUniChatroom()
+          kickMemberOfUniChatroom()
           banMemberOfUniChatroom()
           getMembersOfUniChatroom()
           // Roles
@@ -325,6 +326,8 @@ class Server : IModule {
           removeRoleOfMemberOfUniChatroom()
           // Notifications
           setFirebaseCloudMessagingSubscription()
+          // Encryption
+          setPubKeyPEM()
 
           /*
            * M6 Endpoints (SnippetBase)
@@ -716,8 +719,8 @@ class Server : IModule {
     }
   }
 
-  private fun Route.removeMemberOfUniChatroom() {
-    post("m5/removemember/{uniChatroomGUID}") {
+  private fun Route.kickMemberOfUniChatroom() {
+    post("m5/kickmember/{uniChatroomGUID}") {
       val config: UniChatroomRemoveMember = Json.decodeFromString(call.receive())
       ServerController.removeMemberOfUniChatroom(call, config)
     }
@@ -754,6 +757,13 @@ class Server : IModule {
     post("m5/subscribe/{uniChatroomGUID}") {
       val config: FirebaseCloudMessagingSubscription = Json.decodeFromString(call.receive())
       ServerController.setFirebaseCloudMessagingSubscription(call, config)
+    }
+  }
+
+  private fun Route.setPubKeyPEM() {
+    post("m5/pubkey/{uniChatroomGUID}") {
+      val config: PubKeyPEMContainer = Json.decodeFromString(call.receive())
+      ServerController.setPubKeyPEM(call, config)
     }
   }
 

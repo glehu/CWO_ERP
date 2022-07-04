@@ -12,7 +12,7 @@ import modules.mx.uniMessagesIndexManager
 @ExperimentalCoroutinesApi
 @ExperimentalSerializationApi
 @InternalAPI
-class UniMessagesController: IModule {
+class UniMessagesController : IModule {
   override val moduleNameLong = "UniMessagesController"
   override val module = "M5MSG"
   override fun getIndexManager(): IIndexManager {
