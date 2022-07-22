@@ -18,6 +18,7 @@ import api.misc.json.UniChatroomCreateChatroom
 import api.misc.json.UniChatroomImage
 import api.misc.json.UniChatroomMemberRole
 import api.misc.json.UniChatroomRemoveMember
+import api.misc.json.UniMemberProfileImage
 import api.misc.json.UsernameChange
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
@@ -313,6 +314,7 @@ class Server : IModule {
           createUniChatroom()
           getUniChatroom()
           setImageOfUniChatroom()
+          setImageOfUniMember()
           // Messages
           addMessageToUniChatroom()
           getMessagesOfUniChatroom()
@@ -771,6 +773,13 @@ class Server : IModule {
     post("m5/setimage/{uniChatroomGUID}") {
       val config: UniChatroomImage = Json.decodeFromString(call.receive())
       ServerController.setUniChatroomImage(call, config)
+    }
+  }
+
+  private fun Route.setImageOfUniMember() {
+    post("m5/setmemberimage/{uniChatroomGUID}") {
+      val config: UniMemberProfileImage = Json.decodeFromString(call.receive())
+      ServerController.setUniMemberImage(call, config)
     }
   }
 

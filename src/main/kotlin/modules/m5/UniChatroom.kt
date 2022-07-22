@@ -40,4 +40,11 @@ data class UniChatroom(
   var banlist: ArrayList<String> = arrayListOf()
   var subChatrooms: ArrayList<String> = arrayListOf()
   var parentGUID = ""
+  /** Determines the type of this chatroom.
+   *
+   * Possible values:
+   * - text
+   * - screenshare
+   */
+  var type = "text"
 }

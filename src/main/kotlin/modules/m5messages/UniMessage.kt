@@ -27,6 +27,9 @@ data class UniMessage(
 
   var isEncrypted = false
 
+  @SerialName("reacts")
+  var reactions: ArrayList<String> = arrayListOf()
+
   init {
     if (timestamp.isEmpty()) timestamp = Timestamp.now()
     if (gUID.isEmpty()) gUID = Uuid.randomUUID().toString()

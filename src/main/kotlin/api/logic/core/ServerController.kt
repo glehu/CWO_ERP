@@ -18,6 +18,7 @@ import api.misc.json.UniChatroomImage
 import api.misc.json.UniChatroomMemberRole
 import api.misc.json.UniChatroomMessages
 import api.misc.json.UniChatroomRemoveMember
+import api.misc.json.UniMemberProfileImage
 import api.misc.json.UsernameChange
 import api.misc.json.ValidationContainerJson
 import api.misc.json.WebshopOrder
@@ -433,7 +434,7 @@ class ServerController {
       val uniChatroom: UniChatroom
       with(UniChatroomController()) {
         // Create Chatroom and populate it
-        uniChatroom = createChatroom(config.title)
+        uniChatroom = createChatroom(config.title, config.type)
         uniChatroom.addOrUpdateMember(
           username = owner,
           role = UniRole("Owner")
@@ -460,6 +461,7 @@ class ServerController {
             // Copy other values
             copy.chatroomGUID = uniChatroom.chatroomGUID
             copy.parentGUID = uniChatroom.parentGUID
+            copy.type = uniChatroom.type
             // Create reference
             parent.subChatrooms.add(Json.encodeToString(copy))
             // Reference the parent also
@@ -790,6 +792,39 @@ class ServerController {
               return
             }
             uniChatroom.imgGUID = snippet.gUID
+          }
+          saveChatroom(uniChatroom)
+        }
+        appCall.respond(HttpStatusCode.OK)
+      }
+    }
+
+    suspend fun setUniMemberImage(appCall: ApplicationCall, config: UniMemberProfileImage) {
+      val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      with(UniChatroomController()) {
+        mutex.withLock {
+          val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
+          if (uniChatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          with(SnippetBaseController()) {
+            val snippet = saveFile(
+              base64 = config.imageBase64,
+              snippet = createSnippet(),
+              owner = getUsernameReversedBase(appCall),
+              maxWidth = 100,
+              maxHeight = 100
+            )
+            if (snippet == null) {
+              appCall.respond(HttpStatusCode.InternalServerError)
+              return
+            }
+            uniChatroom.addOrUpdateMember(config.username, imageSnippetURL = snippet.gUID)
           }
           saveChatroom(uniChatroom)
         }

@@ -129,6 +129,7 @@ class SnippetBaseController : IModule, IWebApp {
       }
       withContext(Dispatchers.IO) {
         ImageIO.write(image, fileExtension, file)
+        image.flush() // Flush to free system resources
       }
     } else if (strings[0].contains("audio")) {
       // Write Bytes to File

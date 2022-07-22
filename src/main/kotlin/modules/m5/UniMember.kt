@@ -26,6 +26,9 @@ data class UniMember(
   @SerialName("pem")
   var pubKeyPEM = ""
 
+  @SerialName("iurl")
+  var imageURL = ""
+
   init {
     if (id.isEmpty()) id = Uuid.randomUUID().toString()
   }

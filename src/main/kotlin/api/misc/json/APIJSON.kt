@@ -254,6 +254,13 @@ data class MockingbirdConfig(
 @Serializable
 data class UniChatroomCreateChatroom(
   val title: String,
+  /** Determines the type of this chatroom.
+   *
+   * Possible values:
+   * - text
+   * - screenshare
+   */
+  val type: String,
   val imgBase64: String = ""
 )
 
@@ -267,6 +274,20 @@ data class UniChatroomAddMessage(
 data class UniChatroomEditMessage(
   val uniMessageGUID: String,
   val newContent: String
+)
+
+@Serializable
+data class UniChatroomUpvoteMessage(
+  val uniMessageGUID: String,
+  val username: String
+)
+
+@Serializable
+data class UniMessageReaction(
+  @SerialName("src")
+  val from: String,
+  @SerialName("t")
+  val type: String
 )
 
 @Serializable
@@ -300,6 +321,12 @@ data class PubKeyPEMContainer(
 @Serializable
 data class UniChatroomImage(
   val imageBase64: String
+)
+
+@Serializable
+data class UniMemberProfileImage(
+  val imageBase64: String,
+  val username: String
 )
 
 @Serializable
