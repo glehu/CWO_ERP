@@ -277,15 +277,22 @@ data class UniChatroomEditMessage(
 )
 
 @Serializable
-data class UniChatroomUpvoteMessage(
+data class UniChatroomReactMessage(
   val uniMessageGUID: String,
-  val username: String
+  val type: String
+)
+
+@Serializable
+data class UniChatroomReactMessageResponse(
+  val uniMessageGUID: String,
+  val type: String,
+  val from: String
 )
 
 @Serializable
 data class UniMessageReaction(
   @SerialName("src")
-  val from: String,
+  val from: ArrayList<String>,
   @SerialName("t")
   val type: String
 )

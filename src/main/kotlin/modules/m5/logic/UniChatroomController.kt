@@ -2,7 +2,8 @@ package modules.m5.logic
 
 import api.logic.core.ServerController
 import api.misc.json.UniChatroomEditMessage
-import api.misc.json.UniChatroomUpvoteMessage
+import api.misc.json.UniChatroomReactMessage
+import api.misc.json.UniChatroomReactMessageResponse
 import api.misc.json.UniMessageReaction
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.MulticastMessage
@@ -355,10 +356,10 @@ class UniChatroomController : IModule {
                   frameText, "[c:EDIT<JSON]", thisConnection, clarifierSession!!
                 ).connectionsToDelete
               )
-            } else if (frameText.startsWith("[c:UPVOTE<JSON]")) { // Upvote Message
+            } else if (frameText.startsWith("[c:REACT<JSON]")) { // Reaction
               clarifierSession!!.connectionsToDelete.addAll(
-                handleReceivedUpvoteMessage(
-                  frameText, "[c:UPVOTE<JSON]", thisConnection, clarifierSession!!
+                handleReceivedReactMessage(
+                  frameText, "[c:REACT<JSON]", thisConnection, clarifierSession!!
                 ).connectionsToDelete
               )
             } else if (frameText.startsWith("[c:SC]")) { // Screenshare Blob
@@ -445,42 +446,74 @@ class UniChatroomController : IModule {
     return clarifierSession
   }
 
-  private suspend fun handleReceivedUpvoteMessage(
+  private suspend fun handleReceivedReactMessage(
     frameText: String,
     prefix: String,
     thisConnection: Connection,
     clarifierSession: ClarifierSession
   ): ClarifierSession {
-    val configJson = frameText.substring(prefix.length)
     // Get payload
-    val upvoteMessageConfig: UniChatroomUpvoteMessage =
-      Json.decodeFromString(configJson)
+    val reactMessageConfig: UniChatroomReactMessage =
+      Json.decodeFromString(frameText.substring(prefix.length))
     // Valid?
-    if (upvoteMessageConfig.uniMessageGUID.isEmpty()) return clarifierSession
+    if (reactMessageConfig.uniMessageGUID.isEmpty()) return clarifierSession
     // Edit message from database
     with(UniMessagesController()) {
       var message: UniMessage? = null
       var chatroomUID = -1
       mutexMessages.withLock {
-        getEntriesFromIndexSearch(upvoteMessageConfig.uniMessageGUID, 2, true) {
+        getEntriesFromIndexSearch(reactMessageConfig.uniMessageGUID, 2, true) {
           message = it as UniMessage
         }
         if (message == null) return clarifierSession
-        // Check if user already upvoted this message
-        // If the user did, return
+        // Check if user already reacted to this message in the same way
+        // If the user did, return, if not, add the user
+        var reactionTypeExists = false
+        var index = 0
         for (reaction in message!!.reactions) {
-          val react: UniMessageReaction = Json.decodeFromString(reaction)
-          if (react.from == thisConnection.username) return clarifierSession
+          val react: UniMessageReaction
+          // Self-healing! If a reaction is broken, just clear it
+          try {
+            react = Json.decodeFromString(reaction)
+          } catch (e: Exception) {
+            message!!.reactions[index] = ""
+            continue
+          }
+          if (react.type == reactMessageConfig.type) {
+            reactionTypeExists = true
+            if (react.from.contains(thisConnection.username)) {
+              // Reaction does exist and contains the user -> Return
+              return clarifierSession
+            } else {
+              // Reaction does exist but does not contain the user -> Add user
+              react.from.add(thisConnection.username)
+              message!!.reactions[index] = Json.encodeToString(react)
+              break
+            }
+          }
+          index++
         }
         chatroomUID = message!!.uniChatroomUID
-        val reaction = UniMessageReaction(thisConnection.username, "+")
-        message!!.reactions.add(Json.encodeToString(reaction))
+        if (!reactionTypeExists) {
+          val reaction = UniMessageReaction(
+            from = arrayListOf(thisConnection.username),
+            type = reactMessageConfig.type
+          )
+          message!!.reactions.add(Json.encodeToString(reaction))
+        }
         save(message!!)
       }
+      val response = Json.encodeToString(
+        UniChatroomReactMessageResponse(
+          uniMessageGUID = reactMessageConfig.uniMessageGUID,
+          type = reactMessageConfig.type,
+          from = thisConnection.username
+        )
+      )
       val uniMessage = UniMessage(
         uniChatroomUID = chatroomUID,
         from = "_server",
-        message = "[s:UpvoteNotification]$configJson"
+        message = "[s:ReactNotification]$response"
       )
       val msg = Json.encodeToString(uniMessage)
       clarifierSession.connections.forEach {
