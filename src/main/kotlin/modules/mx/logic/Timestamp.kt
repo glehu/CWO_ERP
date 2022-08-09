@@ -25,5 +25,11 @@ class Timestamp {
     fun now(): String {
       return getUTCTimestampFromUnix(getUnixTimestamp() + (differenceFromUTC * 3600))
     }
+
+    fun yesterday(): String {
+      return getUTCTimestampFromUnix(
+        unixLong = getUnixTimestamp() + ((differenceFromUTC - 24) * 3600)
+      )
+    }
   }
 }
