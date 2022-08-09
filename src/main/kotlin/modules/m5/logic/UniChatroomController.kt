@@ -1,6 +1,7 @@
 package modules.m5.logic
 
 import api.logic.core.ServerController
+import api.misc.json.LeaderboardStats
 import api.misc.json.UniChatroomEditMessage
 import api.misc.json.UniChatroomReactMessage
 import api.misc.json.UniChatroomReactMessageResponse
@@ -432,10 +433,11 @@ class UniChatroomController : IModule {
         uniChatroomUID = -1,
         from = "_server",
         message = "List of all commands:\n" +
-                "\n/gif [keywords] to send a random GIF" +
-                "\n/flip [optional: keywords] to open the Imgflip Interface" +
-                "\n/topflip [optional: -d] to review the most upvoted Image! -d to filter today's images only" +
-                "\n/stats to view the current subchats' statistics on messages"
+                "\n  /gif [keywords] to send a random GIF" +
+                "\n  /flip [optional: keywords] to open the Imgflip interface" +
+                "\n  /topflip [optional: -d] to review the most upvoted image! -d to filter today's images only" +
+                "\n  /stats to view the current subchats' statistics on messages" +
+                "\n  /leaderboard to show the top members of this subchat"
       )
       clarifierSession.connections.forEach {
         if (!it.session.outgoing.isClosedForSend) {
@@ -511,7 +513,7 @@ class UniChatroomController : IModule {
       }
       if (topRating > 0.0 && topFlip != null) {
         val serverMessage = "Top Flip Presented by ${topFlip!!.from}!" +
-                "\nWith a rating of $topRating..."
+                "\nRating: $topRating"
         val tmpMessage = UniMessage(
           uID = -1,
           uniChatroomUID = -1,
@@ -552,7 +554,7 @@ class UniChatroomController : IModule {
       uniMessagesIndexManager!!.getEntriesFromIndexSearch(
         searchText = "^${unichatroomUID}$",
         ixNr = 1,
-        showAll = false
+        showAll = true
       ) {
         it as UniMessage
         if (it.from != "_server") {
@@ -589,6 +591,66 @@ class UniChatroomController : IModule {
                 "\n...with $amountRCT reaction(s)!" +
                 "\n\n${messagesWithReactionPercent.roundTo(2)}% " +
                 "of all messages received a reaction!"
+      )
+      clarifierSession.connections.forEach {
+        if (!it.session.outgoing.isClosedForSend) {
+          it.session.send(Json.encodeToString(tmpMessage))
+        } else {
+          clarifierSession.connectionsToDelete.add(it)
+        }
+      }
+    } else if (frameText.contains("/leaderboard")) {
+      if (unichatroomUID == -1) return
+      val members = hashMapOf<String, LeaderboardStats>()
+      uniMessagesIndexManager!!.getEntriesFromIndexSearch(
+        searchText = "^${unichatroomUID}$",
+        ixNr = 1,
+        showAll = true
+      ) {
+        it as UniMessage
+        if (it.from != "_server") {
+          if (!members.containsKey(it.from)) {
+            members[it.from] = LeaderboardStats(it.from)
+          }
+          members[it.from]!!.messages += 1
+          // Count reactions!
+          if (it.reactions.size > 0) {
+            var upvotes = 0.0
+            var downvotes = 0.0
+            var stars = 0.0
+            members[it.from]!!.reactions += it.reactions.size
+            for (reaction in it.reactions) {
+              val react: UniMessageReaction = Json.decodeFromString(reaction)
+              when (react.type) {
+                "+" -> {
+                  upvotes += react.from.size
+                }
+                "⭐" -> {
+                  stars += react.from.size
+                }
+                "-" -> {
+                  downvotes += react.from.size
+                }
+              }
+            }
+            // Add likes...
+            if (upvotes > 0) members[it.from]!!.totalRating += (1.0 * upvotes)
+            // Multiply by stars...
+            if (stars > 0) members[it.from]!!.totalRating *= (2.25 * stars)
+            // Then subtract downvotes
+            if (downvotes > 0) members[it.from]!!.totalRating -= (1.0 * downvotes)
+          }
+        }
+      }
+      // Sort by Rating
+      val sortedMembers = members.values
+        .toList()
+        .sortedWith(compareBy({ -it.totalRating }, { -it.messages }))
+      val tmpMessage = UniMessage(
+        uID = -1,
+        uniChatroomUID = -1,
+        from = "_server",
+        message = "[s:Leaderboard]" + Json.encodeToString(sortedMembers)
       )
       clarifierSession.connections.forEach {
         if (!it.session.outgoing.isClosedForSend) {

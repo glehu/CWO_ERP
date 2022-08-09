@@ -365,3 +365,11 @@ data class PasswordChange(
   val password: String,
   val newPassword: String
 )
+
+@Serializable
+data class LeaderboardStats(
+  var username: String,
+  var messages: Int = 0,
+  var reactions: Int = 0,
+  var totalRating: Double = 0.0
+)
