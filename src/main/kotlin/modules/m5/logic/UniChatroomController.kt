@@ -37,6 +37,7 @@ import modules.m5messages.logic.UniMessagesController
 import modules.mx.logic.Log
 import modules.mx.logic.Timestamp
 import modules.mx.logic.UserCLIManager
+import modules.mx.logic.roundTo
 import modules.mx.uniChatroomIndexManager
 import modules.mx.uniMessagesIndexManager
 import java.util.*
@@ -462,36 +463,48 @@ class UniChatroomController : IModule {
       uniMessagesIndexManager!!.getEntriesFromIndexSearch(
         searchText = "^${unichatroomUID}$",
         ixNr = 1,
-        showAll = false
+        showAll = true
       ) {
         it as UniMessage
-        ok = true
-        if (isFlipOfTheDay) {
-          val flipYear = it.timestamp.substring(0, 4).toInt()
-          val flipMonth = it.timestamp.substring(5, 7).toInt()
-          val flipDay = it.timestamp.substring(8, 10).toInt()
-          ok = flipYear >= year && flipMonth >= month && flipDay >= day
-        }
-        if (ok && it.message.startsWith("[c:IMG]")) {
-          var rating = 0.0
-          if (it.reactions.size > 0) {
-            for (reaction in it.reactions) {
-              val react: UniMessageReaction = Json.decodeFromString(reaction)
-              when (react.type) {
-                "+" -> {
-                  rating += (1.0 * react.from.size)
-                }
-                "⭐" -> {
-                  rating *= (2.25 * react.from.size)
-                }
-                "-" -> {
-                  rating -= (1.0 * react.from.size)
+        if (it.message.startsWith("[c:IMG]")) {
+          ok = true
+          if (isFlipOfTheDay) {
+            val flipYear = it.timestamp.substring(0, 4).toInt()
+            val flipMonth = it.timestamp.substring(5, 7).toInt()
+            val flipDay = it.timestamp.substring(8, 10).toInt()
+            ok = flipYear >= year && flipMonth >= month && flipDay >= day
+          }
+          if (ok) {
+            var rating = 0.0
+            var upvotes = 0.0
+            var downvotes = 0.0
+            var stars = 0.0
+            if (it.reactions.size > 0) {
+              for (reaction in it.reactions) {
+                val react: UniMessageReaction = Json.decodeFromString(reaction)
+                when (react.type) {
+                  "+" -> {
+                    upvotes += react.from.size
+                  }
+                  "⭐" -> {
+                    stars += react.from.size
+                  }
+                  "-" -> {
+                    downvotes += react.from.size
+                  }
                 }
               }
-            }
-            if (rating > topRating) {
-              topRating = rating
-              topFlip = it
+              // Add likes...
+              if (upvotes > 0) rating += (1.0 * upvotes)
+              // Multiply by stars...
+              if (stars > 0) rating *= (2.25 * stars)
+              // Then subtract downvotes
+              if (downvotes > 0) rating -= (1.0 * downvotes)
+              // Check if we have found a new topflip!
+              if (rating > topRating) {
+                topRating = rating
+                topFlip = it
+              }
             }
           }
         }
@@ -561,7 +574,8 @@ class UniChatroomController : IModule {
         }
       }
       val messagesTotal = amountGIF + amountIMG + amountMSG + amountAUD
-      val messagesWithReactionPercent = messagesWithReaction.toDouble() / messagesTotal.toDouble()
+      val messagesWithReactionPercent =
+        (messagesWithReaction.toDouble() / messagesTotal.toDouble()) * 100.0
       val tmpMessage = UniMessage(
         uID = -1,
         uniChatroomUID = -1,
@@ -573,7 +587,8 @@ class UniChatroomController : IModule {
                 "\nAudios sent: $amountAUD" +
                 "\n\nFor a total of $messagesTotal message(s)" +
                 "\n...with $amountRCT reaction(s)!" +
-                "\n\n${messagesWithReactionPercent * 100.0}% of all messages received a reaction!"
+                "\n\n${messagesWithReactionPercent.roundTo(2)}% " +
+                "of all messages received a reaction!"
       )
       clarifierSession.connections.forEach {
         if (!it.session.outgoing.isClosedForSend) {
