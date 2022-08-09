@@ -490,12 +490,19 @@ class ServerController {
       with(UniChatroomController()) {
         mutex.withLock {
           uniChatroom = getChatroom(uniChatroomGUID)
+          if (uniChatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+          } else {
+            if (uniChatroom.checkIsMemberBanned(
+                username = getJWTUsername(appCall),
+                isEmail = true
+              )) {
+              appCall.respond(HttpStatusCode.Forbidden)
+              return
+            }
+            appCall.respond(uniChatroom)
+          }
         }
-      }
-      if (uniChatroom == null) {
-        appCall.respond(HttpStatusCode.NotFound)
-      } else {
-        appCall.respond(uniChatroom)
       }
     }
 
@@ -505,6 +512,13 @@ class ServerController {
           val uniChatroom: UniChatroom? = getChatroom(config.uniChatroomGUID)
           if (uniChatroom == null) {
             appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           if (!uniChatroom.addMessage(member, config.text)) {
@@ -529,7 +543,15 @@ class ServerController {
         val uniChatroom = getChatroom(uniChatroomGUID)
         if (uniChatroom == null) {
           appCall.respond(HttpStatusCode.NotFound)
+          return
         } else {
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
           //Get Messages from index
           val messages = arrayListOf<String>()
           uniMessagesIndexManager!!.getEntriesFromIndexSearch(
@@ -561,6 +583,13 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
           if (!uniChatroom.addOrUpdateMember(config.member, getRoleFromConfig(config.role))) {
             appCall.respond(HttpStatusCode.InternalServerError)
             return
@@ -584,6 +613,13 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
           if (!uniChatroom.removeMember(config.member)) {
             appCall.respond(HttpStatusCode.NotFound)
             return
@@ -605,6 +641,13 @@ class ServerController {
           val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
           if (uniChatroom == null) {
             appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           // Add member to the ban list to revoke all access rights
@@ -638,6 +681,13 @@ class ServerController {
         if (uniChatroom == null) {
           appCall.respond(HttpStatusCode.NotFound)
         } else {
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
           appCall.respond(uniChatroom.members)
         }
       }
@@ -662,6 +712,13 @@ class ServerController {
           val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
           if (uniChatroom == null) {
             appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           if (uniChatroom.addOrUpdateMember(config.member, UniRole(config.role))) {
@@ -693,14 +750,20 @@ class ServerController {
           if (uniChatroom == null) {
             appCall.respond(HttpStatusCode.NotFound)
             return
-          } else {
-            for (uniMember in uniChatroom.members) {
-              val member = Json.decodeFromString<UniMember>(uniMember)
-              if (member.username == config.member) {
-                member.removeRole(UniRole(config.role))
-                saveChatroom(uniChatroom)
-                break
-              }
+          }
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
+          for (uniMember in uniChatroom.members) {
+            val member = Json.decodeFromString<UniMember>(uniMember)
+            if (member.username == config.member) {
+              member.removeRole(UniRole(config.role))
+              saveChatroom(uniChatroom)
+              break
             }
           }
         }
@@ -730,6 +793,13 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
           uniChatroom.addOrUpdateMember(
             username = UserCLIManager.getUserFromEmail(getJWTUsername(appCall))!!.username,
             fcmToken = config.fcmToken
@@ -756,6 +826,13 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
           uniChatroom.addOrUpdateMember(
             username = UserCLIManager.getUserFromEmail(getJWTUsername(appCall))!!.username,
             pubKeyPEM = config.pubKeyPEM
@@ -777,6 +854,13 @@ class ServerController {
           val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
           if (uniChatroom == null) {
             appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           with(SnippetBaseController()) {
@@ -810,6 +894,13 @@ class ServerController {
           val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
           if (uniChatroom == null) {
             appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          if (uniChatroom.checkIsMemberBanned(
+              username = getJWTUsername(appCall),
+              isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           with(SnippetBaseController()) {

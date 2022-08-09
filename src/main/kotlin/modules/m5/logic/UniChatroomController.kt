@@ -35,8 +35,10 @@ import modules.m5.UniRole
 import modules.m5messages.UniMessage
 import modules.m5messages.logic.UniMessagesController
 import modules.mx.logic.Log
+import modules.mx.logic.Timestamp
 import modules.mx.logic.UserCLIManager
 import modules.mx.uniChatroomIndexManager
+import modules.mx.uniMessagesIndexManager
 import java.util.*
 
 @DelicateCoroutinesApi
@@ -220,13 +222,24 @@ class UniChatroomController : IModule {
     return isMember
   }
 
-  private fun UniChatroom.checkIsMemberBanned(member: String): Boolean {
-    if (member == "_server") return false
-    var isBanned = false
-    for (uniMember in this.banlist) {
-      if (Json.decodeFromString<UniMember>(uniMember).username == member) isBanned = true
+  fun UniChatroom.checkIsMemberBanned(username: String, isEmail: Boolean = false): Boolean {
+    // Exit if there are no banned members (or if server is being checked)
+    if (this.banlist.size < 1 || username == "_server") {
+      return false
     }
-    return isBanned
+    var usernameTmp: String
+    // If an email was provided, convert it to a username first
+    val usernameToCheck = if (isEmail) {
+      UserCLIManager.getUserFromEmail(username)!!.username
+    } else {
+      username
+    }
+    // Check serialized members in banlist
+    for (uniMember in this.banlist) {
+      usernameTmp = Json.decodeFromString<UniMember>(uniMember).username
+      if (usernameTmp == usernameToCheck) return true
+    }
+    return false
   }
 
   class Connection(val session: DefaultWebSocketSession, val email: String, val username: String) {
@@ -307,11 +320,15 @@ class UniChatroomController : IModule {
       clarifierSession = ClarifierSession(uniChatroomGUID)
       clarifierSessions.add(clarifierSession!!)
     }
+    // Retrieve Clarifier Session
+    val uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, username)
+    if (uniChatroom.checkIsMemberBanned(username)) {
+      this.close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Forbidden"))
+      return
+    }
     // Add this new WebSocket connection
     val thisConnection = Connection(this, email, username)
     clarifierSession!!.connections += thisConnection
-    // Retrieve Clarifier Session
-    val uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, username)
     if (!uniChatroom.checkIsMember(thisConnection.username)) {
       // Register new member
       uniChatroom.addOrUpdateMember(username, UniRole("Member"))
@@ -366,6 +383,10 @@ class UniChatroomController : IModule {
               handleReceivedScreenshareBlob(
                 frameText, clarifierSession!!
               )
+            } else if (frameText.startsWith("[c:CMD]")) { // Command
+              handleReceivedCommand(
+                frameText, clarifierSession!!, uniChatroom.uID
+              )
             } else { // Regular Message
               clarifierSession!!.connectionsToDelete.addAll(
                 handleReceivedMessage(
@@ -394,6 +415,172 @@ class UniChatroomController : IModule {
         it.session.send(frameText)
       } else {
         clarifierSession.connectionsToDelete.add(it)
+      }
+    }
+  }
+
+  private suspend fun handleReceivedCommand(
+    frameText: String,
+    clarifierSession: ClarifierSession,
+    unichatroomUID: Int = -1,
+  ) {
+    // What command?
+    if (frameText.contains("/help")) {
+      val tmpMessage = UniMessage(
+        uID = -1,
+        uniChatroomUID = -1,
+        from = "_server",
+        message = "List of all commands:\n" +
+                "\n/gif [keywords] to send a random GIF" +
+                "\n/flip [optional: keywords] to open the Imgflip Interface" +
+                "\n/topflip [optional: -d] to review the most upvoted Image! -d to filter today's images only" +
+                "\n/stats to view the current subchats' statistics on messages"
+      )
+      clarifierSession.connections.forEach {
+        if (!it.session.outgoing.isClosedForSend) {
+          it.session.send(Json.encodeToString(tmpMessage))
+        } else {
+          clarifierSession.connectionsToDelete.add(it)
+        }
+      }
+    } else if (frameText.contains("/topflip")) {
+      if (unichatroomUID == -1) return
+      var isFlipOfTheDay = false
+      val dateFrom = Timestamp.now()
+      // 2022-07-14T11:06:03Z
+      // 00000000001111111111
+      // 01234567890123456789
+      val year = dateFrom.substring(0, 4).toInt()
+      val month = dateFrom.substring(5, 7).toInt()
+      val day = dateFrom.substring(8, 10).toInt()
+      if (frameText.contains("-d")) {
+        isFlipOfTheDay = true
+      }
+      var topFlip: UniMessage? = null
+      var topRating = 0.0
+      var ok: Boolean
+      uniMessagesIndexManager!!.getEntriesFromIndexSearch(
+        searchText = "^${unichatroomUID}$",
+        ixNr = 1,
+        showAll = false
+      ) {
+        it as UniMessage
+        ok = true
+        if (isFlipOfTheDay) {
+          val flipYear = it.timestamp.substring(0, 4).toInt()
+          val flipMonth = it.timestamp.substring(5, 7).toInt()
+          val flipDay = it.timestamp.substring(8, 10).toInt()
+          ok = flipYear >= year && flipMonth >= month && flipDay >= day
+        }
+        if (ok && it.message.startsWith("[c:IMG]")) {
+          var rating = 0.0
+          if (it.reactions.size > 0) {
+            for (reaction in it.reactions) {
+              val react: UniMessageReaction = Json.decodeFromString(reaction)
+              when (react.type) {
+                "+" -> {
+                  rating += (1.0 * react.from.size)
+                }
+                "⭐" -> {
+                  rating *= (2.25 * react.from.size)
+                }
+                "-" -> {
+                  rating -= (1.0 * react.from.size)
+                }
+              }
+            }
+            if (rating > topRating) {
+              topRating = rating
+              topFlip = it
+            }
+          }
+        }
+      }
+      if (topRating > 0.0 && topFlip != null) {
+        val serverMessage = "Top Flip Presented by ${topFlip!!.from}!" +
+                "\nWith a rating of $topRating..."
+        val tmpMessage = UniMessage(
+          uID = -1,
+          uniChatroomUID = -1,
+          from = "_server",
+          message = serverMessage
+        )
+        clarifierSession.connections.forEach {
+          if (!it.session.outgoing.isClosedForSend) {
+            it.session.send(Json.encodeToString(tmpMessage))
+            it.session.send(Json.encodeToString(topFlip))
+          } else {
+            clarifierSession.connectionsToDelete.add(it)
+          }
+        }
+      } else {
+        val tmpMessage = UniMessage(
+          uID = -1,
+          uniChatroomUID = -1,
+          from = "_server",
+          message = "No Top Flip Available!"
+        )
+        clarifierSession.connections.forEach {
+          if (!it.session.outgoing.isClosedForSend) {
+            it.session.send(Json.encodeToString(tmpMessage))
+          } else {
+            clarifierSession.connectionsToDelete.add(it)
+          }
+        }
+      }
+    } else if (frameText.contains("/stats")) {
+      if (unichatroomUID == -1) return
+      var amountMSG = 0
+      var amountGIF = 0
+      var amountIMG = 0
+      var amountAUD = 0
+      var amountRCT = 0
+      var messagesWithReaction = 0
+      uniMessagesIndexManager!!.getEntriesFromIndexSearch(
+        searchText = "^${unichatroomUID}$",
+        ixNr = 1,
+        showAll = false
+      ) {
+        it as UniMessage
+        if (it.from != "_server") {
+          // Count each message type
+          if (it.message.startsWith("[c:GIF]")) {
+            amountGIF += 1
+          } else if (it.message.startsWith("[c:IMG]")) {
+            amountIMG += 1
+          } else if (it.message.startsWith("[c:AUD]")) {
+            amountAUD += 1
+          } else {
+            amountMSG += 1
+          }
+          // Count reactions!
+          if (it.reactions.size > 0) {
+            amountRCT += it.reactions.size
+            messagesWithReaction += 1
+          }
+        }
+      }
+      val messagesTotal = amountGIF + amountIMG + amountMSG + amountAUD
+      val messagesWithReactionPercent = messagesWithReaction.toDouble() / messagesTotal.toDouble()
+      val tmpMessage = UniMessage(
+        uID = -1,
+        uniChatroomUID = -1,
+        from = "_server",
+        message = "Statistics for this Subchat:\n" +
+                "\nTexts sent: $amountMSG" +
+                "\nGIFs sent: $amountGIF" +
+                "\nImages sent: $amountIMG" +
+                "\nAudios sent: $amountAUD" +
+                "\n\nFor a total of $messagesTotal message(s)" +
+                "\n...with $amountRCT reaction(s)!" +
+                "\n\n${messagesWithReactionPercent * 100.0}% of all messages received a reaction!"
+      )
+      clarifierSession.connections.forEach {
+        if (!it.session.outgoing.isClosedForSend) {
+          it.session.send(Json.encodeToString(tmpMessage))
+        } else {
+          clarifierSession.connectionsToDelete.add(it)
+        }
       }
     }
   }
