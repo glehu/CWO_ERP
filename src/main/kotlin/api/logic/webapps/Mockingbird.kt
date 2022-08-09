@@ -37,7 +37,10 @@ class Mockingbird {
 
     suspend fun handleRequest(appCall: ApplicationCall) {
       val who = appCall.request.queryParameters["who"] ?: ""
-      if (who.isEmpty()) return
+      if (who.isEmpty()) {
+        appCall.respond(appCall.receive())
+        return
+      }
       // Get Config
       val config: MockingbirdConfig
       // Measure time to stay as close as possible to the defined delay time by calculate the delta
