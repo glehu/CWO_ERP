@@ -499,7 +499,12 @@ class UniChatroomController : IModule {
               // Add likes...
               if (upvotes > 0) rating += (1.0 * upvotes)
               // Multiply by stars...
-              if (stars > 0) rating *= (2.25 * stars)
+              if (stars > 0) {
+                if (rating == 0.0) {
+                  rating = 1.0
+                }
+                rating *= (2.25 * stars)
+              }
               // Then subtract downvotes
               if (downvotes > 0) rating -= (1.0 * downvotes)
               // Check if we have found a new topflip!
@@ -636,7 +641,12 @@ class UniChatroomController : IModule {
             // Add likes...
             if (upvotes > 0) members[it.from]!!.totalRating += (1.0 * upvotes)
             // Multiply by stars...
-            if (stars > 0) members[it.from]!!.totalRating *= (2.25 * stars)
+            if (stars > 0) {
+              if (members[it.from]!!.totalRating == 0.0) {
+                members[it.from]!!.totalRating = 1.0
+              }
+              members[it.from]!!.totalRating *= (2.25 * stars)
+            }
             // Then subtract downvotes
             if (downvotes > 0) members[it.from]!!.totalRating -= (1.0 * downvotes)
           }
