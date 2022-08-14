@@ -286,7 +286,8 @@ data class UniChatroomReactMessage(
 data class UniChatroomReactMessageResponse(
   val uniMessageGUID: String,
   val type: String,
-  val from: String
+  val from: String,
+  val isRemove: Boolean
 )
 
 @Serializable
@@ -372,4 +373,21 @@ data class LeaderboardStats(
   var messages: Int = 0,
   var reactions: Int = 0,
   var totalRating: Double = 0.0
+)
+
+@Serializable
+data class LeaderboardStatsAdvanced(
+  var username: String,
+  var messages: Int = 0,
+  var reactions: Int = 0,
+  var totalRating: Double = 0.0,
+  var amountMSG: Int = 0,
+  var amountIMG: Int = 0,
+  var amountGIF: Int = 0,
+  var amountAUD: Int = 0
+)
+
+@Serializable
+data class UniChatroomUpgrade(
+  val toRank: Int
 )

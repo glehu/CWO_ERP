@@ -20,31 +20,38 @@ data class UniChatroom(
     if (uID == -1) uID = uniChatroomIndexManager!!.getUID()
     if (chatroomGUID.isEmpty()) chatroomGUID = Uuid.randomUUID().toString()
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
+    if (rank == 0) {
+      rank = 1
+      rankDescription = "Starter"
+    }
     // Always keep this up to date
     dateChangedUnix = Timestamp.getUnixTimestamp()
   }
 
   @SerialName("guid")
-  var chatroomGUID = ""
+  var chatroomGUID: String = ""
 
   @SerialName("cdate")
-  var dateCreated = ""
+  var dateCreated: String = ""
 
   @SerialName("ts")
-  var dateChangedUnix = -1L
+  var dateChangedUnix: Long = -1L
 
   @SerialName("s")
-  var status = 1
-  var imgGUID = ""
+  var status: Int = 1
+  var imgGUID: String = ""
   var members: ArrayList<String> = arrayListOf()
   var banlist: ArrayList<String> = arrayListOf()
   var subChatrooms: ArrayList<String> = arrayListOf()
-  var parentGUID = ""
+  var parentGUID: String = ""
   /** Determines the type of this chatroom.
    *
-   * Possible values:
+   * Possible values (currently):
    * - text
    * - screenshare
+   * - webcam
    */
-  var type = "text"
+  var type: String = "text"
+  var rank: Int = 0
+  var rankDescription: String = ""
 }

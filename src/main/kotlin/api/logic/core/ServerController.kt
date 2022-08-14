@@ -67,7 +67,6 @@ import modules.mx.itemIndexManager
 import modules.mx.logic.Emailer
 import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
-import modules.mx.logic.encryptAES
 import modules.mx.logic.encryptKeccak
 import modules.mx.maxSearchResultsGlobal
 import modules.mx.uniMessagesIndexManager
@@ -384,7 +383,7 @@ class ServerController {
         val newUser = Contact(-1, registrationPayload.username)
         newUser.email = registrationPayload.email
         newUser.username = registrationPayload.username
-        newUser.password = encryptAES(registrationPayload.password)
+        newUser.password = encryptKeccak(registrationPayload.password)
         contactIndexManager!!.save(newUser)
         log(Log.Type.COM, "User ${registrationPayload.username} registered.", appCall.request.uri)
       }
@@ -396,13 +395,13 @@ class ServerController {
       return Base64.getEncoder().encodeToString(sampleImg.readBytes())
     }
 
-    fun getJWTUsername(appCall: ApplicationCall): String {
+    fun getJWTEmail(appCall: ApplicationCall): String {
       return appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
     }
 
     fun getOwnInvoices(appCall: ApplicationCall): Any {
       return invoiceIndexManager!!.getEntryListJson(
-        searchText = getJWTUsername(appCall),
+        searchText = getJWTEmail(appCall),
         ixNr = 2,
         exactSearch = true
       )
@@ -494,7 +493,7 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
           } else {
             if (uniChatroom.checkIsMemberBanned(
-                username = getJWTUsername(appCall),
+                username = getJWTEmail(appCall),
                 isEmail = true
               )) {
               appCall.respond(HttpStatusCode.Forbidden)
@@ -515,7 +514,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
@@ -546,7 +545,7 @@ class ServerController {
           return
         } else {
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
@@ -584,7 +583,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
@@ -614,7 +613,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
@@ -644,7 +643,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
@@ -682,7 +681,7 @@ class ServerController {
           appCall.respond(HttpStatusCode.NotFound)
         } else {
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
@@ -715,7 +714,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
@@ -752,7 +751,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
@@ -771,7 +770,7 @@ class ServerController {
     }
 
     fun getUsernameReversedBase(appCall: ApplicationCall): String {
-      val username = getJWTUsername(appCall)
+      val username = getJWTEmail(appCall)
       val usernameReversed = username.reversed()
       val usernameBase = Base64.getUrlEncoder().encodeToString(usernameReversed.toByteArray())
       return java.net.URLEncoder.encode(usernameBase, "utf-8")
@@ -794,14 +793,14 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           uniChatroom.addOrUpdateMember(
-            username = UserCLIManager.getUserFromEmail(getJWTUsername(appCall))!!.username,
+            username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username,
             fcmToken = config.fcmToken
           )
           saveChatroom(uniChatroom)
@@ -827,14 +826,14 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           uniChatroom.addOrUpdateMember(
-            username = UserCLIManager.getUserFromEmail(getJWTUsername(appCall))!!.username,
+            username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username,
             pubKeyPEM = config.pubKeyPEM
           )
           saveChatroom(uniChatroom)
@@ -857,7 +856,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
@@ -897,7 +896,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTUsername(appCall),
+              username = getJWTEmail(appCall),
               isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
@@ -924,7 +923,7 @@ class ServerController {
     }
 
     suspend fun createSnippetResource(appCall: ApplicationCall, payload: SnippetPayload) {
-      if (!UserCLIManager.checkModuleRight(getJWTUsername(appCall), "M6")) {
+      if (!UserCLIManager.checkModuleRight(getJWTEmail(appCall), "M6")) {
         appCall.respond(HttpStatusCode.Forbidden)
         return
       }
@@ -971,7 +970,7 @@ class ServerController {
         appCall.respond(HttpStatusCode.BadRequest)
         return
       }
-      if (UserCLIManager.changeUsername(getJWTUsername(appCall), payload)) {
+      if (UserCLIManager.changeUsername(getJWTEmail(appCall), payload)) {
         appCall.respond(HttpStatusCode.OK)
       } else {
         appCall.respond((HttpStatusCode.BadRequest))
@@ -983,7 +982,7 @@ class ServerController {
         appCall.respond(HttpStatusCode.BadRequest)
         return
       }
-      if (UserCLIManager.changePassword(getJWTUsername(appCall), payload)) {
+      if (UserCLIManager.changePassword(getJWTEmail(appCall), payload)) {
         appCall.respond(HttpStatusCode.OK)
       } else {
         appCall.respond((HttpStatusCode.BadRequest))

@@ -1,7 +1,6 @@
 package modules.m5.logic
 
 import api.logic.core.ServerController
-import api.misc.json.LeaderboardStats
 import api.misc.json.UniChatroomEditMessage
 import api.misc.json.UniChatroomReactMessage
 import api.misc.json.UniChatroomReactMessageResponse
@@ -68,9 +67,9 @@ class UniChatroomController : IModule {
     return chatroom
   }
 
-  fun getChatroom(chatroomGUID: String): UniChatroom? {
+  suspend fun getChatroom(chatroomGUID: String): UniChatroom? {
     var uniChatroom: UniChatroom?
-    synchronized(this) {
+    mutexChatroom.withLock {
       uniChatroom = null
       getEntriesFromIndexSearch(chatroomGUID, 2, true) {
         uniChatroom = it as UniChatroom
@@ -79,8 +78,27 @@ class UniChatroomController : IModule {
     return uniChatroom
   }
 
+  /**
+   * @return the main [UniChatroom] of the provided subchat or the subchat if it is the main chatroom.
+   */
+  suspend fun getMainChatroom(chatroomGUID: String): UniChatroom? {
+    val chatroom = getChatroom(chatroomGUID) ?: return null
+    // No Subchats allowed
+    val mainChatroom = if (chatroom.parentGUID.isNotEmpty()) {
+      getChatroom(chatroom.parentGUID)
+    } else chatroom
+    if (mainChatroom == null) {
+      return null
+    }
+    return mainChatroom
+  }
+
   suspend fun saveChatroom(uniChatroom: UniChatroom): Int {
-    return save(uniChatroom)
+    var uID: Int
+    mutexChatroom.withLock {
+      uID = save(uniChatroom)
+    }
+    return uID
   }
 
   private fun createMember(username: String, role: String): UniMember {
@@ -244,7 +262,7 @@ class UniChatroomController : IModule {
     return false
   }
 
-  class Connection(val session: DefaultWebSocketSession, val email: String, val username: String) {
+  class Connection(val session: DefaultWebSocketSession, val username: String) {
     companion object {
       // var lastId = AtomicInteger(0)
     }
@@ -271,7 +289,7 @@ class UniChatroomController : IModule {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
-    var email = ""
+    val email: String
     var username = ""
     // Wait for bearer token then authorize with provided JWT Token
     try {
@@ -329,14 +347,12 @@ class UniChatroomController : IModule {
       return
     }
     // Add this new WebSocket connection
-    val thisConnection = Connection(this, email, username)
+    val thisConnection = Connection(this, username)
     clarifierSession!!.connections += thisConnection
     if (!uniChatroom.checkIsMember(thisConnection.username)) {
       // Register new member
       uniChatroom.addOrUpdateMember(username, UniRole("Member"))
-      mutexChatroom.withLock {
-        saveChatroom(uniChatroom)
-      }
+      saveChatroom(uniChatroom)
       // Notify members of new registration
       val serverNotification =
         "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!"
@@ -387,7 +403,7 @@ class UniChatroomController : IModule {
               )
             } else if (frameText.startsWith("[c:CMD]")) { // Command
               handleReceivedCommand(
-                frameText, clarifierSession!!, uniChatroom.uID
+                frameText, clarifierSession!!, uniChatroom
               )
             } else { // Regular Message
               clarifierSession!!.connectionsToDelete.addAll(
@@ -424,7 +440,7 @@ class UniChatroomController : IModule {
   private suspend fun handleReceivedCommand(
     frameText: String,
     clarifierSession: ClarifierSession,
-    unichatroomUID: Int = -1,
+    unichatroom: UniChatroom
   ) {
     // What command?
     if (frameText.contains("/help")) {
@@ -447,7 +463,7 @@ class UniChatroomController : IModule {
         }
       }
     } else if (frameText.contains("/topflip")) {
-      if (unichatroomUID == -1) return
+      if (unichatroom.uID == -1) return
       var isFlipOfTheDay = false
       val dateFrom = Timestamp.now()
       // 2022-07-14T11:06:03Z
@@ -463,7 +479,7 @@ class UniChatroomController : IModule {
       var topRating = 0.0
       var ok: Boolean
       uniMessagesIndexManager!!.getEntriesFromIndexSearch(
-        searchText = "^${unichatroomUID}$",
+        searchText = "^${unichatroom.uID}$",
         ixNr = 1,
         showAll = true
       ) {
@@ -517,7 +533,10 @@ class UniChatroomController : IModule {
         }
       }
       if (topRating > 0.0 && topFlip != null) {
-        val serverMessage = "Top Flip Presented by ${topFlip!!.from}!" +
+        val prefix = if (isFlipOfTheDay) {
+          "The Daily Top Flip..."
+        } else "The All-Time Top Flip..."
+        val serverMessage = "$prefix Presented by ${topFlip!!.from}!" +
                 "\nRating: $topRating"
         val tmpMessage = UniMessage(
           uID = -1,
@@ -549,7 +568,7 @@ class UniChatroomController : IModule {
         }
       }
     } else if (frameText.contains("/stats")) {
-      if (unichatroomUID == -1) return
+      if (unichatroom.uID == -1) return
       var amountMSG = 0
       var amountGIF = 0
       var amountIMG = 0
@@ -557,7 +576,7 @@ class UniChatroomController : IModule {
       var amountRCT = 0
       var messagesWithReaction = 0
       uniMessagesIndexManager!!.getEntriesFromIndexSearch(
-        searchText = "^${unichatroomUID}$",
+        searchText = "^${unichatroom.uID}$",
         ixNr = 1,
         showAll = true
       ) {
@@ -605,57 +624,14 @@ class UniChatroomController : IModule {
         }
       }
     } else if (frameText.contains("/leaderboard")) {
-      if (unichatroomUID == -1) return
-      val members = hashMapOf<String, LeaderboardStats>()
-      uniMessagesIndexManager!!.getEntriesFromIndexSearch(
-        searchText = "^${unichatroomUID}$",
-        ixNr = 1,
-        showAll = true
-      ) {
-        it as UniMessage
-        if (it.from != "_server") {
-          if (!members.containsKey(it.from)) {
-            members[it.from] = LeaderboardStats(it.from)
-          }
-          members[it.from]!!.messages += 1
-          // Count reactions!
-          if (it.reactions.size > 0) {
-            var upvotes = 0.0
-            var downvotes = 0.0
-            var stars = 0.0
-            members[it.from]!!.reactions += it.reactions.size
-            for (reaction in it.reactions) {
-              val react: UniMessageReaction = Json.decodeFromString(reaction)
-              when (react.type) {
-                "+" -> {
-                  upvotes += react.from.size
-                }
-                "⭐" -> {
-                  stars += react.from.size
-                }
-                "-" -> {
-                  downvotes += react.from.size
-                }
-              }
-            }
-            // Add likes...
-            if (upvotes > 0) members[it.from]!!.totalRating += (1.0 * upvotes)
-            // Multiply by stars...
-            if (stars > 0) {
-              if (members[it.from]!!.totalRating == 0.0) {
-                members[it.from]!!.totalRating = 1.0
-              }
-              members[it.from]!!.totalRating *= (2.25 * stars)
-            }
-            // Then subtract downvotes
-            if (downvotes > 0) members[it.from]!!.totalRating -= (1.0 * downvotes)
-          }
-        }
-      }
+      if (unichatroom.uID == -1) return
+      val members = getMemberStatsOfChatroom(unichatroom)
       // Sort by Rating
+      // Negative values to sort descending
       val sortedMembers = members.values
         .toList()
         .sortedWith(compareBy({ -it.totalRating }, { -it.messages }))
+      sortedMembers.forEach { it.totalRating.roundTo(2) }
       val tmpMessage = UniMessage(
         uID = -1,
         uniChatroomUID = -1,
@@ -735,14 +711,15 @@ class UniChatroomController : IModule {
     with(UniMessagesController()) {
       var message: UniMessage? = null
       var chatroomUID = -1
+      // Check if user already reacted to this message in the same way
+      // If the user did, remove user, if not, add the user
+      var reactionTypeExists = false
+      var reactionRemove = false
       mutexMessages.withLock {
         getEntriesFromIndexSearch(reactMessageConfig.uniMessageGUID, 2, true) {
           message = it as UniMessage
         }
         if (message == null) return clarifierSession
-        // Check if user already reacted to this message in the same way
-        // If the user did, return, if not, add the user
-        var reactionTypeExists = false
         var index = 0
         for (reaction in message!!.reactions) {
           val react: UniMessageReaction
@@ -757,7 +734,14 @@ class UniChatroomController : IModule {
             reactionTypeExists = true
             if (react.from.contains(thisConnection.username)) {
               // Reaction does exist and contains the user -> Return
-              return clarifierSession
+              reactionRemove = true
+              react.from.remove(thisConnection.username)
+              if (react.from.size > 0) {
+                message!!.reactions[index] = Json.encodeToString(react)
+              } else {
+                message!!.reactions.removeAt(index)
+              }
+              break
             } else {
               // Reaction does exist but does not contain the user -> Add user
               react.from.add(thisConnection.username)
@@ -781,7 +765,8 @@ class UniChatroomController : IModule {
         UniChatroomReactMessageResponse(
           uniMessageGUID = reactMessageConfig.uniMessageGUID,
           type = reactMessageConfig.type,
-          from = thisConnection.username
+          from = thisConnection.username,
+          isRemove = reactionRemove
         )
       )
       val uniMessage = UniMessage(

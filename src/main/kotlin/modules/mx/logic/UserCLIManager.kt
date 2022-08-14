@@ -58,9 +58,7 @@ class UserCLIManager {
     }
 
     private suspend fun compareCredentials(
-      email: String,
-      password: String,
-      doLog: Boolean
+      email: String, password: String, doLog: Boolean
     ): Boolean {
       mutex.withLock {
         val user = getUserFromEmail(email)
@@ -68,7 +66,7 @@ class UserCLIManager {
           if (doLog) log(Log.Type.ERROR, "No such user found")
           return false
         }
-        return if (user.password == encryptAES(password)) {
+        return if (user.password == encryptKeccak(password)) {
           if (doLog) log(Log.Type.INFO, "User \"$email\" login successful")
           true
         } else {
@@ -81,9 +79,15 @@ class UserCLIManager {
     fun getUserFromEmail(email: String): Contact? {
       var user: Contact? = null
       contactIndexManager!!.getEntriesFromIndexSearch(
-        searchText = "^${email}$",
-        ixNr = 1,
-        showAll = true
+        searchText = "^${email}$", ixNr = 1, showAll = true
+      ) { user = it as Contact }
+      return user
+    }
+
+    fun getUserFromUsername(username: String): Contact? {
+      var user: Contact? = null
+      contactIndexManager!!.getEntriesFromIndexSearch(
+        searchText = "^${username}$", ixNr = 2, showAll = true
       ) { user = it as Contact }
       return user
     }
@@ -97,8 +101,8 @@ class UserCLIManager {
 
     suspend fun changePassword(email: String, config: PasswordChange): Boolean {
       val user = getUserFromEmail(email) ?: return false
-      if (decryptAES(user.password) != config.password) return false
-      user.password = encryptAES(config.newPassword)
+      if (!validateKeccak(config.password, user.password)) return false
+      user.password = encryptKeccak(config.newPassword)
       save(user)
       return true
     }

@@ -55,6 +55,9 @@ import modules.m2.Contact
 import modules.m4.logic.ItemPriceManager
 import modules.m4storage.logic.ItemStorageManager
 import modules.m5.logic.UniChatroomController
+import modules.m5.logic.getBadges
+import modules.m5.logic.giveMessagesBadges
+import modules.m5.logic.handleUpgradeUniChatroomRequest
 import modules.mx.Ini
 import modules.mx.contactIndexManager
 import modules.mx.dataPath
@@ -100,12 +103,10 @@ class Server : IModule {
       host = iniVal.serverIPAddress.substringBefore(':')
       port = 80
     }
-    sslConnector(
-      keyStore = keystore,
+    sslConnector(keyStore = keystore,
       keyAlias = System.getenv(iniVal.envKeyAlias) ?: "?",
       keyStorePassword = { (System.getenv(iniVal.envKeyStorePassword) ?: "?").toCharArray() },
-      privateKeyPassword = { (System.getenv(iniVal.envPrivKeyPassword) ?: "?").toCharArray() }
-    ) {
+      privateKeyPassword = { (System.getenv(iniVal.envPrivKeyPassword) ?: "?").toCharArray() }) {
       host = iniVal.serverIPAddress.substringBefore(':')
       port = 443
     }
@@ -136,9 +137,7 @@ class Server : IModule {
         validate { credentials ->
           authMutex.withLock {
             if (UserCLIManager.login(
-                email = credentials.name,
-                password = credentials.password,
-                doLog = false
+                email = credentials.name, password = credentials.password, doLog = false
               )) {
               UserIdPrincipal(credentials.name)
             } else {
@@ -198,7 +197,7 @@ class Server : IModule {
       register()
       spotifyAuthCallback()
 
-      // SnippetBase e
+      // SnippetBase
       getSnippetImage()
 
       /*
@@ -231,8 +230,7 @@ class Server : IModule {
             Mockingbird.handleSubmit(call)
           }
         }
-        route("/api")
-        {
+        route("/api") {
           /*
            * General Endpoints
            */
@@ -330,6 +328,10 @@ class Server : IModule {
           setFirebaseCloudMessagingSubscription()
           // Encryption
           setPubKeyPEM()
+          // Reward System
+          upgradeUniChatroom()
+          giveMessageBadges()
+          getBadges()
 
           /*
            * M6 Endpoints (SnippetBase)
@@ -362,9 +364,7 @@ class Server : IModule {
       serverEngine.start(wait = true)
     }
     // Initialize Firebase Cloud Messaging Admin SDK
-    val options = FirebaseOptions.builder()
-      .setCredentials(GoogleCredentials.getApplicationDefault())
-      .build()
+    val options = FirebaseOptions.builder().setCredentials(GoogleCredentials.getApplicationDefault()).build()
     FirebaseApp.initializeApp(options)
   }
 
@@ -381,12 +381,10 @@ class Server : IModule {
   private fun Route.login() {
     get("/login") {
       loginMutex.withLock {
-        val username = call.principal<UserIdPrincipal>()?.name
+        val email = call.principal<UserIdPrincipal>()?.name
         var user: Contact? = null
         contactIndexManager!!.getEntriesFromIndexSearch(
-          searchText = "^$username$",
-          ixNr = 1,
-          showAll = true
+          searchText = "^$email$", ixNr = 1, showAll = true
         ) { user = it as Contact }
         if (user == null) {
           call.respond(HttpStatusCode.NotFound)
@@ -438,7 +436,7 @@ class Server : IModule {
   private fun Route.getIndexSelection(vararg indexManager: IIndexManager) {
     for (ix in indexManager) {
       get("${ix.module.lowercase()}/indexselection") {
-        if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
+        if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), ix.module)) {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(ix.getIndexUserSelection())
@@ -450,13 +448,12 @@ class Server : IModule {
   private fun Route.getEntry(vararg indexManager: IIndexManager) {
     for (ix in indexManager) {
       get("${ix.module.lowercase()}/entry/{searchString}") {
-        if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
+        if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), ix.module)) {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(
             ServerController.getEntry(
-              appCall = call,
-              indexManager = ix
+              appCall = call, indexManager = ix
             )
           )
         }
@@ -467,15 +464,13 @@ class Server : IModule {
   private fun Route.saveEntry(vararg indexManager: IIndexManager) {
     for (ix in indexManager) {
       post("${ix.module.lowercase()}/saveentry") {
-        if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
+        if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), ix.module)) {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           val entryJson: EntryJson = call.receive()
           call.respond(
             ServerController.saveEntry(
-              entry = entryJson.entry,
-              indexManager = ix,
-              username = ServerController.getJWTUsername(call)
+              entry = entryJson.entry, indexManager = ix, username = ServerController.getJWTEmail(call)
             )
           )
         }
@@ -486,13 +481,12 @@ class Server : IModule {
   private fun Route.getEntryLock(vararg indexManager: IIndexManager) {
     for (ix in indexManager) {
       get("${ix.module.lowercase()}/getentrylock/{searchString}") {
-        if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
+        if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), ix.module)) {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(
             ServerController.getEntryLock(
-              appCall = call,
-              indexManager = ix
+              appCall = call, indexManager = ix
             )
           )
         }
@@ -503,13 +497,12 @@ class Server : IModule {
   private fun Route.setEntryLock(vararg indexManager: IIndexManager) {
     for (ix in indexManager) {
       get("${ix.module.lowercase()}/setentrylock/{searchString}") {
-        if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), ix.module)) {
+        if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), ix.module)) {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(
             ServerController.setEntryLock(
-              appCall = call,
-              indexManager = ix
+              appCall = call, indexManager = ix
             )
           )
         }
@@ -519,7 +512,7 @@ class Server : IModule {
 
   private fun Route.addWebshopOrder() {
     post("m3/neworder") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M3")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M3")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.placeWebshopOrder(call))
@@ -542,7 +535,7 @@ class Server : IModule {
 
   private fun Route.getPriceCategories() {
     get("m4/pricecategories") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
@@ -554,7 +547,7 @@ class Server : IModule {
 
   private fun Route.getPriceCategoryNumber() {
     get("m4/categorynumber") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
@@ -566,7 +559,7 @@ class Server : IModule {
 
   private fun Route.savePriceCategory() {
     post("m4/savecategory") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.updatePriceCategories(call.receive() as ListDeltaJson))
@@ -576,7 +569,7 @@ class Server : IModule {
 
   private fun Route.deletePriceCategory() {
     post("m4/deletecategory") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.deletePriceCategory(call.receive() as ListDeltaJson))
@@ -586,7 +579,7 @@ class Server : IModule {
 
   private fun Route.getStorages() {
     get("m4/storages") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
@@ -598,7 +591,7 @@ class Server : IModule {
 
   private fun Route.getStorageNumber() {
     get("m4/storagenumber") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
@@ -610,7 +603,7 @@ class Server : IModule {
 
   private fun Route.saveStorage() {
     post("m4/savestorage") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.updateStorages(call.receive() as ListDeltaJson))
@@ -620,7 +613,7 @@ class Server : IModule {
 
   private fun Route.deleteStorage() {
     post("m4/deletestorage") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.deleteStorage(call.receive() as ListDeltaJson))
@@ -630,7 +623,7 @@ class Server : IModule {
 
   private fun Route.getItemImage() {
     get("m4/getimage/{itemUID}") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.getItemImage())
@@ -640,7 +633,7 @@ class Server : IModule {
 
   private fun Route.checkStorage() {
     post("m4sp/check") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.checkStorage(call.receive() as TwoIntOneDoubleJson))
@@ -650,7 +643,7 @@ class Server : IModule {
 
   private fun Route.getAvailableStock() {
     post("m4sp/avail") {
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), "M4")) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(ServerController.getAvailableStock(call.receive() as PairIntJson))
@@ -670,13 +663,12 @@ class Server : IModule {
   private fun Route.getSettingsFileText() {
     post("getsettingsfiletext") {
       val body: SettingsRequestJson = Json.decodeFromString(call.receive())
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTUsername(call), body.module)) {
+      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), body.module)) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
           ServerController.getSettingsFileText(
-            moduleShort = body.module,
-            subSetting = body.subSetting
+            moduleShort = body.module, subSetting = body.subSetting
           )
         )
       }
@@ -686,7 +678,7 @@ class Server : IModule {
   private fun Route.createUniChatroom() {
     post("m5/createchatroom") {
       val config: UniChatroomCreateChatroom = Json.decodeFromString(call.receive())
-      val user = UserCLIManager.getUserFromEmail(ServerController.getJWTUsername(call))
+      val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(call))
       if (user == null) {
         call.respond(HttpStatusCode.Unauthorized)
       } else {
@@ -704,7 +696,7 @@ class Server : IModule {
   private fun Route.addMessageToUniChatroom() {
     post("m5/addmessage") {
       val config: UniChatroomAddMessage = Json.decodeFromString(call.receive())
-      ServerController.addMessageToUniChatroom(call, config, ServerController.getJWTUsername(call))
+      ServerController.addMessageToUniChatroom(call, config, ServerController.getJWTEmail(call))
     }
   }
 
@@ -744,14 +736,22 @@ class Server : IModule {
   private fun Route.addRoleToMemberOfUniChatroom() {
     post("m5/addrole/{uniChatroomGUID}") {
       val config: UniChatroomMemberRole = Json.decodeFromString(call.receive())
-      ServerController.addRoleToMemberOfUniChatroom(call, config)
+      if (config.role.uppercase() == "OWNER") {
+        call.respond(HttpStatusCode.Forbidden)
+      } else {
+        ServerController.addRoleToMemberOfUniChatroom(call, config)
+      }
     }
   }
 
   private fun Route.removeRoleOfMemberOfUniChatroom() {
     post("m5/removerole/{uniChatroomGUID}") {
       val config: UniChatroomMemberRole = Json.decodeFromString(call.receive())
-      ServerController.removeRoleOfMemberOfUniChatroom(call, config)
+      if (config.role.uppercase() == "OWNER") {
+        call.respond(HttpStatusCode.Forbidden)
+      } else {
+        ServerController.removeRoleOfMemberOfUniChatroom(call, config)
+      }
     }
   }
 
@@ -780,6 +780,24 @@ class Server : IModule {
     post("m5/setmemberimage/{uniChatroomGUID}") {
       val config: UniMemberProfileImage = Json.decodeFromString(call.receive())
       ServerController.setUniMemberImage(call, config)
+    }
+  }
+
+  private fun Route.upgradeUniChatroom() {
+    post("m5/upgrade/{uniChatroomGUID}") {
+      handleUpgradeUniChatroomRequest(call, Json.decodeFromString(call.receive()))
+    }
+  }
+
+  private fun Route.giveMessageBadges() {
+    get("m2/badges/set/{uniChatroomGUID}") {
+      giveMessagesBadges(call.parameters["uniChatroomGUID"], call)
+    }
+  }
+
+  private fun Route.getBadges() {
+    get("m2/badges/get/{username}") {
+      getBadges(call.parameters["username"], call)
     }
   }
 
