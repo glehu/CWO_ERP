@@ -83,13 +83,14 @@ class UniChatroomController : IModule {
    */
   suspend fun getMainChatroom(chatroomGUID: String): UniChatroom? {
     val chatroom = getChatroom(chatroomGUID) ?: return null
+    return getMainChatroom(chatroom)
+  }
+
+  suspend fun getMainChatroom(chatroom: UniChatroom): UniChatroom? {
     // No Subchats allowed
     val mainChatroom = if (chatroom.parentGUID.isNotEmpty()) {
       getChatroom(chatroom.parentGUID)
     } else chatroom
-    if (mainChatroom == null) {
-      return null
-    }
     return mainChatroom
   }
 
@@ -437,6 +438,144 @@ class UniChatroomController : IModule {
     }
   }
 
+  private suspend fun handleReceivedEditMessage(
+    frameText: String,
+    prefix: String,
+    thisConnection: Connection,
+    clarifierSession: ClarifierSession
+  ): ClarifierSession {
+    val configJson = frameText.substring(prefix.length)
+    // Get payload
+    val editMessageConfig: UniChatroomEditMessage =
+      Json.decodeFromString(configJson)
+    // Valid?
+    if (editMessageConfig.uniMessageGUID.isEmpty()) return clarifierSession
+    // Edit message from database
+    with(UniMessagesController()) {
+      var message: UniMessage? = null
+      var chatroomUID = -1
+      mutexMessages.withLock {
+        getEntriesFromIndexSearch(editMessageConfig.uniMessageGUID, 2, true) {
+          message = it as UniMessage
+        }
+        if (message == null) return clarifierSession
+        if (message!!.from != thisConnection.username) return clarifierSession
+        chatroomUID = message!!.uniChatroomUID
+        message!!.message = editMessageConfig.newContent
+        // Did the message get deleted?
+        if (message!!.message.isEmpty()) {
+          message!!.uniChatroomUID = -1
+          message!!.gUID = "?"
+        }
+        save(message!!)
+      }
+      val uniMessage = UniMessage(
+        uniChatroomUID = chatroomUID,
+        from = "_server",
+        message = "[s:EditNotification]$configJson"
+      )
+      val msg = Json.encodeToString(uniMessage)
+      clarifierSession.connections.forEach {
+        if (!it.session.outgoing.isClosedForSend) {
+          it.session.send(msg)
+        } else {
+          clarifierSession.connectionsToDelete.add(it)
+        }
+      }
+    }
+    return clarifierSession
+  }
+
+  private suspend fun handleReceivedReactMessage(
+    frameText: String,
+    prefix: String,
+    thisConnection: Connection,
+    clarifierSession: ClarifierSession
+  ): ClarifierSession {
+    // Get payload
+    val reactMessageConfig: UniChatroomReactMessage =
+      Json.decodeFromString(frameText.substring(prefix.length))
+    // Valid?
+    if (reactMessageConfig.uniMessageGUID.isEmpty()) return clarifierSession
+    // Edit message from database
+    with(UniMessagesController()) {
+      var message: UniMessage? = null
+      var chatroomUID = -1
+      // Check if user already reacted to this message in the same way
+      // If the user did, remove user, if not, add the user
+      var reactionTypeExists = false
+      var reactionRemove = false
+      mutexMessages.withLock {
+        getEntriesFromIndexSearch(reactMessageConfig.uniMessageGUID, 2, true) {
+          message = it as UniMessage
+        }
+        if (message == null) return clarifierSession
+        var index = 0
+        for (reaction in message!!.reactions) {
+          val react: UniMessageReaction
+          // Self-healing! If a reaction is broken, just clear it
+          try {
+            react = Json.decodeFromString(reaction)
+          } catch (e: Exception) {
+            message!!.reactions[index] = ""
+            continue
+          }
+          if (react.type == reactMessageConfig.type) {
+            reactionTypeExists = true
+            if (react.from.contains(thisConnection.username)) {
+              // Reaction does exist and contains the user -> Return
+              reactionRemove = true
+              react.from.remove(thisConnection.username)
+              if (react.from.size > 0) {
+                message!!.reactions[index] = Json.encodeToString(react)
+              } else {
+                message!!.reactions.removeAt(index)
+              }
+              break
+            } else {
+              // Reaction does exist but does not contain the user -> Add user
+              react.from.add(thisConnection.username)
+              message!!.reactions[index] = Json.encodeToString(react)
+              break
+            }
+          }
+          index++
+        }
+        chatroomUID = message!!.uniChatroomUID
+        if (!reactionTypeExists) {
+          val reaction = UniMessageReaction(
+            from = arrayListOf(thisConnection.username),
+            type = reactMessageConfig.type
+          )
+          message!!.reactions.add(Json.encodeToString(reaction))
+        }
+        save(message!!)
+      }
+      val response = Json.encodeToString(
+        UniChatroomReactMessageResponse(
+          uniMessageGUID = reactMessageConfig.uniMessageGUID,
+          type = reactMessageConfig.type,
+          from = thisConnection.username,
+          isRemove = reactionRemove
+        )
+      )
+      val uniMessage = UniMessage(
+        uniChatroomUID = chatroomUID,
+        from = "_server",
+        message = "[s:ReactNotification]$response"
+      )
+      val msg = Json.encodeToString(uniMessage)
+      clarifierSession.connections.forEach {
+        if (!it.session.outgoing.isClosedForSend) {
+          it.session.send(msg)
+        } else {
+          clarifierSession.connectionsToDelete.add(it)
+        }
+      }
+    }
+    return clarifierSession
+  }
+
   private suspend fun handleReceivedCommand(
     frameText: String,
     clarifierSession: ClarifierSession,
@@ -625,7 +764,9 @@ class UniChatroomController : IModule {
       }
     } else if (frameText.contains("/leaderboard")) {
       if (unichatroom.uID == -1) return
-      val members = getMemberStatsOfChatroom(unichatroom)
+      val members = getMemberStatsOfChatroom(
+        chatroom = getMainChatroom(unichatroom) ?: unichatroom
+      )
       // Sort by Rating
       // Negative values to sort descending
       val sortedMembers = members.values
@@ -646,144 +787,6 @@ class UniChatroomController : IModule {
         }
       }
     }
-  }
-
-  private suspend fun handleReceivedEditMessage(
-    frameText: String,
-    prefix: String,
-    thisConnection: Connection,
-    clarifierSession: ClarifierSession
-  ): ClarifierSession {
-    val configJson = frameText.substring(prefix.length)
-    // Get payload
-    val editMessageConfig: UniChatroomEditMessage =
-      Json.decodeFromString(configJson)
-    // Valid?
-    if (editMessageConfig.uniMessageGUID.isEmpty()) return clarifierSession
-    // Edit message from database
-    with(UniMessagesController()) {
-      var message: UniMessage? = null
-      var chatroomUID = -1
-      mutexMessages.withLock {
-        getEntriesFromIndexSearch(editMessageConfig.uniMessageGUID, 2, true) {
-          message = it as UniMessage
-        }
-        if (message == null) return clarifierSession
-        if (message!!.from != thisConnection.username) return clarifierSession
-        chatroomUID = message!!.uniChatroomUID
-        message!!.message = editMessageConfig.newContent
-        // Did the message get deleted?
-        if (message!!.message.isEmpty()) {
-          message!!.uniChatroomUID = -1
-          message!!.gUID = "?"
-        }
-        save(message!!)
-      }
-      val uniMessage = UniMessage(
-        uniChatroomUID = chatroomUID,
-        from = "_server",
-        message = "[s:EditNotification]$configJson"
-      )
-      val msg = Json.encodeToString(uniMessage)
-      clarifierSession.connections.forEach {
-        if (!it.session.outgoing.isClosedForSend) {
-          it.session.send(msg)
-        } else {
-          clarifierSession.connectionsToDelete.add(it)
-        }
-      }
-    }
-    return clarifierSession
-  }
-
-  private suspend fun handleReceivedReactMessage(
-    frameText: String,
-    prefix: String,
-    thisConnection: Connection,
-    clarifierSession: ClarifierSession
-  ): ClarifierSession {
-    // Get payload
-    val reactMessageConfig: UniChatroomReactMessage =
-      Json.decodeFromString(frameText.substring(prefix.length))
-    // Valid?
-    if (reactMessageConfig.uniMessageGUID.isEmpty()) return clarifierSession
-    // Edit message from database
-    with(UniMessagesController()) {
-      var message: UniMessage? = null
-      var chatroomUID = -1
-      // Check if user already reacted to this message in the same way
-      // If the user did, remove user, if not, add the user
-      var reactionTypeExists = false
-      var reactionRemove = false
-      mutexMessages.withLock {
-        getEntriesFromIndexSearch(reactMessageConfig.uniMessageGUID, 2, true) {
-          message = it as UniMessage
-        }
-        if (message == null) return clarifierSession
-        var index = 0
-        for (reaction in message!!.reactions) {
-          val react: UniMessageReaction
-          // Self-healing! If a reaction is broken, just clear it
-          try {
-            react = Json.decodeFromString(reaction)
-          } catch (e: Exception) {
-            message!!.reactions[index] = ""
-            continue
-          }
-          if (react.type == reactMessageConfig.type) {
-            reactionTypeExists = true
-            if (react.from.contains(thisConnection.username)) {
-              // Reaction does exist and contains the user -> Return
-              reactionRemove = true
-              react.from.remove(thisConnection.username)
-              if (react.from.size > 0) {
-                message!!.reactions[index] = Json.encodeToString(react)
-              } else {
-                message!!.reactions.removeAt(index)
-              }
-              break
-            } else {
-              // Reaction does exist but does not contain the user -> Add user
-              react.from.add(thisConnection.username)
-              message!!.reactions[index] = Json.encodeToString(react)
-              break
-            }
-          }
-          index++
-        }
-        chatroomUID = message!!.uniChatroomUID
-        if (!reactionTypeExists) {
-          val reaction = UniMessageReaction(
-            from = arrayListOf(thisConnection.username),
-            type = reactMessageConfig.type
-          )
-          message!!.reactions.add(Json.encodeToString(reaction))
-        }
-        save(message!!)
-      }
-      val response = Json.encodeToString(
-        UniChatroomReactMessageResponse(
-          uniMessageGUID = reactMessageConfig.uniMessageGUID,
-          type = reactMessageConfig.type,
-          from = thisConnection.username,
-          isRemove = reactionRemove
-        )
-      )
-      val uniMessage = UniMessage(
-        uniChatroomUID = chatroomUID,
-        from = "_server",
-        message = "[s:ReactNotification]$response"
-      )
-      val msg = Json.encodeToString(uniMessage)
-      clarifierSession.connections.forEach {
-        if (!it.session.outgoing.isClosedForSend) {
-          it.session.send(msg)
-        } else {
-          clarifierSession.connectionsToDelete.add(it)
-        }
-      }
-    }
-    return clarifierSession
   }
 
   private suspend fun handleReceivedMessage(
