@@ -129,10 +129,10 @@ fun runMessageBadgeDist(
     )
   )
   userTmp = statistic.value.checkAndPutMessageBadge(
-    user = userTmp, threshold = 2000, badge = UniBadge(
+    user = userTmp, threshold = 5000, badge = UniBadge(
       title = "Talkative V.",
       handle = "msg4000",
-      description = "Earned for having sent a total of 4,000 messages.",
+      description = "Earned for having sent a total of 5,000 messages.",
       xpGain = 4050,
       rank = 5,
       Timestamp.now()
@@ -160,40 +160,40 @@ fun runRatingBadgeDist(
     )
   )
   userTmp = statistic.value.checkAndPutRatingBadge(
-    user = userTmp, threshold = 50, badge = UniBadge(
+    user = userTmp, threshold = 100, badge = UniBadge(
       title = "Guru II.",
       handle = "rt50",
-      description = "Earned for having a rating of at least 50.",
+      description = "Earned for having a rating of at least 100.",
       xpGain = 150,
       rank = 2,
       Timestamp.now()
     )
   )
   userTmp = statistic.value.checkAndPutRatingBadge(
-    user = userTmp, threshold = 100, badge = UniBadge(
+    user = userTmp, threshold = 200, badge = UniBadge(
       title = "Guru III.",
       handle = "rt100",
-      description = "Earned for having a rating of at least 100.",
+      description = "Earned for having a rating of at least 200.",
       xpGain = 450,
       rank = 3,
       Timestamp.now()
     )
   )
   userTmp = statistic.value.checkAndPutRatingBadge(
-    user = userTmp, threshold = 200, badge = UniBadge(
+    user = userTmp, threshold = 500, badge = UniBadge(
       title = "Guru IV.",
       handle = "rt200",
-      description = "Earned for having a rating of at least 200.",
+      description = "Earned for having a rating of at least 500.",
       xpGain = 1350,
       rank = 4,
       Timestamp.now()
     )
   )
   userTmp = statistic.value.checkAndPutRatingBadge(
-    user = userTmp, threshold = 500, badge = UniBadge(
+    user = userTmp, threshold = 1000, badge = UniBadge(
       title = "Guru V.",
       handle = "rt500",
-      description = "Earned for having a rating of at least 500.",
+      description = "Earned for having a rating of at least 1000.",
       xpGain = 4050,
       rank = 5,
       Timestamp.now()
