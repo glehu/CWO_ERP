@@ -368,14 +368,6 @@ data class PasswordChange(
 )
 
 @Serializable
-data class LeaderboardStats(
-  var username: String,
-  var messages: Int = 0,
-  var reactions: Int = 0,
-  var totalRating: Double = 0.0
-)
-
-@Serializable
 data class LeaderboardStatsAdvanced(
   var username: String,
   var messages: Int = 0,
@@ -390,4 +382,60 @@ data class LeaderboardStatsAdvanced(
 @Serializable
 data class UniChatroomUpgrade(
   val toRank: Int
+)
+
+@Serializable
+data class KnowledgeCreation(
+  val mainChatroomGUID: String = "",
+  val title: String = "",
+  val description: String = "",
+  val keywords: String = "",
+  val isPrivate: Boolean = true
+)
+
+@Serializable
+data class KnowledgeCategoryEdit(
+  val action: String = "",
+  val category: String = ""
+)
+
+@Serializable
+data class WisdomQuestionCreation(
+  val title: String = "",
+  val description: String = "",
+  val knowledgeGUID: String = "",
+  var keywords: String = "",
+  val categories: ArrayList<String> = arrayListOf()
+)
+
+@Serializable
+data class WisdomAnswerCreation(
+  val title: String = "",
+  val description: String = "",
+  val wisdomGUID: String = "",
+  val keywords: String = "",
+  var copyContent: String = ""
+)
+
+@Serializable
+data class WisdomLessonCreation(
+  val title: String = "",
+  val description: String = "",
+  val knowledgeGUID: String = "",
+  val keywords: String = "",
+  var copyContent: String = "",
+  val categories: ArrayList<String> = arrayListOf()
+)
+
+@Serializable
+data class WisdomCommentCreation(
+  val title: String = "",
+  val description: String = "",
+  val wisdomGUID: String = "",
+  val keywords: String = "",
+)
+
+@Serializable
+data class WisdomSearchQuery(
+  val query: String = ""
 )

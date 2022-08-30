@@ -33,6 +33,10 @@ import modules.m5messages.UniMessage
 import modules.m5messages.logic.UniMessagesIndexManager
 import modules.m6.Snippet
 import modules.m6.logic.SnippetBaseIndexManager
+import modules.m7knowledge.Knowledge
+import modules.m7knowledge.logic.KnowledgeIndexManager
+import modules.m7wisdom.Wisdom
+import modules.m7wisdom.logic.WisdomIndexManager
 import java.io.File
 import java.nio.file.Paths
 
@@ -53,6 +57,8 @@ val serializersModuleGlobal = SerializersModule {
     subclass(UniChatroom::class, serializer())
     subclass(UniMessage::class, serializer())
     subclass(Snippet::class, serializer())
+    subclass(Knowledge::class, serializer())
+    subclass(Wisdom::class, serializer())
   }
   polymorphic(IUniRole::class) {
     subclass(UniRole::class, serializer())
@@ -125,6 +131,20 @@ var uniMessagesIndexManager: UniMessagesIndexManager? = null
 @ExperimentalSerializationApi
 var snippetBaseIndexManager: SnippetBaseIndexManager? = null
 
+/**
+ * The global index for Knowledge
+ */
+@InternalAPI
+@ExperimentalSerializationApi
+var knowledgeIndexManager: KnowledgeIndexManager? = null
+
+/**
+ * The global index for Wisdom
+ */
+@InternalAPI
+@ExperimentalSerializationApi
+var wisdomIndexManager: WisdomIndexManager? = null
+
 //*************************************************
 //********************** TRACKER ******************
 //*************************************************
@@ -151,13 +171,9 @@ val programPath: String = System.getProperty("user.dir")
 var dataPath: String = ""
 fun getModulePath(module: String) = Paths.get(dataPath, "data", module).toString()
 fun getIniFile() = File(Paths.get(programPath, "cwo_erp.ini").toString())
-fun getClientSecretFile(api: String) = File(Paths.get(dataPath, "data", "api", "${api}_cs.txt").toString())
 
 //Search settings
 var maxSearchResultsGlobal: Int = 2000
-
-//GUI settings
-const val rightButtonsWidth = 150.0
 
 //Time
 var differenceFromUTC: Int = 0
@@ -170,7 +186,6 @@ var differenceFromUTC: Int = 0
 lateinit var server: Server
 
 var serverJobGlobal: Job? = null
-var telnetServerJobGlobal: Job? = null
 var serverIPAddressGlobal: String = "?"
 
 /**

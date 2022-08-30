@@ -5,6 +5,8 @@ import api.logic.webapps.WebPlanner
 import api.misc.json.EMailJson
 import api.misc.json.EntryJson
 import api.misc.json.FirebaseCloudMessagingSubscription
+import api.misc.json.KnowledgeCategoryEdit
+import api.misc.json.KnowledgeCreation
 import api.misc.json.ListDeltaJson
 import api.misc.json.PairIntJson
 import api.misc.json.PasswordChange
@@ -20,6 +22,11 @@ import api.misc.json.UniChatroomMemberRole
 import api.misc.json.UniChatroomRemoveMember
 import api.misc.json.UniMemberProfileImage
 import api.misc.json.UsernameChange
+import api.misc.json.WisdomAnswerCreation
+import api.misc.json.WisdomCommentCreation
+import api.misc.json.WisdomLessonCreation
+import api.misc.json.WisdomQuestionCreation
+import api.misc.json.WisdomSearchQuery
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
@@ -58,6 +65,8 @@ import modules.m5.logic.UniChatroomController
 import modules.m5.logic.getBadges
 import modules.m5.logic.giveMessagesBadges
 import modules.m5.logic.handleUpgradeUniChatroomRequest
+import modules.m7knowledge.logic.KnowledgeController
+import modules.m7wisdom.logic.WisdomController
 import modules.mx.Ini
 import modules.mx.contactIndexManager
 import modules.mx.dataPath
@@ -337,6 +346,20 @@ class Server : IModule {
            * M6 Endpoints (SnippetBase)
            */
           saveSnippetImage()
+
+          /*
+           * M7 Endpoints (Knowledge)
+           */
+          getKnowledge()
+          createKnowledge()
+          configureKnowledgeCategories()
+          // Wisdom Creation
+          createWisdomQuestion()
+          createWisdomAnswer()
+          createWisdomComment()
+          createWisdomLesson()
+          // Wisdom Query
+          getWisdom()
 
           /*
            * Web Solution Endpoints
@@ -825,6 +848,88 @@ class Server : IModule {
     post("m2/edit/credentials") {
       val payload: PasswordChange = Json.decodeFromString(call.receive())
       ServerController.changePassword(call, payload)
+    }
+  }
+
+  private fun Route.getKnowledge() {
+    get("m7/get") {
+      val source: String = call.request.queryParameters["src"] ?: ""
+      if (source.isEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      val sourceType: String = call.request.queryParameters["from"] ?: ""
+      if (sourceType.isEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      if (source.isNotEmpty() && sourceType.isNotEmpty()) {
+        if (sourceType == "clarifier") {
+          KnowledgeController().httpGetKnowledgeFromUniChatroomGUID(call, source)
+        }
+      }
+    }
+  }
+
+  private fun Route.createKnowledge() {
+    post("m7/create") {
+      val config: KnowledgeCreation = Json.decodeFromString(call.receive())
+      KnowledgeController().httpCreateKnowledge(call, config)
+    }
+  }
+
+  private fun Route.configureKnowledgeCategories() {
+    post("m7/edit/categories/{guid}") {
+      val knowledgeGUID = call.parameters["guid"]
+      if (knowledgeGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      val config: KnowledgeCategoryEdit = Json.decodeFromString(call.receive())
+      if (config.action.isEmpty() || config.category.isEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      KnowledgeController().httpEditKnowledgeCategories(call, config, knowledgeGUID)
+    }
+  }
+
+  private fun Route.createWisdomQuestion() {
+    post("m7/ask/{knowledgeGUID}") {
+      val knowledgeGUID = call.parameters["knowledgeGUID"]
+      if (knowledgeGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      val config: WisdomQuestionCreation = Json.decodeFromString(call.receive())
+      WisdomController().httpCreateQuestion(call, config)
+    }
+  }
+
+  private fun Route.createWisdomAnswer() {
+    post("m7/answer") {
+      val config: WisdomAnswerCreation = Json.decodeFromString(call.receive())
+      WisdomController().httpCreateAnswer(call, config)
+    }
+  }
+
+  private fun Route.createWisdomLesson() {
+    post("m7/teach") {
+      val config: WisdomLessonCreation = Json.decodeFromString(call.receive())
+      WisdomController().httpCreateLesson(call, config)
+    }
+  }
+
+  private fun Route.createWisdomComment() {
+    post("m7/reply") {
+      val config: WisdomCommentCreation = Json.decodeFromString(call.receive())
+      WisdomController().httpCreateComment(call, config)
+    }
+  }
+
+  private fun Route.getWisdom() {
+    post("m7/search/{knowledgeGUID}") {
+      val knowledgeGUID = call.parameters["knowledgeGUID"]
+      if (knowledgeGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      val config: WisdomSearchQuery = Json.decodeFromString(call.receive())
+      WisdomController().httpWisdomQuery(call, config, knowledgeGUID)
     }
   }
 }

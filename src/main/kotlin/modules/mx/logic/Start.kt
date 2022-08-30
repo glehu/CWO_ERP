@@ -16,6 +16,8 @@ import modules.m4stockposting.logic.ItemStockPostingIndexManager
 import modules.m5.logic.UniChatroomIndexManager
 import modules.m5messages.logic.UniMessagesIndexManager
 import modules.m6.logic.SnippetBaseIndexManager
+import modules.m7knowledge.logic.KnowledgeIndexManager
+import modules.m7wisdom.logic.WisdomIndexManager
 import modules.mx.Ini
 import modules.mx.contactIndexManager
 import modules.mx.dataPath
@@ -26,6 +28,7 @@ import modules.mx.getModulePath
 import modules.mx.invoiceIndexManager
 import modules.mx.itemIndexManager
 import modules.mx.itemStockPostingIndexManager
+import modules.mx.knowledgeIndexManager
 import modules.mx.maxSearchResultsGlobal
 import modules.mx.server
 import modules.mx.serverIPAddressGlobal
@@ -37,6 +40,7 @@ import modules.mx.tokenGlobal
 import modules.mx.uniChatroomIndexManager
 import modules.mx.uniMessagesIndexManager
 import modules.mx.usageTracker
+import modules.mx.wisdomIndexManager
 import java.io.File
 import java.io.IOException
 
@@ -78,6 +82,8 @@ suspend fun checkLogFiles() {
   Log.checkLogFile("M5", true)
   Log.checkLogFile("M5MSG", true)
   Log.checkLogFile("M6", true)
+  Log.checkLogFile("M7", true)
+  Log.checkLogFile("M7WISDOM", true)
 }
 
 fun checkModules() {
@@ -90,6 +96,8 @@ fun checkModules() {
   checkModuleDir("M5")
   checkModuleDir("M5MSG")
   checkModuleDir("M6")
+  checkModuleDir("M7")
+  checkModuleDir("M7WISDOM")
 }
 
 fun checkModuleDir(module: String) {
@@ -144,6 +152,8 @@ fun loadIndex(module: String = "") {
       "m5" -> uniChatroomIndexManager = UniChatroomIndexManager()
       "m5msg" -> uniMessagesIndexManager = UniMessagesIndexManager()
       "m6" -> snippetBaseIndexManager = SnippetBaseIndexManager()
+      "m7" -> knowledgeIndexManager = KnowledgeIndexManager()
+      "m7wisdom" -> wisdomIndexManager = WisdomIndexManager()
     }
   } else {
     discographyIndexManager = DiscographyIndexManager()
@@ -154,6 +164,8 @@ fun loadIndex(module: String = "") {
     uniChatroomIndexManager = UniChatroomIndexManager()
     uniMessagesIndexManager = UniMessagesIndexManager()
     snippetBaseIndexManager = SnippetBaseIndexManager()
+    knowledgeIndexManager = KnowledgeIndexManager()
+    wisdomIndexManager = WisdomIndexManager()
   }
 }
 

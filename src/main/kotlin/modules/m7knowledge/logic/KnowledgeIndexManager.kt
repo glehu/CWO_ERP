@@ -1,4 +1,4 @@
-package modules.m6.logic
+package modules.m7knowledge.logic
 
 import db.Index
 import interfaces.IEntry
@@ -6,17 +6,17 @@ import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
-import modules.m6.Snippet
-import modules.mx.snippetBaseIndexManager
+import modules.m7knowledge.Knowledge
+import modules.mx.knowledgeIndexManager
 import java.util.concurrent.atomic.AtomicInteger
 
 @ExperimentalSerializationApi
 @InternalAPI
-class SnippetBaseIndexManager : IIndexManager {
-  override val moduleNameLong = "SnippetBaseIndexManager"
-  override val module = "M6"
+class KnowledgeIndexManager : IIndexManager {
+  override val moduleNameLong = "KnowledgeIndexController"
+  override val module = "M7"
   override fun getIndexManager(): IIndexManager {
-    return snippetBaseIndexManager!!
+    return knowledgeIndexManager!!
   }
 
   override var lastChangeDateHex: String = ""
@@ -36,13 +36,17 @@ class SnippetBaseIndexManager : IIndexManager {
 
   init {
     initialize(
-      1, //ChatroomGUID
+      1, // GUID
+      2, // mainChatroomGUID,
+      3 // keywords
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-      "1-ChatroomGUID",
+      "1-GUID",
+      "2-mainChatroomGUID",
+      "3-keywords"
     )
   }
 
@@ -53,18 +57,20 @@ class SnippetBaseIndexManager : IIndexManager {
     writeToDisk: Boolean,
     userName: String
   ) {
-    entry as Snippet
+    entry as Knowledge
     buildIndices(
       entry.uID,
       posDB,
       byteSize,
       writeToDisk,
       userName,
-      Pair(1, entry.gUID)
+      Pair(1, entry.gUID),
+      Pair(2, entry.mainChatroomGUID),
+      Pair(3, entry.keywords)
     )
   }
 
   override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
-    return json(prettyPrint).encodeToString(entry as Snippet)
+    return json(prettyPrint).encodeToString(entry as Knowledge)
   }
 }
