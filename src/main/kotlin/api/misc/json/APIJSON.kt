@@ -1,8 +1,11 @@
 package api.misc.json
 
 import interfaces.ITokenData
+import io.ktor.util.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import modules.m7wisdom.Wisdom
 
 @Serializable
 data class EntryBytesListJson(
@@ -405,7 +408,8 @@ data class WisdomQuestionCreation(
   val description: String = "",
   val knowledgeGUID: String = "",
   var keywords: String = "",
-  val categories: ArrayList<String> = arrayListOf()
+  val categories: ArrayList<String> = arrayListOf(),
+  var copyContent: String = ""
 )
 
 @Serializable
@@ -437,5 +441,32 @@ data class WisdomCommentCreation(
 
 @Serializable
 data class WisdomSearchQuery(
-  val query: String = ""
+  val query: String = "",
+  val categories: ArrayList<String> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class WisdomSearchResponse(
+  var first: List<WisdomSearchResponseEntry> = arrayListOf(),
+  var second: List<WisdomSearchResponseEntry> = arrayListOf(),
+  var third: List<WisdomSearchResponseEntry> = arrayListOf(),
+  var time: Int = -1
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class WisdomSearchResponseEntry(
+  val wisdom: Wisdom,
+  val accuracy: Int
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class WisdomReferencesResponse(
+  val answers: ArrayList<Wisdom> = arrayListOf(),
+  val comments: ArrayList<Wisdom> = arrayListOf()
 )

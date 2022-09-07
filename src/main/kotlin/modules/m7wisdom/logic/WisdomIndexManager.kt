@@ -37,16 +37,20 @@ class WisdomIndexManager : IIndexManager {
   init {
     initialize(
       1, // GUID
-      2, // srcGUID
-      3 // keywords
+      2, // knowledgeUID
+      3, // srcGUID
+      4, // keywords
+      5 // refGUID
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
       "1-GUID",
-      "2-srcWisdomUID",
-      "3-keywords",
+      "2-knowledgeUID",
+      "3-srcWisdomUID",
+      "4-keywords",
+      "5-refUID"
     )
   }
 
@@ -59,7 +63,8 @@ class WisdomIndexManager : IIndexManager {
   ) {
     entry as Wisdom
     val knowledgeUID = entry.knowledgeUID.toString()
-    val wisdomUID = entry.srcWisdomUID.toString()
+    val srcWisdomUID = entry.srcWisdomUID.toString()
+    val refWisdomUID = entry.refWisdomUID.toString()
     buildIndices(
       entry.uID,
       posDB,
@@ -68,8 +73,9 @@ class WisdomIndexManager : IIndexManager {
       userName,
       Pair(1, entry.gUID),
       Pair(2, if (knowledgeUID != "-1") knowledgeUID else "?"),
-      Pair(3, if (wisdomUID != "-1") wisdomUID else "?"),
-      Pair(4, entry.keywords)
+      Pair(3, if (srcWisdomUID != "-1") srcWisdomUID else "?"),
+      Pair(4, entry.keywords),
+      Pair(5, if (refWisdomUID != "-1") refWisdomUID else "?")
     )
   }
 

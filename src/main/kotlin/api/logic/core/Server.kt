@@ -21,6 +21,7 @@ import api.misc.json.UniChatroomImage
 import api.misc.json.UniChatroomMemberRole
 import api.misc.json.UniChatroomRemoveMember
 import api.misc.json.UniMemberProfileImage
+import api.misc.json.UniMessageReaction
 import api.misc.json.UsernameChange
 import api.misc.json.WisdomAnswerCreation
 import api.misc.json.WisdomCommentCreation
@@ -75,12 +76,15 @@ import modules.mx.getIniFile
 import modules.mx.invoiceIndexManager
 import modules.mx.itemIndexManager
 import modules.mx.itemStockPostingIndexManager
+import modules.mx.knowledgeIndexManager
 import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
 import modules.mx.programPath
 import modules.mx.serverJobGlobal
+import modules.mx.snippetBaseIndexManager
 import modules.mx.uniChatroomIndexManager
 import modules.mx.usageTracker
+import modules.mx.wisdomIndexManager
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileInputStream
@@ -249,7 +253,10 @@ class Server : IModule {
             invoiceIndexManager!!,
             itemIndexManager!!,
             itemStockPostingIndexManager!!,
-            uniChatroomIndexManager!!
+            uniChatroomIndexManager!!,
+            snippetBaseIndexManager!!,
+            knowledgeIndexManager!!,
+            wisdomIndexManager!!
           )
           getEntry(
             discographyIndexManager!!,
@@ -257,7 +264,10 @@ class Server : IModule {
             invoiceIndexManager!!,
             itemIndexManager!!,
             itemStockPostingIndexManager!!,
-            uniChatroomIndexManager!!
+            uniChatroomIndexManager!!,
+            snippetBaseIndexManager!!,
+            knowledgeIndexManager!!,
+            wisdomIndexManager!!
           )
           saveEntry(
             discographyIndexManager!!,
@@ -265,7 +275,10 @@ class Server : IModule {
             invoiceIndexManager!!,
             itemIndexManager!!,
             itemStockPostingIndexManager!!,
-            uniChatroomIndexManager!!
+            uniChatroomIndexManager!!,
+            snippetBaseIndexManager!!,
+            knowledgeIndexManager!!,
+            wisdomIndexManager!!
           )
           getEntryLock(
             discographyIndexManager!!,
@@ -273,7 +286,10 @@ class Server : IModule {
             invoiceIndexManager!!,
             itemIndexManager!!,
             itemStockPostingIndexManager!!,
-            uniChatroomIndexManager!!
+            uniChatroomIndexManager!!,
+            snippetBaseIndexManager!!,
+            knowledgeIndexManager!!,
+            wisdomIndexManager!!
           )
           setEntryLock(
             discographyIndexManager!!,
@@ -281,7 +297,10 @@ class Server : IModule {
             invoiceIndexManager!!,
             itemIndexManager!!,
             itemStockPostingIndexManager!!,
-            uniChatroomIndexManager!!
+            uniChatroomIndexManager!!,
+            snippetBaseIndexManager!!,
+            knowledgeIndexManager!!,
+            wisdomIndexManager!!
           )
           sendEMail()
           getSettingsFileText()
@@ -359,7 +378,10 @@ class Server : IModule {
           createWisdomComment()
           createWisdomLesson()
           // Wisdom Query
-          getWisdom()
+          searchWisdom()
+          getWisdomReferences()
+          // Wisdom Modification
+          reactToWisdom()
 
           /*
            * Web Solution Endpoints
@@ -891,38 +913,38 @@ class Server : IModule {
   }
 
   private fun Route.createWisdomQuestion() {
-    post("m7/ask/{knowledgeGUID}") {
-      val knowledgeGUID = call.parameters["knowledgeGUID"]
-      if (knowledgeGUID.isNullOrEmpty()) {
-        call.respond(HttpStatusCode.BadRequest)
-      }
+    post("m7/ask") {
       val config: WisdomQuestionCreation = Json.decodeFromString(call.receive())
-      WisdomController().httpCreateQuestion(call, config)
+      val wisdomGUID: String = call.request.queryParameters["guid"] ?: ""
+      WisdomController().httpCreateQuestion(call, config, wisdomGUID)
     }
   }
 
   private fun Route.createWisdomAnswer() {
     post("m7/answer") {
       val config: WisdomAnswerCreation = Json.decodeFromString(call.receive())
-      WisdomController().httpCreateAnswer(call, config)
+      val wisdomGUID: String = call.request.queryParameters["guid"] ?: ""
+      WisdomController().httpCreateAnswer(call, config, wisdomGUID)
     }
   }
 
   private fun Route.createWisdomLesson() {
     post("m7/teach") {
       val config: WisdomLessonCreation = Json.decodeFromString(call.receive())
-      WisdomController().httpCreateLesson(call, config)
+      val wisdomGUID: String = call.request.queryParameters["guid"] ?: ""
+      WisdomController().httpCreateLesson(call, config, wisdomGUID)
     }
   }
 
   private fun Route.createWisdomComment() {
     post("m7/reply") {
       val config: WisdomCommentCreation = Json.decodeFromString(call.receive())
-      WisdomController().httpCreateComment(call, config)
+      val wisdomGUID: String = call.request.queryParameters["guid"] ?: ""
+      WisdomController().httpCreateComment(call, config, wisdomGUID)
     }
   }
 
-  private fun Route.getWisdom() {
+  private fun Route.searchWisdom() {
     post("m7/search/{knowledgeGUID}") {
       val knowledgeGUID = call.parameters["knowledgeGUID"]
       if (knowledgeGUID.isNullOrEmpty()) {
@@ -930,6 +952,27 @@ class Server : IModule {
       }
       val config: WisdomSearchQuery = Json.decodeFromString(call.receive())
       WisdomController().httpWisdomQuery(call, config, knowledgeGUID)
+    }
+  }
+
+  private fun Route.reactToWisdom() {
+    post("m7/react/{wisdomGUID}") {
+      val wisdomGUID = call.parameters["wisdomGUID"]
+      if (wisdomGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      val config: UniMessageReaction = Json.decodeFromString(call.receive())
+      WisdomController().httpWisdomReact(call, config, wisdomGUID)
+    }
+  }
+
+  private fun Route.getWisdomReferences() {
+    post("m7/investigate/{wisdomGUID}") {
+      val wisdomGUID = call.parameters["wisdomGUID"]
+      if (wisdomGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      WisdomController().httpGetWisdomEntriesRelated(call, wisdomGUID)
     }
   }
 }

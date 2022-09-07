@@ -138,6 +138,16 @@ fun runMessageBadgeDist(
       Timestamp.now()
     )
   )
+  userTmp = statistic.value.checkAndPutMessageBadge(
+    user = userTmp, threshold = 10_000, badge = UniBadge(
+      title = "Talkative VI.",
+      handle = "msg10000",
+      description = "Earned for having sent a total of 10,000 messages.",
+      xpGain = 12_150,
+      rank = 6,
+      Timestamp.now()
+    )
+  )
   return userTmp
 }
 
@@ -162,7 +172,7 @@ fun runRatingBadgeDist(
   userTmp = statistic.value.checkAndPutRatingBadge(
     user = userTmp, threshold = 100, badge = UniBadge(
       title = "Guru II.",
-      handle = "rt50",
+      handle = "rt100",
       description = "Earned for having a rating of at least 100.",
       xpGain = 150,
       rank = 2,
@@ -172,7 +182,7 @@ fun runRatingBadgeDist(
   userTmp = statistic.value.checkAndPutRatingBadge(
     user = userTmp, threshold = 200, badge = UniBadge(
       title = "Guru III.",
-      handle = "rt100",
+      handle = "rt200",
       description = "Earned for having a rating of at least 200.",
       xpGain = 450,
       rank = 3,
@@ -182,7 +192,7 @@ fun runRatingBadgeDist(
   userTmp = statistic.value.checkAndPutRatingBadge(
     user = userTmp, threshold = 500, badge = UniBadge(
       title = "Guru IV.",
-      handle = "rt200",
+      handle = "rt500",
       description = "Earned for having a rating of at least 500.",
       xpGain = 1350,
       rank = 4,
@@ -192,10 +202,20 @@ fun runRatingBadgeDist(
   userTmp = statistic.value.checkAndPutRatingBadge(
     user = userTmp, threshold = 1000, badge = UniBadge(
       title = "Guru V.",
-      handle = "rt500",
+      handle = "rt1000",
       description = "Earned for having a rating of at least 1000.",
       xpGain = 4050,
       rank = 5,
+      Timestamp.now()
+    )
+  )
+  userTmp = statistic.value.checkAndPutRatingBadge(
+    user = userTmp, threshold = 2000, badge = UniBadge(
+      title = "Guru VI.",
+      handle = "rt2000",
+      description = "Earned for having a rating of at least 2000.",
+      xpGain = 12_150,
+      rank = 6,
       Timestamp.now()
     )
   )

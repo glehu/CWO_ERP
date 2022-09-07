@@ -85,26 +85,28 @@ class SnippetBaseController : IModule, IWebApp {
   ): Snippet? {
     // Get Bytes from Base64 String
     val strings: List<String> = base64.split(",")
+    val mimeType = strings[0]
     val decoder = Base64.getDecoder()
     val decodedBytes: ByteArray = decoder.decode(strings[1])
     var image = withContext(Dispatchers.IO) {
       ImageIO.read(ByteArrayInputStream(decodedBytes))
     }
-
     // Get the file extension
     var fileExtension: String? = null
-    if (strings[0].contains("image")) {
+    if (mimeType.contains("image")) {
       // Image types
-      if (strings[0].contains("jpeg")) {
+      if (mimeType.contains("jpeg")) {
         fileExtension = "jpg"
-      } else if (strings[0].contains("png")) {
+      } else if (mimeType.contains("png")) {
         fileExtension = "png"
+      } else if (mimeType.contains("gif")) {
+        fileExtension = "gif"
       }
-    } else if (strings[0].contains("audio")) {
+    } else if (mimeType.contains("audio")) {
       // Audio types
-      if (strings[0].contains("mpeg")) {
+      if (mimeType.contains("mpeg")) {
         fileExtension = "mp3"
-      } else if (strings[0].contains("wav")) {
+      } else if (mimeType.contains("wav")) {
         fileExtension = "wav"
       }
     }
@@ -112,7 +114,7 @@ class SnippetBaseController : IModule, IWebApp {
     if (fileExtension == null) return null
     val file = getProjectJsonFile(owner, snippet.gUID, extension = fileExtension)
     // Create the resource and save it to the disk
-    if (strings[0].contains("image")) {
+    if (mimeType.contains("image") && !mimeType.contains("gif")) {
       // Resizing necessary?
       if (maxWidth != null && maxWidth > 0) {
         val maxTrueHeight = if (maxHeight == null || maxHeight < 1) {
@@ -131,7 +133,7 @@ class SnippetBaseController : IModule, IWebApp {
         ImageIO.write(image, fileExtension, file)
         image.flush() // Flush to free system resources
       }
-    } else if (strings[0].contains("audio")) {
+    } else {
       // Write Bytes to File
       withContext(Dispatchers.IO)
       {
