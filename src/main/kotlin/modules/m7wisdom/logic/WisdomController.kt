@@ -86,7 +86,9 @@ class WisdomController : IModule {
     // Meta
     question.type = "question"
     question.knowledgeUID = knowledgeRef!!.uID
-    question.authorUsername = user!!.username
+    if (question.authorUsername.isEmpty()) {
+      question.authorUsername = user!!.username
+    }
     // Info
     question.title = config.title
     question.description = config.description
@@ -126,7 +128,9 @@ class WisdomController : IModule {
     answer.type = "answer"
     answer.knowledgeUID = wisdomRef!!.knowledgeUID
     answer.srcWisdomUID = wisdomRef!!.uID
-    answer.authorUsername = user!!.username
+    if (answer.authorUsername.isEmpty()) {
+      answer.authorUsername = user!!.username
+    }
     // Info
     answer.title = config.title
     answer.description = config.description
@@ -168,7 +172,9 @@ class WisdomController : IModule {
     // Meta
     lesson.type = "lesson"
     lesson.knowledgeUID = knowledgeRef!!.uID
-    lesson.authorUsername = user!!.username
+    if (lesson.authorUsername.isEmpty()) {
+      lesson.authorUsername = user!!.username
+    }
     // Info
     lesson.title = config.title
     lesson.description = config.description
@@ -208,7 +214,9 @@ class WisdomController : IModule {
     comment.type = "comment"
     comment.knowledgeUID = wisdomRef!!.knowledgeUID
     comment.srcWisdomUID = wisdomRef!!.uID
-    comment.authorUsername = user!!.username
+    if (comment.authorUsername.isEmpty()) {
+      comment.authorUsername = user!!.username
+    }
     // Info
     comment.title = config.title
     comment.description = config.description
