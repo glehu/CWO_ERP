@@ -86,7 +86,7 @@ class UniChatroomController : IModule {
     return getMainChatroom(chatroom)
   }
 
-  suspend fun getMainChatroom(chatroom: UniChatroom): UniChatroom? {
+  private suspend fun getMainChatroom(chatroom: UniChatroom): UniChatroom? {
     // No Subchats allowed
     val mainChatroom = if (chatroom.parentGUID.isNotEmpty()) {
       getChatroom(chatroom.parentGUID)

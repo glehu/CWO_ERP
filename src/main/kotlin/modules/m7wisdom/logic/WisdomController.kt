@@ -10,6 +10,8 @@ import api.misc.json.WisdomReferencesResponse
 import api.misc.json.WisdomSearchQuery
 import api.misc.json.WisdomSearchResponse
 import api.misc.json.WisdomSearchResponseEntry
+import api.misc.json.WisdomTopContributorsResponse
+import api.misc.json.WisdomTopContributorsResponseEntry
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.http.*
@@ -310,19 +312,29 @@ class WisdomController : IModule {
           }
           accuracy += matchesDescription.count()
         }
-        // Evaluate
-        if (rating >= 4) {
-          first.add(
-            WisdomSearchResponseEntry(it, accuracy)
-          )
-        } else if (rating >= 3) {
-          second.add(
-            WisdomSearchResponseEntry(it, accuracy)
-          )
-        } else if (rating >= 1) {
-          third.add(
-            WisdomSearchResponseEntry(it, accuracy)
-          )
+        // Discard if irrelevant
+        if (rating > 0) {
+          val reducedWisdom: Wisdom = it
+          var description = reducedWisdom.description.substring(0..100)
+          // Remove line breaks as this could lead to broken design
+          description = description.replace("\n", " ")
+          // Remove mermaid markdown graphs since they can only exist as a whole, which might be too much to show
+          description = description.replace(regex = """```.*(```)?""".toRegex(), replacement = "")
+          reducedWisdom.description = description
+          // Evaluate
+          if (rating >= 4) {
+            first.add(
+              WisdomSearchResponseEntry(reducedWisdom, accuracy)
+            )
+          } else if (rating >= 3) {
+            second.add(
+              WisdomSearchResponseEntry(reducedWisdom, accuracy)
+            )
+          } else {
+            third.add(
+              WisdomSearchResponseEntry(reducedWisdom, accuracy)
+            )
+          }
         }
       }
     }
@@ -411,5 +423,83 @@ class WisdomController : IModule {
       }
     }
     appCall.respond(response)
+  }
+
+  suspend fun httpWisdomTopContributors(appCall: ApplicationCall, knowledgeGUID: String?) {
+    var knowledgeRef: Knowledge? = null
+    KnowledgeController().getEntriesFromIndexSearch(
+      searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
+    ) {
+      it as Knowledge
+      knowledgeRef = it
+    }
+    if (knowledgeRef == null) {
+      appCall.respond(HttpStatusCode.BadRequest)
+      return
+    }
+    val contributors = mutableMapOf<String, Int>()
+    getEntriesFromIndexSearch(
+      searchText = "^${knowledgeRef!!.uID}$", ixNr = 2, showAll = true
+    ) {
+      it as Wisdom
+      if (contributors.containsKey(it.authorUsername)) {
+        contributors[it.authorUsername] = contributors[it.authorUsername]!! + 1
+      } else {
+        contributors[it.authorUsername] = 1
+      }
+    }
+    val contributorsSorted = contributors.toList().sortedBy { (_, value) -> value }.reversed().toMap()
+    contributors.clear()
+    val response = WisdomTopContributorsResponse()
+    for (contributor in contributorsSorted) {
+      response.contributors.add(
+        WisdomTopContributorsResponseEntry(
+          username = contributor.key, imageURL = "", lessons = contributor.value
+        )
+      )
+    }
+    appCall.respond(response)
+  }
+
+  suspend fun httpDeleteWisdom(appCall: ApplicationCall, wisdomGUID: String?) {
+    var wisdom: Wisdom? = null
+    getEntriesFromIndexSearch(
+      searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
+    ) {
+      it as Wisdom
+      wisdom = it
+    }
+    if (wisdom == null) {
+      appCall.respond(HttpStatusCode.NotFound)
+      return
+    }
+    val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
+    if (user == null || wisdom!!.authorUsername != user.username) {
+      appCall.respond(HttpStatusCode.Unauthorized)
+      return
+    }
+    wisdom!!.gUID = "?"
+    wisdom!!.knowledgeUID = -1
+    wisdom!!.title = "?"
+    wisdom!!.description = "?"
+    wisdom!!.srcWisdomUID = -1
+    wisdom!!.refWisdomUID = -1
+    saveEntry(wisdom!!)
+    appCall.respond(HttpStatusCode.OK)
+  }
+
+  suspend fun httpGetWisdomEntry(appCall: ApplicationCall, wisdomGUID: String) {
+    var wisdom: Wisdom? = null
+    getEntriesFromIndexSearch(
+      searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
+    ) {
+      it as Wisdom
+      wisdom = it
+    }
+    if (wisdom == null) {
+      appCall.respond(HttpStatusCode.NotFound)
+      return
+    }
+    appCall.respond(wisdom!!)
   }
 }

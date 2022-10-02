@@ -470,3 +470,19 @@ data class WisdomReferencesResponse(
   val answers: ArrayList<Wisdom> = arrayListOf(),
   val comments: ArrayList<Wisdom> = arrayListOf()
 )
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class WisdomTopContributorsResponse(
+  var contributors: ArrayList<WisdomTopContributorsResponseEntry> = arrayListOf(),
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class WisdomTopContributorsResponseEntry(
+  val username: String,
+  val imageURL: String,
+  val lessons: Int,
+)

@@ -380,8 +380,10 @@ class Server : IModule {
           // Wisdom Query
           searchWisdom()
           getWisdomReferences()
+          getTopWisdomContributors()
           // Wisdom Modification
           reactToWisdom()
+          deleteWisdom()
 
           /*
            * Web Solution Endpoints
@@ -973,6 +975,36 @@ class Server : IModule {
         call.respond(HttpStatusCode.BadRequest)
       }
       WisdomController().httpGetWisdomEntriesRelated(call, wisdomGUID)
+    }
+  }
+
+  private fun Route.getWisdom() {
+    post("m7/learn/{wisdomGUID}") {
+      val wisdomGUID = call.parameters["wisdomGUID"]
+      if (wisdomGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      WisdomController().httpGetWisdomEntry(call, wisdomGUID!!)
+    }
+  }
+
+  private fun Route.getTopWisdomContributors() {
+    get("m7/topwriters/{knowledgeGUID}") {
+      val knowledgeGUID = call.parameters["knowledgeGUID"]
+      if (knowledgeGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      WisdomController().httpWisdomTopContributors(call, knowledgeGUID)
+    }
+  }
+
+  private fun Route.deleteWisdom() {
+    get("m7/delete/{wisdomGUID}") {
+      val wisdomGUID = call.parameters["wisdomGUID"]
+      if (wisdomGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      WisdomController().httpDeleteWisdom(call, wisdomGUID)
     }
   }
 }
