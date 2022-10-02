@@ -979,7 +979,7 @@ class Server : IModule {
   }
 
   private fun Route.getWisdom() {
-    post("m7/learn/{wisdomGUID}") {
+    get("m7/learn/{wisdomGUID}") {
       val wisdomGUID = call.parameters["wisdomGUID"]
       if (wisdomGUID.isNullOrEmpty()) {
         call.respond(HttpStatusCode.BadRequest)
