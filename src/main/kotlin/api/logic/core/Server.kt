@@ -381,6 +381,7 @@ class Server : IModule {
           searchWisdom()
           getWisdomReferences()
           getTopWisdomContributors()
+          getWisdom()
           // Wisdom Modification
           reactToWisdom()
           deleteWisdom()
