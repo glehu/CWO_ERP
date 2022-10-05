@@ -314,25 +314,29 @@ class WisdomController : IModule {
         }
         // Discard if irrelevant
         if (rating > 0) {
-          val reducedWisdom: Wisdom = it
-          var description = reducedWisdom.description.substring(0..100)
-          // Remove line breaks as this could lead to broken design
-          description = description.replace("\n", " ")
-          // Remove mermaid markdown graphs since they can only exist as a whole, which might be too much to show
-          description = description.replace(regex = """```.*(```)?""".toRegex(), replacement = "")
-          reducedWisdom.description = description
+          // Cut the description to a maximum of 200 characters if there is one
+          if (it.description.isNotEmpty()) {
+            var end = 200
+            if (end > it.description.length) end = it.description.length - 1
+            var description = it.description.substring(0..end)
+            // Remove line breaks as this could lead to broken design
+            description = description.replace("\n", " ")
+            // Remove mermaid markdown graphs since they can only exist as a whole, which might be too much to show
+            description = description.replace(regex = """```.*(```)?""".toRegex(), replacement = "")
+            it.description = description
+          }
           // Evaluate
           if (rating >= 4) {
             first.add(
-              WisdomSearchResponseEntry(reducedWisdom, accuracy)
+              WisdomSearchResponseEntry(it, accuracy)
             )
           } else if (rating >= 3) {
             second.add(
-              WisdomSearchResponseEntry(reducedWisdom, accuracy)
+              WisdomSearchResponseEntry(it, accuracy)
             )
           } else {
             third.add(
-              WisdomSearchResponseEntry(reducedWisdom, accuracy)
+              WisdomSearchResponseEntry(it, accuracy)
             )
           }
         }
@@ -347,7 +351,8 @@ class WisdomController : IModule {
     response.first = first.sortedWith(compareBy { it.accuracy }).reversed()
     response.second = second.sortedWith(compareBy { it.accuracy }).reversed()
     response.third = third.sortedWith(compareBy { it.accuracy }).reversed()
-    appCall.respond(Json.encodeToString(response))
+    val jsonPayload = Json.encodeToString(response)
+    appCall.respond(jsonPayload)
   }
 
   suspend fun httpWisdomReact(

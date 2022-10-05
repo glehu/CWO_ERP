@@ -50,13 +50,13 @@ class Mockingbird {
       }
       when (config.return_type) {
         "Message" -> respondWithMessage(appCall, config, elapsed)
-        "HTTP Code" -> respondWithHTTPCode(appCall, config, elapsed)
+        //"HTTP Code" -> respondWithHTTPCode(appCall, config, elapsed)
         else -> appCall.respond(HttpStatusCode.NotFound)
       }
     }
 
-    private fun respondWithHTTPCode(appCall: ApplicationCall, config: MockingbirdConfig, elapsed: Long) {
-    }
+    //private fun respondWithHTTPCode(appCall: ApplicationCall, config: MockingbirdConfig, elapsed: Long) {
+    //}
 
     private suspend fun respondWithMessage(appCall: ApplicationCall, config: MockingbirdConfig, elapsed: Long) {
       val message: String
