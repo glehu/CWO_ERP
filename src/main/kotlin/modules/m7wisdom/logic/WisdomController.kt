@@ -314,14 +314,20 @@ class WisdomController : IModule {
         }
         // Discard if irrelevant
         if (rating > 0) {
-          // Cut the description to a maximum of 200 characters if there is one
-          if (it.description.isNotEmpty() && it.description.length > 200) {
-            var description = it.description.substring(0..200)
+          if (it.description.isNotEmpty()) {
+            var description = it.description
+            var truncated = false
+            // Cut the description to a maximum of 200 characters if there is one
+            if (it.description.length > 200) {
+              description = description.substring(0..200)
+              truncated = true
+            }
             // Remove line breaks as this could lead to broken design
             description = description.replace("\n", " ")
             // Remove mermaid markdown graphs since they can only exist as a whole, which might be too much to show
             description = description.replace(regex = """```.*(```)?""".toRegex(), replacement = "")
-            it.description = "$description..."
+            if (truncated) description = "$description..."
+            it.description = description
           }
           // Evaluate
           if (rating >= 4) {
