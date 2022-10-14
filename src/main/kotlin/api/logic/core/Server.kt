@@ -244,9 +244,7 @@ class Server : IModule {
           }
         }
         route("/api") {
-          /*
-           * General Endpoints
-           */
+          // General Endpoints
           getIndexSelection(
             discographyIndexManager!!,
             contactIndexManager!!,
@@ -304,38 +302,24 @@ class Server : IModule {
           )
           sendEMail()
           getSettingsFileText()
-
-          /*
-           * M2 Endpoints (Contacts)
-           */
+          // M2 Endpoints (Contacts)
           changeUsername()
           changePassword()
-
-          /*
-           * M3 Endpoints (Invoice)
-           */
+          // M3 Endpoints (Invoice)
           getOwnInvoices()
-
-          /*
-           * M4 Endpoints (Item)
-           */
+          // M4 Endpoints (Item)
           getPriceCategories()
           getPriceCategoryNumber()
           savePriceCategory()
           deletePriceCategory()
-
           getStorages()
           getStorageNumber()
           saveStorage()
           deleteStorage()
           checkStorage()
           getAvailableStock()
-
           getItemImage()
-
-          /*
-           * M5 Endpoints (UniChatroom)
-           */
+          // M5 Endpoints (UniChatroom)
           // Creation and Modification
           createUniChatroom()
           getUniChatroom()
@@ -360,15 +344,9 @@ class Server : IModule {
           upgradeUniChatroom()
           giveMessageBadges()
           getBadges()
-
-          /*
-           * M6 Endpoints (SnippetBase)
-           */
+          // M6 Endpoints (SnippetBase)
           saveSnippetImage()
-
-          /*
-           * M7 Endpoints (Knowledge)
-           */
+          // M7 Endpoints (Knowledge)
           getKnowledge()
           createKnowledge()
           configureKnowledgeCategories()
@@ -385,15 +363,13 @@ class Server : IModule {
           // Wisdom Modification
           reactToWisdom()
           deleteWisdom()
-
-          /*
-           * Web Solution Endpoints
-           */
+          finishWisdom()
+          // Tasks
+          getTasks()
+          // Web Solution Endpoints
           addWebshopOrder()
           userTracking()
-          /*
-           * Web Apps
-           */
+          // Web Apps
           webPlannerCommit()
           webPlannerRequest()
         }
@@ -1006,6 +982,26 @@ class Server : IModule {
         call.respond(HttpStatusCode.BadRequest)
       }
       WisdomController().httpDeleteWisdom(call, wisdomGUID)
+    }
+  }
+
+  private fun Route.finishWisdom() {
+    get("m7/finish/{wisdomGUID}") {
+      val wisdomGUID = call.parameters["wisdomGUID"]
+      if (wisdomGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      WisdomController().httpFinishWisdom(call, wisdomGUID)
+    }
+  }
+
+  private fun Route.getTasks() {
+    get("m7/tasks/{knowledgeGUID}") {
+      val knowledgeGUID = call.parameters["knowledgeGUID"]
+      if (knowledgeGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      WisdomController().httpGetTasks(call, knowledgeGUID)
     }
   }
 }

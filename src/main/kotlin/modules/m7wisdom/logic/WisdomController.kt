@@ -1,9 +1,12 @@
 package modules.m7wisdom.logic
 
 import api.logic.core.ServerController
+import api.misc.json.TaskBoxPayload
+import api.misc.json.TaskBoxesResponse
 import api.misc.json.UniMessageReaction
 import api.misc.json.WisdomAnswerCreation
 import api.misc.json.WisdomCommentCreation
+import api.misc.json.WisdomHistoryEntry
 import api.misc.json.WisdomLessonCreation
 import api.misc.json.WisdomQuestionCreation
 import api.misc.json.WisdomReferencesResponse
@@ -20,6 +23,7 @@ import io.ktor.server.response.*
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -29,6 +33,7 @@ import kotlinx.serialization.json.Json
 import modules.m7knowledge.Knowledge
 import modules.m7knowledge.logic.KnowledgeController
 import modules.m7wisdom.Wisdom
+import modules.mx.logic.Timestamp
 import modules.mx.logic.UserCLIManager
 import modules.mx.wisdomIndexManager
 import kotlin.system.measureTimeMillis
@@ -162,6 +167,7 @@ class WisdomController : IModule {
       return
     }
     var lesson = Wisdom()
+    var edit = false
     if (wisdomGUID.isNotEmpty()) {
       // Get existing wisdom if one got referenced
       getEntriesFromIndexSearch(
@@ -169,6 +175,7 @@ class WisdomController : IModule {
       ) {
         it as Wisdom
         lesson = it
+        edit = true
       }
     }
     // Meta
@@ -183,6 +190,41 @@ class WisdomController : IModule {
     lesson.keywords = config.keywords
     lesson.copyContent = config.copyContent
     lesson.categories = config.categories
+    lesson.isTask = config.isTask
+    lesson.taskType = config.taskType
+    lesson.columnIndex = config.columnIndex
+    lesson.rowIndex = config.rowIndex
+    if (config.inBox && config.boxGUID.isNotEmpty()) {
+      var boxWisdom: Wisdom? = null
+      getEntriesFromIndexSearch(
+        searchText = "^${config.boxGUID}$", ixNr = 1, showAll = true
+      ) {
+        it as Wisdom
+        boxWisdom = it
+      }
+      if (boxWisdom != null) {
+        lesson.srcWisdomUID = boxWisdom!!.uID
+      } else {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+    }
+    val historyEntry = if (!edit) {
+      WisdomHistoryEntry(
+        type = "creation",
+        date = Timestamp.getUnixTimestampHex(),
+        description = "Created",
+        authorUsername = user!!.username
+      )
+    } else {
+      WisdomHistoryEntry(
+        type = "edit",
+        date = Timestamp.getUnixTimestampHex(),
+        description = "Edited",
+        authorUsername = user!!.username
+      )
+    }
+    lesson.history.add(Json.encodeToString(historyEntry))
     saveEntry(lesson)
     appCall.respond(lesson.gUID)
   }
@@ -193,7 +235,7 @@ class WisdomController : IModule {
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     var wisdomRef: Wisdom? = null
     getEntriesFromIndexSearch(
-      searchText = "^${config.wisdomGUID}$", ixNr = 3, showAll = true
+      searchText = "^${config.wisdomGUID}$", ixNr = 1, showAll = true
     ) {
       it as Wisdom
       wisdomRef = it
@@ -270,8 +312,26 @@ class WisdomController : IModule {
       }
       val queryFormattedString = queryFormatted.toString()
       val regexPattern = queryFormattedString.toRegex(RegexOption.IGNORE_CASE)
+      val indexNumber: Int
+      val indexQuery: String
+      when (config.type) {
+        "wisdom" -> {
+          indexNumber = 2
+          indexQuery = "^${knowledgeRef!!.uID}$"
+        }
+
+        "task" -> {
+          indexNumber = 6
+          indexQuery = "^${knowledgeRef!!.uID};.*$"
+        }
+
+        else -> {
+          indexNumber = 2
+          indexQuery = "^${knowledgeRef!!.uID}$"
+        }
+      }
       getEntriesFromIndexSearch(
-        searchText = "^${knowledgeRef!!.uID}$", ixNr = 2, showAll = true
+        searchText = indexQuery, ixNr = indexNumber, showAll = true
       ) {
         it as Wisdom
         rating = 0
@@ -420,10 +480,24 @@ class WisdomController : IModule {
   }
 
   suspend fun httpGetWisdomEntriesRelated(appCall: ApplicationCall, wisdomGUID: String?) {
-    if (wisdomGUID == null) return
+    if (wisdomGUID == null) {
+      appCall.respond(HttpStatusCode.BadRequest)
+      return
+    }
+    var wisdomRef: Wisdom? = null
+    getEntriesFromIndexSearch(
+      searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
+    ) {
+      it as Wisdom
+      wisdomRef = it
+    }
+    if (wisdomRef == null) {
+      appCall.respond(HttpStatusCode.NotFound)
+      return
+    }
     val response = WisdomReferencesResponse()
     getEntriesFromIndexSearch(
-      searchText = "^$wisdomGUID$", ixNr = 3, showAll = true
+      searchText = "^${wisdomRef!!.uID}$", ixNr = 3, showAll = true
     ) {
       it as Wisdom
       when (it.type) {
@@ -493,6 +567,7 @@ class WisdomController : IModule {
     wisdom!!.description = "?"
     wisdom!!.srcWisdomUID = -1
     wisdom!!.refWisdomUID = -1
+    wisdom!!.isTask = false
     saveEntry(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
   }
@@ -510,5 +585,77 @@ class WisdomController : IModule {
       return
     }
     appCall.respond(wisdom!!)
+  }
+
+  suspend fun httpGetTasks(appCall: ApplicationCall, knowledgeGUID: String?) {
+    if (knowledgeGUID == null) {
+      appCall.respond(HttpStatusCode.BadRequest)
+      return
+    }
+    var knowledgeRef: Knowledge? = null
+    KnowledgeController().getEntriesFromIndexSearch(
+      searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
+    ) {
+      it as Knowledge
+      knowledgeRef = it
+    }
+    if (knowledgeRef == null) {
+      appCall.respond(HttpStatusCode.BadRequest)
+      return
+    }
+    // First, fetch all boxes
+    val taskBoxesResponse = TaskBoxesResponse()
+    getEntriesFromIndexSearch(
+      searchText = "^${knowledgeRef!!.uID};BOX$", ixNr = 6, showAll = true
+    ) {
+      it as Wisdom
+      taskBoxesResponse.boxes.add(TaskBoxPayload(it))
+      runBlocking {
+      }
+    }
+    if (taskBoxesResponse.boxes.isEmpty()) {
+      appCall.respond(HttpStatusCode.NotFound)
+      return
+    }
+    // Now, get the tasks of all gathered boxes
+    for (i in 0 until taskBoxesResponse.boxes.size) {
+      getEntriesFromIndexSearch(
+        searchText = "^${taskBoxesResponse.boxes[i].box.uID}$", ixNr = 3, showAll = true
+      ) {
+        it as Wisdom
+        if (!it.finished) {
+          taskBoxesResponse.boxes[i].tasks.add(it)
+        }
+      }
+    }
+    // Respond
+    appCall.respond(taskBoxesResponse)
+  }
+
+  suspend fun httpFinishWisdom(appCall: ApplicationCall, wisdomGUID: String?) {
+    var wisdom: Wisdom? = null
+    getEntriesFromIndexSearch(
+      searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
+    ) {
+      it as Wisdom
+      wisdom = it
+    }
+    if (wisdom == null) {
+      appCall.respond(HttpStatusCode.NotFound)
+      return
+    }
+    val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
+    // If the user is unauthorized or neither the creator nor a collaborator, exit
+    if (user == null ||
+      wisdom!!.authorUsername != user.username ||
+      !wisdom!!.collaborators.contains(user.username)) {
+      appCall.respond(HttpStatusCode.Unauthorized)
+      return
+    }
+    wisdom!!.hasDueDate = false
+    wisdom!!.finished = true
+    wisdom!!.finishedDate = Timestamp.getUnixTimestampHex()
+    saveEntry(wisdom!!)
+    appCall.respond(HttpStatusCode.OK)
   }
 }

@@ -587,12 +587,14 @@ class UniChatroomController : IModule {
         uID = -1,
         uniChatroomUID = -1,
         from = "_server",
-        message = "List of all commands:\n" +
-                "\n  /gif [keywords] to send a random GIF" +
-                "\n  /flip [optional: keywords] to open the Imgflip interface" +
-                "\n  /topflip [optional: -d] to review the most upvoted image! -d to filter today's images only" +
-                "\n  /stats to view the current subchats' statistics on messages" +
-                "\n  /leaderboard to show the top members of this subchat"
+        message = "#### List of all commands:\n" +
+                "| Command      | Explanation |" +
+                "| ------------ | ----------- |" +
+                "\n| `/gif` [keywords] | Send a random GIF |" +
+                "\n| `/flip` [optional: keywords] | Open the Imgflip interface |" +
+                "\n| `/topflip` [optional: `-d`] | Review the most upvoted image! -d to filter today's images only |" +
+                "\n| `/stats` | View the current subchats' statistics on messages |" +
+                "\n| `/leaderboard` | Show the top members of this subchat |"
       )
       clarifierSession.connections.forEach {
         if (!it.session.outgoing.isClosedForSend) {

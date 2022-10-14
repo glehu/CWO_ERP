@@ -44,6 +44,38 @@ data class Wisdom(
   @SerialName("reacts")
   var reactions: ArrayList<String> = arrayListOf()
 
+  var isTask: Boolean = false
+
+  var taskType: String = ""
+
+  var taskPayloadType: String = "text"
+
+  var hasDueDate: Boolean = false
+
+  var dueDate: String = ""
+
+  var collaborators: ArrayList<String> = arrayListOf()
+
+  var history: ArrayList<String> = arrayListOf()
+
+  var status: String = ""
+
+  var finished: Boolean = false
+
+  var finishedDate: String = ""
+
+  var hasAttachement: Boolean = false
+
+  var snippetGUID: String = ""
+
+  var hasBackgroundImage: Boolean = false
+
+  var backgroundSnippetGUID: String = ""
+
+  var columnIndex: Int = 0
+
+  var rowIndex: Int = 0
+
   init {
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
     if (gUID.isEmpty()) gUID = Uuid.randomUUID().toString()

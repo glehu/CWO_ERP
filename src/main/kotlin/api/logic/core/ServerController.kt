@@ -113,7 +113,7 @@ class ServerController {
 
     fun getEntry(appCall: ApplicationCall, indexManager: IIndexManager): Any {
       val routePar = appCall.parameters["searchString"]
-      if (routePar != null && routePar.isNotEmpty()) {
+      if (!routePar.isNullOrEmpty()) {
         when (appCall.request.queryParameters["type"]) {
           "uid" -> {
             val doLock = when (appCall.request.queryParameters["lock"]) {
@@ -163,7 +163,7 @@ class ServerController {
 
     fun getEntryLock(appCall: ApplicationCall, indexManager: IIndexManager): Boolean {
       val routePar = appCall.parameters["searchString"]
-      if (routePar != null && routePar.isNotEmpty()) {
+      if (!routePar.isNullOrEmpty()) {
         return indexManager.getEntryLock(
           uID = routePar.toInt(),
           userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
@@ -175,7 +175,7 @@ class ServerController {
     suspend fun setEntryLock(appCall: ApplicationCall, indexManager: IIndexManager): Boolean {
       val routePar = appCall.parameters["searchString"]
       val queryPar = appCall.request.queryParameters["type"]
-      val success: Boolean = if (routePar != null && routePar.isNotEmpty()) {
+      val success: Boolean = if (!routePar.isNullOrEmpty()) {
         mutex.withLock {
           indexManager.setEntryLock(
             uID = routePar.toInt(),

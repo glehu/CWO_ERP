@@ -428,7 +428,13 @@ data class WisdomLessonCreation(
   val knowledgeGUID: String = "",
   val keywords: String = "",
   var copyContent: String = "",
-  val categories: ArrayList<String> = arrayListOf()
+  val categories: ArrayList<String> = arrayListOf(),
+  val isTask: Boolean = false,
+  val taskType: String = "",
+  val columnIndex: Int = 0,
+  val rowIndex: Int = 0,
+  val inBox: Boolean = false,
+  val boxGUID: String = ""
 )
 
 @Serializable
@@ -442,6 +448,10 @@ data class WisdomCommentCreation(
 @Serializable
 data class WisdomSearchQuery(
   val query: String = "",
+  /**
+   * wisdom or task
+   */
+  val type: String = "wisdom",
   val categories: ArrayList<String> = arrayListOf()
 )
 
@@ -485,4 +495,29 @@ data class WisdomTopContributorsResponseEntry(
   val username: String,
   val imageURL: String,
   val lessons: Int,
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class TaskBoxesResponse(
+  var boxes: ArrayList<TaskBoxPayload> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class TaskBoxPayload(
+  var box: Wisdom,
+  var tasks: ArrayList<Wisdom> = arrayListOf()
+)
+
+@Serializable
+data class WisdomHistoryEntry(
+  var type: String = "",
+  var date: String = "",
+  @SerialName("desc")
+  var description: String = "",
+  @SerialName("author")
+  var authorUsername: String = ""
 )
