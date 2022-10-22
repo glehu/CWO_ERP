@@ -137,6 +137,7 @@ class ServerController {
               )
             }
           }
+
           "name" -> {
             val requestIndex = appCall.request.queryParameters["index"]
             val ixNr: Int = (requestIndex?.toInt()) ?: 1
@@ -155,6 +156,7 @@ class ServerController {
               )
             }
           }
+
           else -> return ""
         }
       }
@@ -770,7 +772,7 @@ class ServerController {
     }
 
     fun getUsernameReversedBase(appCall: ApplicationCall): String {
-      val username = getJWTEmail(appCall)
+      val username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username
       val usernameReversed = username.reversed()
       val usernameBase = Base64.getUrlEncoder().encodeToString(usernameReversed.toByteArray())
       return java.net.URLEncoder.encode(usernameBase, "utf-8")

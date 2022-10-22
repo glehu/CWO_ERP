@@ -5,6 +5,7 @@ import api.misc.json.TaskBoxPayload
 import api.misc.json.TaskBoxesResponse
 import api.misc.json.UniMessageReaction
 import api.misc.json.WisdomAnswerCreation
+import api.misc.json.WisdomCollaboratorPayload
 import api.misc.json.WisdomCommentCreation
 import api.misc.json.WisdomHistoryEntry
 import api.misc.json.WisdomLessonCreation
@@ -192,8 +193,15 @@ class WisdomController : IModule {
     lesson.categories = config.categories
     lesson.isTask = config.isTask
     lesson.taskType = config.taskType
+    if (lesson.isTask) {
+      if (lesson.taskType.isNotEmpty()) {
+        lesson.type = config.taskType
+      }
+    }
     lesson.columnIndex = config.columnIndex
     lesson.rowIndex = config.rowIndex
+    lesson.hasDueDate = config.hasDueDate
+    lesson.dueDate = config.dueDate
     if (config.inBox && config.boxGUID.isNotEmpty()) {
       var boxWisdom: Wisdom? = null
       getEntriesFromIndexSearch(
@@ -389,6 +397,11 @@ class WisdomController : IModule {
             if (truncated) description = "$description..."
             it.description = description
           }
+          // Clean up dates (human-readable)
+          if (it.finished) {
+            it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
+          }
+          it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
           // Evaluate
           if (rating >= 4) {
             first.add(
@@ -525,10 +538,12 @@ class WisdomController : IModule {
       searchText = "^${knowledgeRef!!.uID}$", ixNr = 2, showAll = true
     ) {
       it as Wisdom
-      if (contributors.containsKey(it.authorUsername)) {
-        contributors[it.authorUsername] = contributors[it.authorUsername]!! + 1
-      } else {
-        contributors[it.authorUsername] = 1
+      if (!it.isTask) {
+        if (contributors.containsKey(it.authorUsername)) {
+          contributors[it.authorUsername] = contributors[it.authorUsername]!! + 1
+        } else {
+          contributors[it.authorUsername] = 1
+        }
       }
     }
     val contributorsSorted = contributors.toList().sortedBy { (_, value) -> value }.reversed().toMap()
@@ -578,6 +593,10 @@ class WisdomController : IModule {
       searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
     ) {
       it as Wisdom
+      if (it.finished) {
+        it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
+      }
+      it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
       wisdom = it
     }
     if (wisdom == null) {
@@ -587,7 +606,7 @@ class WisdomController : IModule {
     appCall.respond(wisdom!!)
   }
 
-  suspend fun httpGetTasks(appCall: ApplicationCall, knowledgeGUID: String?) {
+  suspend fun httpGetTasks(appCall: ApplicationCall, knowledgeGUID: String?, stateFilter: String) {
     if (knowledgeGUID == null) {
       appCall.respond(HttpStatusCode.BadRequest)
       return
@@ -609,6 +628,10 @@ class WisdomController : IModule {
       searchText = "^${knowledgeRef!!.uID};BOX$", ixNr = 6, showAll = true
     ) {
       it as Wisdom
+      if (it.finished) {
+        it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
+      }
+      it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
       taskBoxesResponse.boxes.add(TaskBoxPayload(it))
       runBlocking {
       }
@@ -618,12 +641,19 @@ class WisdomController : IModule {
       return
     }
     // Now, get the tasks of all gathered boxes
+    var isFinishedDesire = false
+    if (stateFilter == "finished") isFinishedDesire = true
     for (i in 0 until taskBoxesResponse.boxes.size) {
       getEntriesFromIndexSearch(
         searchText = "^${taskBoxesResponse.boxes[i].box.uID}$", ixNr = 3, showAll = true
       ) {
         it as Wisdom
-        if (!it.finished) {
+        if (it.finished == isFinishedDesire) {
+          // Convert dates before sending the entries back
+          if (it.finished) {
+            it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
+          }
+          it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
           taskBoxesResponse.boxes[i].tasks.add(it)
         }
       }
@@ -647,8 +677,7 @@ class WisdomController : IModule {
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     // If the user is unauthorized or neither the creator nor a collaborator, exit
     if (user == null ||
-      wisdom!!.authorUsername != user.username ||
-      !wisdom!!.collaborators.contains(user.username)) {
+      (wisdom!!.authorUsername != user.username && !wisdom!!.collaborators.contains(user.username))) {
       appCall.respond(HttpStatusCode.Unauthorized)
       return
     }
@@ -657,5 +686,32 @@ class WisdomController : IModule {
     wisdom!!.finishedDate = Timestamp.getUnixTimestampHex()
     saveEntry(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
+  }
+
+  suspend fun httpModifyWisdomContributor(
+    appCall: ApplicationCall,
+    wisdomGUID: String?,
+    config: WisdomCollaboratorPayload
+  ) {
+    var wisdom: Wisdom? = null
+    getEntriesFromIndexSearch(
+      searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
+    ) {
+      it as Wisdom
+      wisdom = it
+    }
+    if (wisdom == null) {
+      appCall.respond(HttpStatusCode.NotFound)
+      return
+    }
+    // Add collaborator if he doesn't exist yet
+    if (!wisdom!!.collaborators.contains(config.username)) {
+      if (config.add) {
+        wisdom!!.collaborators.add(config.username)
+      }
+    } else if (!config.add) {
+      // Remove him if he does
+      wisdom!!.collaborators.remove(config.username)
+    }
   }
 }

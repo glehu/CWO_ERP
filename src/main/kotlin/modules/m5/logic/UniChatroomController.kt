@@ -197,7 +197,7 @@ class UniChatroomController : IModule {
     username: String,
   ): Boolean {
     if (username.isEmpty()) return false
-    // Does the member already exist in the Clarifier's ban list'?
+    // Does the member already exist in the Clarifier's ban list?
     var found = false
     for (uniMember in this.banlist) {
       if (Json.decodeFromString<UniMember>(uniMember).username == username) {
@@ -589,7 +589,7 @@ class UniChatroomController : IModule {
         from = "_server",
         message = "#### List of all commands:\n" +
                 "| Command      | Explanation |" +
-                "| ------------ | ----------- |" +
+                "\n| ------------ | ----------- |" +
                 "\n| `/gif` [keywords] | Send a random GIF |" +
                 "\n| `/flip` [optional: keywords] | Open the Imgflip interface |" +
                 "\n| `/topflip` [optional: `-d`] | Review the most upvoted image! -d to filter today's images only |" +

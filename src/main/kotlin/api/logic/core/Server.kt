@@ -24,6 +24,7 @@ import api.misc.json.UniMemberProfileImage
 import api.misc.json.UniMessageReaction
 import api.misc.json.UsernameChange
 import api.misc.json.WisdomAnswerCreation
+import api.misc.json.WisdomCollaboratorPayload
 import api.misc.json.WisdomCommentCreation
 import api.misc.json.WisdomLessonCreation
 import api.misc.json.WisdomQuestionCreation
@@ -364,6 +365,7 @@ class Server : IModule {
           reactToWisdom()
           deleteWisdom()
           finishWisdom()
+          modifyWisdomContributor()
           // Tasks
           getTasks()
           // Web Solution Endpoints
@@ -1001,7 +1003,19 @@ class Server : IModule {
       if (knowledgeGUID.isNullOrEmpty()) {
         call.respond(HttpStatusCode.BadRequest)
       }
-      WisdomController().httpGetTasks(call, knowledgeGUID)
+      val stateFilter: String = call.request.queryParameters["state"] ?: "unfinished"
+      WisdomController().httpGetTasks(call, knowledgeGUID, stateFilter)
+    }
+  }
+
+  private fun Route.modifyWisdomContributor() {
+    post("m7/modifycollab/{wisdomGUID}") {
+      val wisdomGUID = call.parameters["wisdomGUID"]
+      if (wisdomGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      val config: WisdomCollaboratorPayload = Json.decodeFromString(call.receive())
+      WisdomController().httpModifyWisdomContributor(call, wisdomGUID, config)
     }
   }
 }

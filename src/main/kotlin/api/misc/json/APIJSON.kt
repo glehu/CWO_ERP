@@ -434,7 +434,9 @@ data class WisdomLessonCreation(
   val columnIndex: Int = 0,
   val rowIndex: Int = 0,
   val inBox: Boolean = false,
-  val boxGUID: String = ""
+  val boxGUID: String = "",
+  val hasDueDate: Boolean = false,
+  val dueDate: String = ""
 )
 
 @Serializable
@@ -520,4 +522,9 @@ data class WisdomHistoryEntry(
   var description: String = "",
   @SerialName("author")
   var authorUsername: String = ""
+)
+
+data class WisdomCollaboratorPayload(
+  var username: String,
+  var add: Boolean = true
 )
