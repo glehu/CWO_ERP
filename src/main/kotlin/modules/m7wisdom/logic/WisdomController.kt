@@ -195,6 +195,7 @@ class WisdomController : IModule {
     lesson.taskType = config.taskType
     if (lesson.isTask) {
       if (lesson.taskType.isNotEmpty()) {
+        lesson.isTask = true
         lesson.type = config.taskType
       }
     }

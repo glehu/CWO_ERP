@@ -104,8 +104,7 @@ class ServerController {
           moduleAlt = indexManager.module
         )
         uID = indexManager.save(
-          entry = indexManager.decode(entry),
-          userName = username
+          entry = indexManager.decode(entry), userName = username
         )
       }
       return uID
@@ -126,8 +125,7 @@ class ServerController {
               )
               entry.initialize()
               indexManager.encodeToJsonString(
-                entry = entry,
-                prettyPrint = true
+                entry = entry, prettyPrint = true
               )
             } else {
               indexManager.getBytes(
@@ -144,15 +142,11 @@ class ServerController {
             val exactSearch = requestIndex != null
             return if (appCall.request.queryParameters["format"] == "json") {
               indexManager.getEntryListJson(
-                searchText = routePar,
-                ixNr,
-                exactSearch = exactSearch
+                searchText = routePar, ixNr, exactSearch = exactSearch
               )
             } else {
               indexManager.getEntryBytesListJson(
-                searchText = routePar,
-                ixNr,
-                exactSearch = exactSearch
+                searchText = routePar, ixNr, exactSearch = exactSearch
               )
             }
           }
@@ -167,8 +161,7 @@ class ServerController {
       val routePar = appCall.parameters["searchString"]
       if (!routePar.isNullOrEmpty()) {
         return indexManager.getEntryLock(
-          uID = routePar.toInt(),
-          userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
+          uID = routePar.toInt(), userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
         )
       }
       return false
@@ -196,11 +189,8 @@ class ServerController {
         //                 h   min  sec  ms
         val expiresInMs = (1 * 60 * 60 * 1000)
         val expiresAt = Date(System.currentTimeMillis() + expiresInMs)
-        val token = JWT.create()
-          .withAudience("https://${iniVal.serverIPAddress}/")
-          .withIssuer("https://${iniVal.serverIPAddress}/")
-          .withClaim("username", user.email)
-          .withExpiresAt(expiresAt)
+        val token = JWT.create().withAudience("https://${iniVal.serverIPAddress}/")
+          .withIssuer("https://${iniVal.serverIPAddress}/").withClaim("username", user.email).withExpiresAt(expiresAt)
           .sign(Algorithm.HMAC256(iniVal.token))
         val loginResponse = Json.encodeToString(
           LoginResponseJson(
@@ -217,22 +207,16 @@ class ServerController {
           )
         )
         return ValidationContainerJson(
-          contentJson = loginResponse,
-          hash = encryptKeccak(
-            input = loginResponse,
-            salt = encryptKeccak(user.email),
-            pepper = encryptKeccak("CWO_ERP LoginValidation")
+          contentJson = loginResponse, hash = encryptKeccak(
+            input = loginResponse, salt = encryptKeccak(user.email), pepper = encryptKeccak("CWO_ERP LoginValidation")
           )
         )
       }
     }
 
     fun buildJWTVerifier(iniVal: Ini): JWTVerifier {
-      return JWT
-        .require(Algorithm.HMAC256(iniVal.token))
-        .withAudience("https://${iniVal.serverIPAddress}/")
-        .withIssuer("https://${iniVal.serverIPAddress}/")
-        .build()
+      return JWT.require(Algorithm.HMAC256(iniVal.token)).withAudience("https://${iniVal.serverIPAddress}/")
+        .withIssuer("https://${iniVal.serverIPAddress}/").build()
     }
 
     @InternalAPI
@@ -294,8 +278,7 @@ class ServerController {
           order.items[i] = Json.encodeToString(itemPosition)
         }
       }
-      order.customerNote = body.customerNote
-      /*
+      order.customerNote = body.customerNote/*
        * Finalize the order and save it
        */
       val userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
@@ -307,9 +290,7 @@ class ServerController {
       order.statusText = InvoiceCLIController().getStatusText(order.status)
       //Check if the customer is an existing contact, if not, create it
       val contactsMatched = contactIndexManager!!.getEntryBytesListJson(
-        searchText = userName,
-        ixNr = 1,
-        exactSearch = false
+        searchText = userName, ixNr = 1, exactSearch = false
       )
       if (contactsMatched.resultsList.isEmpty() && m3IniVal.autoCreateContacts) {
         val contact = Contact(-1, userName)
@@ -343,9 +324,7 @@ class ServerController {
       if (m3IniVal.autoSendEmailConfirmation) {
         Emailer().sendEmail(
           subject = "Web Shop Order #${order.uID}",
-          body = "Hey, we're confirming your order over ${order.grossTotal} Euro.\n" +
-                  "Order Number: #${order.uID}\n" +
-                  "Date: ${order.date}",
+          body = "Hey, we're confirming your order over ${order.grossTotal} Euro.\n" + "Order Number: #${order.uID}\n" + "Date: ${order.date}",
           recipient = order.buyer
         )
       }
@@ -363,9 +342,7 @@ class ServerController {
       mutex.withLock {
         // Check if email is registered already
         contactIndexManager!!.getEntriesFromIndexSearch(
-          searchText = "^${registrationPayload.email}$",
-          ixNr = 1,
-          showAll = true
+          searchText = "^${registrationPayload.email}$", ixNr = 1, showAll = true
         ) { exists = true } // Set 'exists' to true if anything was found
         if (exists) {
           message = "User with entered Email already exists"
@@ -373,9 +350,7 @@ class ServerController {
         }
         // Check if username is registered already
         contactIndexManager!!.getEntriesFromIndexSearch(
-          searchText = "^${registrationPayload.username}$",
-          ixNr = 2,
-          showAll = true
+          searchText = "^${registrationPayload.username}$", ixNr = 2, showAll = true
         ) { exists = true } // Set 'exists' to true if anything was found
         if (exists) {
           message = "User with entered Username already exists"
@@ -403,9 +378,7 @@ class ServerController {
 
     fun getOwnInvoices(appCall: ApplicationCall): Any {
       return invoiceIndexManager!!.getEntryListJson(
-        searchText = getJWTEmail(appCall),
-        ixNr = 2,
-        exactSearch = true
+        searchText = getJWTEmail(appCall), ixNr = 2, exactSearch = true
       )
     }
 
@@ -437,8 +410,7 @@ class ServerController {
         // Create Chatroom and populate it
         uniChatroom = createChatroom(config.title, config.type)
         uniChatroom.addOrUpdateMember(
-          username = owner,
-          role = UniRole("Owner")
+          username = owner, role = UniRole("Owner")
         )
         // Set Chatroom Image if provided
         if (config.imgBase64.isNotEmpty()) uniChatroom.imgGUID = config.imgBase64
@@ -474,8 +446,7 @@ class ServerController {
           saveChatroom(uniChatroom)
         }
         uniChatroom.addMessage(
-          member = "_server",
-          message = "[s:RegistrationNotification]${owner} has created ${config.title}!"
+          member = "_server", message = "[s:RegistrationNotification]${owner} has created ${config.title}!"
         )
       }
       appCall.respond(uniChatroom)
@@ -495,8 +466,7 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
           } else {
             if (uniChatroom.checkIsMemberBanned(
-                username = getJWTEmail(appCall),
-                isEmail = true
+                username = getJWTEmail(appCall), isEmail = true
               )) {
               appCall.respond(HttpStatusCode.Forbidden)
               return
@@ -516,8 +486,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -547,8 +516,7 @@ class ServerController {
           return
         } else {
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -585,8 +553,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -615,8 +582,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -645,8 +611,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -683,8 +648,7 @@ class ServerController {
           appCall.respond(HttpStatusCode.NotFound)
         } else {
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -716,8 +680,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -753,8 +716,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -775,7 +737,7 @@ class ServerController {
       val username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username
       val usernameReversed = username.reversed()
       val usernameBase = Base64.getUrlEncoder().encodeToString(usernameReversed.toByteArray())
-      return java.net.URLEncoder.encode(usernameBase, "utf-8")
+      return java.net.URLEncoder.encode(usernameBase.replace('=', Character.MIN_VALUE), "utf-8")
     }
 
     suspend fun setFirebaseCloudMessagingSubscription(
@@ -795,15 +757,13 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           uniChatroom.addOrUpdateMember(
-            username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username,
-            fcmToken = config.fcmToken
+            username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username, fcmToken = config.fcmToken
           )
           saveChatroom(uniChatroom)
         }
@@ -828,15 +788,13 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           uniChatroom.addOrUpdateMember(
-            username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username,
-            pubKeyPEM = config.pubKeyPEM
+            username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username, pubKeyPEM = config.pubKeyPEM
           )
           saveChatroom(uniChatroom)
         }
@@ -858,8 +816,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -898,8 +855,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall),
-              isEmail = true
+              username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return

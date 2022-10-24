@@ -41,7 +41,6 @@ class Mockingbird {
         appCall.respond(appCall.receive())
         return
       }
-      println(who)
       // Get Config
       val config: MockingbirdConfig
       // Measure time to stay as close as possible to the defined delay time by calculate the delta
