@@ -454,7 +454,8 @@ data class WisdomSearchQuery(
    * wisdom or task
    */
   val type: String = "wisdom",
-  val categories: ArrayList<String> = arrayListOf()
+  val categories: ArrayList<String> = arrayListOf(),
+  val filterOverride: String = ""
 )
 
 @ExperimentalSerializationApi

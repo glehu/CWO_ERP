@@ -292,13 +292,7 @@ class WisdomController : IModule {
       return
     }
     // Matches Total
-    var matchesTitleAll: Sequence<MatchResult>
-    var matchesKeywordsAll: Sequence<MatchResult>
-    var matchesDescriptionAll: Sequence<MatchResult>
-    // Atomic Matches
-    val matchesTitle: MutableList<String> = mutableListOf()
-    val matchesKeywords: MutableList<String> = mutableListOf()
-    val matchesDescription: MutableList<String> = mutableListOf()
+    var matchesAll: Sequence<MatchResult>
     // Etc
     var rating: Int
     var accuracy: Int
@@ -339,47 +333,48 @@ class WisdomController : IModule {
           indexQuery = "^${knowledgeRef!!.uID}$"
         }
       }
+      var regexMatchCounts: Int
       getEntriesFromIndexSearch(
         searchText = indexQuery, ixNr = indexNumber, showAll = true
       ) {
         it as Wisdom
         rating = 0
         accuracy = 0
-        matchesTitle.clear()
-        matchesKeywords.clear()
-        matchesDescription.clear()
         // Title
-        matchesTitleAll = regexPattern.findAll(it.title)
-        if (matchesTitleAll.count() > 0) {
-          rating += 2
-          for (match in matchesTitleAll) {
-            if (!matchesTitle.contains(match.value)) {
-              matchesTitle.add(match.value)
-            }
+        if (config.filterOverride.isEmpty() || config.filterOverride.contains("title")) {
+          matchesAll = regexPattern.findAll(it.title)
+          regexMatchCounts = matchesAll.count()
+          if (regexMatchCounts > 0) {
+            rating += 2
+            accuracy += regexMatchCounts
           }
-          accuracy += matchesTitle.count()
         }
         // Keywords
-        matchesKeywordsAll = regexPattern.findAll(it.keywords)
-        if (matchesKeywordsAll.count() > 0) {
-          rating += 2
-          for (match in matchesKeywordsAll) {
-            if (!matchesKeywords.contains(match.value)) {
-              matchesKeywords.add(match.value)
-            }
+        if (config.filterOverride.isEmpty() || config.filterOverride.contains("keywords")) {
+          matchesAll = regexPattern.findAll(it.keywords)
+          regexMatchCounts = matchesAll.count()
+          if (regexMatchCounts > 0) {
+            rating += 2
+            accuracy += regexMatchCounts
           }
-          accuracy += matchesKeywords.count()
         }
         // Description
-        matchesDescriptionAll = regexPattern.findAll(it.description)
-        if (matchesDescriptionAll.count() > 0) {
-          rating += 1
-          for (match in matchesDescriptionAll) {
-            if (!matchesDescription.contains(match.value)) {
-              matchesDescription.add(match.value)
-            }
+        if (config.filterOverride.isEmpty() || config.filterOverride.contains("description")) {
+          matchesAll = regexPattern.findAll(it.description)
+          regexMatchCounts = matchesAll.count()
+          if (regexMatchCounts > 0) {
+            rating += 1
+            accuracy += regexMatchCounts
           }
-          accuracy += matchesDescription.count()
+        }
+        // Author
+        if (config.filterOverride.isEmpty() || config.filterOverride.contains("author")) {
+          matchesAll = regexPattern.findAll(it.authorUsername)
+          regexMatchCounts = matchesAll.count()
+          if (regexMatchCounts > 0) {
+            rating += 1
+            accuracy += regexMatchCounts
+          }
         }
         // Discard if irrelevant
         if (rating > 0) {
