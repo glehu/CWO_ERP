@@ -2,12 +2,9 @@ package modules.mx.logic
 
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
-import modules.mx.tokenGlobal
 import org.komputing.khash.keccak.KeccakParameter
 import org.komputing.khash.keccak.extensions.digestKeccak
 import java.util.*
-import javax.crypto.Cipher
-import javax.crypto.spec.SecretKeySpec
 
 /**
  * Used to encrypt an input string using the Keccak SHA3_512 algorithm.
@@ -16,10 +13,8 @@ import javax.crypto.spec.SecretKeySpec
 @InternalAPI
 @ExperimentalSerializationApi
 fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String {
-  return Base64.getEncoder()
-    .encodeToString(
-      "$pepper$input$salt"
-        .digestKeccak(parameter = KeccakParameter.SHA3_512)
+  return Base64.getEncoder().encodeToString(
+            "$pepper$input$salt".digestKeccak(parameter = KeccakParameter.SHA3_512)
     )
 }
 
@@ -31,10 +26,7 @@ fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String
 @InternalAPI
 @ExperimentalSerializationApi
 fun validateKeccak(
-  input: String,
-  base64KeccakString: String,
-  salt: String = "",
-  pepper: String = ""
+  input: String, base64KeccakString: String, salt: String = "", pepper: String = ""
 ): Boolean {
   return (encryptKeccak("$pepper$input$salt") == base64KeccakString)
 }

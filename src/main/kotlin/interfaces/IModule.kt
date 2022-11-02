@@ -58,11 +58,7 @@ interface IModule {
     }
     entry.initialize()
     val (posDBXt, byteSizeXt) = CwODB.saveEntry(
-      entryBytes = encode(entry),
-      posDB = posDB,
-      byteSize = byteSize,
-      module = indexManager.module,
-      raf = rafLocal
+            entryBytes = encode(entry), posDB = posDB, byteSize = byteSize, module = indexManager.module, raf = rafLocal
     )
     val posDBX: Long = posDBXt
     val byteSizeX: Int = byteSizeXt
@@ -108,8 +104,7 @@ interface IModule {
     var entryBytes: ByteArray = byteArrayOf()
     if (uID != -1) {
       entryBytes = CwODB.getEntryByteArrayFromUID(
-        uID = uID,
-        indexManager = getIndexManager()!!
+              uID = uID, indexManager = getIndexManager()!!
       )
       //Lock the entry (if: GET)
       getIndexManager()!!.setEntryLock(uID, lock, userName)
@@ -142,17 +137,15 @@ interface IModule {
    * @return [EntryBytesListJson]
    */
   fun getEntryBytesListJson(
-    searchText: String,
-    ixNr: Int,
-    exactSearch: Boolean = false
+    searchText: String, ixNr: Int, exactSearch: Boolean = false
   ): EntryBytesListJson {
     val resultsListJson = EntryBytesListJson(0, arrayListOf())
     var resultCounter = 0
     CwODB.getEntriesFromSearchString(
-      searchText = searchText.uppercase(),
-      ixNr = ixNr,
-      exactSearch = exactSearch,
-      indexManager = getIndexManager()!!
+            searchText = searchText.uppercase(),
+            ixNr = ixNr,
+            exactSearch = exactSearch,
+            indexManager = getIndexManager()!!
     ) { _, bytes ->
       resultCounter++
       resultsListJson.resultsList.add(bytes)
@@ -165,26 +158,23 @@ interface IModule {
    * @return [EntryListJson]
    */
   fun getEntryListJson(
-    searchText: String,
-    ixNr: Int,
-    prettyPrint: Boolean = false,
-    exactSearch: Boolean = false
+    searchText: String, ixNr: Int, prettyPrint: Boolean = false, exactSearch: Boolean = false
   ): EntryListJson {
     val resultsListJson = EntryListJson(0, arrayListOf())
     var resultCounter = 0
     CwODB.getEntriesFromSearchString(
-      searchText = searchText.uppercase(),
-      ixNr = ixNr,
-      exactSearch = exactSearch,
-      indexManager = getIndexManager()!!
+            searchText = searchText.uppercase(),
+            ixNr = ixNr,
+            exactSearch = exactSearch,
+            indexManager = getIndexManager()!!
     ) { _, bytes ->
       resultCounter++
       val entry = decode(bytes)
       entry.initialize()
       resultsListJson.resultsList.add(
-        getIndexManager()!!.encodeToJsonString(
-          entry = entry, prettyPrint = prettyPrint
-        )
+              getIndexManager()!!.encodeToJsonString(
+                      entry = entry, prettyPrint = prettyPrint
+              )
       )
     }
     resultsListJson.total = resultCounter
@@ -204,11 +194,7 @@ interface IModule {
    */
   suspend fun log(type: Log.Type, text: String, apiEndpoint: String = "", moduleAlt: String? = null) {
     Log.log(
-      module = moduleAlt ?: module,
-      type = type,
-      text = text,
-      caller = moduleNameLong,
-      apiEndpoint = apiEndpoint
+            module = moduleAlt ?: module, type = type, text = text, caller = moduleNameLong, apiEndpoint = apiEndpoint
     )
   }
 
@@ -248,9 +234,7 @@ interface IModule {
    * @return the settings file of a provided module
    */
   fun getSettingsFileText(
-    moduleShort: String = module,
-    subSetting: String = "",
-    check: Boolean = true
+    moduleShort: String = module, subSetting: String = "", check: Boolean = true
   ): String {
     return getSettingsFile(moduleShort = moduleShort, subSetting = subSetting).readText()
   }
@@ -277,9 +261,7 @@ interface IModule {
   }
 
   suspend fun sendEmail(
-    subject: String,
-    body: String,
-    recipient: String
+    subject: String, body: String, recipient: String
   ): Boolean {
     Emailer().sendEmailOverMailServer(subject, body, recipient)
     return true
@@ -303,14 +285,14 @@ interface IModule {
   ) {
     val searchTextFormatted = if (format) indexFormat(searchText) else searchText
     CwODB.getEntriesFromSearchString(
-      searchText = searchTextFormatted,
-      ixNr = ixNr,
-      exactSearch = true,
-      indexManager = getIndexManager()!!,
-      maxSearchResults = if (showAll) -1 else pageSize,
-      numberComparison = numberComparison,
-      paginationIndex = paginationIndex,
-      skip = skip
+            searchText = searchTextFormatted,
+            ixNr = ixNr,
+            exactSearch = true,
+            indexManager = getIndexManager()!!,
+            maxSearchResults = if (showAll) -1 else pageSize,
+            numberComparison = numberComparison,
+            paginationIndex = paginationIndex,
+            skip = skip
     ) { _, bytes ->
       try {
         entryOut(decode(bytes))

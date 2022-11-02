@@ -118,9 +118,9 @@ class Server : IModule {
       port = 80
     }
     sslConnector(keyStore = keystore,
-      keyAlias = System.getenv(iniVal.envKeyAlias) ?: "?",
-      keyStorePassword = { (System.getenv(iniVal.envKeyStorePassword) ?: "?").toCharArray() },
-      privateKeyPassword = { (System.getenv(iniVal.envPrivKeyPassword) ?: "?").toCharArray() }) {
+            keyAlias = System.getenv(iniVal.envKeyAlias) ?: "?",
+            keyStorePassword = { (System.getenv(iniVal.envKeyStorePassword) ?: "?").toCharArray() },
+            privateKeyPassword = { (System.getenv(iniVal.envPrivKeyPassword) ?: "?").toCharArray() }) {
       host = iniVal.serverIPAddress.substringBefore(':')
       port = 443
     }
@@ -131,8 +131,7 @@ class Server : IModule {
 
   val serverEngine = embeddedServer(Netty, environment)
 
-  fun Application.module() {
-    /*
+  fun Application.module() {/*
      * #### Plugins ####
      */
     install(HttpsRedirect) {
@@ -151,7 +150,7 @@ class Server : IModule {
         validate { credentials ->
           authMutex.withLock {
             if (UserCLIManager.login(
-                email = credentials.name, password = credentials.password, doLog = false
+                      email = credentials.name, password = credentials.password, doLog = false
               )) {
               UserIdPrincipal(credentials.name)
             } else {
@@ -167,7 +166,7 @@ class Server : IModule {
         validate { credential ->
           authMutex.withLock {
             if (UserCLIManager.checkModuleRight(
-                credential.payload.getClaim("username").asString(), "M*"
+                      credential.payload.getClaim("username").asString(), "M*"
               )) {
               JWTPrincipal(credential.payload)
             } else {
@@ -188,8 +187,7 @@ class Server : IModule {
       maxFrameSize = Long.MAX_VALUE
       masking = false
     }
-    install(DoubleReceive)
-    /*
+    install(DoubleReceive)/*
      * #### Routing ####
      */
     routing {
@@ -247,59 +245,59 @@ class Server : IModule {
         route("/api") {
           // General Endpoints
           getIndexSelection(
-            discographyIndexManager!!,
-            contactIndexManager!!,
-            invoiceIndexManager!!,
-            itemIndexManager!!,
-            itemStockPostingIndexManager!!,
-            uniChatroomIndexManager!!,
-            snippetBaseIndexManager!!,
-            knowledgeIndexManager!!,
-            wisdomIndexManager!!
+                  discographyIndexManager!!,
+                  contactIndexManager!!,
+                  invoiceIndexManager!!,
+                  itemIndexManager!!,
+                  itemStockPostingIndexManager!!,
+                  uniChatroomIndexManager!!,
+                  snippetBaseIndexManager!!,
+                  knowledgeIndexManager!!,
+                  wisdomIndexManager!!
           )
           getEntry(
-            discographyIndexManager!!,
-            contactIndexManager!!,
-            invoiceIndexManager!!,
-            itemIndexManager!!,
-            itemStockPostingIndexManager!!,
-            uniChatroomIndexManager!!,
-            snippetBaseIndexManager!!,
-            knowledgeIndexManager!!,
-            wisdomIndexManager!!
+                  discographyIndexManager!!,
+                  contactIndexManager!!,
+                  invoiceIndexManager!!,
+                  itemIndexManager!!,
+                  itemStockPostingIndexManager!!,
+                  uniChatroomIndexManager!!,
+                  snippetBaseIndexManager!!,
+                  knowledgeIndexManager!!,
+                  wisdomIndexManager!!
           )
           saveEntry(
-            discographyIndexManager!!,
-            contactIndexManager!!,
-            invoiceIndexManager!!,
-            itemIndexManager!!,
-            itemStockPostingIndexManager!!,
-            uniChatroomIndexManager!!,
-            snippetBaseIndexManager!!,
-            knowledgeIndexManager!!,
-            wisdomIndexManager!!
+                  discographyIndexManager!!,
+                  contactIndexManager!!,
+                  invoiceIndexManager!!,
+                  itemIndexManager!!,
+                  itemStockPostingIndexManager!!,
+                  uniChatroomIndexManager!!,
+                  snippetBaseIndexManager!!,
+                  knowledgeIndexManager!!,
+                  wisdomIndexManager!!
           )
           getEntryLock(
-            discographyIndexManager!!,
-            contactIndexManager!!,
-            invoiceIndexManager!!,
-            itemIndexManager!!,
-            itemStockPostingIndexManager!!,
-            uniChatroomIndexManager!!,
-            snippetBaseIndexManager!!,
-            knowledgeIndexManager!!,
-            wisdomIndexManager!!
+                  discographyIndexManager!!,
+                  contactIndexManager!!,
+                  invoiceIndexManager!!,
+                  itemIndexManager!!,
+                  itemStockPostingIndexManager!!,
+                  uniChatroomIndexManager!!,
+                  snippetBaseIndexManager!!,
+                  knowledgeIndexManager!!,
+                  wisdomIndexManager!!
           )
           setEntryLock(
-            discographyIndexManager!!,
-            contactIndexManager!!,
-            invoiceIndexManager!!,
-            itemIndexManager!!,
-            itemStockPostingIndexManager!!,
-            uniChatroomIndexManager!!,
-            snippetBaseIndexManager!!,
-            knowledgeIndexManager!!,
-            wisdomIndexManager!!
+                  discographyIndexManager!!,
+                  contactIndexManager!!,
+                  invoiceIndexManager!!,
+                  itemIndexManager!!,
+                  itemStockPostingIndexManager!!,
+                  uniChatroomIndexManager!!,
+                  snippetBaseIndexManager!!,
+                  knowledgeIndexManager!!,
+                  wisdomIndexManager!!
           )
           sendEMail()
           getSettingsFileText()
@@ -382,8 +380,8 @@ class Server : IModule {
   init {
     // Get HTTPS Certificate
     keystore.load(
-      FileInputStream(Paths.get(programPath, "keystore.jks").toString()),
-      (System.getenv(iniVal.envCertPassword) ?: "?").toCharArray()
+            FileInputStream(Paths.get(programPath, "keystore.jks").toString()),
+            (System.getenv(iniVal.envCertPassword) ?: "?").toCharArray()
     )
     // Start Server
     serverJobGlobal = GlobalScope.launch {
@@ -397,9 +395,9 @@ class Server : IModule {
   private fun Route.logout() {
     get("/logout") {
       log(
-        type = Log.Type.COM,
-        text = "User ${call.principal<UserIdPrincipal>()?.name} logout",
-        apiEndpoint = call.request.uri
+              type = Log.Type.COM,
+              text = "User ${call.principal<UserIdPrincipal>()?.name} logout",
+              apiEndpoint = call.request.uri
       )
     }
   }
@@ -410,13 +408,13 @@ class Server : IModule {
         val email = call.principal<UserIdPrincipal>()?.name
         var user: Contact? = null
         contactIndexManager!!.getEntriesFromIndexSearch(
-          searchText = "^$email$", ixNr = 1, showAll = true
+                searchText = "^$email$", ixNr = 1, showAll = true
         ) { user = it as Contact }
         if (user == null) {
           call.respond(HttpStatusCode.NotFound)
         } else {
           call.respond(
-            ServerController.generateLoginResponse(user!!)
+                  ServerController.generateLoginResponse(user!!)
           )
         }
       }
@@ -478,9 +476,9 @@ class Server : IModule {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(
-            ServerController.getEntry(
-              appCall = call, indexManager = ix
-            )
+                  ServerController.getEntry(
+                          appCall = call, indexManager = ix
+                  )
           )
         }
       }
@@ -495,9 +493,9 @@ class Server : IModule {
         } else {
           val entryJson: EntryJson = call.receive()
           call.respond(
-            ServerController.saveEntry(
-              entry = entryJson.entry, indexManager = ix, username = ServerController.getJWTEmail(call)
-            )
+                  ServerController.saveEntry(
+                          entry = entryJson.entry, indexManager = ix, username = ServerController.getJWTEmail(call)
+                  )
           )
         }
       }
@@ -511,9 +509,9 @@ class Server : IModule {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(
-            ServerController.getEntryLock(
-              appCall = call, indexManager = ix
-            )
+                  ServerController.getEntryLock(
+                          appCall = call, indexManager = ix
+                  )
           )
         }
       }
@@ -527,9 +525,9 @@ class Server : IModule {
           call.respond(HttpStatusCode.Forbidden)
         } else {
           call.respond(
-            ServerController.setEntryLock(
-              appCall = call, indexManager = ix
-            )
+                  ServerController.setEntryLock(
+                          appCall = call, indexManager = ix
+                  )
           )
         }
       }
@@ -565,7 +563,7 @@ class Server : IModule {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
-          ItemPriceManager().getCategories()
+                ItemPriceManager().getCategories()
         )
       }
     }
@@ -577,7 +575,7 @@ class Server : IModule {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
-          ItemPriceManager().getNumber(ItemPriceManager().getCategories())
+                ItemPriceManager().getNumber(ItemPriceManager().getCategories())
         )
       }
     }
@@ -609,7 +607,7 @@ class Server : IModule {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
-          ItemStorageManager().getStorages()
+                ItemStorageManager().getStorages()
         )
       }
     }
@@ -621,7 +619,7 @@ class Server : IModule {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
-          ItemStorageManager().getNumber(ItemStorageManager().getStorages())
+                ItemStorageManager().getNumber(ItemStorageManager().getStorages())
         )
       }
     }
@@ -693,9 +691,9 @@ class Server : IModule {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
-          ServerController.getSettingsFileText(
-            moduleShort = body.module, subSetting = body.subSetting
-          )
+                ServerController.getSettingsFileText(
+                        moduleShort = body.module, subSetting = body.subSetting
+                )
         )
       }
     }

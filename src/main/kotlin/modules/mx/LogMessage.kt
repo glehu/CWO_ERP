@@ -8,16 +8,10 @@ import modules.mx.logic.Log
 @InternalAPI
 @Serializable
 data class LogMessage(
-  @SerialName("ts")
-  val unixTimestamp: String,
-  @SerialName("md")
-  val module: String,
-  @SerialName("tp")
-  val type: Log.Type,
-  @SerialName("tx")
-  val text: String,
-  @SerialName("cl")
-  val caller: String,
-  @SerialName("ap")
-  val apiEndpoint: String = ""
+  @SerialName("ts") val unixTimestamp: String,
+  @SerialName("md") val module: String,
+  @SerialName("tp") val type: Log.Type,
+  @SerialName("tx") val text: String,
+  @SerialName("cl") val caller: String,
+  @SerialName("ap") val apiEndpoint: String = ""
 )

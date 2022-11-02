@@ -53,6 +53,7 @@ class UserCLIManager {
           if (user.canAccessSnippetBase) flag++
           return (flag > 0)
         }
+
         else -> return false
       }
     }
@@ -79,7 +80,7 @@ class UserCLIManager {
     fun getUserFromEmail(email: String): Contact? {
       var user: Contact? = null
       contactIndexManager!!.getEntriesFromIndexSearch(
-        searchText = "^${email}$", ixNr = 1, showAll = true
+              searchText = "^${email}$", ixNr = 1, showAll = true
       ) { user = it as Contact }
       return user
     }
@@ -87,7 +88,7 @@ class UserCLIManager {
     fun getUserFromUsername(username: String): Contact? {
       var user: Contact? = null
       contactIndexManager!!.getEntriesFromIndexSearch(
-        searchText = "^${username}$", ixNr = 2, showAll = true
+              searchText = "^${username}$", ixNr = 2, showAll = true
       ) { user = it as Contact }
       return user
     }

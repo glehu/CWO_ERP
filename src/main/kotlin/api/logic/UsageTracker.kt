@@ -32,8 +32,8 @@ class UsageTracker {
   }
 
   suspend fun writeUsageTrackingData(appCall: ApplicationCall) {
-    val data = Timestamp.getUTCTimestampFromUnix(Timestamp.getUnixTimestamp()) +
-            "<${Json.encodeToString(appCall.receive<UsageTrackerData>())}>\n"
+    val data =
+      Timestamp.getUTCTimestampFromUnix(Timestamp.getUnixTimestamp()) + "<${Json.encodeToString(appCall.receive<UsageTrackerData>())}>\n"
     mutex.withLock { getUsageLogFile().appendText(data) }
     mutex.withLock { writeUsageStats() }
   }

@@ -44,17 +44,11 @@ class ItemStockPostingController : IModule {
   fun getStorageUnitWithAtLeast(amount: Double): Triple<Int, Int, Int> {
     val entriesFound: ArrayList<ItemStockPosting> = arrayListOf()
     getEntriesFromIndexSearch(
-      searchText = amount.toString(),
-      ixNr = 6,
-      showAll = true,
-      format = false,
-      numberComparison = true
+            searchText = amount.toString(), ixNr = 6, showAll = true, format = false, numberComparison = true
     ) {
       it as ItemStockPosting
       if (check(
-          storageFromUID = it.storageToUID,
-          storageUnitFromUID = it.storageUnitToUID,
-          amount = amount
+                storageFromUID = it.storageToUID, storageUnitFromUID = it.storageUnitToUID, amount = amount
         )) {
         entriesFound.add(it)
       }
@@ -69,17 +63,11 @@ class ItemStockPostingController : IModule {
     val entriesFound: ArrayList<ItemStockPosting> = arrayListOf()
     var amountLeft = amount
     getEntriesFromIndexSearch(
-      searchText = "1",
-      ixNr = 6,
-      showAll = true,
-      format = false,
-      numberComparison = true
+            searchText = "1", ixNr = 6, showAll = true, format = false, numberComparison = true
     ) {
       it as ItemStockPosting
       if (check(
-          storageFromUID = it.storageToUID,
-          storageUnitFromUID = it.storageUnitToUID,
-          amount = 1.0
+                storageFromUID = it.storageToUID, storageUnitFromUID = it.storageUnitToUID, amount = 1.0
         )) {
         entriesFound.add(it)
       }
@@ -108,6 +96,7 @@ class ItemStockPostingController : IModule {
           lastStorageUnitUID = stockPosting.storageUnitToUID
         }
       }
+
       AutoStorageSelectionOrderType.FIFO -> {
         //Start with the newest one
         for (stockPosting in entriesFound.reversed()) {
@@ -126,6 +115,7 @@ class ItemStockPostingController : IModule {
           lastStorageUID = stockPosting.storageToUID
         }
       }
+
       else -> {
         return arrayOf(arrayListOf(), arrayListOf(), arrayListOf())
       }
@@ -138,8 +128,7 @@ class ItemStockPostingController : IModule {
    * @return a [Triple] StorageUID, StorageUnitUID and ItemStockPostingUID
    */
   private fun pickAccordingToOrderType(
-    entriesFound: ArrayList<ItemStockPosting>,
-    autoStorageSelectionOrder: AutoStorageSelectionOrderType
+    entriesFound: ArrayList<ItemStockPosting>, autoStorageSelectionOrder: AutoStorageSelectionOrderType
   ): Triple<Int, Int, Int> {
     return if (entriesFound.isEmpty()) {
       Triple(-1, -1, -1)

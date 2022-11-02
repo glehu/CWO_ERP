@@ -45,8 +45,7 @@ class Mockingbird {
       val config: MockingbirdConfig
       // Measure time to stay as close as possible to the defined delay time by calculate the delta
       val elapsed = measureTimeMillis {
-        config =
-          Json.decodeFromString<WebMockingbirdConfig>(getProjectJsonFile(who, who).readText()).config
+        config = Json.decodeFromString<WebMockingbirdConfig>(getProjectJsonFile(who, who).readText()).config
       }
       when (config.return_type) {
         "Message" -> respondWithMessage(appCall, config, elapsed)

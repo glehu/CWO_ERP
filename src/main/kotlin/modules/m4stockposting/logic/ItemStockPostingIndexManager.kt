@@ -37,47 +37,38 @@ class ItemStockPostingIndexManager : IIndexManager {
 
   init {
     initialize(
-      1, //ItemUID
-      2, //Storage Unit From
-      3, //Storage Unit To
-      4, //Date
-      5, //Status
-      6 //Amount
+            1, //ItemUID
+            2, //Storage Unit From
+            3, //Storage Unit To
+            4, //Date
+            5, //Status
+            6 //Amount
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-      "1-ItemUID",
-      "2-From",
-      "3-To",
-      "4-Date",
-      "5-Status",
-      "6-Amount"
+            "1-ItemUID", "2-From", "3-To", "4-Date", "5-Status", "6-Amount"
     )
   }
 
   override suspend fun indexEntry(
-    entry: IEntry,
-    posDB: Long,
-    byteSize: Int,
-    writeToDisk: Boolean,
-    userName: String
+    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
   ) {
     entry as ItemStockPosting
     val stockAvailable = entry.stockAvailable ?: 0.0
     buildIndices(
-      entry.uID,
-      posDB,
-      byteSize,
-      writeToDisk,
-      userName,
-      Pair(1, entry.itemUID.toString()),
-      Pair(2, getIndexTextIfStockAvailable(entry.ixStorageAndStorageUnitFrom, stockAvailable)),
-      Pair(3, getIndexTextIfStockAvailable(entry.ixStorageAndStorageUnitTo, stockAvailable)),
-      Pair(4, entry.dateBooked),
-      Pair(5, entry.status.toString()),
-      Pair(6, (getIndexTextIfStockAvailable(stockAvailable.toString(), stockAvailable)))
+            entry.uID,
+            posDB,
+            byteSize,
+            writeToDisk,
+            userName,
+            Pair(1, entry.itemUID.toString()),
+            Pair(2, getIndexTextIfStockAvailable(entry.ixStorageAndStorageUnitFrom, stockAvailable)),
+            Pair(3, getIndexTextIfStockAvailable(entry.ixStorageAndStorageUnitTo, stockAvailable)),
+            Pair(4, entry.dateBooked),
+            Pair(5, entry.status.toString()),
+            Pair(6, (getIndexTextIfStockAvailable(stockAvailable.toString(), stockAvailable)))
     )
   }
 

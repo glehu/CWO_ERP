@@ -13,6 +13,7 @@ import modules.mx.contactIndexManager
 @Serializable
 data class Contact(override var uID: Int, var name: String) : IEntry {
   var guid: String = ""
+
   //----------------------------------v
   //--------- Credentials ------------|
   //----------------------------------^

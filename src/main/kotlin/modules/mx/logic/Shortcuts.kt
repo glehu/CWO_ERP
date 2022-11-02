@@ -39,10 +39,7 @@ fun getDefaultDate(): String {
  */
 fun getRandomString(size: Long, numbers: Boolean = false): String {
   val dictionary = if (!numbers) "ABCDEFGHIJKLMNOPQRSTUVWXYZ" else "123456789"
-  return Random().ints(size, 0, dictionary.length)
-    .asSequence()
-    .map(dictionary::get)
-    .joinToString("")
+  return Random().ints(size, 0, dictionary.length).asSequence().map(dictionary::get).joinToString("")
 }
 
 fun Double.roundTo(numFractionDigits: Int): Double {

@@ -36,7 +36,7 @@ class ItemIndexManager : IIndexManager {
 
   init {
     initialize(
-      1, //Description
+            1, //Description
     )
   }
 
@@ -45,20 +45,16 @@ class ItemIndexManager : IIndexManager {
   }
 
   override suspend fun indexEntry(
-    entry: IEntry,
-    posDB: Long,
-    byteSize: Int,
-    writeToDisk: Boolean,
-    userName: String
+    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
   ) {
     entry as Item
     buildIndices(
-      entry.uID,
-      posDB,
-      byteSize,
-      writeToDisk,
-      userName,
-      Pair(1, entry.description),
+            entry.uID,
+            posDB,
+            byteSize,
+            writeToDisk,
+            userName,
+            Pair(1, entry.description),
     )
   }
 

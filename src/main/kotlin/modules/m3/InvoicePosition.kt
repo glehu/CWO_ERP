@@ -8,11 +8,9 @@ import kotlinx.serialization.Serializable
 @ExperimentalSerializationApi
 @Serializable
 data class InvoicePosition(
-  @SerialName("i")
-  override var uID: Int,
+  @SerialName("i") override var uID: Int,
 
-  @SerialName("d")
-  var description: String
+  @SerialName("d") var description: String
 ) : IEntry {
   @SerialName("gp")
   var grossPrice: Double = 0.0

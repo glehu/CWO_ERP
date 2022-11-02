@@ -36,40 +36,36 @@ class UniChatroomIndexManager : IIndexManager {
 
   init {
     initialize(
-      1, //Title
-      2, //ChatroomGUID
-      3, //Date Created
-      4, //Status
+            1, //Title
+            2, //ChatroomGUID
+            3, //Date Created
+            4, //Status
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-      "1-Title",
-      "2-ChatroomGUID",
-      "3-Date Created",
-      "4-Status",
+            "1-Title",
+            "2-ChatroomGUID",
+            "3-Date Created",
+            "4-Status",
     )
   }
 
   override suspend fun indexEntry(
-    entry: IEntry,
-    posDB: Long,
-    byteSize: Int,
-    writeToDisk: Boolean,
-    userName: String
+    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
   ) {
     entry as UniChatroom
     buildIndices(
-      entry.uID,
-      posDB,
-      byteSize,
-      writeToDisk,
-      userName,
-      Pair(1, entry.title),
-      Pair(2, entry.chatroomGUID),
-      Pair(3, entry.dateCreated),
-      Pair(4, entry.status.toString()),
+            entry.uID,
+            posDB,
+            byteSize,
+            writeToDisk,
+            userName,
+            Pair(1, entry.title),
+            Pair(2, entry.chatroomGUID),
+            Pair(3, entry.dateCreated),
+            Pair(4, entry.status.toString()),
     )
   }
 

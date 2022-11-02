@@ -98,13 +98,13 @@ class ServerController {
       val uID: Int
       mutex.withLock {
         log(
-          type = Log.Type.COM,
-          text = "API ${indexManager.module} entry save",
-          apiEndpoint = "/api/${indexManager.module}/save",
-          moduleAlt = indexManager.module
+                type = Log.Type.COM,
+                text = "API ${indexManager.module} entry save",
+                apiEndpoint = "/api/${indexManager.module}/save",
+                moduleAlt = indexManager.module
         )
         uID = indexManager.save(
-          entry = indexManager.decode(entry), userName = username
+                entry = indexManager.decode(entry), userName = username
         )
       }
       return uID
@@ -121,17 +121,17 @@ class ServerController {
             }
             return if (appCall.request.queryParameters["format"] == "json") {
               val entry = indexManager.decode(
-                indexManager.getBytes(uID = routePar.toInt())
+                      indexManager.getBytes(uID = routePar.toInt())
               )
               entry.initialize()
               indexManager.encodeToJsonString(
-                entry = entry, prettyPrint = true
+                      entry = entry, prettyPrint = true
               )
             } else {
               indexManager.getBytes(
-                uID = routePar.toInt(),
-                lock = doLock,
-                userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
+                      uID = routePar.toInt(),
+                      lock = doLock,
+                      userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
               )
             }
           }
@@ -142,11 +142,11 @@ class ServerController {
             val exactSearch = requestIndex != null
             return if (appCall.request.queryParameters["format"] == "json") {
               indexManager.getEntryListJson(
-                searchText = routePar, ixNr, exactSearch = exactSearch
+                      searchText = routePar, ixNr, exactSearch = exactSearch
               )
             } else {
               indexManager.getEntryBytesListJson(
-                searchText = routePar, ixNr, exactSearch = exactSearch
+                      searchText = routePar, ixNr, exactSearch = exactSearch
               )
             }
           }
@@ -161,7 +161,8 @@ class ServerController {
       val routePar = appCall.parameters["searchString"]
       if (!routePar.isNullOrEmpty()) {
         return indexManager.getEntryLock(
-          uID = routePar.toInt(), userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
+                uID = routePar.toInt(),
+                userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
         )
       }
       return false
@@ -173,9 +174,9 @@ class ServerController {
       val success: Boolean = if (!routePar.isNullOrEmpty()) {
         mutex.withLock {
           indexManager.setEntryLock(
-            uID = routePar.toInt(),
-            doLock = queryPar.toBoolean(),
-            userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
+                  uID = routePar.toInt(),
+                  doLock = queryPar.toBoolean(),
+                  userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
           )
         }
       } else false
@@ -193,23 +194,25 @@ class ServerController {
           .withIssuer("https://${iniVal.serverIPAddress}/").withClaim("username", user.email).withExpiresAt(expiresAt)
           .sign(Algorithm.HMAC256(iniVal.token))
         val loginResponse = Json.encodeToString(
-          LoginResponseJson(
-            httpCode = 200,
-            username = user.username,
-            token = token,
-            expiresInMs = expiresInMs,
-            accessM1 = user.canAccessDiscography,
-            accessM2 = user.canAccessContacts,
-            accessM3 = user.canAccessInvoices,
-            accessM4 = user.canAccessInventory,
-            accessM5 = user.canAccessClarifier,
-            accessM6 = user.canAccessSnippetBase
-          )
+                LoginResponseJson(
+                        httpCode = 200,
+                        username = user.username,
+                        token = token,
+                        expiresInMs = expiresInMs,
+                        accessM1 = user.canAccessDiscography,
+                        accessM2 = user.canAccessContacts,
+                        accessM3 = user.canAccessInvoices,
+                        accessM4 = user.canAccessInventory,
+                        accessM5 = user.canAccessClarifier,
+                        accessM6 = user.canAccessSnippetBase
+                )
         )
         return ValidationContainerJson(
-          contentJson = loginResponse, hash = encryptKeccak(
-            input = loginResponse, salt = encryptKeccak(user.email), pepper = encryptKeccak("CWO_ERP LoginValidation")
-          )
+                contentJson = loginResponse, hash = encryptKeccak(
+                input = loginResponse,
+                salt = encryptKeccak(user.email),
+                pepper = encryptKeccak("CWO_ERP LoginValidation")
+        )
         )
       }
     }
@@ -222,8 +225,8 @@ class ServerController {
     @InternalAPI
     fun updatePriceCategories(categoryJson: ListDeltaJson): Boolean {
       ItemPriceManager().updateCategory(
-        categoryNew = Json.decodeFromString(categoryJson.listEntryNew),
-        categoryOld = Json.decodeFromString(categoryJson.listEntryOld)
+              categoryNew = Json.decodeFromString(categoryJson.listEntryNew),
+              categoryOld = Json.decodeFromString(categoryJson.listEntryOld)
       )
       return true
     }
@@ -231,7 +234,7 @@ class ServerController {
     @InternalAPI
     fun deletePriceCategory(categoryJson: ListDeltaJson): Boolean {
       ItemPriceManager().deleteCategory(
-        category = Json.decodeFromString(categoryJson.listEntryNew),
+              category = Json.decodeFromString(categoryJson.listEntryNew),
       )
       return true
     }
@@ -239,8 +242,8 @@ class ServerController {
     @InternalAPI
     fun updateStorages(categoryJson: ListDeltaJson): Boolean {
       ItemStorageManager().funUpdateStorage(
-        storageNew = Json.decodeFromString(categoryJson.listEntryNew),
-        storageOld = Json.decodeFromString(categoryJson.listEntryOld)
+              storageNew = Json.decodeFromString(categoryJson.listEntryNew),
+              storageOld = Json.decodeFromString(categoryJson.listEntryOld)
       )
       return true
     }
@@ -248,7 +251,7 @@ class ServerController {
     @InternalAPI
     fun deleteStorage(categoryJson: ListDeltaJson): Boolean {
       ItemStorageManager().deleteStorage(
-        storage = Json.decodeFromString(categoryJson.listEntryNew),
+              storage = Json.decodeFromString(categoryJson.listEntryNew),
       )
       return true
     }
@@ -290,7 +293,7 @@ class ServerController {
       order.statusText = InvoiceCLIController().getStatusText(order.status)
       //Check if the customer is an existing contact, if not, create it
       val contactsMatched = contactIndexManager!!.getEntryBytesListJson(
-        searchText = userName, ixNr = 1, exactSearch = false
+              searchText = userName, ixNr = 1, exactSearch = false
       )
       if (contactsMatched.resultsList.isEmpty() && m3IniVal.autoCreateContacts) {
         val contact = Contact(-1, userName)
@@ -315,17 +318,17 @@ class ServerController {
       }
       mutex.withLock {
         log(
-          type = Log.Type.COM,
-          text = "web shop order #${order.uID} from ${order.buyer}",
-          apiEndpoint = appCall.request.uri,
-          moduleAlt = invoiceIndexManager!!.module
+                type = Log.Type.COM,
+                text = "web shop order #${order.uID} from ${order.buyer}",
+                apiEndpoint = appCall.request.uri,
+                moduleAlt = invoiceIndexManager!!.module
         )
       }
       if (m3IniVal.autoSendEmailConfirmation) {
         Emailer().sendEmail(
-          subject = "Web Shop Order #${order.uID}",
-          body = "Hey, we're confirming your order over ${order.grossTotal} Euro.\n" + "Order Number: #${order.uID}\n" + "Date: ${order.date}",
-          recipient = order.buyer
+                subject = "Web Shop Order #${order.uID}",
+                body = "Hey, we're confirming your order over ${order.grossTotal} Euro.\n" + "Order Number: #${order.uID}\n" + "Date: ${order.date}",
+                recipient = order.buyer
         )
       }
       return order.uID
@@ -342,7 +345,7 @@ class ServerController {
       mutex.withLock {
         // Check if email is registered already
         contactIndexManager!!.getEntriesFromIndexSearch(
-          searchText = "^${registrationPayload.email}$", ixNr = 1, showAll = true
+                searchText = "^${registrationPayload.email}$", ixNr = 1, showAll = true
         ) { exists = true } // Set 'exists' to true if anything was found
         if (exists) {
           message = "User with entered Email already exists"
@@ -350,7 +353,7 @@ class ServerController {
         }
         // Check if username is registered already
         contactIndexManager!!.getEntriesFromIndexSearch(
-          searchText = "^${registrationPayload.username}$", ixNr = 2, showAll = true
+                searchText = "^${registrationPayload.username}$", ixNr = 2, showAll = true
         ) { exists = true } // Set 'exists' to true if anything was found
         if (exists) {
           message = "User with entered Username already exists"
@@ -378,7 +381,7 @@ class ServerController {
 
     fun getOwnInvoices(appCall: ApplicationCall): Any {
       return invoiceIndexManager!!.getEntryListJson(
-        searchText = getJWTEmail(appCall), ixNr = 2, exactSearch = true
+              searchText = getJWTEmail(appCall), ixNr = 2, exactSearch = true
       )
     }
 
@@ -410,7 +413,7 @@ class ServerController {
         // Create Chatroom and populate it
         uniChatroom = createChatroom(config.title, config.type)
         uniChatroom.addOrUpdateMember(
-          username = owner, role = UniRole("Owner")
+                username = owner, role = UniRole("Owner")
         )
         // Set Chatroom Image if provided
         if (config.imgBase64.isNotEmpty()) uniChatroom.imgGUID = config.imgBase64
@@ -446,7 +449,7 @@ class ServerController {
           saveChatroom(uniChatroom)
         }
         uniChatroom.addMessage(
-          member = "_server", message = "[s:RegistrationNotification]${owner} has created ${config.title}!"
+                member = "_server", message = "[s:RegistrationNotification]${owner} has created ${config.title}!"
         )
       }
       appCall.respond(uniChatroom)
@@ -466,7 +469,7 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
           } else {
             if (uniChatroom.checkIsMemberBanned(
-                username = getJWTEmail(appCall), isEmail = true
+                      username = getJWTEmail(appCall), isEmail = true
               )) {
               appCall.respond(HttpStatusCode.Forbidden)
               return
@@ -486,7 +489,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -516,7 +519,7 @@ class ServerController {
           return
         } else {
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -524,12 +527,12 @@ class ServerController {
           //Get Messages from index
           val messages = arrayListOf<String>()
           uniMessagesIndexManager!!.getEntriesFromIndexSearch(
-            searchText = "^${uniChatroom.uID}$",
-            ixNr = 1,
-            showAll = false,
-            paginationIndex = pageIndex,
-            pageSize = pageSize,
-            skip = skipCount
+                  searchText = "^${uniChatroom.uID}$",
+                  ixNr = 1,
+                  showAll = false,
+                  paginationIndex = pageIndex,
+                  pageSize = pageSize,
+                  skip = skipCount
           ) {
             it as UniMessage
             messages.add(uniMessagesIndexManager!!.encodeToJsonString(it))
@@ -553,7 +556,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -582,7 +585,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -611,7 +614,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -648,7 +651,7 @@ class ServerController {
           appCall.respond(HttpStatusCode.NotFound)
         } else {
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -680,7 +683,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -716,7 +719,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
@@ -757,13 +760,14 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           uniChatroom.addOrUpdateMember(
-            username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username, fcmToken = config.fcmToken
+                  username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username,
+                  fcmToken = config.fcmToken
           )
           saveChatroom(uniChatroom)
         }
@@ -788,13 +792,14 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           uniChatroom.addOrUpdateMember(
-            username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username, pubKeyPEM = config.pubKeyPEM
+                  username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username,
+                  pubKeyPEM = config.pubKeyPEM
           )
           saveChatroom(uniChatroom)
         }
@@ -816,18 +821,18 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           with(SnippetBaseController()) {
             val snippet = saveFile(
-              base64 = config.imageBase64,
-              snippet = createSnippet(),
-              owner = "clarifier-$uniChatroomGUID",
-              maxWidth = 300,
-              maxHeight = 300
+                    base64 = config.imageBase64,
+                    snippet = createSnippet(),
+                    owner = "clarifier-$uniChatroomGUID",
+                    maxWidth = 300,
+                    maxHeight = 300
             )
             if (snippet == null) {
               appCall.respond(HttpStatusCode.InternalServerError)
@@ -855,18 +860,18 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-              username = getJWTEmail(appCall), isEmail = true
+                    username = getJWTEmail(appCall), isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           with(SnippetBaseController()) {
             val snippet = saveFile(
-              base64 = config.imageBase64,
-              snippet = createSnippet(),
-              owner = getUsernameReversedBase(appCall),
-              maxWidth = 100,
-              maxHeight = 100
+                    base64 = config.imageBase64,
+                    snippet = createSnippet(),
+                    owner = getUsernameReversedBase(appCall),
+                    maxWidth = 100,
+                    maxHeight = 100
             )
             if (snippet == null) {
               appCall.respond(HttpStatusCode.InternalServerError)
@@ -887,11 +892,11 @@ class ServerController {
       }
       with(SnippetBaseController()) {
         val snippet = saveFile(
-          base64 = payload.payload,
-          snippet = createSnippet(),
-          owner = getUsernameReversedBase(appCall),
-          maxWidth = 1920,
-          maxHeight = 1920
+                base64 = payload.payload,
+                snippet = createSnippet(),
+                owner = getUsernameReversedBase(appCall),
+                maxWidth = 1920,
+                maxHeight = 1920
         )
         if (snippet == null) {
           appCall.respond(HttpStatusCode.InternalServerError)

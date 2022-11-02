@@ -35,12 +35,10 @@ class WebPlanner : IWebApp, IModule {
   suspend fun load(call: ApplicationCall): WebPlannerResponse {
     val request = call.receive<WebPlannerRequest>()
     if (request.action != "load" || request.project.isEmpty()) return WebPlannerResponse(
-      "load",
-      arrayOf()
+            "load", arrayOf()
     ) //Return an empty array
     return WebPlannerResponse(
-      "load",
-      Json.decodeFromString(getProjectJsonFile(request.project, request.project).readText())
+            "load", Json.decodeFromString(getProjectJsonFile(request.project, request.project).readText())
     )
   }
 }

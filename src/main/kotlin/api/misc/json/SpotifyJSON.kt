@@ -6,16 +6,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SpotifyAuthCallbackJson(
-  @SerialName("access_token")
-  override var accessToken: String = "?",
-  @SerialName("token_type")
-  override var tokenType: String = "?",
+  @SerialName("access_token") override var accessToken: String = "?",
+  @SerialName("token_type") override var tokenType: String = "?",
   override var scope: String = "?",
-  @SerialName("expires_in")
-  override var expiresInSeconds: Int = 0,
-  @SerialName("refresh_token")
-  override var refreshToken: String = "",
-  //Automatic
+  @SerialName("expires_in") override var expiresInSeconds: Int = 0,
+  @SerialName("refresh_token") override var refreshToken: String = "",
+        //Automatic
   override var generatedAtUnixTimestamp: Long = 0,
   override var expireUnixTimestamp: Long = 0
 ) : ITokenData
@@ -37,8 +33,7 @@ data class SpotifyUserProfileJson(
 @Serializable
 data class SpotifyAlbumListJson(
   var href: String = "?",
-  @SerialName("items")
-  var albums: List<SpotifyAlbumJson> = listOf(SpotifyAlbumJson()),
+  @SerialName("items") var albums: List<SpotifyAlbumJson> = listOf(SpotifyAlbumJson()),
   var limit: Int = 0,
   var next: String? = "?",
   var offset: Int = 0,
@@ -47,22 +42,16 @@ data class SpotifyAlbumListJson(
 
 @Serializable
 data class SpotifyAlbumJson(
-  @SerialName("album_group")
-  var albumGroup: String = "?",
-  @SerialName("album_type")
-  var albumType: String = "?",
+  @SerialName("album_group") var albumGroup: String = "?",
+  @SerialName("album_type") var albumType: String = "?",
   var artists: List<SpotifyArtistJson> = listOf(SpotifyArtistJson()),
-  @SerialName("available_markets")
-  var availableMarkets: List<String> = listOf("?"),
-  @SerialName("external_urls")
-  var externalUrls: Map<String, String> = mapOf("?" to "?"),
+  @SerialName("available_markets") var availableMarkets: List<String> = listOf("?"),
+  @SerialName("external_urls") var externalUrls: Map<String, String> = mapOf("?" to "?"),
   var href: String = "?",
   var id: String = "?",
   var name: String = "?",
-  @SerialName("release_date")
-  var releaseDate: String = "?",
-  @SerialName("release_date_precision")
-  var releaseDatePrecision: String = "?",
+  @SerialName("release_date") var releaseDate: String = "?",
+  @SerialName("release_date_precision") var releaseDatePrecision: String = "?",
   var type: String = "?",
   var uri: String = "?"
 )
@@ -74,8 +63,7 @@ data class SpotifyArtistListJson(
 
 @Serializable
 data class SpotifyArtistJson(
-  @SerialName("external_urls")
-  var externalUrls: Map<String, String> = mapOf("?" to "?"),
+  @SerialName("external_urls") var externalUrls: Map<String, String> = mapOf("?" to "?"),
   var followers: Map<String, String?> = mapOf("?" to "?"),
   var genres: List<String> = listOf("?"),
   var href: String = "?",
@@ -89,8 +77,7 @@ data class SpotifyArtistJson(
 @Serializable
 data class SpotifyTracklistJson(
   var href: String = "?",
-  @SerialName("items")
-  var tracks: List<SpotifyTrackJson> = listOf(SpotifyTrackJson()),
+  @SerialName("items") var tracks: List<SpotifyTrackJson> = listOf(SpotifyTrackJson()),
   var limit: Int = 0,
   var next: String? = "?",
   var offset: Int = 0,
@@ -100,20 +87,15 @@ data class SpotifyTracklistJson(
 @Serializable
 data class SpotifyTrackJson(
   var artists: List<SpotifyArtistJson> = listOf(SpotifyArtistJson()),
-  @SerialName("available_markets")
-  var availableMarkets: List<String> = listOf("?"),
-  @SerialName("disc_number")
-  var discNumber: Int = 0,
-  @SerialName("duration_ms")
-  var durationMs: Int = 0,
+  @SerialName("available_markets") var availableMarkets: List<String> = listOf("?"),
+  @SerialName("disc_number") var discNumber: Int = 0,
+  @SerialName("duration_ms") var durationMs: Int = 0,
   var explicit: Boolean = false,
-  @SerialName("external_urls")
-  var externalUrls: Map<String, String> = mapOf("?" to "?"),
+  @SerialName("external_urls") var externalUrls: Map<String, String> = mapOf("?" to "?"),
   var href: String = "?",
   var id: String = "?",
   var name: String = "?",
-  @SerialName("track_number")
-  var trackNumber: Int = 0,
+  @SerialName("track_number") var trackNumber: Int = 0,
   var type: String = "?",
   var uri: String = "?"
 )

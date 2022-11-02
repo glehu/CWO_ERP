@@ -221,9 +221,7 @@ class UniChatroomController : IModule {
       return false
     }
     val uniMessage = UniMessage(
-      uniChatroomUID = this.uID,
-      from = member,
-      message = message
+            uniChatroomUID = this.uID, from = member, message = message
     )
     if (gUID.isNotEmpty()) uniMessage.gUID = gUID
     uniMessagesController.save(uniMessage)
@@ -298,15 +296,11 @@ class UniChatroomController : IModule {
         when (frame) {
           is Frame.Text -> {
             // Retrieve username from validated token
-            email = ServerController
-              .buildJWTVerifier(ServerController.iniVal)
-              .verify(frame.readText())
-              .getClaim("username")
-              .asString()
+            email =
+              ServerController.buildJWTVerifier(ServerController.iniVal).verify(frame.readText()).getClaim("username")
+                .asString()
             // Further, check user rights
-            if (
-              UserCLIManager.checkModuleRight(email = email, module = "M5")
-            ) {
+            if (UserCLIManager.checkModuleRight(email = email, module = "M5")) {
               username = UserCLIManager.getUserFromEmail(email)!!.username
               break
             } else {
@@ -314,6 +308,7 @@ class UniChatroomController : IModule {
               return
             }
           }
+
           else -> {}
         }
       }
@@ -355,14 +350,11 @@ class UniChatroomController : IModule {
       uniChatroom.addOrUpdateMember(username, UniRole("Member"))
       saveChatroom(uniChatroom)
       // Notify members of new registration
-      val serverNotification =
-        "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!"
+      val serverNotification = "[s:RegistrationNotification]$username has joined ${uniChatroom.title}!"
       val msg = Json.encodeToString(
-        UniMessage(
-          uniChatroomUID = uniChatroom.uID,
-          from = "_server",
-          message = serverNotification
-        )
+              UniMessage(
+                      uniChatroomUID = uniChatroom.uID, from = "_server", message = serverNotification
+              )
       )
       clarifierSession!!.connections.forEach {
         if (!it.session.outgoing.isClosedForSend) {
@@ -371,8 +363,7 @@ class UniChatroomController : IModule {
       }
       mutexMessages.withLock {
         uniChatroom.addMessage(
-          member = "_server",
-          message = serverNotification
+                member = "_server", message = serverNotification
         )
       }
     }
@@ -388,46 +379,47 @@ class UniChatroomController : IModule {
             // What's happening?
             if (frameText.startsWith("[c:EDIT<JSON]")) { // Edit Message
               clarifierSession!!.connectionsToDelete.addAll(
-                handleReceivedEditMessage(
-                  frameText, "[c:EDIT<JSON]", thisConnection, clarifierSession!!
-                ).connectionsToDelete
+                      handleReceivedEditMessage(
+                              frameText, "[c:EDIT<JSON]", thisConnection, clarifierSession!!
+                      ).connectionsToDelete
               )
             } else if (frameText.startsWith("[c:REACT<JSON]")) { // Reaction
               clarifierSession!!.connectionsToDelete.addAll(
-                handleReceivedReactMessage(
-                  frameText, "[c:REACT<JSON]", thisConnection, clarifierSession!!
-                ).connectionsToDelete
+                      handleReceivedReactMessage(
+                              frameText, "[c:REACT<JSON]", thisConnection, clarifierSession!!
+                      ).connectionsToDelete
               )
             } else if (frameText.startsWith("[c:SC]")) { // Screenshare Blob
               handleReceivedScreenshareBlob(
-                frameText, clarifierSession!!
+                      frameText, clarifierSession!!
               )
             } else if (frameText.startsWith("[c:CMD]")) { // Command
               handleReceivedCommand(
-                frameText, clarifierSession!!, uniChatroom
+                      frameText, clarifierSession!!, uniChatroom
               )
             } else { // Regular Message
               clarifierSession!!.connectionsToDelete.addAll(
-                handleReceivedMessage(
-                  frameText, uniChatroom, thisConnection, clarifierSession!!
-                ).connectionsToDelete
+                      handleReceivedMessage(
+                              frameText, uniChatroom, thisConnection, clarifierSession!!
+                      ).connectionsToDelete
               )
             }
             clarifierSession!!.cleanup()
           }
         }
+
         is Frame.Close -> {
           log(Log.Type.COM, "WS CLOSE FRAME RECEIVED ${call.request.origin.remoteHost}")
           clarifierSession!!.connections.remove(thisConnection)
         }
+
         else -> {}
       }
     }
   }
 
   private suspend fun handleReceivedScreenshareBlob(
-    frameText: String,
-    clarifierSession: ClarifierSession
+    frameText: String, clarifierSession: ClarifierSession
   ) {
     clarifierSession.connections.forEach {
       if (!it.session.outgoing.isClosedForSend) {
@@ -439,15 +431,11 @@ class UniChatroomController : IModule {
   }
 
   private suspend fun handleReceivedEditMessage(
-    frameText: String,
-    prefix: String,
-    thisConnection: Connection,
-    clarifierSession: ClarifierSession
+    frameText: String, prefix: String, thisConnection: Connection, clarifierSession: ClarifierSession
   ): ClarifierSession {
     val configJson = frameText.substring(prefix.length)
     // Get payload
-    val editMessageConfig: UniChatroomEditMessage =
-      Json.decodeFromString(configJson)
+    val editMessageConfig: UniChatroomEditMessage = Json.decodeFromString(configJson)
     // Valid?
     if (editMessageConfig.uniMessageGUID.isEmpty()) return clarifierSession
     // Edit message from database
@@ -470,9 +458,7 @@ class UniChatroomController : IModule {
         save(message!!)
       }
       val uniMessage = UniMessage(
-        uniChatroomUID = chatroomUID,
-        from = "_server",
-        message = "[s:EditNotification]$configJson"
+              uniChatroomUID = chatroomUID, from = "_server", message = "[s:EditNotification]$configJson"
       )
       val msg = Json.encodeToString(uniMessage)
       clarifierSession.connections.forEach {
@@ -487,14 +473,10 @@ class UniChatroomController : IModule {
   }
 
   private suspend fun handleReceivedReactMessage(
-    frameText: String,
-    prefix: String,
-    thisConnection: Connection,
-    clarifierSession: ClarifierSession
+    frameText: String, prefix: String, thisConnection: Connection, clarifierSession: ClarifierSession
   ): ClarifierSession {
     // Get payload
-    val reactMessageConfig: UniChatroomReactMessage =
-      Json.decodeFromString(frameText.substring(prefix.length))
+    val reactMessageConfig: UniChatroomReactMessage = Json.decodeFromString(frameText.substring(prefix.length))
     // Valid?
     if (reactMessageConfig.uniMessageGUID.isEmpty()) return clarifierSession
     // Edit message from database
@@ -544,25 +526,22 @@ class UniChatroomController : IModule {
         chatroomUID = message!!.uniChatroomUID
         if (!reactionTypeExists) {
           val reaction = UniMessageReaction(
-            from = arrayListOf(thisConnection.username),
-            type = reactMessageConfig.type
+                  from = arrayListOf(thisConnection.username), type = reactMessageConfig.type
           )
           message!!.reactions.add(Json.encodeToString(reaction))
         }
         save(message!!)
       }
       val response = Json.encodeToString(
-        UniChatroomReactMessageResponse(
-          uniMessageGUID = reactMessageConfig.uniMessageGUID,
-          type = reactMessageConfig.type,
-          from = thisConnection.username,
-          isRemove = reactionRemove
-        )
+              UniChatroomReactMessageResponse(
+                      uniMessageGUID = reactMessageConfig.uniMessageGUID,
+                      type = reactMessageConfig.type,
+                      from = thisConnection.username,
+                      isRemove = reactionRemove
+              )
       )
       val uniMessage = UniMessage(
-        uniChatroomUID = chatroomUID,
-        from = "_server",
-        message = "[s:ReactNotification]$response"
+              uniChatroomUID = chatroomUID, from = "_server", message = "[s:ReactNotification]$response"
       )
       val msg = Json.encodeToString(uniMessage)
       clarifierSession.connections.forEach {
@@ -577,24 +556,15 @@ class UniChatroomController : IModule {
   }
 
   private suspend fun handleReceivedCommand(
-    frameText: String,
-    clarifierSession: ClarifierSession,
-    unichatroom: UniChatroom
+    frameText: String, clarifierSession: ClarifierSession, unichatroom: UniChatroom
   ) {
     // What command?
     if (frameText.contains("/help")) {
       val tmpMessage = UniMessage(
-        uID = -1,
-        uniChatroomUID = -1,
-        from = "_server",
-        message = "#### List of all commands:\n" +
-                "| Command      | Explanation |" +
-                "\n| ------------ | ----------- |" +
-                "\n| `/gif` [keywords] | Send a random GIF |" +
-                "\n| `/flip` [optional: keywords] | Open the Imgflip interface |" +
-                "\n| `/topflip` [optional: `-d`] | Review the most upvoted image! -d to filter today's images only |" +
-                "\n| `/stats` | View the current subchats' statistics on messages |" +
-                "\n| `/leaderboard` | Show the top members of this subchat |"
+              uID = -1,
+              uniChatroomUID = -1,
+              from = "_server",
+              message = "#### List of all commands:\n" + "| Command      | Explanation |" + "\n| ------------ | ----------- |" + "\n| `/gif` [keywords] | Send a random GIF |" + "\n| `/flip` [optional: keywords] | Open the Imgflip interface |" + "\n| `/topflip` [optional: `-d`] | Review the most upvoted image! -d to filter today's images only |" + "\n| `/stats` | View the current subchats' statistics on messages |" + "\n| `/leaderboard` | Show the top members of this subchat |"
       )
       clarifierSession.connections.forEach {
         if (!it.session.outgoing.isClosedForSend) {
@@ -620,9 +590,7 @@ class UniChatroomController : IModule {
       var topRating = 0.0
       var ok: Boolean
       uniMessagesIndexManager!!.getEntriesFromIndexSearch(
-        searchText = "^${unichatroom.uID}$",
-        ixNr = 1,
-        showAll = true
+              searchText = "^${unichatroom.uID}$", ixNr = 1, showAll = true
       ) {
         it as UniMessage
         if (it.message.startsWith("[c:IMG]")) {
@@ -645,9 +613,11 @@ class UniChatroomController : IModule {
                   "+" -> {
                     upvotes += react.from.size
                   }
+
                   "⭐" -> {
                     stars += react.from.size
                   }
+
                   "-" -> {
                     downvotes += react.from.size
                   }
@@ -677,13 +647,9 @@ class UniChatroomController : IModule {
         val prefix = if (isFlipOfTheDay) {
           "The Daily Top Flip..."
         } else "The All-Time Top Flip..."
-        val serverMessage = "$prefix Presented by ${topFlip!!.from}!" +
-                "\nRating: $topRating"
+        val serverMessage = "$prefix Presented by ${topFlip!!.from}!" + "\nRating: $topRating"
         val tmpMessage = UniMessage(
-          uID = -1,
-          uniChatroomUID = -1,
-          from = "_server",
-          message = serverMessage
+                uID = -1, uniChatroomUID = -1, from = "_server", message = serverMessage
         )
         clarifierSession.connections.forEach {
           if (!it.session.outgoing.isClosedForSend) {
@@ -695,10 +661,7 @@ class UniChatroomController : IModule {
         }
       } else {
         val tmpMessage = UniMessage(
-          uID = -1,
-          uniChatroomUID = -1,
-          from = "_server",
-          message = "No Top Flip Available!"
+                uID = -1, uniChatroomUID = -1, from = "_server", message = "No Top Flip Available!"
         )
         clarifierSession.connections.forEach {
           if (!it.session.outgoing.isClosedForSend) {
@@ -717,9 +680,7 @@ class UniChatroomController : IModule {
       var amountRCT = 0
       var messagesWithReaction = 0
       uniMessagesIndexManager!!.getEntriesFromIndexSearch(
-        searchText = "^${unichatroom.uID}$",
-        ixNr = 1,
-        showAll = true
+              searchText = "^${unichatroom.uID}$", ixNr = 1, showAll = true
       ) {
         it as UniMessage
         if (it.from != "_server") {
@@ -741,21 +702,14 @@ class UniChatroomController : IModule {
         }
       }
       val messagesTotal = amountGIF + amountIMG + amountMSG + amountAUD
-      val messagesWithReactionPercent =
-        (messagesWithReaction.toDouble() / messagesTotal.toDouble()) * 100.0
+      val messagesWithReactionPercent = (messagesWithReaction.toDouble() / messagesTotal.toDouble()) * 100.0
       val tmpMessage = UniMessage(
-        uID = -1,
-        uniChatroomUID = -1,
-        from = "_server",
-        message = "Statistics for this Subchat:\n" +
-                "\nTexts sent: $amountMSG" +
-                "\nGIFs sent: $amountGIF" +
-                "\nImages sent: $amountIMG" +
-                "\nAudios sent: $amountAUD" +
-                "\n\nFor a total of $messagesTotal message(s)" +
-                "\n...with $amountRCT reaction(s)!" +
-                "\n\n${messagesWithReactionPercent.roundTo(2)}% " +
-                "of all messages received a reaction!"
+              uID = -1,
+              uniChatroomUID = -1,
+              from = "_server",
+              message = "Statistics for this Subchat:\n" + "\nTexts sent: $amountMSG" + "\nGIFs sent: $amountGIF" + "\nImages sent: $amountIMG" + "\nAudios sent: $amountAUD" + "\n\nFor a total of $messagesTotal message(s)" + "\n...with $amountRCT reaction(s)!" + "\n\n${
+                messagesWithReactionPercent.roundTo(2)
+              }% " + "of all messages received a reaction!"
       )
       clarifierSession.connections.forEach {
         if (!it.session.outgoing.isClosedForSend) {
@@ -767,19 +721,17 @@ class UniChatroomController : IModule {
     } else if (frameText.contains("/leaderboard")) {
       if (unichatroom.uID == -1) return
       val members = getMemberStatsOfChatroom(
-        chatroom = getMainChatroom(unichatroom) ?: unichatroom
+              chatroom = getMainChatroom(unichatroom) ?: unichatroom
       )
       // Sort by Rating
       // Negative values to sort descending
-      val sortedMembers = members.values
-        .toList()
-        .sortedWith(compareBy({ -it.totalRating }, { -it.messages }))
+      val sortedMembers = members.values.toList().sortedWith(compareBy({ -it.totalRating }, { -it.messages }))
       sortedMembers.forEach { it.totalRating.roundTo(2) }
       val tmpMessage = UniMessage(
-        uID = -1,
-        uniChatroomUID = -1,
-        from = "_server",
-        message = "[s:Leaderboard]" + Json.encodeToString(sortedMembers)
+              uID = -1,
+              uniChatroomUID = -1,
+              from = "_server",
+              message = "[s:Leaderboard]" + Json.encodeToString(sortedMembers)
       )
       clarifierSession.connections.forEach {
         if (!it.session.outgoing.isClosedForSend) {
@@ -792,18 +744,13 @@ class UniChatroomController : IModule {
   }
 
   private suspend fun handleReceivedMessage(
-    frameText: String,
-    uniChatroom: UniChatroom,
-    thisConnection: Connection,
-    clarifierSession: ClarifierSession
+    frameText: String, uniChatroom: UniChatroom, thisConnection: Connection, clarifierSession: ClarifierSession
   ): ClarifierSession {
     val prefix = "[c:MSG<ENCR]"
     var isEncrypted = false
     if (frameText.startsWith(prefix)) isEncrypted = true
     val uniMessage = UniMessage(
-      uniChatroomUID = uniChatroom.uID,
-      from = thisConnection.username,
-      message = frameText
+            uniChatroomUID = uniChatroom.uID, from = thisConnection.username, message = frameText
     )
     uniMessage.isEncrypted = isEncrypted
     val msg = Json.encodeToString(uniMessage)
@@ -824,8 +771,7 @@ class UniChatroomController : IModule {
       if (member.firebaseCloudMessagingToken.isEmpty()) continue
       fcmTokens.add(member.firebaseCloudMessagingToken)
     }
-    if (fcmTokens.isNotEmpty()) {
-      /*
+    if (fcmTokens.isNotEmpty()) {/*
        Build the notification
        If there's a parentGUID, then this chatroom must be a subchat
        */
@@ -838,26 +784,16 @@ class UniChatroomController : IModule {
         destination = uniChatroom.chatroomGUID
         subchatGUID = ""
       }
-      val message = MulticastMessage.builder()
-        .setWebpushConfig(
-          WebpushConfig.builder()
-            .setNotification(
-              WebpushNotification(
-                uniChatroom.title,
-                "${thisConnection.username} has sent a message."
-              )
-            )
-            .setFcmOptions(
-              WebpushFcmOptions
-                .withLink("/apps/clarifier/wss/$destination")
-            )
-            .putData("dlType", "clarifier")
-            .putData("dlDest", "/apps/clarifier/wss/$destination")
-            .putData("subchatGUID", subchatGUID)
-            .build()
-        )
-        .addAllTokens(fcmTokens)
-        .build()
+      val message = MulticastMessage.builder().setWebpushConfig(
+                WebpushConfig.builder().setNotification(
+                          WebpushNotification(
+                                  uniChatroom.title, "${thisConnection.username} has sent a message."
+                          )
+                  ).setFcmOptions(
+                          WebpushFcmOptions.withLink("/apps/clarifier/wss/$destination")
+                  ).putData("dlType", "clarifier").putData("dlDest", "/apps/clarifier/wss/$destination")
+                  .putData("subchatGUID", subchatGUID).build()
+        ).addAllTokens(fcmTokens).build()
       FirebaseMessaging.getInstance().sendMulticast(message)
     }
     return clarifierSession

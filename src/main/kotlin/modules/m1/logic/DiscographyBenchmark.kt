@@ -35,9 +35,9 @@ class DiscographyBenchmark : IModule {
         song.genre = getRandomGenre()
         song.releaseDate = "01.01.1000"
         save(
-          entry = song,
-          raf = raf,
-          indexWriteToDisk = false,
+                entry = song,
+                raf = raf,
+                indexWriteToDisk = false,
         )
         if (i % 10_000 == 0) {
           log(Log.Type.INFO, "BENCHMARK_INSERTION uID ${song.uID}")

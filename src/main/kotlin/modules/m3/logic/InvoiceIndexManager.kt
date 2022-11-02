@@ -36,10 +36,10 @@ class InvoiceIndexManager : IIndexManager {
 
   init {
     initialize(
-      1, //Seller
-      2, //Buyer
-      3, //Text
-      4 //Status
+            1, //Seller
+            2, //Buyer
+            3, //Text
+            4 //Status
     )
   }
 
@@ -48,23 +48,19 @@ class InvoiceIndexManager : IIndexManager {
   }
 
   override suspend fun indexEntry(
-    entry: IEntry,
-    posDB: Long,
-    byteSize: Int,
-    writeToDisk: Boolean,
-    userName: String
+    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
   ) {
     entry as Invoice
     buildIndices(
-      entry.uID,
-      posDB,
-      byteSize,
-      writeToDisk,
-      userName,
-      Pair(1, entry.seller),
-      Pair(2, entry.buyer),
-      Pair(3, entry.text),
-      Pair(4, entry.status.toString())
+            entry.uID,
+            posDB,
+            byteSize,
+            writeToDisk,
+            userName,
+            Pair(1, entry.seller),
+            Pair(2, entry.buyer),
+            Pair(3, entry.text),
+            Pair(4, entry.status.toString())
     )
   }
 

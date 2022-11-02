@@ -36,31 +36,22 @@ class SnippetBaseIndexManager : IIndexManager {
 
   init {
     initialize(
-      1, //ChatroomGUID
+            1, //ChatroomGUID
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-      "1-ChatroomGUID",
+            "1-ChatroomGUID",
     )
   }
 
   override suspend fun indexEntry(
-    entry: IEntry,
-    posDB: Long,
-    byteSize: Int,
-    writeToDisk: Boolean,
-    userName: String
+    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
   ) {
     entry as Snippet
     buildIndices(
-      entry.uID,
-      posDB,
-      byteSize,
-      writeToDisk,
-      userName,
-      Pair(1, entry.gUID)
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.gUID)
     )
   }
 

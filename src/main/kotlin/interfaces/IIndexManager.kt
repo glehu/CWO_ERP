@@ -127,23 +127,14 @@ interface IIndexManager : IModule {
    * This function must call buildIndices, which will build all indices for an entry.
    */
   suspend fun indexEntry(
-    entry: IEntry,
-    posDB: Long,
-    byteSize: Int,
-    writeToDisk: Boolean,
-    userName: String
+    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
   )
 
   /**
    * Used to build indices for an entry.
    */
   suspend fun buildIndices(
-    uID: Int,
-    posDB: Long,
-    byteSize: Int,
-    writeToDisk: Boolean,
-    userName: String,
-    vararg indices: Pair<Int, String>
+    uID: Int, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String, vararg indices: Pair<Int, String>
   ) {
     buildDefaultIndex(uID, posDB, byteSize)
     for ((ixNr, ixContent) in indices) {
@@ -151,7 +142,7 @@ interface IIndexManager : IModule {
         if (indexList[ixNr] == null) addIndex(ixNr)
         synchronized(this) {
           indexList[ixNr]!!.indexMap[uID] = IndexContent(
-            content = indexFormat(ixContent).uppercase()
+                  content = indexFormat(ixContent).uppercase()
           )
         }
       } else {
@@ -189,7 +180,7 @@ interface IIndexManager : IModule {
     synchronized(this) {
       for (index in indexList.entries) {
         getIndexFile(index.key).writeText(
-          Json.encodeToString(indexList[index.key])
+                Json.encodeToString(indexList[index.key])
         )
       }
     }

@@ -20,9 +20,7 @@ class ContactAnalytics : IModule {
   }
 
   suspend fun getChartDataOnCityDistribution(
-    indexManager: ContactIndexManager,
-    amount: Int = -1,
-    updateProgress: (Pair<Int, String>) -> Unit
+    indexManager: ContactIndexManager, amount: Int = -1, updateProgress: (Pair<Int, String>) -> Unit
   ): MutableMap<String, Double> {
     val tempMap = mutableMapOf<String, Double>()
     lateinit var sortedMap: MutableMap<String, Double>
@@ -33,11 +31,7 @@ class ContactAnalytics : IModule {
     log(Log.Type.INFO, "City distribution analysis start")
     val timeInMS = measureTimeMillis {
       CwODB.getEntriesFromSearchString(
-        searchText = "",
-        ixNr = 0,
-        exactSearch = false,
-        maxSearchResults = -1,
-        indexManager = indexManager
+              searchText = "", ixNr = 0, exactSearch = false, maxSearchResults = -1, indexManager = indexManager
       )                       // shout out blkghst
       { uID, entryBytes ->
         updateProgress(Pair(uID, "Mapping city data..."))

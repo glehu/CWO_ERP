@@ -15,20 +15,14 @@ interface IWebApp : IModule {
   }
 
   fun getProjectJsonFile(
-    project: String,
-    filename: String,
-    extension: String = "json",
-    check: Boolean = true
+    project: String, filename: String, extension: String = "json", check: Boolean = true
   ): File {
     if (check) checkProjectJsonFile(project, filename, extension = extension)
     return File(Paths.get(getWebAppPath(project), "$filename.$extension").toString())
   }
 
   private fun checkProjectJsonFile(
-    project: String,
-    filename: String,
-    extension: String = "json",
-    createIfMissing: Boolean = true
+    project: String, filename: String, extension: String = "json", createIfMissing: Boolean = true
   ) {
     if (project.isEmpty()) return
     checkProjectDir(project)

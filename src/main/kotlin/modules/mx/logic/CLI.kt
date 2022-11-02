@@ -47,8 +47,7 @@ class CLI : IModule {
       val envPass: String = System.getenv("CWOERPPASS") ?: "?"
       if (envUser != "?" && envPass != "?") {
         // Attempt to log in the user
-        log(Log.Type.SYS, "LOGGING IN")
-        /*
+        log(Log.Type.SYS, "LOGGING IN")/*
         if (!UserCLIManager().login(envUser, envPass, doLog = true)) {
           log(Log.Type.ERROR, "TERMINATED PROCESS REASON wrong-credentials")
           cliExit()
@@ -56,8 +55,8 @@ class CLI : IModule {
         */
       } else {
         log(
-          Log.Type.WARNING,
-          "REMOVED FLAG -env REASON incomplete-env-variables HELP check CWOERPUSER and CWOERPPASS"
+                Log.Type.WARNING,
+                "REMOVED FLAG -env REASON incomplete-env-variables HELP check CWOERPUSER and CWOERPPASS"
         )
       }
     }
@@ -72,12 +71,11 @@ class CLI : IModule {
       } catch (e: Exception) {
         log(Log.Type.ERROR, "ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
         terminal.println(
-          red("ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
+                red("ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
         )
         cliExit(false)
       }
-    } else {
-      /*
+    } else {/*
       // Prompts the user to log in if there is no active user
       val login: Boolean = if (activeUser.username.isEmpty()) cliLogin() else true
       cliClearTerminal()
@@ -141,7 +139,7 @@ class CLI : IModule {
     log(Log.Type.SYS, "Terminating System...")
     exitMain()
     terminal.println(
-      "${gray("CWO:>")} ${green("System successfully terminated.")}"
+            "${gray("CWO:>")} ${green("System successfully terminated.")}"
     )
     exitProcess(0)
   }

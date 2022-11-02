@@ -13,12 +13,9 @@ import modules.mx.uniMessagesIndexManager
 @kotlinx.serialization.Serializable
 data class UniMessage(
   override var uID: Int = -1,
-  @SerialName("cid")
-  var uniChatroomUID: Int,
-  @SerialName("src")
-  val from: String,
-  @SerialName("msg")
-  var message: String,
+  @SerialName("cid") var uniChatroomUID: Int,
+  @SerialName("src") val from: String,
+  @SerialName("msg") var message: String,
 ) : IEntry {
   @SerialName("ts")
   var timestamp: String = ""

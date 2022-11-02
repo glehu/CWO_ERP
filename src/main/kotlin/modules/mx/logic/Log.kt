@@ -38,22 +38,12 @@ class Log {
      * Writes a log message to the disk.
      */
     suspend fun log(
-      module: String,
-      type: Type,
-      text: String,
-      caller: String,
-      write: Boolean = true,
-      apiEndpoint: String = ""
+      module: String, type: Type, text: String, caller: String, write: Boolean = true, apiEndpoint: String = ""
     ) {
       val logMessageSerialized = Json.encodeToString(
-        LogMessage(
-          Timestamp.getUnixTimestampHex(),
-          module,
-          type,
-          text,
-          caller,
-          apiEndpoint
-        )
+              LogMessage(
+                      Timestamp.getUnixTimestampHex(), module, type, text, caller, apiEndpoint
+              )
       ) + "\n"
       print(logMessageSerialized)
       if (write) {

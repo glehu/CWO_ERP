@@ -13,8 +13,7 @@ import modules.mx.uniChatroomIndexManager
 @kotlinx.serialization.Serializable
 data class UniChatroom(
   override var uID: Int,
-  @SerialName("t")
-  var title: String,
+  @SerialName("t") var title: String,
 ) : IEntry {
   override fun initialize() {
     if (uID == -1) uID = uniChatroomIndexManager!!.getUID()
@@ -44,6 +43,7 @@ data class UniChatroom(
   var banlist: ArrayList<String> = arrayListOf()
   var subChatrooms: ArrayList<String> = arrayListOf()
   var parentGUID: String = ""
+
   /** Determines the type of this chatroom.
    *
    * Possible values (currently):

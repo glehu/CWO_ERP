@@ -36,18 +36,18 @@ class WisdomIndexManager : IIndexManager {
 
   init {
     initialize(
-      1, // GUID
-      2, // knowledgeUID
-      3, // srcGUID
-      4, // keywords
-      5, // refGUID
-      6 // knowledgeUID;taskType
+            1, // GUID
+            2, // knowledgeUID
+            3, // srcGUID
+            4, // keywords
+            5, // refGUID
+            6 // knowledgeUID;taskType
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-      "1-GUID", "2-knowledgeUID", "3-srcWisdomUID", "4-keywords", "5-refUID"
+            "1-GUID", "2-knowledgeUID", "3-srcWisdomUID", "4-keywords", "5-refUID"
     )
   }
 
@@ -59,17 +59,17 @@ class WisdomIndexManager : IIndexManager {
     val srcWisdomUID = entry.srcWisdomUID.toString()
     val refWisdomUID = entry.refWisdomUID.toString()
     buildIndices(
-      entry.uID,
-      posDB,
-      byteSize,
-      writeToDisk,
-      userName,
-      Pair(1, entry.gUID),
-      Pair(2, if (knowledgeUID != "-1") knowledgeUID else "?"),
-      Pair(3, if (srcWisdomUID != "-1") srcWisdomUID else "?"),
-      Pair(4, entry.keywords),
-      Pair(5, if (refWisdomUID != "-1") refWisdomUID else "?"),
-      Pair(6, if (entry.isTask) "$knowledgeUID;${entry.taskType}" else "?")
+            entry.uID,
+            posDB,
+            byteSize,
+            writeToDisk,
+            userName,
+            Pair(1, entry.gUID),
+            Pair(2, if (knowledgeUID != "-1") knowledgeUID else "?"),
+            Pair(3, if (srcWisdomUID != "-1") srcWisdomUID else "?"),
+            Pair(4, entry.keywords),
+            Pair(5, if (refWisdomUID != "-1") refWisdomUID else "?"),
+            Pair(6, if (entry.isTask) "$knowledgeUID;${entry.taskType}" else "?")
     )
   }
 

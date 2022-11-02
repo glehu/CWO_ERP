@@ -13,8 +13,7 @@ import kotlinx.serialization.SerialName
 @InternalAPI
 @kotlinx.serialization.Serializable
 data class UniMember(
-  @SerialName("usr")
-  var username: String,
+  @SerialName("usr") var username: String,
   var roles: ArrayList<String>,
 ) {
   @SerialName("id")

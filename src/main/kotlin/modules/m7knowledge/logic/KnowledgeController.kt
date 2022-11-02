@@ -46,9 +46,7 @@ class KnowledgeController : IModule {
   suspend fun httpGetKnowledgeFromUniChatroomGUID(appCall: ApplicationCall, mainChatroomGUID: String) {
     var knowledge: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-      searchText = "^$mainChatroomGUID$",
-      ixNr = 2,
-      showAll = true
+            searchText = "^$mainChatroomGUID$", ixNr = 2, showAll = true
     ) {
       it as Knowledge
       knowledge = it
@@ -63,9 +61,7 @@ class KnowledgeController : IModule {
   suspend fun httpCreateKnowledge(appCall: ApplicationCall, config: KnowledgeCreation) {
     var knowledge: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-      searchText = "^${config.mainChatroomGUID}$",
-      ixNr = 2,
-      showAll = true
+            searchText = "^${config.mainChatroomGUID}$", ixNr = 2, showAll = true
     ) {
       it as Knowledge
       knowledge = it
@@ -85,15 +81,11 @@ class KnowledgeController : IModule {
   }
 
   suspend fun httpEditKnowledgeCategories(
-    appCall: ApplicationCall,
-    config: KnowledgeCategoryEdit,
-    knowledgeGUID: String?
+    appCall: ApplicationCall, config: KnowledgeCategoryEdit, knowledgeGUID: String?
   ) {
     var knowledge: Knowledge? = null
     getEntriesFromIndexSearch(
-      searchText = "^$knowledgeGUID$",
-      ixNr = 1,
-      showAll = true
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
     ) {
       it as Knowledge
       knowledge = it
@@ -121,6 +113,7 @@ class KnowledgeController : IModule {
         appCall.respond(HttpStatusCode.OK)
         return
       }
+
       "remove" -> {
         // Check if it contains the category
         var category: WisdomCategory
@@ -136,6 +129,7 @@ class KnowledgeController : IModule {
         appCall.respond(HttpStatusCode.NotFound)
         return
       }
+
       else -> {
         appCall.respond(HttpStatusCode.BadRequest)
         return

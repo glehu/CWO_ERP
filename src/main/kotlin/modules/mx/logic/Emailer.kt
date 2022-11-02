@@ -28,25 +28,20 @@ class Emailer : IModule {
 
   init {
     mailServer = MailServer(
-      host = iniVal.emailHost,
-      port = iniVal.emailPort,
-      username = iniVal.emailUsername,
-      password = iniVal.emailPassword
+            host = iniVal.emailHost,
+            port = iniVal.emailPort,
+            username = iniVal.emailUsername,
+            password = iniVal.emailPassword
     )
   }
 
   suspend fun sendEmailOverMailServer(
-    subject: String,
-    body: String,
-    recipient: String
+    subject: String, body: String, recipient: String
   ) {
     mailServer.sendEmail(
-      Email(
-        from = iniVal.emailAddress,
-        subject = subject,
-        body = body,
-        recipient = recipient
-      )
+            Email(
+                    from = iniVal.emailAddress, subject = subject, body = body, recipient = recipient
+            )
     )
     log(Log.Type.COM, "Email $subject sent to $recipient")
   }

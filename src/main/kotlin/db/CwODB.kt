@@ -21,11 +21,7 @@ class CwODB {
      * @return the position in the database and byte size of the stored entry.
      */
     fun saveEntry(
-      entryBytes: ByteArray,
-      posDB: Long,
-      byteSize: Int,
-      module: String,
-      raf: RandomAccessFile
+      entryBytes: ByteArray, posDB: Long, byteSize: Int, module: String, raf: RandomAccessFile
     ): Pair<Long, Int> {
       val byteSizeNew = entryBytes.size
       var canOverride = false
@@ -42,8 +38,7 @@ class CwODB {
         }
         if (!indexError) {
           //Save the serialized entry to the determined destination file
-          writeDBEntry(entryBytes, posDBNew, raf)
-          /*
+          writeDBEntry(entryBytes, posDBNew, raf)/*
            If we saved a preexisting entry we have to delete the old entry
            ...if the new byteSize is greater than the old one
            */
@@ -141,9 +136,7 @@ class CwODB {
      * @return the index results for a search text from all available indices.
      */
     private fun returnFromAllIndices(
-      indexManager: IIndexManager,
-      searchText: String,
-      updateProgress: (Map<Int, IndexContent>) -> Unit
+      indexManager: IIndexManager, searchText: String, updateProgress: (Map<Int, IndexContent>) -> Unit
     ) {
       runBlocking {
         searchInAllIndices(indexManager, searchText).collect { indexResult ->

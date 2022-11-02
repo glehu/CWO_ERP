@@ -37,33 +37,29 @@ class DiscographyIndexManager : IModule, IIndexManager {
 
   init {
     initialize(
-      1, //Name
-      2, //Vocalist
-      3, //Producer
-      4, //Genre
-      5 //SpotifyID
+            1, //Name
+            2, //Vocalist
+            3, //Producer
+            4, //Genre
+            5 //SpotifyID
     )
   }
 
   override suspend fun indexEntry(
-    entry: IEntry,
-    posDB: Long,
-    byteSize: Int,
-    writeToDisk: Boolean,
-    userName: String
+    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
   ) {
     entry as Song
     buildIndices(
-      entry.uID,
-      posDB,
-      byteSize,
-      writeToDisk,
-      userName,
-      Pair(1, entry.name),
-      Pair(2, entry.vocalist),
-      Pair(3, entry.producer),
-      Pair(4, entry.genre),
-      Pair(5, entry.spotifyID)
+            entry.uID,
+            posDB,
+            byteSize,
+            writeToDisk,
+            userName,
+            Pair(1, entry.name),
+            Pair(2, entry.vocalist),
+            Pair(3, entry.producer),
+            Pair(4, entry.genre),
+            Pair(5, entry.spotifyID)
     )
   }
 
