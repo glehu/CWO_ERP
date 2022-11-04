@@ -720,7 +720,11 @@ class Server : IModule {
   private fun Route.addMessageToUniChatroom() {
     post("m5/addmessage") {
       val config: UniChatroomAddMessage = Json.decodeFromString(call.receive())
-      ServerController.addMessageToUniChatroom(call, config, ServerController.getJWTEmail(call))
+      ServerController.addMessageToUniChatroom(
+              appCall = call,
+              config = config,
+              username = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(call))!!.username
+      )
     }
   }
 

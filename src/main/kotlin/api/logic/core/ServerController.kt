@@ -25,6 +25,11 @@ import api.misc.json.WebshopOrder
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.MulticastMessage
+import com.google.firebase.messaging.WebpushConfig
+import com.google.firebase.messaging.WebpushFcmOptions
+import com.google.firebase.messaging.WebpushNotification
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.http.*
@@ -34,6 +39,7 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.util.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -480,7 +486,7 @@ class ServerController {
       }
     }
 
-    suspend fun addMessageToUniChatroom(appCall: ApplicationCall, config: UniChatroomAddMessage, member: String) {
+    suspend fun addMessageToUniChatroom(appCall: ApplicationCall, config: UniChatroomAddMessage, username: String) {
       with(UniChatroomController()) {
         mutex.withLock {
           val uniChatroom: UniChatroom? = getChatroom(config.uniChatroomGUID)
@@ -489,14 +495,65 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
+                    username = username, isEmail = true
             )) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
-          if (!uniChatroom.addMessage(member, config.text)) {
+          if (!uniChatroom.addMessage(username, config.text)) {
             appCall.respond(HttpStatusCode.BadRequest)
             return
+          }
+          UniChatroomController.clarifierSessions.forEach { session ->
+            if (session.chatroomGUID == config.uniChatroomGUID) {
+              val prefix = "[c:MSG<ENCR]"
+              var isEncrypted = false
+              if (config.text.startsWith(prefix)) isEncrypted = true
+              val uniMessage = UniMessage(
+                      uniChatroomUID = uniChatroom.uID, from = username, message = config.text
+              )
+              uniMessage.isEncrypted = isEncrypted
+              val msg = Json.encodeToString(uniMessage)
+              session.connections.forEach {
+                if (!it.session.outgoing.isClosedForSend) {
+                  it.session.send(msg)
+                } else {
+                  session.connectionsToDelete.add(it)
+                }
+              }
+              // Send notification to all members
+              val fcmTokens: ArrayList<String> = arrayListOf()
+              for (memberJson in uniChatroom.members) {
+                val member: UniMember = Json.decodeFromString(memberJson)
+                if (member.firebaseCloudMessagingToken.isEmpty()) continue
+                fcmTokens.add(member.firebaseCloudMessagingToken)
+              }
+              if (fcmTokens.isNotEmpty()) {/*
+                  Build the notification
+                  If there's a parentGUID, then this chatroom must be a subchat
+                */
+                lateinit var destination: String
+                lateinit var subchatGUID: String
+                if (uniChatroom.parentGUID.isNotEmpty()) {
+                  destination = uniChatroom.parentGUID
+                  subchatGUID = uniChatroom.chatroomGUID
+                } else {
+                  destination = uniChatroom.chatroomGUID
+                  subchatGUID = ""
+                }
+                val message = MulticastMessage.builder().setWebpushConfig(
+                        WebpushConfig.builder().setNotification(
+                                WebpushNotification(
+                                        uniChatroom.title, "$username has sent a message."
+                                )
+                        ).setFcmOptions(
+                                WebpushFcmOptions.withLink("/apps/clarifier/wss/$destination")
+                        ).putData("dlType", "clarifier").putData("dlDest", "/apps/clarifier/wss/$destination")
+                          .putData("subchatGUID", subchatGUID).build()
+                ).addAllTokens(fcmTokens).build()
+                FirebaseMessaging.getInstance().sendMulticast(message)
+              }
+            }
           }
         }
         appCall.respond(HttpStatusCode.OK)

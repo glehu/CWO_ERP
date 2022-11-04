@@ -707,7 +707,7 @@ class UniChatroomController : IModule {
               uID = -1,
               uniChatroomUID = -1,
               from = "_server",
-              message = "Statistics for this Subchat:\n" + "\nTexts sent: $amountMSG" + "\nGIFs sent: $amountGIF" + "\nImages sent: $amountIMG" + "\nAudios sent: $amountAUD" + "\n\nFor a total of $messagesTotal message(s)" + "\n...with $amountRCT reaction(s)!" + "\n\n${
+              message = "Statistics for this Subchat:\n\nTexts sent: $amountMSG\nGIFs sent: $amountGIF\nImages sent: $amountIMG\nAudios sent: $amountAUD\n\nFor a total of $messagesTotal message(s)\n...with $amountRCT reaction(s)!" + "\n\n${
                 messagesWithReactionPercent.roundTo(2)
               }% " + "of all messages received a reaction!"
       )
@@ -785,15 +785,15 @@ class UniChatroomController : IModule {
         subchatGUID = ""
       }
       val message = MulticastMessage.builder().setWebpushConfig(
-                WebpushConfig.builder().setNotification(
-                          WebpushNotification(
-                                  uniChatroom.title, "${thisConnection.username} has sent a message."
-                          )
-                  ).setFcmOptions(
-                          WebpushFcmOptions.withLink("/apps/clarifier/wss/$destination")
-                  ).putData("dlType", "clarifier").putData("dlDest", "/apps/clarifier/wss/$destination")
-                  .putData("subchatGUID", subchatGUID).build()
-        ).addAllTokens(fcmTokens).build()
+              WebpushConfig.builder().setNotification(
+                      WebpushNotification(
+                              uniChatroom.title, "${thisConnection.username} has sent a message."
+                      )
+              ).setFcmOptions(
+                      WebpushFcmOptions.withLink("/apps/clarifier/wss/$destination")
+              ).putData("dlType", "clarifier").putData("dlDest", "/apps/clarifier/wss/$destination")
+                .putData("subchatGUID", subchatGUID).build()
+      ).addAllTokens(fcmTokens).build()
       FirebaseMessaging.getInstance().sendMulticast(message)
     }
     return clarifierSession
