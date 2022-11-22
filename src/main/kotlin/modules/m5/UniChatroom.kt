@@ -54,4 +54,5 @@ data class UniChatroom(
   var type: String = "text"
   var rank: Int = 0
   var rankDescription: String = ""
+  var directMessageUsername: String = ""
 }

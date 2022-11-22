@@ -236,9 +236,23 @@ data class UniChatroomCreateChatroom(
    * Possible values:
    * - text
    * - screenshare
+   * - webcam
+   * - direct
    */
-  val type: String, val imgBase64: String = ""
-)
+  val type: String, val imgBase64: String = "", val directMessageUsernames: Array<String> = arrayOf()
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    other as UniChatroomCreateChatroom
+    if (!directMessageUsernames.contentEquals(other.directMessageUsernames)) return false
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return directMessageUsernames.contentHashCode()
+  }
+}
 
 @Serializable
 data class UniChatroomAddMessage(
@@ -487,3 +501,38 @@ data class WisdomCollaboratorPayload(
     return roles.contentHashCode()
   }
 }
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class ActiveMembersPayload(
+  var members: ArrayList<String> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class KeywordsPayload(
+  var keywords: ArrayList<String> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class CategoriesPayload(
+  var categories: ArrayList<CategoryPayload> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class CategoryPayload(
+  var category: String, var count: Int
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class ChatroomGUIDsPayload(
+  var chatrooms: ArrayList<String> = arrayListOf()
+)

@@ -324,6 +324,7 @@ class Server : IModule {
           getUniChatroom()
           setImageOfUniChatroom()
           setImageOfUniMember()
+          getDirectChatrooms()
           // Messages
           addMessageToUniChatroom()
           getMessagesOfUniChatroom()
@@ -332,6 +333,7 @@ class Server : IModule {
           kickMemberOfUniChatroom()
           banMemberOfUniChatroom()
           getMembersOfUniChatroom()
+          getActiveMembersOfUniChatroom()
           // Roles
           addRoleToMemberOfUniChatroom()
           removeRoleOfMemberOfUniChatroom()
@@ -359,6 +361,8 @@ class Server : IModule {
           getWisdomReferences()
           getTopWisdomContributors()
           getWisdom()
+          getRecentKeywords()
+          getRecentCategories()
           // Wisdom Modification
           reactToWisdom()
           deleteWisdom()
@@ -1018,6 +1022,46 @@ class Server : IModule {
       }
       val config: WisdomCollaboratorPayload = Json.decodeFromString(call.receive())
       WisdomController().httpModifyWisdomContributor(call, wisdomGUID, config)
+    }
+  }
+
+  private fun Route.getActiveMembersOfUniChatroom() {
+    get("m5/activemembers/{uniChatroomGUID}") {
+      val uniChatroomGUID = call.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      ServerController.getActiveMembersOfUniChatroom(call, uniChatroomGUID!!)
+    }
+  }
+
+  private fun Route.getRecentKeywords() {
+    get("m7/keywordlist/{knowledgeGUID}") {
+      val knowledgeGUID = call.parameters["knowledgeGUID"]
+      if (knowledgeGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      WisdomController().httpGetRecentKeywords(call, knowledgeGUID)
+    }
+  }
+
+  private fun Route.getRecentCategories() {
+    get("m7/categorylist/{knowledgeGUID}") {
+      val knowledgeGUID = call.parameters["knowledgeGUID"]
+      if (knowledgeGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      WisdomController().httpGetRecentCategories(call, knowledgeGUID)
+    }
+  }
+
+  private fun Route.getDirectChatrooms() {
+    get("m5/direct/{username}") {
+      val username = call.parameters["username"]
+      if (username.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      ServerController.getDirectChatrooms(call, username)
     }
   }
 }

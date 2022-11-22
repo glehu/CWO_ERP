@@ -1,6 +1,9 @@
 package modules.m7wisdom.logic
 
 import api.logic.core.ServerController
+import api.misc.json.CategoriesPayload
+import api.misc.json.CategoryPayload
+import api.misc.json.KeywordsPayload
 import api.misc.json.TaskBoxPayload
 import api.misc.json.TaskBoxesResponse
 import api.misc.json.UniMessageReaction
@@ -24,7 +27,6 @@ import io.ktor.server.response.*
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -34,6 +36,7 @@ import kotlinx.serialization.json.Json
 import modules.m7knowledge.Knowledge
 import modules.m7knowledge.logic.KnowledgeController
 import modules.m7wisdom.Wisdom
+import modules.m7wisdom.WisdomCategory
 import modules.m7wisdom.WisdomCollaborator
 import modules.mx.logic.Timestamp
 import modules.mx.logic.UserCLIManager
@@ -634,7 +637,6 @@ class WisdomController : IModule {
       }
       it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
       taskBoxesResponse.boxes.add(TaskBoxPayload(it))
-      runBlocking {}
     }
     if (taskBoxesResponse.boxes.isEmpty()) {
       appCall.respond(HttpStatusCode.NotFound)
@@ -728,5 +730,75 @@ class WisdomController : IModule {
       // Remove him if he does
       wisdom!!.isCollaborator(config.username, true)
     }
+  }
+
+  suspend fun httpGetRecentKeywords(appCall: ApplicationCall, knowledgeGUID: String?) {
+    var knowledgeRef: Knowledge? = null
+    KnowledgeController().getEntriesFromIndexSearch(
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
+    ) {
+      it as Knowledge
+      knowledgeRef = it
+    }
+    if (knowledgeRef == null) {
+      appCall.respond(HttpStatusCode.BadRequest)
+      return
+    }
+    val indexNumber = 2
+    val indexQuery = "^${knowledgeRef!!.uID}$"
+    val keywords = arrayListOf<String>()
+    getEntriesFromIndexSearch(
+            searchText = indexQuery, ixNr = indexNumber, showAll = true
+    ) {
+      it as Wisdom
+      for (keyword in it.keywords.split(',')) {
+        if (keyword.isNotEmpty()) keywords.add(keyword)
+      }
+    }
+    val payload = KeywordsPayload()
+    val maxCounter = 1000
+    for ((counter, keyword) in keywords.reversed().withIndex()) {
+      if (counter >= maxCounter) break
+      payload.keywords.add(keyword)
+    }
+    appCall.respond(payload)
+  }
+
+  suspend fun httpGetRecentCategories(appCall: ApplicationCall, knowledgeGUID: String?) {
+    var knowledgeRef: Knowledge? = null
+    KnowledgeController().getEntriesFromIndexSearch(
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
+    ) {
+      it as Knowledge
+      knowledgeRef = it
+    }
+    if (knowledgeRef == null) {
+      appCall.respond(HttpStatusCode.BadRequest)
+      return
+    }
+    val indexNumber = 2
+    val indexQuery = "^${knowledgeRef!!.uID}$"
+    val payload = CategoriesPayload()
+    var categoryDecoded: WisdomCategory
+    var foundTmp: Boolean
+    getEntriesFromIndexSearch(
+            searchText = indexQuery, ixNr = indexNumber, showAll = true
+    ) {
+      it as Wisdom
+      for (category in it.categories) {
+        categoryDecoded = Json.decodeFromString(category)
+        foundTmp = false
+        if (payload.categories.isNotEmpty()) {
+          for (cat in payload.categories) {
+            if (cat.category == categoryDecoded.category) {
+              cat.count++
+              foundTmp = true
+            }
+          }
+        }
+        if (!foundTmp) payload.categories.add(CategoryPayload(categoryDecoded.category, 1))
+      }
+    }
+    appCall.respond(payload)
   }
 }

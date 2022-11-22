@@ -282,6 +282,10 @@ class UniChatroomController : IModule {
     }
   }
 
+  /**
+   * Entry point for all incoming websocket connections.
+   * This function handles all user actions being transmitted via the provided websocket.
+   */
   suspend fun DefaultWebSocketServerSession.startSession(appCall: ApplicationCall) {
     val uniChatroomGUID = appCall.parameters["unichatroomGUID"]
     if (uniChatroomGUID.isNullOrEmpty()) {

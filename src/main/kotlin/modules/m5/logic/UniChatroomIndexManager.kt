@@ -36,19 +36,17 @@ class UniChatroomIndexManager : IIndexManager {
 
   init {
     initialize(
-            1, //Title
-            2, //ChatroomGUID
-            3, //Date Created
-            4, //Status
+            1, // Title
+            2, // ChatroomGUID
+            3, // Date Created
+            4, // Status
+            5 // DirectMessageUsername
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-Title",
-            "2-ChatroomGUID",
-            "3-Date Created",
-            "4-Status",
+            "1-Title", "2-ChatroomGUID", "3-Date Created", "4-Status", "5-DirectMessageUsername"
     )
   }
 
@@ -66,6 +64,7 @@ class UniChatroomIndexManager : IIndexManager {
             Pair(2, entry.chatroomGUID),
             Pair(3, entry.dateCreated),
             Pair(4, entry.status.toString()),
+            Pair(5, entry.directMessageUsername)
     )
   }
 

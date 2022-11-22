@@ -1,5 +1,7 @@
 package api.logic.core
 
+import api.misc.json.ActiveMembersPayload
+import api.misc.json.ChatroomGUIDsPayload
 import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.ListDeltaJson
 import api.misc.json.LoginResponseJson
@@ -418,11 +420,28 @@ class ServerController {
       with(UniChatroomController()) {
         // Create Chatroom and populate it
         uniChatroom = createChatroom(config.title, config.type)
-        uniChatroom.addOrUpdateMember(
-                username = owner, role = UniRole("Owner")
-        )
+        if (config.directMessageUsernames.isNotEmpty()) {
+          uniChatroom.directMessageUsername = ""
+          var addedDirectMembers = false
+          for (user in config.directMessageUsernames) {
+            if (user.isNotEmpty()) {
+              addedDirectMembers = true
+              uniChatroom.directMessageUsername += "|$user|"
+              uniChatroom.addOrUpdateMember(
+                      username = user, role = UniRole("Owner")
+              )
+            }
+          }
+          if (!addedDirectMembers) {
+            appCall.respond(HttpStatusCode.BadRequest)
+            return
+          }
+          uniChatroom.type = "direct"
+        }
         // Set Chatroom Image if provided
-        if (config.imgBase64.isNotEmpty()) uniChatroom.imgGUID = config.imgBase64
+        if (config.imgBase64.isNotEmpty()) {
+          uniChatroom.imgGUID = config.imgBase64
+        }
         // Update parent chatroom with this chatroom's GUID if needed
         if (parentUniChatroomGUID.isNotEmpty()) {
           val parent: UniChatroom?
@@ -1006,6 +1025,62 @@ class ServerController {
         appCall.respond(HttpStatusCode.OK)
       } else {
         appCall.respond((HttpStatusCode.BadRequest))
+      }
+    }
+
+    suspend fun getActiveMembersOfUniChatroom(
+      appCall: ApplicationCall, uniChatroomGUID: String
+    ) {
+      with(UniChatroomController()) {
+        val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
+        if (uniChatroom == null) {
+          appCall.respond(HttpStatusCode.NotFound)
+          return
+        }
+        val username = getJWTEmail(appCall)
+        if (uniChatroom.checkIsMemberBanned(
+                  username = username, isEmail = true
+          )) {
+          appCall.respond(HttpStatusCode.Forbidden)
+          return
+        }
+        val activeMembers = ActiveMembersPayload()
+        UniChatroomController.clarifierSessions.forEach { session ->
+          if (session.chatroomGUID == uniChatroomGUID) {
+            session.connections.forEach {
+              if (!it.session.outgoing.isClosedForSend) {
+                activeMembers.members.add(it.username)
+              } else {
+                session.connectionsToDelete.add(it)
+              }
+            }
+          }
+        }
+        appCall.respond(activeMembers)
+      }
+    }
+
+    suspend fun getDirectChatrooms(appCall: ApplicationCall, username: String?) {
+      val chatrooms = ChatroomGUIDsPayload()
+      with(UniChatroomController()) {
+        var uniChatroom: UniChatroom?
+        UniChatroomController.mutexChatroom.withLock {
+          uniChatroom = null
+          getEntriesFromIndexSearch(username!!, 5, true) {
+            uniChatroom = it as UniChatroom
+            val usernameToken = getJWTEmail(appCall)
+            if (!uniChatroom!!.checkIsMemberBanned(
+                      username = usernameToken, isEmail = true
+              )) {
+              chatrooms.chatrooms.add(uniChatroom!!.chatroomGUID)
+            }
+          }
+        }
+      }
+      if (chatrooms.chatrooms.isNotEmpty()) {
+        appCall.respond(chatrooms)
+      } else {
+        appCall.respond(HttpStatusCode.NotFound)
       }
     }
   }
