@@ -1066,7 +1066,7 @@ class ServerController {
         var uniChatroom: UniChatroom?
         UniChatroomController.mutexChatroom.withLock {
           uniChatroom = null
-          getEntriesFromIndexSearch(username!!, 5, true) {
+          getEntriesFromIndexSearch("|${username!!}|", 5, true) {
             uniChatroom = it as UniChatroom
             val usernameToken = getJWTEmail(appCall)
             if (!uniChatroom!!.checkIsMemberBanned(
