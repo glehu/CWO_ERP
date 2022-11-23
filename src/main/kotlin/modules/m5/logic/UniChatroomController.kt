@@ -232,7 +232,7 @@ class UniChatroomController : IModule {
     return message.isNotEmpty()
   }
 
-  private fun UniChatroom.checkIsMember(member: String): Boolean {
+  fun UniChatroom.checkIsMember(member: String): Boolean {
     if (member == "_server") return true
     var isMember = false
     for (uniMember in this.members) {

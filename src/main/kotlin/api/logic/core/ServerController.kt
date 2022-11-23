@@ -423,7 +423,9 @@ class ServerController {
         if (config.directMessageUsernames.isNotEmpty()) {
           uniChatroom.directMessageUsername = ""
           var addedDirectMembers = false
+          var amount = 0
           for (user in config.directMessageUsernames) {
+            amount++
             if (user.isNotEmpty()) {
               addedDirectMembers = true
               uniChatroom.directMessageUsername += "|$user|"
@@ -431,6 +433,8 @@ class ServerController {
                       username = user, role = UniRole("Owner")
               )
             }
+            // Only two people can participate in a direct message
+            if (amount == 2) break
           }
           if (!addedDirectMembers) {
             appCall.respond(HttpStatusCode.BadRequest)
@@ -1061,17 +1065,20 @@ class ServerController {
     }
 
     suspend fun getDirectChatrooms(appCall: ApplicationCall, username: String?) {
+      val usernameTokenEmail = getJWTEmail(appCall)
+      val usernameToken = UserCLIManager.getUserFromEmail(usernameTokenEmail)!!.username
       val chatrooms = ChatroomGUIDsPayload()
+      val query = "^" + "\\|${username!!}\\||\\|${usernameToken}\\|" + "\\|${usernameToken}\\||\\|${username}\\|" + "$"
       with(UniChatroomController()) {
         var uniChatroom: UniChatroom?
         UniChatroomController.mutexChatroom.withLock {
           uniChatroom = null
-          getEntriesFromIndexSearch("|${username!!}|", 5, true) {
+          getEntriesFromIndexSearch(query, 5, true) {
             uniChatroom = it as UniChatroom
-            val usernameToken = getJWTEmail(appCall)
             if (!uniChatroom!!.checkIsMemberBanned(
-                      username = usernameToken, isEmail = true
-              )) {
+                      username = usernameToken,
+                      isEmail = false
+              ) && uniChatroom!!.checkIsMember(usernameToken)) {
               chatrooms.chatrooms.add(uniChatroom!!.chatroomGUID)
             }
           }
