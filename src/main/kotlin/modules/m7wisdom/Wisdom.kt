@@ -76,6 +76,8 @@ data class Wisdom(
 
   var rowIndex: Int = 0
 
+  var dueDateUntil: String = ""
+
   init {
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
     if (gUID.isEmpty()) gUID = Uuid.randomUUID().toString()

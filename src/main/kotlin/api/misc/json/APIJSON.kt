@@ -421,7 +421,11 @@ data class WisdomSearchQuery(
   /**
    * wisdom or task
    */
-  val type: String = "wisdom", val categories: ArrayList<String> = arrayListOf(), val filterOverride: String = ""
+  val type: String = "wisdom",
+  val categories: ArrayList<String> = arrayListOf(),
+  val filterOverride: String = "",
+  val entryType: String = "",
+  val state: String = ""
 )
 
 @ExperimentalSerializationApi
@@ -445,7 +449,11 @@ data class WisdomSearchResponseEntry(
 @InternalAPI
 @Serializable
 data class WisdomReferencesResponse(
-  val answers: ArrayList<Wisdom> = arrayListOf(), val comments: ArrayList<Wisdom> = arrayListOf()
+  val answers: ArrayList<Wisdom> = arrayListOf(),
+  val comments: ArrayList<Wisdom> = arrayListOf(),
+  val tasks: ArrayList<Wisdom> = arrayListOf(),
+  val questions: ArrayList<Wisdom> = arrayListOf(),
+  val lessons: ArrayList<Wisdom> = arrayListOf()
 )
 
 @ExperimentalSerializationApi

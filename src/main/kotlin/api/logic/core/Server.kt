@@ -959,7 +959,8 @@ class Server : IModule {
       if (wisdomGUID.isNullOrEmpty()) {
         call.respond(HttpStatusCode.BadRequest)
       }
-      WisdomController().httpGetWisdomEntriesRelated(call, wisdomGUID)
+      val type: String = call.request.queryParameters["type"] ?: "guid"
+      WisdomController().httpGetWisdomEntriesRelated(call, wisdomGUID, type)
     }
   }
 
@@ -999,7 +1000,8 @@ class Server : IModule {
       if (wisdomGUID.isNullOrEmpty()) {
         call.respond(HttpStatusCode.BadRequest)
       }
-      WisdomController().httpFinishWisdom(call, wisdomGUID)
+      val answerGUID: String? = call.request.queryParameters["answer"]
+      WisdomController().httpFinishWisdom(call, wisdomGUID, answerGUID)
     }
   }
 

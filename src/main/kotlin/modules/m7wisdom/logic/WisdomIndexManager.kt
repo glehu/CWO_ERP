@@ -47,7 +47,7 @@ class WisdomIndexManager : IIndexManager {
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-GUID", "2-knowledgeUID", "3-srcWisdomUID", "4-keywords", "5-refUID"
+            "1-GUID", "2-knowledgeUID", "3-srcWisdomUID", "4-keywords", "5-refUID", "6-knowledgeUID;taskType"
     )
   }
 

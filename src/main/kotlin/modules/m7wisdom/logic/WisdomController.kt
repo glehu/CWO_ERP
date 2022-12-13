@@ -86,6 +86,7 @@ class WisdomController : IModule {
       return
     }
     var question = Wisdom()
+    question.type = "question"
     if (wisdomGUID.isNotEmpty()) {
       // Get existing wisdom if one got referenced
       getEntriesFromIndexSearch(
@@ -96,7 +97,6 @@ class WisdomController : IModule {
       }
     }
     // Meta
-    question.type = "question"
     question.knowledgeUID = knowledgeRef!!.uID
     if (question.authorUsername.isEmpty()) {
       question.authorUsername = user!!.username
@@ -127,6 +127,7 @@ class WisdomController : IModule {
       return
     }
     var answer = Wisdom()
+    answer.type = "answer"
     if (wisdomGUID.isNotEmpty()) {
       // Get existing wisdom if one got referenced
       getEntriesFromIndexSearch(
@@ -137,7 +138,6 @@ class WisdomController : IModule {
       }
     }
     // Meta
-    answer.type = "answer"
     answer.knowledgeUID = wisdomRef!!.knowledgeUID
     answer.srcWisdomUID = wisdomRef!!.uID
     if (answer.authorUsername.isEmpty()) {
@@ -172,6 +172,7 @@ class WisdomController : IModule {
       return
     }
     var lesson = Wisdom()
+    lesson.type = "lesson"
     var edit = false
     if (wisdomGUID.isNotEmpty()) {
       // Get existing wisdom if one got referenced
@@ -184,7 +185,6 @@ class WisdomController : IModule {
       }
     }
     // Meta
-    lesson.type = "lesson"
     lesson.knowledgeUID = knowledgeRef!!.uID
     if (lesson.authorUsername.isEmpty()) {
       lesson.authorUsername = user!!.username
@@ -201,10 +201,8 @@ class WisdomController : IModule {
       lesson.isTask = false
     }
     if (lesson.isTask || lesson.taskType.isNotEmpty()) {
-      if (lesson.taskType.isNotEmpty()) {
-        lesson.isTask = true
-        lesson.type = config.taskType
-      }
+      lesson.isTask = true
+      lesson.type = config.taskType
     }
     lesson.columnIndex = config.columnIndex
     lesson.rowIndex = config.rowIndex
@@ -262,6 +260,7 @@ class WisdomController : IModule {
       return
     }
     var comment = Wisdom()
+    comment.type = "comment"
     if (wisdomGUID.isNotEmpty()) {
       // Get existing wisdom if one got referenced
       getEntriesFromIndexSearch(
@@ -272,7 +271,6 @@ class WisdomController : IModule {
       }
     }
     // Meta
-    comment.type = "comment"
     comment.knowledgeUID = wisdomRef!!.knowledgeUID
     comment.srcWisdomUID = wisdomRef!!.uID
     if (comment.authorUsername.isEmpty()) {
@@ -346,79 +344,91 @@ class WisdomController : IModule {
               searchText = indexQuery, ixNr = indexNumber, showAll = true
       ) {
         it as Wisdom
-        rating = 0
-        accuracy = 0
-        // Title
-        if (config.filterOverride.isEmpty() || config.filterOverride.contains("title")) {
-          matchesAll = regexPattern.findAll(it.title)
-          regexMatchCounts = matchesAll.count()
-          if (regexMatchCounts > 0) {
-            rating += 2
-            accuracy += regexMatchCounts
+        var valid = true
+        // If type of wisdom differs from preference then invalidate it
+        if (config.entryType.isNotEmpty() && it.type != config.entryType) valid = false
+        if (valid && config.state.isNotEmpty()) {
+          // If state of wisdom differs from preference then invalidate it
+          when(config.state) {
+            "true" -> if (!it.finished) valid = false
+            "false" -> if (it.finished) valid = false
           }
         }
-        // Keywords
-        if (config.filterOverride.isEmpty() || config.filterOverride.contains("keywords")) {
-          matchesAll = regexPattern.findAll(it.keywords)
-          regexMatchCounts = matchesAll.count()
-          if (regexMatchCounts > 0) {
-            rating += 2
-            accuracy += regexMatchCounts
-          }
-        }
-        // Description
-        if (config.filterOverride.isEmpty() || config.filterOverride.contains("description")) {
-          matchesAll = regexPattern.findAll(it.description)
-          regexMatchCounts = matchesAll.count()
-          if (regexMatchCounts > 0) {
-            rating += 1
-            accuracy += regexMatchCounts
-          }
-        }
-        // Author
-        if (config.filterOverride.isEmpty() || config.filterOverride.contains("author")) {
-          matchesAll = regexPattern.findAll(it.authorUsername)
-          regexMatchCounts = matchesAll.count()
-          if (regexMatchCounts > 0) {
-            rating += 1
-            accuracy += regexMatchCounts
-          }
-        }
-        // Discard if irrelevant
-        if (rating > 0) {
-          if (it.description.isNotEmpty()) {
-            var description = it.description
-            var truncated = false
-            // Cut the description to a maximum of 200 characters if there is one
-            if (it.description.length > 200) {
-              description = description.substring(0..200)
-              truncated = true
+        if (valid) {
+          rating = 0
+          accuracy = 0
+          // Title
+          if (config.filterOverride.isEmpty() || config.filterOverride.contains("title")) {
+            matchesAll = regexPattern.findAll(it.title)
+            regexMatchCounts = matchesAll.count()
+            if (regexMatchCounts > 0) {
+              rating += 2
+              accuracy += regexMatchCounts
             }
-            // Remove line breaks as this could lead to broken design
-            description = description.replace("\n", " ")
-            // Remove mermaid markdown graphs since they can only exist as a whole, which might be too much to show
-            description = description.replace(regex = """```.*(```)?""".toRegex(), replacement = "")
-            if (truncated) description = "$description..."
-            it.description = description
           }
-          // Clean up dates (human-readable)
-          if (it.finished) {
-            it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
+          // Keywords
+          if (config.filterOverride.isEmpty() || config.filterOverride.contains("keywords")) {
+            matchesAll = regexPattern.findAll(it.keywords)
+            regexMatchCounts = matchesAll.count()
+            if (regexMatchCounts > 0) {
+              rating += 2
+              accuracy += regexMatchCounts
+            }
           }
-          it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
-          // Evaluate
-          if (rating >= 4) {
-            first.add(
-                    WisdomSearchResponseEntry(it, accuracy)
-            )
-          } else if (rating >= 3) {
-            second.add(
-                    WisdomSearchResponseEntry(it, accuracy)
-            )
-          } else {
-            third.add(
-                    WisdomSearchResponseEntry(it, accuracy)
-            )
+          // Description
+          if (config.filterOverride.isEmpty() || config.filterOverride.contains("description")) {
+            matchesAll = regexPattern.findAll(it.description)
+            regexMatchCounts = matchesAll.count()
+            if (regexMatchCounts > 0) {
+              rating += 1
+              accuracy += regexMatchCounts
+            }
+          }
+          // Author
+          if (config.filterOverride.isEmpty() || config.filterOverride.contains("author")) {
+            matchesAll = regexPattern.findAll(it.authorUsername)
+            regexMatchCounts = matchesAll.count()
+            if (regexMatchCounts > 0) {
+              rating += 1
+              accuracy += regexMatchCounts
+            }
+          }
+          // Discard if irrelevant
+          if (rating > 0) {
+            if (it.description.isNotEmpty()) {
+              var description = it.description
+              var truncated = false
+              // Cut the description to a maximum of 200 characters if there is one
+              if (it.description.length > 200) {
+                description = description.substring(0..200)
+                truncated = true
+              }
+              // Remove line breaks as this could lead to broken design
+              description = description.replace("(\r\n|\r|\n)".toRegex(), " ")
+              // Remove mermaid markdown graphs since they can only exist as a whole, which might be too much to show
+              description = description.replace(regex = """```.*(```)?""".toRegex(), replacement = "")
+              if (truncated) description = "$description..."
+              it.description = description
+            }
+            // Clean up dates (human-readable)
+            if (it.finished) {
+              it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
+            }
+            it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
+            // Evaluate
+            if (rating >= 4) {
+              first.add(
+                      WisdomSearchResponseEntry(it, accuracy)
+              )
+            } else if (rating >= 3) {
+              second.add(
+                      WisdomSearchResponseEntry(it, accuracy)
+              )
+            } else {
+              third.add(
+                      WisdomSearchResponseEntry(it, accuracy)
+              )
+            }
           }
         }
       }
@@ -496,17 +506,23 @@ class WisdomController : IModule {
     appCall.respond(HttpStatusCode.OK)
   }
 
-  suspend fun httpGetWisdomEntriesRelated(appCall: ApplicationCall, wisdomGUID: String?) {
+  suspend fun httpGetWisdomEntriesRelated(
+    appCall: ApplicationCall, wisdomGUID: String?, type: String = "guid"
+  ) {
     if (wisdomGUID == null) {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
     var wisdomRef: Wisdom? = null
-    getEntriesFromIndexSearch(
-            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-    ) {
-      it as Wisdom
-      wisdomRef = it
+    if (type == "guid") {
+      getEntriesFromIndexSearch(
+              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
+      ) {
+        it as Wisdom
+        wisdomRef = it
+      }
+    } else if (type == "uid") {
+      wisdomRef = load(wisdomGUID.toInt()) as Wisdom
     }
     if (wisdomRef == null) {
       appCall.respond(HttpStatusCode.NotFound)
@@ -520,6 +536,9 @@ class WisdomController : IModule {
       when (it.type) {
         "answer" -> response.answers.add(it)
         "comment" -> response.comments.add(it)
+        "task" -> response.tasks.add(it)
+        "question" -> response.questions.add(it)
+        "lesson" -> response.lessons.add(it)
       }
     }
     appCall.respond(response)
@@ -664,7 +683,7 @@ class WisdomController : IModule {
     appCall.respond(taskBoxesResponse)
   }
 
-  suspend fun httpFinishWisdom(appCall: ApplicationCall, wisdomGUID: String?) {
+  suspend fun httpFinishWisdom(appCall: ApplicationCall, wisdomGUID: String?, answerGUID: String?) {
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
             searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
@@ -685,6 +704,27 @@ class WisdomController : IModule {
     wisdom!!.hasDueDate = false
     wisdom!!.finished = true
     wisdom!!.finishedDate = Timestamp.getUnixTimestampHex()
+    // Do we need to mark a comment as the answer?
+    if (!answerGUID.isNullOrEmpty()) {
+      var answer: Wisdom? = null
+      getEntriesFromIndexSearch(
+              searchText = "^$answerGUID$", ixNr = 1, showAll = true
+      ) {
+        it as Wisdom
+        answer = it
+      }
+      if (answer == null) {
+        appCall.respond(HttpStatusCode.NotFound)
+        return
+      }
+      answer!!.type = "answer"
+      // If the answered wisdom contains keywords, copy them to the answer, so it can be found more easily!
+      if (wisdom!!.keywords.isNotEmpty()) {
+        if (answer!!.keywords.isNotEmpty()) answer!!.keywords += ','
+        answer!!.keywords += wisdom!!.keywords
+      }
+      saveEntry(answer!!)
+    }
     saveEntry(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
   }
