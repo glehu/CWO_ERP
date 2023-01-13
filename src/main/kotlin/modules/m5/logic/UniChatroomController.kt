@@ -1,6 +1,8 @@
 package modules.m5.logic
 
 import api.logic.core.ServerController
+import api.misc.json.ChatroomsPayload
+import api.misc.json.UniChatroomCreateChatroom
 import api.misc.json.UniChatroomEditMessage
 import api.misc.json.UniChatroomReactMessage
 import api.misc.json.UniChatroomReactMessageResponse
@@ -111,37 +113,44 @@ class UniChatroomController : IModule {
     role: UniRole? = null,
     fcmToken: String? = null,
     pubKeyPEM: String? = null,
-    imageSnippetURL: String? = null
+    imageSnippetURL: String? = null,
+    bannerSnippetURL: String? = null
   ): Boolean {
     if (username.isEmpty()) return false
     // Does the member already exist in the Clarifier Session?
     var indexAt = -1
     var found = false
+    val json = Json {
+      isLenient = true
+      ignoreUnknownKeys = true
+    }
     for (uniMember in this.members) {
       indexAt++
-      if (Json.decodeFromString<UniMember>(uniMember).username == username) {
+      if (json.decodeFromString<UniMember>(uniMember).username == username) {
         found = true
         break
       }
     }
     if (indexAt != -1 && found) {
       // Update
-      val member: UniMember = Json.decodeFromString(this.members[indexAt])
+      val member: UniMember = json.decodeFromString(this.members[indexAt])
       if (role != null) member.addRole(role)
       if (!fcmToken.isNullOrEmpty()) member.subscribeFCM(fcmToken)
       if (!pubKeyPEM.isNullOrEmpty()) member.addRSAPubKeyPEM(pubKeyPEM)
       if (!imageSnippetURL.isNullOrEmpty()) member.imageURL = imageSnippetURL
+      if (!bannerSnippetURL.isNullOrEmpty()) member.bannerURL = bannerSnippetURL
       // Save
-      this.members[indexAt] = Json.encodeToString(member)
+      this.members[indexAt] = json.encodeToString(member)
     } else {
       // Create
-      val member = createMember(username, Json.encodeToString(UniRole("Member")))
+      val member = createMember(username, json.encodeToString(UniRole("Member")))
       if (role != null) member.addRole(role)
       if (!fcmToken.isNullOrEmpty()) member.subscribeFCM(fcmToken)
       if (!pubKeyPEM.isNullOrEmpty()) member.addRSAPubKeyPEM(pubKeyPEM)
       if (!imageSnippetURL.isNullOrEmpty()) member.imageURL = imageSnippetURL
+      if (!bannerSnippetURL.isNullOrEmpty()) member.bannerURL = bannerSnippetURL
       // Save
-      this.members.add(Json.encodeToString(member))
+      this.members.add(json.encodeToString(member))
     }
     return true
   }
@@ -849,5 +858,92 @@ class UniChatroomController : IModule {
    */
   private fun UniMember.addRSAPubKeyPEM(pubKeyPEM: String) {
     this.pubKeyPEM = pubKeyPEM
+  }
+
+  suspend fun getDirectChatrooms(appCall: ApplicationCall, username: String?): ChatroomsPayload {
+    val usernameTokenEmail = ServerController.getJWTEmail(appCall)
+    val usernameToken = UserCLIManager.getUserFromEmail(usernameTokenEmail)!!.username
+    val chatrooms = ChatroomsPayload()
+    val query = "^" + "\\|${username!!}\\||\\|${usernameToken}\\|" + "\\|${usernameToken}\\||\\|${username}\\|" + "$"
+    with(UniChatroomController()) {
+      var uniChatroom: UniChatroom?
+      mutexChatroom.withLock {
+        uniChatroom = null
+        getEntriesFromIndexSearch(query, 5, true) {
+          uniChatroom = it as UniChatroom
+          if (!uniChatroom!!.checkIsMemberBanned(
+                    username = usernameToken, isEmail = false
+            ) && uniChatroom!!.checkIsMember(usernameToken)) {
+            chatrooms.chatrooms.add(uniChatroom!!)
+          }
+        }
+      }
+    }
+    return chatrooms
+  }
+
+  suspend fun createConfiguredChatroom(
+    config: UniChatroomCreateChatroom, owner: String, parentUniChatroomGUID: String = ""
+  ): UniChatroom {
+    val uniChatroom: UniChatroom
+    // Create Chatroom and populate it
+    uniChatroom = createChatroom(config.title, config.type)
+    if (config.directMessageUsernames.isEmpty()) {
+      uniChatroom.addOrUpdateMember(
+              username = owner, role = UniRole("Owner")
+      )
+    } else {
+      uniChatroom.directMessageUsername = ""
+      var amount = 0
+      for (user in config.directMessageUsernames) {
+        amount++
+        if (user.isNotEmpty()) {
+          uniChatroom.directMessageUsername += "|$user|"
+          uniChatroom.addOrUpdateMember(
+                  username = user, role = UniRole("Owner")
+          )
+        }
+        // Only two people can participate in a direct message
+        if (amount == 2) break
+      }
+      uniChatroom.type = "direct"
+    }
+    // Set Chatroom Image if provided
+    if (config.imgBase64.isNotEmpty()) {
+      uniChatroom.imgGUID = config.imgBase64
+    }
+    // Update parent chatroom with this chatroom's GUID if needed
+    if (parentUniChatroomGUID.isNotEmpty()) {
+      val parent: UniChatroom?
+      mutexChatroom.withLock {
+        // We initialize here since we didn't save yet, thus having no GUID to reference etc.
+        uniChatroom.uID = -2 // Little bypass
+        uniChatroom.initialize()
+        uniChatroom.uID = -1
+        // Create a copy since we want to remove unnecessary stuff before saving it into the parent
+        val copy = uniChatroom.copy()
+        copy.imgGUID = ""
+        copy.members.clear()
+        // Copy other values
+        copy.chatroomGUID = uniChatroom.chatroomGUID
+        copy.parentGUID = uniChatroom.parentGUID
+        copy.type = uniChatroom.type
+        parent = getChatroom(parentUniChatroomGUID)
+        if (parent != null) {
+          // Create reference
+          parent.subChatrooms.add(Json.encodeToString(copy))
+          // Reference the parent also
+          uniChatroom.parentGUID = parent.chatroomGUID
+          saveChatroom(parent)
+        }
+      }
+    }
+    mutexChatroom.withLock {
+      saveChatroom(uniChatroom)
+    }
+    uniChatroom.addMessage(
+            member = "_server", message = "[s:RegistrationNotification]${owner} has created ${config.title}!"
+    )
+    return uniChatroom
   }
 }

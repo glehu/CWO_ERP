@@ -28,6 +28,9 @@ data class UniMember(
   @SerialName("iurl")
   var imageURL = ""
 
+  @SerialName("burl")
+  var bannerURL = ""
+
   init {
     if (id.isEmpty()) id = Uuid.randomUUID().toString()
   }

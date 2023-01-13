@@ -153,7 +153,7 @@ class WisdomController : IModule {
   }
 
   suspend fun httpCreateLesson(
-    appCall: ApplicationCall, config: WisdomLessonCreation, wisdomGUID: String
+    appCall: ApplicationCall, config: WisdomLessonCreation, wisdomGUID: String, mode: String
   ) {
     if (config.knowledgeGUID.isEmpty()) {
       appCall.respond(HttpStatusCode.BadRequest)
@@ -184,6 +184,23 @@ class WisdomController : IModule {
         edit = true
       }
     }
+    // If mode was set to "due", update the due dates only and fix them while doing so
+    if (mode.contains("^due$".toRegex())) {
+      lesson.dueDate = config.dueDate
+      lesson.dueDateUntil = config.dueDateUntil
+      if (lesson.dueDate.isNotEmpty() || lesson.dueDateUntil.isNotEmpty()) {
+        if (!lesson.hasDueDate) lesson.hasDueDate = true
+        if (lesson.dueDate.isEmpty()) lesson.dueDate = lesson.dueDateUntil
+        if (lesson.dueDateUntil.isEmpty()) lesson.dueDateUntil = lesson.dueDate
+        if (lesson.finished) {
+          lesson.finished = false
+          lesson.finishedDate = ""
+        }
+      }
+      saveEntry(lesson)
+      appCall.respond(lesson.gUID)
+      return
+    }
     // Meta
     lesson.knowledgeUID = knowledgeRef!!.uID
     if (lesson.authorUsername.isEmpty()) {
@@ -208,6 +225,7 @@ class WisdomController : IModule {
     lesson.rowIndex = config.rowIndex
     lesson.hasDueDate = config.hasDueDate
     lesson.dueDate = config.dueDate
+    lesson.dueDateUntil = config.dueDateUntil
     // Reference the Box containing this task if specified
     if (config.inBox && config.boxGUID.isNotEmpty()) {
       var boxWisdom: Wisdom? = null
@@ -349,7 +367,7 @@ class WisdomController : IModule {
         if (config.entryType.isNotEmpty() && it.type != config.entryType) valid = false
         if (valid && config.state.isNotEmpty()) {
           // If state of wisdom differs from preference then invalidate it
-          when(config.state) {
+          when (config.state) {
             "true" -> if (!it.finished) valid = false
             "false" -> if (it.finished) valid = false
           }

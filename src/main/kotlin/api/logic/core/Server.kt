@@ -61,6 +61,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import modules.m2.Contact
+import modules.m2.logic.ContactController
 import modules.m4.logic.ItemPriceManager
 import modules.m4storage.logic.ItemStorageManager
 import modules.m5.logic.UniChatroomController
@@ -69,6 +70,7 @@ import modules.m5.logic.giveMessagesBadges
 import modules.m5.logic.handleUpgradeUniChatroomRequest
 import modules.m7knowledge.logic.KnowledgeController
 import modules.m7wisdom.logic.WisdomController
+import modules.m8notification.logic.NotificationController
 import modules.mx.Ini
 import modules.mx.contactIndexManager
 import modules.mx.dataPath
@@ -187,7 +189,8 @@ class Server : IModule {
       maxFrameSize = Long.MAX_VALUE
       masking = false
     }
-    install(DoubleReceive)/*
+    install(DoubleReceive)
+    /*
      * #### Routing ####
      */
     routing {
@@ -211,6 +214,8 @@ class Server : IModule {
 
       // SnippetBase
       getSnippetImage()
+
+      getUsercount()
 
       /*
        * Clarifier WebSocket Session
@@ -304,6 +309,7 @@ class Server : IModule {
           // M2 Endpoints (Contacts)
           changeUsername()
           changePassword()
+          sendFriendRequest()
           // M3 Endpoints (Invoice)
           getOwnInvoices()
           // M4 Endpoints (Item)
@@ -324,6 +330,7 @@ class Server : IModule {
           getUniChatroom()
           setImageOfUniChatroom()
           setImageOfUniMember()
+          setBannerOfUniMember()
           getDirectChatrooms()
           // Messages
           addMessageToUniChatroom()
@@ -376,6 +383,8 @@ class Server : IModule {
           // Web Apps
           webPlannerCommit()
           webPlannerRequest()
+          // Notification
+          getNotifications()
         }
       }
     }
@@ -815,6 +824,13 @@ class Server : IModule {
     }
   }
 
+  private fun Route.setBannerOfUniMember() {
+    post("m5/setmemberbanner/{uniChatroomGUID}") {
+      val config: UniMemberProfileImage = Json.decodeFromString(call.receive())
+      ServerController.setUniMemberImage(call, config, true)
+    }
+  }
+
   private fun Route.upgradeUniChatroom() {
     post("m5/upgrade/{uniChatroomGUID}") {
       handleUpgradeUniChatroomRequest(call, Json.decodeFromString(call.receive()))
@@ -860,6 +876,12 @@ class Server : IModule {
     }
   }
 
+  private fun Route.getUsercount() {
+    get("m2/count") {
+      ServerController.getUsercount(call)
+    }
+  }
+
   private fun Route.getKnowledge() {
     get("m7/get") {
       val source: String = call.request.queryParameters["src"] ?: ""
@@ -873,6 +895,8 @@ class Server : IModule {
       if (source.isNotEmpty() && sourceType.isNotEmpty()) {
         if (sourceType == "clarifier") {
           KnowledgeController().httpGetKnowledgeFromUniChatroomGUID(call, source)
+        } else if (sourceType == "guid") {
+          KnowledgeController().httpGetKnowledgeFromGUID(call, source)
         }
       }
     }
@@ -919,7 +943,8 @@ class Server : IModule {
     post("m7/teach") {
       val config: WisdomLessonCreation = Json.decodeFromString(call.receive())
       val wisdomGUID: String = call.request.queryParameters["guid"] ?: ""
-      WisdomController().httpCreateLesson(call, config, wisdomGUID)
+      val mode: String = call.request.queryParameters["mode"] ?: ""
+      WisdomController().httpCreateLesson(call, config, wisdomGUID, mode)
     }
   }
 
@@ -1064,6 +1089,32 @@ class Server : IModule {
         call.respond(HttpStatusCode.BadRequest)
       }
       ServerController.getDirectChatrooms(call, username)
+    }
+  }
+
+  private fun Route.sendFriendRequest() {
+    get("m2/befriend/{username}") {
+      val username = call.parameters["username"]
+      if (username.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      ContactController().httpSendFriendRequest(call, username!!)
+    }
+  }
+
+  private fun Route.getNotifications() {
+    get("m8/notifications") {
+      NotificationController().httpGetNotifications(call)
+    }
+  }
+
+  private fun Route.dismissNotification() {
+    get("m8/notifications/dismiss/{guid}") {
+      val notificationGUID = call.parameters["guid"]
+      if (notificationGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      NotificationController().httpDismissNotification(call, notificationGUID!!)
     }
   }
 }

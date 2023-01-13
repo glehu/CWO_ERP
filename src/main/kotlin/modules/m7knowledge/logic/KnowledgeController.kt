@@ -58,6 +58,21 @@ class KnowledgeController : IModule {
     }
   }
 
+  suspend fun httpGetKnowledgeFromGUID(appCall: ApplicationCall, knowledgeGUID: String) {
+    var knowledge: Knowledge? = null
+    KnowledgeController().getEntriesFromIndexSearch(
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
+    ) {
+      it as Knowledge
+      knowledge = it
+    }
+    if (knowledge == null) {
+      appCall.respond(HttpStatusCode.NotFound)
+    } else {
+      appCall.respond(knowledge!!)
+    }
+  }
+
   suspend fun httpCreateKnowledge(appCall: ApplicationCall, config: KnowledgeCreation) {
     var knowledge: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(

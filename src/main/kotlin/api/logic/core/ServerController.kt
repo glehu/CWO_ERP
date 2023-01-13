@@ -1,7 +1,6 @@
 package api.logic.core
 
 import api.misc.json.ActiveMembersPayload
-import api.misc.json.ChatroomGUIDsPayload
 import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.ListDeltaJson
 import api.misc.json.LoginResponseJson
@@ -420,7 +419,11 @@ class ServerController {
       with(UniChatroomController()) {
         // Create Chatroom and populate it
         uniChatroom = createChatroom(config.title, config.type)
-        if (config.directMessageUsernames.isNotEmpty()) {
+        if (config.directMessageUsernames.isEmpty()) {
+          uniChatroom.addOrUpdateMember(
+                  username = owner, role = UniRole("Owner")
+          )
+        } else {
           uniChatroom.directMessageUsername = ""
           var addedDirectMembers = false
           var amount = 0
@@ -545,9 +548,13 @@ class ServerController {
                 }
               }
               // Send notification to all members
+              val json = Json {
+                isLenient = true
+                ignoreUnknownKeys = true
+              }
               val fcmTokens: ArrayList<String> = arrayListOf()
               for (memberJson in uniChatroom.members) {
-                val member: UniMember = Json.decodeFromString(memberJson)
+                val member: UniMember = json.decodeFromString(memberJson)
                 if (member.firebaseCloudMessagingToken.isEmpty()) continue
                 fcmTokens.add(member.firebaseCloudMessagingToken)
               }
@@ -926,7 +933,9 @@ class ServerController {
       }
     }
 
-    suspend fun setUniMemberImage(appCall: ApplicationCall, config: UniMemberProfileImage) {
+    suspend fun setUniMemberImage(
+      appCall: ApplicationCall, config: UniMemberProfileImage, isBanner: Boolean = false
+    ) {
       val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
       if (uniChatroomGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
@@ -950,14 +959,15 @@ class ServerController {
                     base64 = config.imageBase64,
                     snippet = createSnippet(),
                     owner = getUsernameReversedBase(appCall),
-                    maxWidth = 100,
-                    maxHeight = 100
+                    maxWidth = 300,
+                    maxHeight = 300
             )
             if (snippet == null) {
               appCall.respond(HttpStatusCode.InternalServerError)
               return
             }
-            uniChatroom.addOrUpdateMember(config.username, imageSnippetURL = snippet.gUID)
+            if (!isBanner) uniChatroom.addOrUpdateMember(config.username, imageSnippetURL = snippet.gUID)
+            if (isBanner) uniChatroom.addOrUpdateMember(config.username, bannerSnippetURL = snippet.gUID)
           }
           saveChatroom(uniChatroom)
         }
@@ -1032,6 +1042,14 @@ class ServerController {
       }
     }
 
+    suspend fun getUsercount(appCall: ApplicationCall) {
+      if (contactIndexManager == null) {
+        appCall.respond(HttpStatusCode.ServiceUnavailable)
+        return
+      }
+      appCall.respond(contactIndexManager!!.getLastUniqueID().toInt())
+    }
+
     suspend fun getActiveMembersOfUniChatroom(
       appCall: ApplicationCall, uniChatroomGUID: String
     ) {
@@ -1065,25 +1083,7 @@ class ServerController {
     }
 
     suspend fun getDirectChatrooms(appCall: ApplicationCall, username: String?) {
-      val usernameTokenEmail = getJWTEmail(appCall)
-      val usernameToken = UserCLIManager.getUserFromEmail(usernameTokenEmail)!!.username
-      val chatrooms = ChatroomGUIDsPayload()
-      val query = "^" + "\\|${username!!}\\||\\|${usernameToken}\\|" + "\\|${usernameToken}\\||\\|${username}\\|" + "$"
-      with(UniChatroomController()) {
-        var uniChatroom: UniChatroom?
-        UniChatroomController.mutexChatroom.withLock {
-          uniChatroom = null
-          getEntriesFromIndexSearch(query, 5, true) {
-            uniChatroom = it as UniChatroom
-            if (!uniChatroom!!.checkIsMemberBanned(
-                      username = usernameToken,
-                      isEmail = false
-              ) && uniChatroom!!.checkIsMember(usernameToken)) {
-              chatrooms.chatrooms.add(uniChatroom!!.chatroomGUID)
-            }
-          }
-        }
-      }
+      val chatrooms = UniChatroomController().getDirectChatrooms(appCall, username)
       if (chatrooms.chatrooms.isNotEmpty()) {
         appCall.respond(chatrooms)
       } else {

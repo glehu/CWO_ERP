@@ -37,6 +37,8 @@ import modules.m7knowledge.Knowledge
 import modules.m7knowledge.logic.KnowledgeIndexManager
 import modules.m7wisdom.Wisdom
 import modules.m7wisdom.logic.WisdomIndexManager
+import modules.m8notification.Notification
+import modules.m8notification.logic.NotificationIndexManager
 import java.io.File
 import java.nio.file.Paths
 
@@ -59,6 +61,7 @@ val serializersModuleGlobal = SerializersModule {
     subclass(Snippet::class, serializer())
     subclass(Knowledge::class, serializer())
     subclass(Wisdom::class, serializer())
+    subclass(Notification::class, serializer())
   }
   polymorphic(IUniRole::class) {
     subclass(UniRole::class, serializer())
@@ -144,6 +147,14 @@ var knowledgeIndexManager: KnowledgeIndexManager? = null
 @InternalAPI
 @ExperimentalSerializationApi
 var wisdomIndexManager: WisdomIndexManager? = null
+
+/**
+ * The global index for Notification
+ */
+@InternalAPI
+@ExperimentalSerializationApi
+var notificationIndexManager: NotificationIndexManager? = null
+
 
 //*************************************************
 //********************** TRACKER ******************

@@ -5,6 +5,7 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import modules.m5.UniChatroom
 import modules.m5.UniRole
 import modules.m7wisdom.Wisdom
 
@@ -404,7 +405,8 @@ data class WisdomLessonCreation(
   val inBox: Boolean = false,
   val boxGUID: String = "",
   val hasDueDate: Boolean = false,
-  val dueDate: String = ""
+  val dueDate: String = "",
+  val dueDateUntil: String = ""
 )
 
 @Serializable
@@ -541,6 +543,11 @@ data class CategoryPayload(
 @ExperimentalSerializationApi
 @InternalAPI
 @Serializable
-data class ChatroomGUIDsPayload(
-  var chatrooms: ArrayList<String> = arrayListOf()
+data class ChatroomsPayload(
+  var chatrooms: ArrayList<UniChatroom> = arrayListOf()
+)
+
+data class FriendRequestResponse(
+  var successful: Boolean,
+  var message: String
 )

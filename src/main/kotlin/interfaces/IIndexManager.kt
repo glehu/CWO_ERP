@@ -261,7 +261,7 @@ interface IIndexManager : IModule {
   }
 
   /**
-   * @return the last unique identifier as an AtomicInteger
+   * @return the last unique identifier as an [AtomicInteger]
    */
   fun getLastUniqueID(): AtomicInteger {
     checkNuFile()

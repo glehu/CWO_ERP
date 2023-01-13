@@ -147,7 +147,7 @@ class CwODB {
 
     /**
      * Used to search in all indices by starting an index search flow for each index manager.
-     * @return the flow of an index manager's index search.
+     * @return the [Flow] of an index manager's index search.
      */
     private fun searchInAllIndices(indexManager: IIndexManager, searchText: String): Flow<Map<Int, IndexContent>> =
       flow {
