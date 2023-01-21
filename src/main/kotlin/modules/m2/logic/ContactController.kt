@@ -73,14 +73,16 @@ class ContactController : IModule {
     val notificationController = NotificationController()
     var notification = Notification(-1, username)
     notification.title = "Friend Request"
+    notification.authorUsername = "_server"
     notification.description = "$usernameToken has sent a Friend Request! Click to accept!"
     notification.hasClickAction = true
-    notification.clickAction = "join group"
+    notification.clickAction = "join,group"
     notification.clickActionReferenceGUID = chatroom.chatroomGUID
     notificationController.saveEntry(notification)
     // Add a notification for the user that sent the friend request
     notification = Notification(-1, usernameToken)
     notification.title = "Request Sent"
+    notification.authorUsername = "_server"
     notification.description = "$username has received your friend request. Waiting for approval."
     notificationController.saveEntry(notification)
     // Respond

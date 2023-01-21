@@ -243,11 +243,24 @@ class UniChatroomController : IModule {
 
   fun UniChatroom.checkIsMember(member: String): Boolean {
     if (member == "_server") return true
-    var isMember = false
     for (uniMember in this.members) {
-      if (Json.decodeFromString<UniMember>(uniMember).username == member) isMember = true
+      if (Json.decodeFromString<UniMember>(uniMember).username == member) {
+        return true
+      }
     }
-    return isMember
+    return false
+  }
+
+  private fun UniChatroom.checkMemberPubkey(member: String): Boolean {
+    if (member == "_server") return false
+    var uniMemberDecoded: UniMember
+    for (uniMember in this.members) {
+      uniMemberDecoded = Json.decodeFromString(uniMember)
+      if (uniMemberDecoded.username == member) {
+        return uniMemberDecoded.pubKeyPEM.isNotEmpty()
+      }
+    }
+    return false
   }
 
   fun UniChatroom.checkIsMemberBanned(username: String, isEmail: Boolean = false): Boolean {
@@ -860,7 +873,9 @@ class UniChatroomController : IModule {
     this.pubKeyPEM = pubKeyPEM
   }
 
-  suspend fun getDirectChatrooms(appCall: ApplicationCall, username: String?): ChatroomsPayload {
+  suspend fun getDirectChatrooms(
+    appCall: ApplicationCall, username: String?, hasToBeJoined: Boolean = false
+  ): ChatroomsPayload {
     val usernameTokenEmail = ServerController.getJWTEmail(appCall)
     val usernameToken = UserCLIManager.getUserFromEmail(usernameTokenEmail)!!.username
     val chatrooms = ChatroomsPayload()
@@ -874,6 +889,7 @@ class UniChatroomController : IModule {
           if (!uniChatroom!!.checkIsMemberBanned(
                     username = usernameToken, isEmail = false
             ) && uniChatroom!!.checkIsMember(usernameToken)) {
+            if (!hasToBeJoined || uniChatroom!!.checkMemberPubkey(usernameToken))
             chatrooms.chatrooms.add(uniChatroom!!)
           }
         }
@@ -885,9 +901,8 @@ class UniChatroomController : IModule {
   suspend fun createConfiguredChatroom(
     config: UniChatroomCreateChatroom, owner: String, parentUniChatroomGUID: String = ""
   ): UniChatroom {
-    val uniChatroom: UniChatroom
     // Create Chatroom and populate it
-    uniChatroom = createChatroom(config.title, config.type)
+    val uniChatroom: UniChatroom = createChatroom(config.title, config.type)
     if (config.directMessageUsernames.isEmpty()) {
       uniChatroom.addOrUpdateMember(
               username = owner, role = UniRole("Owner")

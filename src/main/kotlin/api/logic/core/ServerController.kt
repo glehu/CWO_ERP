@@ -871,6 +871,8 @@ class ServerController {
         appCall.respond(HttpStatusCode.BadRequest)
         return
       }
+      val usernameTokenEmail = getJWTEmail(appCall)
+      val usernameToken = UserCLIManager.getUserFromEmail(usernameTokenEmail)!!.username
       with(UniChatroomController()) {
         mutex.withLock {
           val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
@@ -878,9 +880,7 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
-          if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+          if (uniChatroom.checkIsMemberBanned(usernameToken) || !uniChatroom.checkIsMember(usernameToken)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -1082,8 +1082,8 @@ class ServerController {
       }
     }
 
-    suspend fun getDirectChatrooms(appCall: ApplicationCall, username: String?) {
-      val chatrooms = UniChatroomController().getDirectChatrooms(appCall, username)
+    suspend fun getDirectChatrooms(appCall: ApplicationCall, username: String?, hasToBeJoined: Boolean = true) {
+      val chatrooms = UniChatroomController().getDirectChatrooms(appCall, username, hasToBeJoined)
       if (chatrooms.chatrooms.isNotEmpty()) {
         appCall.respond(chatrooms)
       } else {

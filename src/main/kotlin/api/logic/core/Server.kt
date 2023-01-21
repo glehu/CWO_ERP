@@ -189,8 +189,7 @@ class Server : IModule {
       maxFrameSize = Long.MAX_VALUE
       masking = false
     }
-    install(DoubleReceive)
-    /*
+    install(DoubleReceive)/*
      * #### Routing ####
      */
     routing {
@@ -385,6 +384,7 @@ class Server : IModule {
           webPlannerRequest()
           // Notification
           getNotifications()
+          dismissNotification()
         }
       }
     }
@@ -1088,7 +1088,10 @@ class Server : IModule {
       if (username.isNullOrEmpty()) {
         call.respond(HttpStatusCode.BadRequest)
       }
-      ServerController.getDirectChatrooms(call, username)
+      val getAllQuery: String = call.request.queryParameters["all"] ?: "false"
+      var hasToBeJoined = true
+      if (getAllQuery == "true") hasToBeJoined = false
+      ServerController.getDirectChatrooms(call, username, hasToBeJoined)
     }
   }
 
