@@ -58,8 +58,8 @@ class WisdomController : IModule {
     val mutex = Mutex()
   }
 
-  private suspend fun saveEntry(wisdom: Wisdom): Int {
-    var uID: Int
+  private suspend fun saveEntry(wisdom: Wisdom): Long {
+    var uID: Long
     mutex.withLock {
       uID = save(wisdom)
     }
@@ -540,7 +540,7 @@ class WisdomController : IModule {
         wisdomRef = it
       }
     } else if (type == "uid") {
-      wisdomRef = load(wisdomGUID.toInt()) as Wisdom
+      wisdomRef = load(wisdomGUID.toLong()) as Wisdom
     }
     if (wisdomRef == null) {
       appCall.respond(HttpStatusCode.NotFound)

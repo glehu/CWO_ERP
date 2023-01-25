@@ -12,10 +12,10 @@ import modules.mx.uniChatroomIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class Snippet(
-  override var uID: Int = -1,
+  override var uID: Long = -1,
 ) : IEntry {
   override fun initialize() {
-    if (uID == -1) uID = uniChatroomIndexManager!!.getUID()
+    if (uID == -1L) uID = uniChatroomIndexManager!!.getUID()
     if (gUID.isEmpty()) gUID = "snippet-" + Uuid.randomUUID().toString()
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
   }

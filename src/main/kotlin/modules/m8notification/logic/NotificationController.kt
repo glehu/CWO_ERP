@@ -32,8 +32,8 @@ class NotificationController : IModule {
     val mutex = Mutex()
   }
 
-  suspend fun saveEntry(notification: Notification): Int {
-    var uID: Int
+  suspend fun saveEntry(notification: Notification): Long {
+    var uID: Long
     mutex.withLock {
       uID = save(notification)
     }

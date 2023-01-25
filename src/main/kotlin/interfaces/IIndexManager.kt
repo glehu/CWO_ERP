@@ -7,8 +7,13 @@ import db.CwODB
 import db.Index
 import db.IndexContent
 import io.ktor.util.*
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -24,15 +29,65 @@ import modules.mx.logic.roundTo
 import modules.mx.terminal
 import java.io.File
 import java.nio.file.Paths
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.collections.set
 import kotlin.concurrent.thread
 
 @InternalAPI
 @ExperimentalSerializationApi
 interface IIndexManager : IModule {
+  /**
+   * All [Index] entries managed by this [IIndexManager] instance.
+   */
   val indexList: MutableMap<Int, Index>
-  var lastUID: AtomicInteger
+
+  /**
+   * The maximum amount of entries that this [IIndexManager] instance is allowed to contain.
+   * If the threshold is surpassed, a new IIndexManager instance will be created.
+   *
+   * The capacity is specified using a [Long] but it is not allowed to be greater than [Int.MAX_VALUE].
+   * This is because of the internal structure of [MutableMap].
+   */
+  var capacity: Long
+
+  var isRemote: Boolean
+
+  var remoteURL: String
+
+  /**
+   * Specifies the depth of this [IIndexManager] in the scope of all other instances.
+   * Deeper instances manage [Index] entries that were added later in the timeline.
+   */
+  var level: Long
+
+  /**
+   * Self replicating [IIndexManager] instances if needed.
+   */
+  var prevManager: IIndexManager?
+
+  /**
+   * Self replicating [IIndexManager] instances if needed.
+   */
+  var nextManager: IIndexManager?
+
+  /**
+   * The last uID generated.
+   */
+  var lastUID: AtomicLong
+
+  /**
+   * Specifies the first uID that this [IIndexManager] instance can handle.
+   * All other uIDs are being managed by other IIndexManager instances.
+   */
+  var localMinUID: Long
+
+  /**
+   * Specifies the last uID that this [IIndexManager] instance can handle.
+   * All other uIDs are being managed by other IIndexManager instances.
+   */
+  var localMaxUID: Long
+
+  // #### Statistical values below ####
   var lastChangeDateHex: String
   var lastChangeDateUTC: String
   var lastChangeDateLocal: String
@@ -41,12 +96,23 @@ interface IIndexManager : IModule {
   var ixSizeMiByte: Double
 
   /**
-   * This function needs to be called in the init{} block of the index manager.
+   * This function needs to be called in the init{} block of the [IIndexManager].
    */
   fun initialize(vararg ixNumbers: Int) {
-    terminal.println("${TextColors.gray("CWO :>")} Initializing $moduleNameLong...")
+    if (level < 0) error("level of IIndexManager cannot be smaller than 0")
+    terminal.println("${TextColors.gray("CWO :> IX")} Initializing $moduleNameLong @ level $level...")
+    // Get or generate UID information
     lastUID = updateLastUID()
     getLastChangeDates()
+    // Calculate the lowest possible uID
+    // Example: 1
+    localMinUID = capacity * level
+    // Calculate the highest possible uID for this index manager.
+    // We subtract one from the initial capacity (capacity - 1)
+    // because we're working with indices that start with 0.
+    localMaxUID = (capacity - 1) + localMinUID
+    terminal.println("${TextColors.gray("CWO :> IX")} [ $localMinUID < uID > $localMaxUID ]")
+    // Retrieve indices from disk
     val progress = terminal.progressAnimation {
       text("Retrieving indices...")
       progressBar(pendingChar = "-", completeChar = "|")
@@ -56,15 +122,29 @@ interface IIndexManager : IModule {
     terminal.info.updateTerminalSize()
     progress.start()
     progress.updateTotal(ixNumbers.size.toLong() + 1L)
-    //Perform actions
     addIndex(0)
     progress.advance(1L)
     getIndicesFromArray(ixNumbers, progress)
-    //Stop progress animation
+    // Stop progress animation
     progress.stop()
     progress.clear()
-    terminal.println("\n${TextColors.green("Success!")}")
+    terminal.println("${TextColors.green("Success!")}\n")
+    // Get statistical values
     getFileSizes()
+    // Check for deeper index managers
+    terminal.println("${TextColors.gray("CWO :> IX")} Looking for deeper index managers...")
+    val ix1 = getIndexFile(0, level + 1L)
+    if (ix1.isFile) {
+      terminal.println("${TextColors.gray("CWO :> IX")} Deeper index manager found... initializing...")
+      terminal.println("${TextColors.gray("CWO :> IX")} Retrieving from ${ix1.name}...")
+      // Build and set up new IIndexManager
+      val newManager = buildNewIndexManager()
+      // Set references
+      newManager.prevManager = this
+      nextManager = newManager
+    } else {
+      terminal.println("${TextColors.gray("CWO :> IX")} None found!\n")
+    }
   }
 
   fun getFileSizes() {
@@ -78,9 +158,9 @@ interface IIndexManager : IModule {
   }
 
   /**
-   * @return a new unique identifier as an AtomicInteger.
+   * @return a new unique identifier as an [AtomicLong].
    */
-  fun getUID(): Int {
+  fun getUID(): Long {
     val uID = lastUID.getAndIncrement()
     thread {
       setLastUniqueID(lastUID)
@@ -88,7 +168,7 @@ interface IIndexManager : IModule {
     return uID
   }
 
-  fun setLastChangeData(uID: Int, userName: String) {
+  fun setLastChangeData(uID: Long, userName: String) {
     lastChangeDateHex = getUnixTimestampHex()
     val lastChange = LastChange(uID, lastChangeDateHex, userName)
     setLastChangeValues(lastChange)
@@ -130,15 +210,37 @@ interface IIndexManager : IModule {
     entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
   )
 
+  fun buildNewIndexManager(): IIndexManager
+
   /**
    * Used to build indices for an entry.
    */
   suspend fun buildIndices(
-    uID: Int, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String, vararg indices: Pair<Int, String>
+    uID: Long, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String, vararg indices: Pair<Int, String>
   ) {
+    if (uID != -1L && uID < localMinUID) {
+      if (prevManager != null) {
+        prevManager!!.buildIndices(uID, posDB, byteSize, writeToDisk, userName, *indices)
+        return
+      } else return // TODO: Check for unserialized index manager
+    } else if (uID > localMaxUID) {
+      if (nextManager != null) {
+        nextManager!!.buildIndices(uID, posDB, byteSize, writeToDisk, userName, *indices)
+        return
+      } else {
+        // Build and set up new IIndexManager
+        val newManager = buildNewIndexManager()
+        // Set references
+        newManager.prevManager = this
+        nextManager = newManager
+        // Perform action
+        newManager.buildIndices(uID, posDB, byteSize, writeToDisk, userName, *indices)
+        return
+      }
+    }
     buildDefaultIndex(uID, posDB, byteSize)
     for ((ixNr, ixContent) in indices) {
-      if (ixContent != "?") {
+      if (ixContent.isNotEmpty()) {
         if (indexList[ixNr] == null) addIndex(ixNr)
         synchronized(this) {
           indexList[ixNr]!!.indexMap[uID] = IndexContent(
@@ -161,7 +263,7 @@ interface IIndexManager : IModule {
   /**
    * Builds the default index 0 (uID)
    */
-  private fun buildDefaultIndex(uID: Int, posDB: Long, byteSize: Int) {
+  private fun buildDefaultIndex(uID: Long, posDB: Long, byteSize: Int) {
     if (indexList[0] == null) addIndex(0)
     indexList[0]!!.indexMap[uID] = IndexContent(pos = posDB, byteSize = byteSize)
   }
@@ -224,14 +326,14 @@ interface IIndexManager : IModule {
   }
 
   /**
-   * @return the index file of a provided module
+   * @return the index [File] of a provided module
    */
-  fun getIndexFile(ixNr: Int): File {
-    return File(Paths.get(getModulePath(module), "$module.ix$ixNr").toString())
+  fun getIndexFile(ixNr: Int, levelOverride: Long? = null): File {
+    return File(Paths.get(getModulePath(module), "$module-$ixNr-${levelOverride ?: level}.ix").toString())
   }
 
   /**
-   * @return the file storing the last change date hex value
+   * @return the [File] storing the last change date hex value
    */
   private fun getLastChangeDateHexFile(): File {
     return File(Paths.get(getModulePath(module), "lastchange.json").toString())
@@ -256,21 +358,21 @@ interface IIndexManager : IModule {
   /**
    * Used to write the last unique identifier to the database.
    */
-  fun setLastUniqueID(uniqueID: AtomicInteger) {
+  fun setLastUniqueID(uniqueID: AtomicLong) {
     getNuFile().writeText(uniqueID.toString())
   }
 
   /**
-   * @return the last unique identifier as an [AtomicInteger]
+   * @return the last unique identifier as an [AtomicLong]
    */
-  fun getLastUniqueID(): AtomicInteger {
+  fun getLastUniqueID(): AtomicLong {
     checkNuFile()
     val nuFile = getNuFile()
-    val lastUniqueIDNumber: AtomicInteger
+    val lastUniqueIDNumber: AtomicLong
     val lastUniqueIDString: String = nuFile.readText()
     lastUniqueIDNumber = if (lastUniqueIDString.isNotEmpty()) {
-      AtomicInteger((lastUniqueIDString).toInt())
-    } else AtomicInteger(0)
+      AtomicLong((lastUniqueIDString).toLong())
+    } else AtomicLong(0)
     return lastUniqueIDNumber
   }
 
@@ -292,11 +394,74 @@ interface IIndexManager : IModule {
   }
 
   /**
-   * @return the main index (ix0) for an entry's provided uID.
+   * @return the main [IndexContent] (ix0) for an entry's provided uID.
    */
-  fun getBaseIndex(uID: Int): IndexContent {
-    return indexList[0]!!.indexMap[uID]!!
+  fun getBaseIndex(uID: Long): IndexContent? {
+    return if (uID != -1L && uID < localMinUID) {
+      if (prevManager != null) {
+        prevManager!!.getBaseIndex(uID)
+      } else null
+    } else if (uID > localMaxUID) {
+      if (nextManager != null) {
+        nextManager!!.getBaseIndex(uID)
+      } else null
+    } else {
+      indexList[0]!!.indexMap[uID]!!
+    }
   }
 
   fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean = false): String
+  fun filterStringValues(ixNr: Int, searchText: String): Set<Long> {
+    var filteredMap: Set<Long> = setOf()
+    if (nextManager != null) {
+      filteredMap = filteredMap union (nextManager!!.filterStringValues(ixNr, searchText))
+    }
+    filteredMap = filteredMap union (indexList[ixNr]!!.indexMap.filterValues {
+      it.content.contains(searchText.toRegex())
+    }.keys.reversed())
+    return filteredMap
+  }
+
+  fun filterDoubleValues(ixNr: Int, searchText: String): MutableSet<Long> {
+    val filteredMap = mutableSetOf<Long>()
+    if (nextManager != null) {
+      filteredMap union (nextManager!!.filterDoubleValues(ixNr, searchText)).reversed()
+    }
+    filteredMap union (indexList[ixNr]!!.indexMap.filterValues {
+      it.content.toDouble() >= searchText.toDouble()
+    }.keys.reversed())
+    return filteredMap
+  }
+
+  /**
+   * @return the index results for a search text from all available indices.
+   */
+  @OptIn(FlowPreview::class)
+  fun returnFromAllIndices(searchText: String, updateProgress: (Map<Long, IndexContent>) -> Unit) {
+    runBlocking {
+      if (nextManager != null) {
+        searchInAllIndices(searchText).flatMapMerge { nextManager!!.searchInAllIndices(searchText) }
+          .collect { indexResult: Map<Long, IndexContent> ->
+            updateProgress(indexResult)
+          }
+      } else {
+        searchInAllIndices(searchText).collect { indexResult: Map<Long, IndexContent> ->
+          updateProgress(indexResult)
+        }
+      }
+    }
+  }
+
+  /**
+   * Used to search in all indices by starting an index search flow for each index manager.
+   * @return the [Flow] of an index manager's index search.
+   */
+  private fun searchInAllIndices(searchText: String): Flow<Map<Long, IndexContent>> = flow {
+    for (ixNr in 1 until indexList.size) {
+      val results = indexList[ixNr]!!.indexMap.filterValues {
+        it.content.contains(searchText.toRegex())
+      }
+      emit(results)
+    }
+  }
 }

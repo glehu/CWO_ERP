@@ -8,12 +8,12 @@ import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.KnowledgeCategoryEdit
 import api.misc.json.KnowledgeCreation
 import api.misc.json.ListDeltaJson
-import api.misc.json.PairIntJson
+import api.misc.json.PairLongJson
 import api.misc.json.PasswordChange
 import api.misc.json.PubKeyPEMContainer
 import api.misc.json.SettingsRequestJson
 import api.misc.json.SnippetPayload
-import api.misc.json.TwoIntOneDoubleJson
+import api.misc.json.TwoLongOneDoubleJson
 import api.misc.json.UniChatroomAddMember
 import api.misc.json.UniChatroomAddMessage
 import api.misc.json.UniChatroomCreateChatroom
@@ -673,7 +673,7 @@ class Server : IModule {
       if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
-        call.respond(ServerController.checkStorage(call.receive() as TwoIntOneDoubleJson))
+        call.respond(ServerController.checkStorage(call.receive() as TwoLongOneDoubleJson))
       }
     }
   }
@@ -683,7 +683,7 @@ class Server : IModule {
       if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M4")) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
-        call.respond(ServerController.getAvailableStock(call.receive() as PairIntJson))
+        call.respond(ServerController.getAvailableStock(call.receive() as PairLongJson))
       }
     }
   }

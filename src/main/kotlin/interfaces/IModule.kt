@@ -46,15 +46,17 @@ interface IModule {
     indexWriteToDisk: Boolean = true,
     userName: String = "",
     unlock: Boolean = true
-  ): Int {
+  ): Long {
     val indexManager = getIndexManager()!!
     val rafLocal = raf ?: CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
     var posDB: Long = -1L
     var byteSize: Int = -1
-    if (entry.uID != -1) {
+    if (entry.uID != -1L) {
       val index = indexManager.getBaseIndex(entry.uID)
-      posDB = index.pos
-      byteSize = index.byteSize
+      if (index != null) {
+        posDB = index.pos
+        byteSize = index.byteSize
+      }
     }
     entry.initialize()
     val (posDBXt, byteSizeXt) = CwODB.saveEntry(
@@ -64,7 +66,7 @@ interface IModule {
     val byteSizeX: Int = byteSizeXt
     indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, "")
     if (raf == null) CwODB.closeRandomFileAccess(rafLocal)
-    val uID: Int = entry.uID
+    val uID: Long = entry.uID
     //Unlock the entry
     if (unlock) getIndexManager()!!.setEntryLock(uID, false)
     return uID
@@ -79,7 +81,7 @@ interface IModule {
    * @return an [IEntry] with the provided unique identifier.
    */
   @ExperimentalSerializationApi
-  fun get(uID: Int): IEntry {
+  fun get(uID: Long): IEntry {
     return decode(getBytes(uID, true))
   }
 
@@ -91,7 +93,7 @@ interface IModule {
    * @return an [IEntry] with the provided unique identifier.
    */
   @ExperimentalSerializationApi
-  fun load(uID: Int): IEntry {
+  fun load(uID: Long): IEntry {
     return decode(getBytes(uID, false))
   }
 
@@ -100,9 +102,9 @@ interface IModule {
    * It is possible to retrieve an [IEntry] of another module if that module gets passed into the function.
    * @return the [ByteArray] of an [IEntry] with the provided unique identifier.
    */
-  fun getBytes(uID: Int, lock: Boolean = false, userName: String = ""): ByteArray {
+  fun getBytes(uID: Long, lock: Boolean = false, userName: String = ""): ByteArray {
     var entryBytes: ByteArray = byteArrayOf()
-    if (uID != -1) {
+    if (uID != -1L) {
       entryBytes = CwODB.getEntryByteArrayFromUID(
               uID = uID, indexManager = getIndexManager()!!
       )
@@ -198,24 +200,24 @@ interface IModule {
     )
   }
 
-  fun getEntryLock(uID: Int, userName: String = ""): Boolean {
-    val content = getIndexManager()!!.getBaseIndex(uID).content
-    return (content != "?" && content != userName)
+  fun getEntryLock(uID: Long, userName: String = ""): Boolean {
+    val content = getIndexManager()!!.getBaseIndex(uID)?.content ?: ""
+    return (content.isNotEmpty() && content != userName)
   }
 
-  fun setEntryLock(uID: Int, doLock: Boolean, userName: String = ""): Boolean {
+  fun setEntryLock(uID: Long, doLock: Boolean, userName: String = ""): Boolean {
     var success = false
     val indexManager = getIndexManager()!!
     val entryLocked = indexManager.getEntryLock(uID, userName)
     if (doLock) {
       if (!entryLocked) {
-        indexManager.getBaseIndex(uID).content = userName
+        indexManager.getBaseIndex(uID)?.content = userName
         success = true
       }
     } else {
       //If the entry is locked by the user that is trying to unlock -> unlock
-      if (indexManager.getBaseIndex(uID).content == userName) {
-        indexManager.getBaseIndex(uID).content = "?"
+      if (indexManager.getBaseIndex(uID)?.content == userName) {
+        indexManager.getBaseIndex(uID)?.content = ""
         success = true
       }
     }

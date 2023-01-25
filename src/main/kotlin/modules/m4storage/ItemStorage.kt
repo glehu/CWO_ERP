@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ItemStorage(
-  @SerialName("n") val number: Int,
+  @SerialName("n") val number: Long,
   @SerialName("d") val description: String = "",
   @SerialName("l") var locked: Boolean = false
 ) {

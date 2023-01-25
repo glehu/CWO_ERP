@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Index(@SerialName("m") val module: String) {
   @SerialName("i")
-  val indexMap = mutableMapOf<Int, IndexContent>()
+  val indexMap = mutableMapOf<Long, IndexContent>()
 }

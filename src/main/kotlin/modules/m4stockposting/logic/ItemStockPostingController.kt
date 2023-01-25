@@ -19,7 +19,7 @@ class ItemStockPostingController : IModule {
     return itemStockPostingIndexManager!!
   }
 
-  fun getAvailableStock(storageUnitUID: Int, storageUID: Int): Double {
+  fun getAvailableStock(storageUnitUID: Long, storageUID: Long): Double {
     var availableStock = 0.0
     val ixSearchText = "<${storageUID}><${storageUnitUID}>"
     //Find stock taken from this storage unit
@@ -41,7 +41,7 @@ class ItemStockPostingController : IModule {
    * Tries to find a storage unit that suits the requested amount.
    * @return a [Triple] StorageUID, StorageUnitUID and ItemStockPostingUID
    */
-  fun getStorageUnitWithAtLeast(amount: Double): Triple<Int, Int, Int> {
+  fun getStorageUnitWithAtLeast(amount: Double): Triple<Long, Long, Long> {
     val entriesFound: ArrayList<ItemStockPosting> = arrayListOf()
     getEntriesFromIndexSearch(
             searchText = amount.toString(), ixNr = 6, showAll = true, format = false, numberComparison = true
@@ -74,8 +74,8 @@ class ItemStockPostingController : IModule {
     }
     //Evaluate and choose
     var storagesIterator = -1
-    var lastStorageUID = -1
-    var lastStorageUnitUID = -1
+    var lastStorageUID = -1L
+    var lastStorageUnitUID = -1L
     when (InvoiceCLIController().getAutoStorageSelectionOrder()) {
       AutoStorageSelectionOrderType.LIFO -> {
         //Start with the oldest one
@@ -129,14 +129,14 @@ class ItemStockPostingController : IModule {
    */
   private fun pickAccordingToOrderType(
     entriesFound: ArrayList<ItemStockPosting>, autoStorageSelectionOrder: AutoStorageSelectionOrderType
-  ): Triple<Int, Int, Int> {
+  ): Triple<Long, Long, Long> {
     return if (entriesFound.isEmpty()) {
-      Triple(-1, -1, -1)
+      Triple(-1L, -1L, -1L)
     } else {
       when (autoStorageSelectionOrder) {
         AutoStorageSelectionOrderType.LIFO -> getTripleOfUIDs(entriesFound.first()) //Return oldest
         AutoStorageSelectionOrderType.FIFO -> getTripleOfUIDs(entriesFound.last()) //Return newest
-        else -> Triple(-1, -1, -1) //Not supported :(
+        else -> Triple(-1L, -1L, -1L) //Not supported :(
       }
     }
   }
@@ -144,19 +144,19 @@ class ItemStockPostingController : IModule {
   /**
    * @return a [Triple] StorageUID, StorageUnitUID and ItemStockPostingUID
    */
-  private fun getTripleOfUIDs(itemStockPosting: ItemStockPosting): Triple<Int, Int, Int> {
+  private fun getTripleOfUIDs(itemStockPosting: ItemStockPosting): Triple<Long, Long, Long> {
     return Triple(itemStockPosting.storageToUID, itemStockPosting.storageUnitToUID, itemStockPosting.uID)
   }
 
-  fun check(storageFromUID: Int, storageUnitFromUID: Int, amount: Double? = null): Boolean {
+  fun check(storageFromUID: Long, storageUnitFromUID: Long, amount: Double? = null): Boolean {
     //Check if the storage exists
-    if (storageFromUID == -1) return false
-    if (storageUnitFromUID == -1) return false
+    if (storageFromUID == -1L) return false
+    if (storageUnitFromUID == -1L) return false
     //Check details...
     val storage = ItemStorageManager().getStorages().storages[storageFromUID]!!
     //Check if storage or storage unit is locked
     if (storage.locked) return false
-    if (storage.storageUnits[storageUnitFromUID].locked) return false
+    if (storage.storageUnits[storageUnitFromUID.toInt()].locked) return false
     //Check if the selected storage unit suits the position's amount
     if (amount != null) {
       val available = ItemStockPostingController().getAvailableStock(storageUnitFromUID, storageFromUID)

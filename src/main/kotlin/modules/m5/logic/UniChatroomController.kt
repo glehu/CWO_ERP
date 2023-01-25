@@ -96,8 +96,8 @@ class UniChatroomController : IModule {
     return mainChatroom
   }
 
-  suspend fun saveChatroom(uniChatroom: UniChatroom): Int {
-    var uID: Int
+  suspend fun saveChatroom(uniChatroom: UniChatroom): Long {
+    var uID: Long
     mutexChatroom.withLock {
       uID = save(uniChatroom)
     }
@@ -467,7 +467,7 @@ class UniChatroomController : IModule {
     // Edit message from database
     with(UniMessagesController()) {
       var message: UniMessage? = null
-      var chatroomUID = -1
+      var chatroomUID = -1L
       mutexMessages.withLock {
         getEntriesFromIndexSearch(editMessageConfig.uniMessageGUID, 2, true) {
           message = it as UniMessage
@@ -508,7 +508,7 @@ class UniChatroomController : IModule {
     // Edit message from database
     with(UniMessagesController()) {
       var message: UniMessage? = null
-      var chatroomUID = -1
+      var chatroomUID = -1L
       // Check if user already reacted to this message in the same way
       // If the user did, remove user, if not, add the user
       var reactionTypeExists = false
@@ -600,7 +600,7 @@ class UniChatroomController : IModule {
         }
       }
     } else if (frameText.contains("/topflip")) {
-      if (unichatroom.uID == -1) return
+      if (unichatroom.uID == -1L) return
       var isFlipOfTheDay = false
       val dateFrom = Timestamp.now()
       // 2022-07-14T11:06:03Z
@@ -698,7 +698,7 @@ class UniChatroomController : IModule {
         }
       }
     } else if (frameText.contains("/stats")) {
-      if (unichatroom.uID == -1) return
+      if (unichatroom.uID == -1L) return
       var amountMSG = 0
       var amountGIF = 0
       var amountIMG = 0
@@ -745,7 +745,7 @@ class UniChatroomController : IModule {
         }
       }
     } else if (frameText.contains("/leaderboard")) {
-      if (unichatroom.uID == -1) return
+      if (unichatroom.uID == -1L) return
       val members = getMemberStatsOfChatroom(
               chatroom = getMainChatroom(unichatroom) ?: unichatroom
       )

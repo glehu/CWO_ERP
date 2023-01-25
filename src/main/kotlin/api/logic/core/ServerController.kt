@@ -4,14 +4,14 @@ import api.misc.json.ActiveMembersPayload
 import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.ListDeltaJson
 import api.misc.json.LoginResponseJson
-import api.misc.json.PairIntJson
+import api.misc.json.PairLongJson
 import api.misc.json.PasswordChange
 import api.misc.json.PubKeyPEMContainer
 import api.misc.json.RegistrationPayload
 import api.misc.json.RegistrationResponse
 import api.misc.json.SnippetPayload
 import api.misc.json.SnippetResponse
-import api.misc.json.TwoIntOneDoubleJson
+import api.misc.json.TwoLongOneDoubleJson
 import api.misc.json.UniChatroomAddMember
 import api.misc.json.UniChatroomAddMessage
 import api.misc.json.UniChatroomCreateChatroom
@@ -101,8 +101,8 @@ class ServerController {
 
     private val mutex = Mutex()
 
-    suspend fun saveEntry(entry: ByteArray, indexManager: IIndexManager, username: String): Int {
-      val uID: Int
+    suspend fun saveEntry(entry: ByteArray, indexManager: IIndexManager, username: String): Long {
+      val uID: Long
       mutex.withLock {
         log(
                 type = Log.Type.COM,
@@ -128,7 +128,7 @@ class ServerController {
             }
             return if (appCall.request.queryParameters["format"] == "json") {
               val entry = indexManager.decode(
-                      indexManager.getBytes(uID = routePar.toInt())
+                      indexManager.getBytes(uID = routePar.toLong())
               )
               entry.initialize()
               indexManager.encodeToJsonString(
@@ -136,7 +136,7 @@ class ServerController {
               )
             } else {
               indexManager.getBytes(
-                      uID = routePar.toInt(),
+                      uID = routePar.toLong(),
                       lock = doLock,
                       userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
               )
@@ -168,7 +168,7 @@ class ServerController {
       val routePar = appCall.parameters["searchString"]
       if (!routePar.isNullOrEmpty()) {
         return indexManager.getEntryLock(
-                uID = routePar.toInt(),
+                uID = routePar.toLong(),
                 userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
         )
       }
@@ -181,7 +181,7 @@ class ServerController {
       val success: Boolean = if (!routePar.isNullOrEmpty()) {
         mutex.withLock {
           indexManager.setEntryLock(
-                  uID = routePar.toInt(),
+                  uID = routePar.toLong(),
                   doLock = queryPar.toBoolean(),
                   userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
           )
@@ -263,7 +263,7 @@ class ServerController {
       return true
     }
 
-    suspend fun placeWebshopOrder(appCall: ApplicationCall): Int {
+    suspend fun placeWebshopOrder(appCall: ApplicationCall): Long {
       val m3IniVal = InvoiceCLIController().getIni()
 
       /**
@@ -278,7 +278,7 @@ class ServerController {
       if (body.cart.isEmpty()) return -1
       for (i in 0 until body.cart.size) {
         val item = itemIndexManager!!.get(body.cart[i].uID) as Item
-        if (item.uID != -1) {
+        if (item.uID != -1L) {
           /**
            * Item position
            */
@@ -392,11 +392,11 @@ class ServerController {
       )
     }
 
-    fun checkStorage(request: TwoIntOneDoubleJson): Boolean {
+    fun checkStorage(request: TwoLongOneDoubleJson): Boolean {
       return ItemStockPostingController().check(request.first, request.second, request.third)
     }
 
-    fun getAvailableStock(request: PairIntJson): Double {
+    fun getAvailableStock(request: PairLongJson): Double {
       return ItemStockPostingController().getAvailableStock(request.first, request.second)
     }
 
@@ -611,7 +611,7 @@ class ServerController {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
-          //Get Messages from index
+          // Get Messages from index
           val messages = arrayListOf<String>()
           uniMessagesIndexManager!!.getEntriesFromIndexSearch(
                   searchText = "^${uniChatroom.uID}$",

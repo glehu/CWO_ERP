@@ -25,7 +25,7 @@ class DiscographyAnalytics : IModule {
 
   @ExperimentalSerializationApi
   suspend fun getDistributionChartData(
-    distType: DistType, updateProgress: (Pair<Int, String>) -> Unit
+    distType: DistType, updateProgress: (Pair<Long, String>) -> Unit
   ): MutableMap<String, Double> {
     var songCount = 0.0
     val map = mutableMapOf<String, Double>()
@@ -47,7 +47,7 @@ class DiscographyAnalytics : IModule {
           null
         }
         if (song != null) {
-          if (song.uID != -1) {
+          if (song.uID != -1L) {
             songCount++
             distTypeData = when (distType) {
               DistType.GENRE -> song.genre

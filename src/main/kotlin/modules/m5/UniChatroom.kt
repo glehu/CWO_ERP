@@ -12,11 +12,11 @@ import modules.mx.uniChatroomIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class UniChatroom(
-  override var uID: Int,
+  override var uID: Long,
   @SerialName("t") var title: String,
 ) : IEntry {
   override fun initialize() {
-    if (uID == -1) uID = uniChatroomIndexManager!!.getUID()
+    if (uID == -1L) uID = uniChatroomIndexManager!!.getUID()
     if (chatroomGUID.isEmpty()) chatroomGUID = Uuid.randomUUID().toString()
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
     if (rank == 0) {

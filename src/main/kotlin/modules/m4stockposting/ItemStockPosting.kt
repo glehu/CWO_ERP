@@ -11,13 +11,13 @@ import modules.mx.logic.Timestamp
 @ExperimentalSerializationApi
 @Serializable
 data class ItemStockPosting(
-  override var uID: Int,
+  override var uID: Long,
   val itemUID: Int,
-  val storageFromUID: Int,
-  val storageUnitFromUID: Int,
-  val stockPostingFromUID: Int,
-  val storageToUID: Int,
-  val storageUnitToUID: Int,
+  val storageFromUID: Long,
+  val storageUnitFromUID: Long,
+  val stockPostingFromUID: Long,
+  val storageToUID: Long,
+  val storageUnitToUID: Long,
   val amount: Double,
   val note: String = ""
 ) : IEntry {
@@ -34,7 +34,7 @@ data class ItemStockPosting(
   var dateBooked: String = ""
 
   override fun initialize() {
-    if (uID == -1) uID = itemStockPostingIndexManager!!.getUID()
+    if (uID == -1L) uID = itemStockPostingIndexManager!!.getUID()
     when (status) {
       !in 0..9 -> status = 0
       9 -> {
@@ -54,7 +54,7 @@ data class ItemStockPosting(
     //Check null to make sure we do not set the available stock again
     if (stockAvailable == null) {
       //We only care for stock we actually own, so we return if the target storage does not exist
-      if (storageToUID != -1 && storageUnitToUID != -1) {
+      if (storageToUID != -1L && storageUnitToUID != -1L) {
         //... or the amount is negative
         stockAvailable = if (amount > 0) amount else 0.0
       }

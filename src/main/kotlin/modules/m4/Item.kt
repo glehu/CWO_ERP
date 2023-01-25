@@ -12,7 +12,7 @@ import java.util.*
 @ExperimentalSerializationApi
 @Serializable
 data class Item(
-  override var uID: Int, var description: String
+  override var uID: Long, var description: String
 ) : IEntry {
   var articleNumber = ""
   var ean = ""
@@ -41,7 +41,7 @@ data class Item(
   var stock: MutableMap<Int, String> = mutableMapOf()
 
   override fun initialize() {
-    if (uID == -1) uID = itemIndexManager!!.getUID()
+    if (uID == -1L) uID = itemIndexManager!!.getUID()
     if (imagePath != "?") {
       imageBase64String = Base64.getEncoder().encodeToString(File(imagePath).readBytes())
     }

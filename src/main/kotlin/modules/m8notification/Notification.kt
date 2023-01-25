@@ -12,7 +12,7 @@ import modules.mx.notificationIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class Notification(
-  override var uID: Int = -1, @SerialName("recipient") var recipientUsername: String
+  override var uID: Long = -1, @SerialName("recipient") var recipientUsername: String
 ) : IEntry {
   @SerialName("t")
   var title: String = ""
@@ -37,7 +37,7 @@ data class Notification(
   var finished: Boolean = false
   var finishedDate: String = ""
 
-  var hasAttachement: Boolean = false
+  var hasAttachment: Boolean = false
   var snippetGUID: String = ""
 
   var hasBackgroundImage: Boolean = false
@@ -50,6 +50,6 @@ data class Notification(
   }
 
   override fun initialize() {
-    if (uID == -1) uID = notificationIndexManager!!.getUID()
+    if (uID == -1L) uID = notificationIndexManager!!.getUID()
   }
 }

@@ -79,7 +79,7 @@ class ItemStorageManager : IModule {
     var counter = 0
     if (categories.storages.isNotEmpty()) {
       for ((_, category) in categories.storages) {
-        numbers[counter] = category.number
+        numbers[counter] = category.number.toInt()
         counter++
       }
       numbers.sort()

@@ -12,7 +12,7 @@ import modules.mx.wisdomIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class Wisdom(
-  override var uID: Int = -1
+  override var uID: Long = -1
 ) : IEntry {
   @SerialName("t")
   var title: String = ""
@@ -30,13 +30,13 @@ data class Wisdom(
   var gUID: String = ""
 
   // References the Knowledge entry it belongs to
-  var knowledgeUID: Int = -1
+  var knowledgeUID: Long = -1L
 
   // References another (sub) Wisdom entry (e.g. Wisdom that got commented)
-  var refWisdomUID: Int = -1
+  var refWisdomUID: Long = -1L
 
   // References the source parent Wisdom entry
-  var srcWisdomUID: Int = -1
+  var srcWisdomUID: Long = -1L
 
   @SerialName("cdate")
   var dateCreated: String = ""
@@ -85,6 +85,6 @@ data class Wisdom(
   }
 
   override fun initialize() {
-    if (uID == -1) uID = wisdomIndexManager!!.getUID()
+    if (uID == -1L) uID = wisdomIndexManager!!.getUID()
   }
 }

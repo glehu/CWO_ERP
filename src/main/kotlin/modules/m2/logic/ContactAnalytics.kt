@@ -20,7 +20,7 @@ class ContactAnalytics : IModule {
   }
 
   suspend fun getChartDataOnCityDistribution(
-    indexManager: ContactIndexManager, amount: Int = -1, updateProgress: (Pair<Int, String>) -> Unit
+    indexManager: ContactIndexManager, amount: Int = -1, updateProgress: (Pair<Long, String>) -> Unit
   ): MutableMap<String, Double> {
     val tempMap = mutableMapOf<String, Double>()
     lateinit var sortedMap: MutableMap<String, Double>
@@ -42,7 +42,7 @@ class ContactAnalytics : IModule {
           null
         }
         if (contact != null) {
-          if (contact.uID != -1) {
+          if (contact.uID != -1L) {
             city = contact.city.uppercase()
             contactCount += 1.0
             if (tempMap.containsKey(city)) {

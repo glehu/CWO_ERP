@@ -9,15 +9,19 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m1.Song
 import modules.mx.discographyIndexManager
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 @InternalAPI
 @ExperimentalSerializationApi
-class DiscographyIndexManager : IModule, IIndexManager {
+class DiscographyIndexManager(override var level: Long) : IModule, IIndexManager {
   override val moduleNameLong = "DiscographyIndexManager"
   override val module = "M1"
   override fun getIndexManager(): IIndexManager {
     return discographyIndexManager!!
+  }
+
+  override fun buildNewIndexManager(): IIndexManager {
+    return DiscographyIndexManager(level + 1)
   }
 
   override var lastChangeDateHex: String = ""
@@ -33,7 +37,14 @@ class DiscographyIndexManager : IModule, IIndexManager {
   //*************************************************
 
   override val indexList = mutableMapOf<Int, Index>()
-  override var lastUID = AtomicInteger(-1)
+  override var lastUID = AtomicLong(-1L)
+  override var capacity: Long = 2_000_000_000L
+  override var nextManager: IIndexManager? = null
+  override var prevManager: IIndexManager? = null
+  override var isRemote: Boolean = false
+  override var remoteURL: String = ""
+  override var localMinUID: Long = -1L
+  override var localMaxUID: Long = -1L
 
   init {
     initialize(

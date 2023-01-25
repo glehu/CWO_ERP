@@ -8,15 +8,19 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import modules.m2.Contact
 import modules.mx.contactIndexManager
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 @InternalAPI
 @ExperimentalSerializationApi
-class ContactIndexManager : IIndexManager {
+class ContactIndexManager(override var level: Long) : IIndexManager {
   override val moduleNameLong = "ContactIndexManager"
   override val module = "M2"
   override fun getIndexManager(): IIndexManager {
     return contactIndexManager!!
+  }
+
+  override fun buildNewIndexManager(): IIndexManager {
+    return ContactIndexManager(level + 1)
   }
 
   override var lastChangeDateHex: String = ""
@@ -32,7 +36,14 @@ class ContactIndexManager : IIndexManager {
   //*************************************************
 
   override val indexList = mutableMapOf<Int, Index>()
-  override var lastUID = AtomicInteger(-1)
+  override var lastUID = AtomicLong(-1L)
+  override var capacity: Long = 2_000_000_000L
+  override var nextManager: IIndexManager? = null
+  override var prevManager: IIndexManager? = null
+  override var isRemote: Boolean = false
+  override var remoteURL: String = ""
+  override var localMinUID: Long = -1L
+  override var localMaxUID: Long = -1L
 
   init {
     initialize(

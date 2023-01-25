@@ -11,7 +11,7 @@ import modules.mx.contactIndexManager
 @InternalAPI
 @ExperimentalSerializationApi
 @Serializable
-data class Contact(override var uID: Int, var name: String) : IEntry {
+data class Contact(override var uID: Long, var name: String) : IEntry {
   var guid: String = ""
 
   //----------------------------------v
@@ -68,7 +68,7 @@ data class Contact(override var uID: Int, var name: String) : IEntry {
   var badges: ArrayList<String> = arrayListOf()
 
   override fun initialize() {
-    if (uID == -1) uID = contactIndexManager!!.getUID()
+    if (uID == -1L) uID = contactIndexManager!!.getUID()
     if (guid.isEmpty()) guid = Uuid.randomUUID().toString()
   }
 }

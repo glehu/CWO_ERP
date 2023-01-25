@@ -10,7 +10,7 @@ import modules.mx.invoiceIndexManager
 @InternalAPI
 @ExperimentalSerializationApi
 @Serializable
-data class Invoice(override var uID: Int) : IEntry, IInvoice {
+data class Invoice(override var uID: Long) : IEntry, IInvoice {
   //*************************************************
   //********************** User Input Data **********
   //*************************************************
@@ -19,9 +19,9 @@ data class Invoice(override var uID: Int) : IEntry, IInvoice {
   //------------- Who? ---------------|
   //----------------------------------^
   var seller: String = "?"
-  var sellerUID: Int = -1
+  var sellerUID: Long = -1L
   var buyer: String = "?"
-  var buyerUID: Int = -1
+  var buyerUID: Long = -1L
 
   //----------------------------------v
   //------------- When? --------------|
@@ -59,7 +59,7 @@ data class Invoice(override var uID: Int) : IEntry, IInvoice {
   private var isIncome: Boolean = false
 
   override fun initialize() {
-    if (uID == -1) uID = invoiceIndexManager!!.getUID()
+    if (uID == -1L) uID = invoiceIndexManager!!.getUID()
     if (grossTotal > 0) isIncome = true
   }
 }

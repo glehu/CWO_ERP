@@ -35,8 +35,8 @@ class KnowledgeController : IModule {
     val mutex = Mutex()
   }
 
-  private suspend fun saveEntry(knowledge: Knowledge): Int {
-    var uID: Int
+  private suspend fun saveEntry(knowledge: Knowledge): Long {
+    var uID: Long
     mutex.withLock {
       uID = save(knowledge)
     }

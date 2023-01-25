@@ -9,15 +9,19 @@ import kotlinx.serialization.encodeToString
 import modules.m4.Item
 import modules.m4stockposting.ItemStockPosting
 import modules.mx.itemStockPostingIndexManager
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 @InternalAPI
 @ExperimentalSerializationApi
-class ItemStockPostingIndexManager : IIndexManager {
+class ItemStockPostingIndexManager(override var level: Long) : IIndexManager {
   override val moduleNameLong = "ItemStockPostingIndexManager"
   override val module = "M4SP"
   override fun getIndexManager(): IIndexManager {
     return itemStockPostingIndexManager!!
+  }
+
+  override fun buildNewIndexManager(): IIndexManager {
+    return ItemStockPostingIndexManager(level + 1)
   }
 
   override var lastChangeDateHex: String = ""
@@ -33,7 +37,14 @@ class ItemStockPostingIndexManager : IIndexManager {
   //*************************************************
 
   override val indexList = mutableMapOf<Int, Index>()
-  override var lastUID = AtomicInteger(-1)
+  override var lastUID = AtomicLong(-1L)
+  override var capacity: Long = 2_000_000_000L
+  override var nextManager: IIndexManager? = null
+  override var prevManager: IIndexManager? = null
+  override var isRemote: Boolean = false
+  override var remoteURL: String = ""
+  override var localMinUID: Long = -1L
+  override var localMaxUID: Long = -1L
 
   init {
     initialize(

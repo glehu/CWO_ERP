@@ -12,7 +12,7 @@ import modules.mx.logic.Timestamp
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class Knowledge(
-  override var uID: Int = -1
+  override var uID: Long = -1
 ) : IEntry {
   @SerialName("t")
   var title: String = ""
@@ -42,6 +42,6 @@ data class Knowledge(
   }
 
   override fun initialize() {
-    if (uID == -1) uID = knowledgeIndexManager!!.getUID()
+    if (uID == -1L) uID = knowledgeIndexManager!!.getUID()
   }
 }

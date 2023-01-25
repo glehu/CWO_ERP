@@ -97,7 +97,7 @@ data class WebshopOrder(
 
 @Serializable
 data class WebshopCartItem(
-  val uID: Int,
+  val uID: Long,
   val description: String,
   val amount: Int,
   val price: Double,
@@ -135,13 +135,13 @@ data class SettingsRequestJson(
 )
 
 @Serializable
-data class TwoIntOneDoubleJson(
-  val first: Int, val second: Int, val third: Double
+data class TwoLongOneDoubleJson(
+  val first: Long, val second: Long, val third: Double
 )
 
 @Serializable
-data class PairIntJson(
-  val first: Int, val second: Int
+data class PairLongJson(
+  val first: Long, val second: Long
 )
 
 @Serializable

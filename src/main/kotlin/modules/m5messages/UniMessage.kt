@@ -12,8 +12,8 @@ import modules.mx.uniMessagesIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class UniMessage(
-  override var uID: Int = -1,
-  @SerialName("cid") var uniChatroomUID: Int,
+  override var uID: Long = -1,
+  @SerialName("cid") var uniChatroomUID: Long,
   @SerialName("src") val from: String,
   @SerialName("msg") var message: String,
 ) : IEntry {
@@ -33,6 +33,6 @@ data class UniMessage(
   }
 
   override fun initialize() {
-    if (uID == -1) uID = uniMessagesIndexManager!!.getUID()
+    if (uID == -1L) uID = uniMessagesIndexManager!!.getUID()
   }
 }
