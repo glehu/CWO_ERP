@@ -24,7 +24,7 @@ import api.misc.json.UniMemberProfileImage
 import api.misc.json.UniMessageReaction
 import api.misc.json.UsernameChange
 import api.misc.json.WisdomAnswerCreation
-import api.misc.json.WisdomCollaboratorPayload
+import api.misc.json.WisdomCollaboratorEditPayload
 import api.misc.json.WisdomCommentCreation
 import api.misc.json.WisdomLessonCreation
 import api.misc.json.WisdomQuestionCreation
@@ -1047,7 +1047,7 @@ class Server : IModule {
       if (wisdomGUID.isNullOrEmpty()) {
         call.respond(HttpStatusCode.BadRequest)
       }
-      val config: WisdomCollaboratorPayload = Json.decodeFromString(call.receive())
+      val config: WisdomCollaboratorEditPayload = Json.decodeFromString(call.receive())
       WisdomController().httpModifyWisdomContributor(call, wisdomGUID, config)
     }
   }

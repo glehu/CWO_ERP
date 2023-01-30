@@ -496,6 +496,9 @@ data class WisdomHistoryEntry(
   @SerialName("author") var authorUsername: String = ""
 )
 
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
 data class WisdomCollaboratorPayload(
   var username: String, var roles: Array<UniRole> = arrayOf(), var add: Boolean = true
 ) {
@@ -509,6 +512,25 @@ data class WisdomCollaboratorPayload(
 
   override fun hashCode(): Int {
     return roles.contentHashCode()
+  }
+}
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class WisdomCollaboratorEditPayload(
+  var collaborators: Array<WisdomCollaboratorPayload>
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    other as WisdomCollaboratorEditPayload
+    if (!collaborators.contentEquals(other.collaborators)) return false
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return collaborators.contentHashCode()
   }
 }
 
@@ -548,6 +570,5 @@ data class ChatroomsPayload(
 )
 
 data class FriendRequestResponse(
-  var successful: Boolean,
-  var message: String
+  var successful: Boolean, var message: String
 )

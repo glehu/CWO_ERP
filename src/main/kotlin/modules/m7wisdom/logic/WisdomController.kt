@@ -8,7 +8,7 @@ import api.misc.json.TaskBoxPayload
 import api.misc.json.TaskBoxesResponse
 import api.misc.json.UniMessageReaction
 import api.misc.json.WisdomAnswerCreation
-import api.misc.json.WisdomCollaboratorPayload
+import api.misc.json.WisdomCollaboratorEditPayload
 import api.misc.json.WisdomCommentCreation
 import api.misc.json.WisdomHistoryEntry
 import api.misc.json.WisdomLessonCreation
@@ -201,6 +201,18 @@ class WisdomController : IModule {
       appCall.respond(lesson.gUID)
       return
     }
+    // If mode was set to "edit", update some human-entered fields only.
+    // This mode is useful since those fields are the only ones that can be edited in the WisdomViewer of wikiric
+    if (mode.contains("^edit$".toRegex())) {
+      lesson.title = config.title
+      lesson.description = config.description
+      lesson.keywords = config.keywords
+      lesson.categories = config.categories
+      lesson.copyContent = config.copyContent
+      saveEntry(lesson)
+      appCall.respond(lesson.gUID)
+      return
+    }
     // Meta
     lesson.knowledgeUID = knowledgeRef!!.uID
     if (lesson.authorUsername.isEmpty()) {
@@ -237,6 +249,9 @@ class WisdomController : IModule {
       }
       if (boxWisdom != null) {
         lesson.srcWisdomUID = boxWisdom!!.uID
+        // Add the box's title to the task's keywords
+        if (lesson.keywords.isNotEmpty()) lesson.keywords += ','
+        lesson.keywords += boxWisdom!!.title
       } else {
         appCall.respond(HttpStatusCode.BadRequest)
         return
@@ -743,6 +758,14 @@ class WisdomController : IModule {
       }
       saveEntry(answer!!)
     }
+    // Write history entry
+    val historyEntry = WisdomHistoryEntry(
+            type = "completion",
+            date = Timestamp.getUnixTimestampHex(),
+            description = "Finished",
+            authorUsername = user.username
+    )
+    wisdom!!.history.add(Json.encodeToString(historyEntry))
     saveEntry(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
   }
@@ -766,7 +789,7 @@ class WisdomController : IModule {
   }
 
   suspend fun httpModifyWisdomContributor(
-    appCall: ApplicationCall, wisdomGUID: String?, config: WisdomCollaboratorPayload
+    appCall: ApplicationCall, wisdomGUID: String?, config: WisdomCollaboratorEditPayload
   ) {
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
@@ -779,15 +802,18 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.NotFound)
       return
     }
+    for (collaborator in config.collaborators)
     // Add collaborator if he doesn't exist yet
-    if (!wisdom!!.isCollaborator(config.username)) {
-      if (config.add) {
-        wisdom!!.collaborators.add(Json.encodeToString(WisdomCollaborator(config.username)))
+      if (!wisdom!!.isCollaborator(collaborator.username)) {
+        if (collaborator.add) {
+          wisdom!!.collaborators.add(Json.encodeToString(WisdomCollaborator(collaborator.username)))
+        }
+      } else if (!collaborator.add) {
+        // Remove him if he does
+        wisdom!!.isCollaborator(collaborator.username, true)
       }
-    } else if (!config.add) {
-      // Remove him if he does
-      wisdom!!.isCollaborator(config.username, true)
-    }
+    save(wisdom!!)
+    appCall.respond(HttpStatusCode.OK)
   }
 
   suspend fun httpGetRecentKeywords(appCall: ApplicationCall, knowledgeGUID: String?) {
