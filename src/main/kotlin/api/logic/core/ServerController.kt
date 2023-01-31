@@ -542,7 +542,7 @@ class ServerController {
               val msg = Json.encodeToString(uniMessage)
               session.connections.forEach {
                 if (!it.session.outgoing.isClosedForSend) {
-                  it.session.send(msg)
+                  it.session.send(Frame.Text(msg))
                 } else {
                   session.connectionsToDelete.add(it)
                 }

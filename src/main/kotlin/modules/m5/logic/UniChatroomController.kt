@@ -889,8 +889,7 @@ class UniChatroomController : IModule {
           if (!uniChatroom!!.checkIsMemberBanned(
                     username = usernameToken, isEmail = false
             ) && uniChatroom!!.checkIsMember(usernameToken)) {
-            if (!hasToBeJoined || uniChatroom!!.checkMemberPubkey(usernameToken))
-            chatrooms.chatrooms.add(uniChatroom!!)
+            if (!hasToBeJoined || uniChatroom!!.checkMemberPubkey(usernameToken)) chatrooms.chatrooms.add(uniChatroom!!)
           }
         }
       }

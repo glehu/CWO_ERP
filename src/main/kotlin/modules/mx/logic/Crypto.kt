@@ -14,8 +14,8 @@ import java.util.*
 @ExperimentalSerializationApi
 fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String {
   return Base64.getEncoder().encodeToString(
-            "$pepper$input$salt".digestKeccak(parameter = KeccakParameter.SHA3_512)
-    )
+          "$pepper$input$salt".digestKeccak(parameter = KeccakParameter.SHA3_512)
+  )
 }
 
 /**

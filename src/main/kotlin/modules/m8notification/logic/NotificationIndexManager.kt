@@ -64,9 +64,7 @@ class NotificationIndexManager(override var level: Long) : IIndexManager {
   ) {
     entry as Notification
     buildIndices(
-            entry.uID, posDB, byteSize, writeToDisk, userName,
-            Pair(1, entry.gUID),
-            Pair(2, entry.recipientUsername)
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.gUID), Pair(2, entry.recipientUsername)
     )
   }
 

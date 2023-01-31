@@ -155,7 +155,6 @@ var wisdomIndexManager: WisdomIndexManager? = null
 @ExperimentalSerializationApi
 var notificationIndexManager: NotificationIndexManager? = null
 
-
 //*************************************************
 //********************** TRACKER ******************
 //*************************************************
