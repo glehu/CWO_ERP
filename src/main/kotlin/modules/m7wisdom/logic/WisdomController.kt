@@ -232,6 +232,14 @@ class WisdomController : IModule {
     if (lesson.isTask || lesson.taskType.isNotEmpty()) {
       lesson.isTask = true
       lesson.type = config.taskType
+      if (!edit) {
+        // Add box's title to its keywords
+        if (config.taskType.lowercase() == "box") {
+          if (!config.keywords.contains(config.title)) {
+            lesson.keywords += config.title
+          }
+        }
+      }
     }
     lesson.columnIndex = config.columnIndex
     lesson.rowIndex = config.rowIndex
@@ -249,9 +257,11 @@ class WisdomController : IModule {
       }
       if (boxWisdom != null) {
         lesson.srcWisdomUID = boxWisdom!!.uID
-        // Add the box's title to the task's keywords
-        if (lesson.keywords.isNotEmpty()) lesson.keywords += ','
-        lesson.keywords += boxWisdom!!.title
+        if (!edit) {
+          // Add the box's title to the task's keywords
+          if (lesson.keywords.isNotEmpty()) lesson.keywords += ','
+          lesson.keywords += boxWisdom!!.title
+        }
       } else {
         appCall.respond(HttpStatusCode.BadRequest)
         return
@@ -566,6 +576,11 @@ class WisdomController : IModule {
             searchText = "^${wisdomRef!!.uID}$", ixNr = 3, showAll = true
     ) {
       it as Wisdom
+      // Convert dates for convenience
+      if (it.finished) {
+        it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
+      }
+      it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
       when (it.type) {
         "answer" -> response.answers.add(it)
         "comment" -> response.comments.add(it)
@@ -695,14 +710,18 @@ class WisdomController : IModule {
       return
     }
     // Now, get the tasks of all gathered boxes
-    var isFinishedDesire = false
-    if (stateFilter == "finished") isFinishedDesire = true
+    var isFinishedDesire: Boolean? = false
+    when (stateFilter) {
+      "finished" -> isFinishedDesire = true
+      "any", "all" -> isFinishedDesire = null
+    }
     for (i in 0 until taskBoxesResponse.boxes.size) {
       getEntriesFromIndexSearch(
               searchText = "^${taskBoxesResponse.boxes[i].box.uID}$", ixNr = 3, showAll = true
       ) {
         it as Wisdom
-        if (it.finished == isFinishedDesire) {
+        // Filter if there is a preference for "is finished"
+        if (isFinishedDesire == null || it.finished == isFinishedDesire) {
           // Convert dates before sending the entries back
           if (it.finished) {
             it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)

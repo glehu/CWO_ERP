@@ -4,8 +4,6 @@ import db.CwODB
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.m1.Song
 import modules.m1.misc.getGenreList
@@ -41,7 +39,7 @@ class DiscographyBenchmark : IModule {
         )
         if (i % 10_000 == 0) {
           log(Log.Type.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
-          coroutineScope { launch { discographyIndexManager!!.writeIndexData() } }
+          discographyIndexManager!!.writeIndexData()
         }
       }
     }

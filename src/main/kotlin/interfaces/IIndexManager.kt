@@ -276,14 +276,16 @@ interface IIndexManager : IModule {
   }
 
   /**
-   * Writes the index values stored in the RAM into the database.
+   * Writes the index values stored in the RAM onto the disk.
    */
-  suspend fun writeIndexData() {
+  suspend fun writeIndexData() = runBlocking {
     synchronized(this) {
       for (index in indexList.entries) {
-        getIndexFile(index.key).writeText(
-                Json.encodeToString(indexList[index.key])
-        )
+        launch {
+          getIndexFile(index.key).writeText(
+                  Json.encodeToString(indexList[index.key])
+          )
+        }
       }
     }
   }
