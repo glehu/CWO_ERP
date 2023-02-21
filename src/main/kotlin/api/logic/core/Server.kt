@@ -147,6 +147,7 @@ class Server : IModule {
       json(Json {
         prettyPrint = true
         isLenient = true
+        encodeDefaults = true
       })
     }
     install(Authentication) {
