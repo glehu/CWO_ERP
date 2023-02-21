@@ -11,7 +11,7 @@ import modules.mx.uniMessagesIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class ProcessEvent(
-  override var uID: Long = -1,
+  override var uID: Long = -1L,
 ) : IEntry {
   @SerialName("ts")
   var guid: String = ""
@@ -19,11 +19,14 @@ data class ProcessEvent(
   // Purpose
 
   /**
-   * This event's mode specified by "ProcessController.mode"
+   * This event's mode specified by "ProcessController.Mode"
    */
   var mode: String = ""
 
-  var actionType: String = ""
+  /**
+   * This event's mode specified by "ProcessController.ActionType"
+   */
+  var actionType: String = "incoming"
 
   var actionTarget: ArrayList<String> = arrayListOf()
 
@@ -39,18 +42,18 @@ data class ProcessEvent(
 
   var keywords: String = ""
 
-  var triggerWords: String = ""
+  var knowledgeUID: Long = -1L
 
-  var knowledgeGUID: String = ""
+  var wisdomUID: Long = -1L
 
-  var wisdomGUID: String = ""
+  var taskWisdomUID: Long = -1L
 
   var wisdomReferences: ArrayList<String> = arrayListOf()
 
   /**
    * If not -1, defines the start of an elaboration path, containing a sub-path being grouped by this entry.
    */
-  var elaborationPathStartUID: Long = -1
+  var elaborationPathStartUID: Long = -1L
 
   // #### In/Out
 
@@ -59,6 +62,10 @@ data class ProcessEvent(
   var outgoingUID: ArrayList<Long> = arrayListOf()
 
   // #### Timing
+
+  var graceTime: Double = 0.0
+
+  var graceTimeUnit: String = "ms"
 
   var durationMin: Double = 0.0
 
@@ -71,6 +78,10 @@ data class ProcessEvent(
   var amount: Int = 1
 
   // #### Likelihood
+
+  var auto: Boolean = false
+
+  var triggerWords: String = ""
 
   /**
    * Defines the weighting of this entry.
