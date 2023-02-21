@@ -16,12 +16,12 @@ data class Snippet(
 ) : IEntry {
   override fun initialize() {
     if (uID == -1L) uID = uniChatroomIndexManager!!.getUID()
-    if (gUID.isEmpty()) gUID = "snippet-" + Uuid.randomUUID().toString()
+    if (guid.isEmpty()) guid = "snippet-" + Uuid.randomUUID().toString()
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
   }
 
   @SerialName("guid")
-  var gUID = ""
+  var guid = ""
 
   @SerialName("cdate")
   var dateCreated = ""

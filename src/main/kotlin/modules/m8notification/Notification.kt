@@ -29,7 +29,7 @@ data class Notification(
 
   var keywords: String = ""
   var type: String = ""
-  var gUID: String = ""
+  var guid: String = ""
 
   @SerialName("cdate")
   var dateCreated: String = ""
@@ -45,7 +45,7 @@ data class Notification(
 
   init {
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
-    if (gUID.isEmpty()) gUID = Uuid.randomUUID().toString()
+    if (guid.isEmpty()) guid = Uuid.randomUUID().toString()
     if (type.isEmpty()) type = "info"
   }
 

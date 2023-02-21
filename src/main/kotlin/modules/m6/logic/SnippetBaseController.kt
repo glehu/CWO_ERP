@@ -46,11 +46,11 @@ class SnippetBaseController : IModule, IWebApp {
     return snippet
   }
 
-  suspend fun getSnippet(gUID: String): Snippet? {
+  suspend fun getSnippet(guid: String): Snippet? {
     var snippet: Snippet?
     mutex.withLock {
       snippet = null
-      getEntriesFromIndexSearch(gUID, 1, true) {
+      getEntriesFromIndexSearch(guid, 1, true) {
         snippet = it as Snippet
       }
     }
@@ -108,7 +108,7 @@ class SnippetBaseController : IModule, IWebApp {
     }
     // Exit upon reaching this point without having found a supported media type
     if (fileExtension == null) return null
-    val file = getProjectJsonFile(owner, snippet.gUID, extension = fileExtension)
+    val file = getProjectJsonFile(owner, snippet.guid, extension = fileExtension)
     // Create the resource and save it to the disk
     if (mimeType.contains("image") && !mimeType.contains("gif")) {
       // Resizing necessary?

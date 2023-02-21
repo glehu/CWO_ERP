@@ -20,7 +20,7 @@ data class UniMessage(
   @SerialName("ts")
   var timestamp: String = ""
 
-  var gUID: String = ""
+  var guid: String = ""
 
   var isEncrypted = false
 
@@ -29,7 +29,7 @@ data class UniMessage(
 
   init {
     if (timestamp.isEmpty()) timestamp = Timestamp.now()
-    if (gUID.isEmpty()) gUID = Uuid.randomUUID().toString()
+    if (guid.isEmpty()) guid = Uuid.randomUUID().toString()
   }
 
   override fun initialize() {

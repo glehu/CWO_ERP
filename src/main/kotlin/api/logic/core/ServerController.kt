@@ -925,7 +925,7 @@ class ServerController {
               appCall.respond(HttpStatusCode.InternalServerError)
               return
             }
-            uniChatroom.imgGUID = snippet.gUID
+            uniChatroom.imgGUID = snippet.guid
           }
           saveChatroom(uniChatroom)
         }
@@ -966,8 +966,8 @@ class ServerController {
               appCall.respond(HttpStatusCode.InternalServerError)
               return
             }
-            if (!isBanner) uniChatroom.addOrUpdateMember(config.username, imageSnippetURL = snippet.gUID)
-            if (isBanner) uniChatroom.addOrUpdateMember(config.username, bannerSnippetURL = snippet.gUID)
+            if (!isBanner) uniChatroom.addOrUpdateMember(config.username, imageSnippetURL = snippet.guid)
+            if (isBanner) uniChatroom.addOrUpdateMember(config.username, bannerSnippetURL = snippet.guid)
           }
           saveChatroom(uniChatroom)
         }
@@ -992,7 +992,7 @@ class ServerController {
           appCall.respond(HttpStatusCode.InternalServerError)
           return
         }
-        appCall.respond(Json.encodeToString(SnippetResponse(HttpStatusCode.Created.value, snippet.gUID)))
+        appCall.respond(Json.encodeToString(SnippetResponse(HttpStatusCode.Created.value, snippet.guid)))
       }
     }
 

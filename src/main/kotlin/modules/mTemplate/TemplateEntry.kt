@@ -17,11 +17,11 @@ data class TemplateEntry(
   @SerialName("ts")
   var timestamp: String = ""
 
-  var gUID: String = ""
+  var guid: String = ""
 
   init {
     if (timestamp.isEmpty()) timestamp = Timestamp.now()
-    if (gUID.isEmpty()) gUID = Uuid.randomUUID().toString()
+    if (guid.isEmpty()) guid = Uuid.randomUUID().toString()
   }
 
   override fun initialize() {

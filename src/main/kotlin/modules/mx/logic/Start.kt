@@ -19,6 +19,7 @@ import modules.m6.logic.SnippetBaseIndexManager
 import modules.m7knowledge.logic.KnowledgeIndexManager
 import modules.m7wisdom.logic.WisdomIndexManager
 import modules.m8notification.logic.NotificationIndexManager
+import modules.m9process.logic.ProcessIndexManager
 import modules.mx.Ini
 import modules.mx.contactIndexManager
 import modules.mx.dataPath
@@ -32,6 +33,7 @@ import modules.mx.itemStockPostingIndexManager
 import modules.mx.knowledgeIndexManager
 import modules.mx.maxSearchResultsGlobal
 import modules.mx.notificationIndexManager
+import modules.mx.processIndexManager
 import modules.mx.server
 import modules.mx.serverIPAddressGlobal
 import modules.mx.serverJobGlobal
@@ -159,6 +161,7 @@ fun loadIndex(module: String = "") {
       "m7" -> knowledgeIndexManager = KnowledgeIndexManager(0)
       "m7wisdom" -> wisdomIndexManager = WisdomIndexManager(0)
       "m8notification" -> notificationIndexManager = NotificationIndexManager(0)
+      "m9process" -> processIndexManager = ProcessIndexManager(0)
     }
   } else {
     discographyIndexManager = DiscographyIndexManager(0)
@@ -172,6 +175,7 @@ fun loadIndex(module: String = "") {
     knowledgeIndexManager = KnowledgeIndexManager(0)
     wisdomIndexManager = WisdomIndexManager(0)
     notificationIndexManager = NotificationIndexManager(0)
+    processIndexManager = ProcessIndexManager(0)
   }
 }
 

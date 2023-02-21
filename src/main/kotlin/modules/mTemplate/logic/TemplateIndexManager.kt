@@ -62,7 +62,7 @@ class TemplateIndexManager(override var level: Long) : IIndexManager {
     entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
   ) {
     entry as TemplateEntry
-    val chatUID = entry.gUID
+    val chatUID = entry.guid
     buildIndices(
             entry.uID,
             posDB,
@@ -70,7 +70,7 @@ class TemplateIndexManager(override var level: Long) : IIndexManager {
             writeToDisk,
             userName,
             Pair(1, if (chatUID != "-1") chatUID else "?"),
-            Pair(2, entry.gUID)
+            Pair(2, entry.guid)
     )
   }
 

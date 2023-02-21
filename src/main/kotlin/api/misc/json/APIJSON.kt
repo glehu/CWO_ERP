@@ -11,17 +11,20 @@ import modules.m7wisdom.Wisdom
 
 @Serializable
 data class EntryBytesListJson(
-  var total: Int, val resultsList: ArrayList<ByteArray>
+  var total: Int,
+  val resultsList: ArrayList<ByteArray>
 )
 
 @Serializable
 data class EntryListJson(
-  var total: Int, val resultsList: ArrayList<String>
+  var total: Int,
+  val resultsList: ArrayList<String>
 )
 
 @Serializable
 data class EntryJson(
-  var uID: Int, var entry: ByteArray
+  var uID: Int,
+  var entry: ByteArray
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -67,17 +70,20 @@ data class CWOAuthCallbackJson(
  */
 @Serializable
 data class ValidationContainerJson(
-  val contentJson: String, val hash: String
+  val contentJson: String,
+  val hash: String
 )
 
 @Serializable
 data class ListDeltaJson(
-  val listEntryNew: String, val listEntryOld: String
+  val listEntryNew: String,
+  val listEntryOld: String
 )
 
 @Serializable
 data class WebshopOrder(
-  val cart: Array<WebshopCartItem>, val customerNote: String = ""
+  val cart: Array<WebshopCartItem>,
+  val customerNote: String = ""
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -106,12 +112,15 @@ data class WebshopCartItem(
 
 @Serializable
 data class RegistrationPayload(
-  val email: String, val username: String, val password: String
+  val email: String,
+  val username: String,
+  val password: String
 )
 
 @Serializable
 data class RegistrationResponse(
-  val success: Boolean, val message: String
+  val success: Boolean,
+  val message: String
 )
 
 @Serializable
@@ -121,32 +130,42 @@ data class UsageTrackerStats(
 
 @Serializable
 data class UsageTrackerData(
-  val source: String, val module: String, val action: String
+  val source: String,
+  val module: String,
+  val action: String
 )
 
 @Serializable
 data class EMailJson(
-  val subject: String, val body: String, val recipient: String
+  val subject: String,
+  val body: String,
+  val recipient: String
 )
 
 @Serializable
 data class SettingsRequestJson(
-  val module: String, val subSetting: String
+  val module: String,
+  val subSetting: String
 )
 
 @Serializable
 data class TwoLongOneDoubleJson(
-  val first: Long, val second: Long, val third: Double
+  val first: Long,
+  val second: Long,
+  val third: Double
 )
 
 @Serializable
 data class PairLongJson(
-  val first: Long, val second: Long
+  val first: Long,
+  val second: Long
 )
 
 @Serializable
 data class WebPlannerCommit(
-  val action: String, val project: String, val cells: Array<WebPlannerCell>
+  val action: String,
+  val project: String,
+  val cells: Array<WebPlannerCell>
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -163,12 +182,14 @@ data class WebPlannerCommit(
 
 @Serializable
 data class WebPlannerRequest(
-  val action: String, val project: String
+  val action: String,
+  val project: String
 )
 
 @Serializable
 data class WebPlannerResponse(
-  val type: String, val content: Array<WebPlannerCell>
+  val type: String,
+  val content: Array<WebPlannerCell>
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -240,7 +261,9 @@ data class UniChatroomCreateChatroom(
    * - webcam
    * - direct
    */
-  val type: String, val imgBase64: String = "", val directMessageUsernames: Array<String> = arrayOf()
+  val type: String,
+  val imgBase64: String = "",
+  val directMessageUsernames: Array<String> = arrayOf()
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -257,32 +280,41 @@ data class UniChatroomCreateChatroom(
 
 @Serializable
 data class UniChatroomAddMessage(
-  val uniChatroomGUID: String, val text: String
+  val uniChatroomGUID: String,
+  val text: String
 )
 
 @Serializable
 data class UniChatroomEditMessage(
-  val uniMessageGUID: String, val newContent: String
+  val uniMessageGUID: String,
+  val newContent: String
 )
 
 @Serializable
 data class UniChatroomReactMessage(
-  val uniMessageGUID: String, val type: String
+  val uniMessageGUID: String,
+  val type: String
 )
 
 @Serializable
 data class UniChatroomReactMessageResponse(
-  val uniMessageGUID: String, val type: String, val from: String, val isRemove: Boolean
+  val uniMessageGUID: String,
+  val type: String,
+  val from: String,
+  val isRemove: Boolean
 )
 
 @Serializable
 data class UniMessageReaction(
-  @SerialName("src") val from: ArrayList<String>, @SerialName("t") val type: String
+  @SerialName("src") val from: ArrayList<String>,
+  @SerialName("t") val type: String
 )
 
 @Serializable
 data class UniChatroomAddMember(
-  val uniChatroomGUID: String, val member: String, val role: String
+  val uniChatroomGUID: String,
+  val member: String,
+  val role: String
 )
 
 @Serializable
@@ -292,7 +324,8 @@ data class UniChatroomRemoveMember(
 
 @Serializable
 data class UniChatroomMemberRole(
-  val member: String, val role: String
+  val member: String,
+  val role: String
 )
 
 @Serializable
@@ -312,7 +345,8 @@ data class UniChatroomImage(
 
 @Serializable
 data class UniMemberProfileImage(
-  val imageBase64: String, val username: String
+  val imageBase64: String,
+  val username: String
 )
 
 @Serializable
@@ -322,22 +356,27 @@ data class UniChatroomMessages(
 
 @Serializable
 data class SnippetPayload(
-  val type: String, val payload: String = ""
+  val type: String,
+  val payload: String = ""
 )
 
 @Serializable
 data class SnippetResponse(
-  val httpCode: Int, val guid: String
+  val httpCode: Int,
+  val guid: String
 )
 
 @Serializable
 data class UsernameChange(
-  val username: String, val newUsername: String
+  val username: String,
+  val newUsername: String
 )
 
 @Serializable
 data class PasswordChange(
-  val username: String, val password: String, val newPassword: String
+  val username: String,
+  val password: String,
+  val newPassword: String
 )
 
 @Serializable
@@ -368,7 +407,8 @@ data class KnowledgeCreation(
 
 @Serializable
 data class KnowledgeCategoryEdit(
-  val action: String = "", val category: String = ""
+  val action: String = "",
+  val category: String = ""
 )
 
 @Serializable
@@ -444,7 +484,8 @@ data class WisdomSearchResponse(
 @InternalAPI
 @Serializable
 data class WisdomSearchResponseEntry(
-  val wisdom: Wisdom, val accuracy: Int
+  val wisdom: Wisdom,
+  val accuracy: Int
 )
 
 @ExperimentalSerializationApi
@@ -477,15 +518,25 @@ data class WisdomTopContributorsResponseEntry(
 @ExperimentalSerializationApi
 @InternalAPI
 @Serializable
-data class TaskBoxesResponse(
-  var boxes: ArrayList<TaskBoxPayload> = arrayListOf()
+data class PlannerBoxesPayload(
+  var boxes: ArrayList<PlannerBoxTasksPayload> = arrayListOf()
 )
 
 @ExperimentalSerializationApi
 @InternalAPI
 @Serializable
-data class TaskBoxPayload(
-  var box: Wisdom, var tasks: ArrayList<Wisdom> = arrayListOf()
+data class PlannerBoxTasksPayload(
+  var box: Wisdom,
+  var tasks: ArrayList<PlannerTaskPayload> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class PlannerTaskPayload(
+  var task: Wisdom,
+  var recentComment: Wisdom? = null,
+  var amountComments: Int = 0
 )
 
 @Serializable
@@ -500,7 +551,9 @@ data class WisdomHistoryEntry(
 @InternalAPI
 @Serializable
 data class WisdomCollaboratorPayload(
-  var username: String, var roles: Array<UniRole> = arrayOf(), var add: Boolean = true
+  var username: String,
+  var roles: Array<UniRole> = arrayOf(),
+  var add: Boolean = true
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -559,7 +612,8 @@ data class CategoriesPayload(
 @InternalAPI
 @Serializable
 data class CategoryPayload(
-  var category: String, var count: Int
+  var category: String,
+  var count: Int
 )
 
 @ExperimentalSerializationApi
@@ -569,6 +623,23 @@ data class ChatroomsPayload(
   var chatrooms: ArrayList<UniChatroom> = arrayListOf()
 )
 
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
 data class FriendRequestResponse(
-  var successful: Boolean, var message: String
+  var successful: Boolean,
+  var message: String
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class ProcessEntryConfig(
+  var mode: String = "",
+  var title: String = "",
+  var description: String = "",
+  var keywords: String = "",
+  var value: String = "",
+  var knowledgeGUID: String = "",
+  var wisdomGUID: String = ""
 )

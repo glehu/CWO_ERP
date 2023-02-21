@@ -75,10 +75,10 @@ class WisdomIndexManager(override var level: Long) : IIndexManager {
             byteSize,
             writeToDisk,
             userName,
-            Pair(1, entry.gUID),
+            Pair(1, entry.guid),
             Pair(2, if (knowledgeUID != "-1") knowledgeUID else "?"),
             Pair(3, if (srcWisdomUID != "-1") srcWisdomUID else "?"),
-            Pair(4, entry.keywords),
+            Pair(4, entry.keywords.take(100)),
             Pair(5, if (refWisdomUID != "-1") refWisdomUID else "?"),
             Pair(6, if (entry.isTask) "$knowledgeUID;${entry.taskType}" else "?")
     )

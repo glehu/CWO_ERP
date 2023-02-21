@@ -62,7 +62,7 @@ class SnippetBaseIndexManager(override var level: Long) : IIndexManager {
   ) {
     entry as Snippet
     buildIndices(
-            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.gUID)
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid)
     )
   }
 

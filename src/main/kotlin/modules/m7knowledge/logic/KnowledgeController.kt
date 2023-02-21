@@ -1,5 +1,6 @@
 package modules.m7knowledge.logic
 
+import api.logic.core.ServerController
 import api.misc.json.KnowledgeCategoryEdit
 import api.misc.json.KnowledgeCreation
 import interfaces.IIndexManager
@@ -16,9 +17,11 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.m5.logic.UniChatroomController
 import modules.m7knowledge.Knowledge
 import modules.m7wisdom.WisdomCategory
 import modules.mx.knowledgeIndexManager
+import modules.mx.logic.UserCLIManager
 
 @DelicateCoroutinesApi
 @ExperimentalCoroutinesApi
@@ -92,7 +95,7 @@ class KnowledgeController : IModule {
     knowledge!!.keywords = config.keywords
     knowledge!!.isPrivate = config.isPrivate
     KnowledgeController().saveEntry(knowledge!!)
-    appCall.respond(knowledge!!.gUID)
+    appCall.respond(knowledge!!.guid)
   }
 
   suspend fun httpEditKnowledgeCategories(
@@ -150,5 +153,30 @@ class KnowledgeController : IModule {
         return
       }
     }
+  }
+
+  /**
+   * Check if user is authorized in case the knowledge is private.
+   * @return [Boolean] "true" if the user is authorized and "false" if not.
+   */
+  suspend fun httpCanAccessKnowledge(appCall: ApplicationCall, knowledgeRef: Knowledge): Boolean {
+    if (knowledgeRef.isPrivate) {
+      if (knowledgeRef.mainChatroomGUID.isNotEmpty()) {
+        with(UniChatroomController()) {
+          val chatroom = getChatroom(knowledgeRef.mainChatroomGUID)
+          if (chatroom == null) {
+            appCall.respond(HttpStatusCode.Conflict)
+            return false
+          }
+          if (!chatroom.checkIsMember(
+                    UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))!!.username
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return false
+          } else return true
+        }
+      }
+    }
+    return true
   }
 }

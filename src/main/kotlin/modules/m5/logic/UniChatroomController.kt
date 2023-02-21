@@ -220,7 +220,7 @@ class UniChatroomController : IModule {
     } else false
   }
 
-  suspend fun UniChatroom.addMessage(member: String, message: String, gUID: String = ""): Boolean {
+  suspend fun UniChatroom.addMessage(member: String, message: String, guid: String = ""): Boolean {
     if (!checkMessage(message)) {
       log(Log.Type.ERROR, "Message invalid (checkMessage)")
       return false
@@ -232,7 +232,7 @@ class UniChatroomController : IModule {
     val uniMessage = UniMessage(
             uniChatroomUID = this.uID, from = member, message = message
     )
-    if (gUID.isNotEmpty()) uniMessage.gUID = gUID
+    if (guid.isNotEmpty()) uniMessage.guid = guid
     uniMessagesController.save(uniMessage)
     return true
   }
@@ -479,7 +479,7 @@ class UniChatroomController : IModule {
         // Did the message get deleted?
         if (message!!.message.isEmpty()) {
           message!!.uniChatroomUID = -1
-          message!!.gUID = "?"
+          message!!.guid = "?"
         }
         save(message!!)
       }
@@ -788,7 +788,7 @@ class UniChatroomController : IModule {
       }
     }
     mutexMessages.withLock {
-      uniChatroom.addMessage(thisConnection.username, uniMessage.message, uniMessage.gUID)
+      uniChatroom.addMessage(thisConnection.username, uniMessage.message, uniMessage.guid)
     }
     // Send notification to all members
     val fcmTokens: ArrayList<String> = arrayListOf()

@@ -4,8 +4,9 @@ import api.logic.core.ServerController
 import api.misc.json.CategoriesPayload
 import api.misc.json.CategoryPayload
 import api.misc.json.KeywordsPayload
-import api.misc.json.TaskBoxPayload
-import api.misc.json.TaskBoxesResponse
+import api.misc.json.PlannerBoxTasksPayload
+import api.misc.json.PlannerBoxesPayload
+import api.misc.json.PlannerTaskPayload
 import api.misc.json.UniMessageReaction
 import api.misc.json.WisdomAnswerCreation
 import api.misc.json.WisdomCollaboratorEditPayload
@@ -33,6 +34,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.m2.Contact
 import modules.m7knowledge.Knowledge
 import modules.m7knowledge.logic.KnowledgeController
 import modules.m7wisdom.Wisdom
@@ -67,7 +69,9 @@ class WisdomController : IModule {
   }
 
   suspend fun httpCreateQuestion(
-    appCall: ApplicationCall, config: WisdomQuestionCreation, wisdomGUID: String = ""
+    appCall: ApplicationCall,
+    config: WisdomQuestionCreation,
+    wisdomGUID: String = ""
   ) {
     if (config.knowledgeGUID.isEmpty()) {
       appCall.respond(HttpStatusCode.BadRequest)
@@ -85,6 +89,8 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
+    if (!KnowledgeController().httpCanAccessKnowledge(appCall, knowledgeRef!!)) return
+    var edit = false
     var question = Wisdom()
     question.type = "question"
     if (wisdomGUID.isNotEmpty()) {
@@ -94,6 +100,14 @@ class WisdomController : IModule {
       ) {
         it as Wisdom
         question = it
+        edit = true
+      }
+      if (!edit) {
+        appCall.respond(HttpStatusCode.NotFound)
+        return
+      } else {
+        // Are we allowed to alter this entry?
+        if (!httpCheckWisdomRights(appCall, question, false, user = user)) return
       }
     }
     // Meta
@@ -108,11 +122,13 @@ class WisdomController : IModule {
     question.categories = config.categories
     question.copyContent = config.copyContent
     saveEntry(question)
-    appCall.respond(question.gUID)
+    appCall.respond(question.guid)
   }
 
   suspend fun httpCreateAnswer(
-    appCall: ApplicationCall, config: WisdomAnswerCreation, wisdomGUID: String
+    appCall: ApplicationCall,
+    config: WisdomAnswerCreation,
+    wisdomGUID: String
   ) {
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     var wisdomRef: Wisdom? = null
@@ -126,6 +142,7 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
+    var edit = false
     var answer = Wisdom()
     answer.type = "answer"
     if (wisdomGUID.isNotEmpty()) {
@@ -135,6 +152,14 @@ class WisdomController : IModule {
       ) {
         it as Wisdom
         answer = it
+        edit = true
+      }
+      if (!edit) {
+        appCall.respond(HttpStatusCode.NotFound)
+        return
+      } else {
+        // Are we allowed to alter this entry?
+        if (!httpCheckWisdomRights(appCall, answer, user = user)) return
       }
     }
     // Meta
@@ -149,11 +174,14 @@ class WisdomController : IModule {
     answer.keywords = config.keywords
     answer.copyContent = config.copyContent
     saveEntry(answer)
-    appCall.respond(answer.gUID)
+    appCall.respond(answer.guid)
   }
 
   suspend fun httpCreateLesson(
-    appCall: ApplicationCall, config: WisdomLessonCreation, wisdomGUID: String, mode: String
+    appCall: ApplicationCall,
+    config: WisdomLessonCreation,
+    wisdomGUID: String,
+    mode: String
   ) {
     if (config.knowledgeGUID.isEmpty()) {
       appCall.respond(HttpStatusCode.BadRequest)
@@ -171,6 +199,7 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
+    if (!KnowledgeController().httpCanAccessKnowledge(appCall, knowledgeRef!!)) return
     var lesson = Wisdom()
     lesson.type = "lesson"
     var edit = false
@@ -182,6 +211,13 @@ class WisdomController : IModule {
         it as Wisdom
         lesson = it
         edit = true
+      }
+      if (!edit) {
+        appCall.respond(HttpStatusCode.NotFound)
+        return
+      } else {
+        // Are we allowed to alter this entry?
+        if (!httpCheckWisdomRights(appCall, lesson, false, user = user)) return
       }
     }
     // If mode was set to "due", update the due dates only and fix them while doing so
@@ -198,7 +234,7 @@ class WisdomController : IModule {
         }
       }
       saveEntry(lesson)
-      appCall.respond(lesson.gUID)
+      appCall.respond(lesson.guid)
       return
     }
     // If mode was set to "edit", update some human-entered fields only.
@@ -210,7 +246,7 @@ class WisdomController : IModule {
       lesson.categories = config.categories
       lesson.copyContent = config.copyContent
       saveEntry(lesson)
-      appCall.respond(lesson.gUID)
+      appCall.respond(lesson.guid)
       return
     }
     // Meta
@@ -269,26 +305,24 @@ class WisdomController : IModule {
     }
     val historyEntry = if (!edit) {
       WisdomHistoryEntry(
-              type = "creation",
-              date = Timestamp.getUnixTimestampHex(),
-              description = "Created",
+              type = "creation", date = Timestamp.getUnixTimestampHex(), description = "Created",
               authorUsername = user!!.username
       )
     } else {
       WisdomHistoryEntry(
-              type = "edit",
-              date = Timestamp.getUnixTimestampHex(),
-              description = "Edited",
+              type = "edit", date = Timestamp.getUnixTimestampHex(), description = "Edited",
               authorUsername = user!!.username
       )
     }
     lesson.history.add(Json.encodeToString(historyEntry))
     saveEntry(lesson)
-    appCall.respond(lesson.gUID)
+    appCall.respond(lesson.guid)
   }
 
   suspend fun httpCreateComment(
-    appCall: ApplicationCall, config: WisdomCommentCreation, wisdomGUID: String
+    appCall: ApplicationCall,
+    config: WisdomCommentCreation,
+    wisdomGUID: String
   ) {
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     var wisdomRef: Wisdom? = null
@@ -302,6 +336,7 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
+    var edit = false
     var comment = Wisdom()
     comment.type = "comment"
     if (wisdomGUID.isNotEmpty()) {
@@ -311,6 +346,14 @@ class WisdomController : IModule {
       ) {
         it as Wisdom
         comment = it
+        edit = true
+      }
+      if (!edit) {
+        appCall.respond(HttpStatusCode.NotFound)
+        return
+      } else {
+        // Are we allowed to alter this entry?
+        if (!httpCheckWisdomRights(appCall, comment, user = user)) return
       }
     }
     // Meta
@@ -324,10 +367,14 @@ class WisdomController : IModule {
     comment.description = config.description
     comment.keywords = config.keywords
     saveEntry(comment)
-    appCall.respond(comment.gUID)
+    appCall.respond(comment.guid)
   }
 
-  suspend fun httpWisdomQuery(appCall: ApplicationCall, config: WisdomSearchQuery, knowledgeGUID: String?) {
+  suspend fun httpWisdomQuery(
+    appCall: ApplicationCall,
+    config: WisdomSearchQuery,
+    knowledgeGUID: String?
+  ) {
     // val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
@@ -340,6 +387,7 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
+    if (!KnowledgeController().httpCanAccessKnowledge(appCall, knowledgeRef!!)) return
     // Matches Total
     var matchesAll: Sequence<MatchResult>
     // Etc
@@ -490,7 +538,9 @@ class WisdomController : IModule {
   }
 
   suspend fun httpWisdomReact(
-    appCall: ApplicationCall, config: UniMessageReaction, wisdomGUID: String?
+    appCall: ApplicationCall,
+    config: UniMessageReaction,
+    wisdomGUID: String?
   ) {
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     if (user == null) {
@@ -550,7 +600,9 @@ class WisdomController : IModule {
   }
 
   suspend fun httpGetWisdomEntriesRelated(
-    appCall: ApplicationCall, wisdomGUID: String?, type: String = "guid"
+    appCall: ApplicationCall,
+    wisdomGUID: String?,
+    type: String = "guid"
   ) {
     if (wisdomGUID == null) {
       appCall.respond(HttpStatusCode.BadRequest)
@@ -592,7 +644,10 @@ class WisdomController : IModule {
     appCall.respond(response)
   }
 
-  suspend fun httpWisdomTopContributors(appCall: ApplicationCall, knowledgeGUID: String?) {
+  suspend fun httpWisdomTopContributors(
+    appCall: ApplicationCall,
+    knowledgeGUID: String?
+  ) {
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
             searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
@@ -604,6 +659,7 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
+    if (!KnowledgeController().httpCanAccessKnowledge(appCall, knowledgeRef!!)) return
     val contributors = mutableMapOf<String, Int>()
     getEntriesFromIndexSearch(
             searchText = "^${knowledgeRef!!.uID}$", ixNr = 2, showAll = true
@@ -630,7 +686,10 @@ class WisdomController : IModule {
     appCall.respond(response)
   }
 
-  suspend fun httpDeleteWisdom(appCall: ApplicationCall, wisdomGUID: String?) {
+  suspend fun httpDeleteWisdom(
+    appCall: ApplicationCall,
+    wisdomGUID: String?
+  ) {
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
             searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
@@ -643,11 +702,9 @@ class WisdomController : IModule {
       return
     }
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
-    if (user == null || wisdom!!.authorUsername != user.username) {
-      appCall.respond(HttpStatusCode.Unauthorized)
-      return
-    }
-    wisdom!!.gUID = "?"
+    if (!httpCheckWisdomRights(appCall, wisdom!!, user = user)) return
+    // Configure wisdom
+    wisdom!!.guid = "?"
     wisdom!!.knowledgeUID = -1
     wisdom!!.title = "?"
     wisdom!!.description = "?"
@@ -658,7 +715,10 @@ class WisdomController : IModule {
     appCall.respond(HttpStatusCode.OK)
   }
 
-  suspend fun httpGetWisdomEntry(appCall: ApplicationCall, wisdomGUID: String) {
+  suspend fun httpGetWisdomEntry(
+    appCall: ApplicationCall,
+    wisdomGUID: String
+  ) {
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
             searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
@@ -677,7 +737,11 @@ class WisdomController : IModule {
     appCall.respond(wisdom!!)
   }
 
-  suspend fun httpGetTasks(appCall: ApplicationCall, knowledgeGUID: String?, stateFilter: String) {
+  suspend fun httpGetTasks(
+    appCall: ApplicationCall,
+    knowledgeGUID: String?,
+    stateFilter: String
+  ) {
     if (knowledgeGUID == null) {
       appCall.respond(HttpStatusCode.BadRequest)
       return
@@ -693,8 +757,9 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.BadRequest)
       return
     }
+    if (!KnowledgeController().httpCanAccessKnowledge(appCall, knowledgeRef!!)) return
     // First, fetch all boxes
-    val taskBoxesResponse = TaskBoxesResponse()
+    val plannerBoxesPayload = PlannerBoxesPayload()
     getEntriesFromIndexSearch(
             searchText = "^${knowledgeRef!!.uID};BOX$", ixNr = 6, showAll = true
     ) {
@@ -703,9 +768,9 @@ class WisdomController : IModule {
         it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
       }
       it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
-      taskBoxesResponse.boxes.add(TaskBoxPayload(it))
+      plannerBoxesPayload.boxes.add(PlannerBoxTasksPayload(it))
     }
-    if (taskBoxesResponse.boxes.isEmpty()) {
+    if (plannerBoxesPayload.boxes.isEmpty()) {
       appCall.respond(HttpStatusCode.NotFound)
       return
     }
@@ -715,27 +780,51 @@ class WisdomController : IModule {
       "finished" -> isFinishedDesire = true
       "any", "all" -> isFinishedDesire = null
     }
-    for (i in 0 until taskBoxesResponse.boxes.size) {
+    for (i in 0 until plannerBoxesPayload.boxes.size) {
       getEntriesFromIndexSearch(
-              searchText = "^${taskBoxesResponse.boxes[i].box.uID}$", ixNr = 3, showAll = true
-      ) {
-        it as Wisdom
+              searchText = "^${plannerBoxesPayload.boxes[i].box.uID}$", ixNr = 3, showAll = true
+      ) { taskIt ->
+        taskIt as Wisdom
         // Filter if there is a preference for "is finished"
-        if (isFinishedDesire == null || it.finished == isFinishedDesire) {
+        if (isFinishedDesire == null || taskIt.finished == isFinishedDesire) {
+          val plannerTaskPayload = PlannerTaskPayload(taskIt)
           // Convert dates before sending the entries back
-          if (it.finished) {
-            it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
+          if (taskIt.finished) {
+            taskIt.finishedDate = Timestamp.getUTCTimestampFromHex(taskIt.finishedDate)
           }
-          it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
-          taskBoxesResponse.boxes[i].tasks.add(it)
+          taskIt.dateCreated = Timestamp.getUTCTimestampFromHex(taskIt.dateCreated)
+          // Retrieve comments for this task
+          getEntriesFromIndexSearch(
+                  searchText = "^${taskIt.uID}$", ixNr = 3, showAll = true
+          ) {
+            it as Wisdom
+            when (it.type) {
+              "comment" -> {
+                plannerTaskPayload.amountComments += 1
+                if (plannerTaskPayload.recentComment == null) {
+                  // Convert dates for convenience
+                  if (it.finished) {
+                    it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
+                  }
+                  it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
+                  plannerTaskPayload.recentComment = it
+                }
+              }
+            }
+          }
+          plannerBoxesPayload.boxes[i].tasks.add(plannerTaskPayload)
         }
       }
     }
     // Respond
-    appCall.respond(taskBoxesResponse)
+    appCall.respond(plannerBoxesPayload)
   }
 
-  suspend fun httpFinishWisdom(appCall: ApplicationCall, wisdomGUID: String?, answerGUID: String?) {
+  suspend fun httpFinishWisdom(
+    appCall: ApplicationCall,
+    wisdomGUID: String?,
+    answerGUID: String?
+  ) {
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
             searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
@@ -748,11 +837,8 @@ class WisdomController : IModule {
       return
     }
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
-    // If the user is unauthorized or neither the creator nor a collaborator, exit
-    if (user == null || (wisdom!!.authorUsername != user.username && !wisdom!!.isCollaborator(user.username))) {
-      appCall.respond(HttpStatusCode.Unauthorized)
-      return
-    }
+    if (!httpCheckWisdomRights(appCall, wisdom!!, user = user)) return
+    // Configure wisdom
     wisdom!!.hasDueDate = false
     wisdom!!.finished = true
     wisdom!!.finishedDate = Timestamp.getUnixTimestampHex()
@@ -779,18 +865,54 @@ class WisdomController : IModule {
     }
     // Write history entry
     val historyEntry = WisdomHistoryEntry(
-            type = "completion",
-            date = Timestamp.getUnixTimestampHex(),
-            description = "Finished",
-            authorUsername = user.username
+            type = "completion", date = Timestamp.getUnixTimestampHex(), description = "Finished",
+            authorUsername = user!!.username
     )
     wisdom!!.history.add(Json.encodeToString(historyEntry))
     saveEntry(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
   }
 
+  private suspend fun httpCheckWisdomRights(
+    appCall: ApplicationCall,
+    wisdom: Wisdom,
+    checkKnowledge: Boolean = true,
+    user: Contact? = null
+  ): Boolean {
+    if (checkKnowledge) {
+      if (wisdom.knowledgeUID == -1L) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return false
+      }
+      val knowledgeController = KnowledgeController()
+      var knowledgeRef: Knowledge? = null
+      KnowledgeController().getEntriesFromIndexSearch(
+              searchText = "^${wisdom.knowledgeUID}$", ixNr = 0, showAll = true
+      ) {
+        it as Knowledge
+        knowledgeRef = it
+      }
+      if (knowledgeRef == null) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return false
+      }
+      if (!knowledgeController.httpCanAccessKnowledge(appCall, knowledgeRef!!)) {
+        return false
+      }
+    }
+    // Retrieve user if not provided
+    val userTmp = user ?: UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
+    // If the user is unauthorized or neither the creator nor a collaborator, exit
+    if (userTmp == null || (wisdom.authorUsername != userTmp.username && !wisdom.isCollaborator(userTmp.username))) {
+      appCall.respond(HttpStatusCode.Forbidden)
+      return false
+    }
+    return true
+  }
+
   private fun Wisdom.isCollaborator(
-    username: String, removeIfFound: Boolean = false
+    username: String,
+    removeIfFound: Boolean = false
   ): Boolean {
     if (username.isEmpty()) return false
     if (this.collaborators.isEmpty()) return false
@@ -808,7 +930,9 @@ class WisdomController : IModule {
   }
 
   suspend fun httpModifyWisdomContributor(
-    appCall: ApplicationCall, wisdomGUID: String?, config: WisdomCollaboratorEditPayload
+    appCall: ApplicationCall,
+    wisdomGUID: String?,
+    config: WisdomCollaboratorEditPayload
   ) {
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
@@ -835,7 +959,10 @@ class WisdomController : IModule {
     appCall.respond(HttpStatusCode.OK)
   }
 
-  suspend fun httpGetRecentKeywords(appCall: ApplicationCall, knowledgeGUID: String?) {
+  suspend fun httpGetRecentKeywords(
+    appCall: ApplicationCall,
+    knowledgeGUID: String?
+  ) {
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
             searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
@@ -867,7 +994,10 @@ class WisdomController : IModule {
     appCall.respond(payload)
   }
 
-  suspend fun httpGetRecentCategories(appCall: ApplicationCall, knowledgeGUID: String?) {
+  suspend fun httpGetRecentCategories(
+    appCall: ApplicationCall,
+    knowledgeGUID: String?
+  ) {
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
             searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true

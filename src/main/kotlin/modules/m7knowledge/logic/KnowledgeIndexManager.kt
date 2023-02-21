@@ -69,9 +69,9 @@ class KnowledgeIndexManager(override var level: Long) : IIndexManager {
             byteSize,
             writeToDisk,
             userName,
-            Pair(1, entry.gUID),
+            Pair(1, entry.guid),
             Pair(2, entry.mainChatroomGUID),
-            Pair(3, entry.keywords)
+            Pair(3, entry.keywords.take(100))
     )
   }
 

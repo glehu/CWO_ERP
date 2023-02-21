@@ -27,7 +27,7 @@ data class Wisdom(
   var type: String = ""
   var categories: ArrayList<String> = arrayListOf()
 
-  var gUID: String = ""
+  var guid: String = ""
 
   // References the Knowledge entry it belongs to
   var knowledgeUID: Long = -1L
@@ -80,7 +80,7 @@ data class Wisdom(
 
   init {
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
-    if (gUID.isEmpty()) gUID = Uuid.randomUUID().toString()
+    if (guid.isEmpty()) guid = Uuid.randomUUID().toString()
     if (type.isEmpty()) type = "info"
   }
 

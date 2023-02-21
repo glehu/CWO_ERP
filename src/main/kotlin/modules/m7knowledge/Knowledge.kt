@@ -20,7 +20,7 @@ data class Knowledge(
   @SerialName("desc")
   var description: String = ""
   var keywords: String = ""
-  var gUID: String = ""
+  var guid: String = ""
   var isPrivate: Boolean = true
   var mainChatroomGUID: String = ""
   var categories: ArrayList<String> = arrayListOf()
@@ -38,7 +38,7 @@ data class Knowledge(
 
   init {
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
-    if (gUID.isEmpty()) gUID = Uuid.randomUUID().toString()
+    if (guid.isEmpty()) guid = Uuid.randomUUID().toString()
   }
 
   override fun initialize() {

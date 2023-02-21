@@ -39,6 +39,8 @@ import modules.m7wisdom.Wisdom
 import modules.m7wisdom.logic.WisdomIndexManager
 import modules.m8notification.Notification
 import modules.m8notification.logic.NotificationIndexManager
+import modules.m9process.ProcessEvent
+import modules.m9process.logic.ProcessIndexManager
 import java.io.File
 import java.nio.file.Paths
 
@@ -62,6 +64,7 @@ val serializersModuleGlobal = SerializersModule {
     subclass(Knowledge::class, serializer())
     subclass(Wisdom::class, serializer())
     subclass(Notification::class, serializer())
+    subclass(ProcessEvent::class, serializer())
   }
   polymorphic(IUniRole::class) {
     subclass(UniRole::class, serializer())
@@ -154,6 +157,13 @@ var wisdomIndexManager: WisdomIndexManager? = null
 @InternalAPI
 @ExperimentalSerializationApi
 var notificationIndexManager: NotificationIndexManager? = null
+
+/**
+ * The global index for ProcessEvent
+ */
+@InternalAPI
+@ExperimentalSerializationApi
+var processIndexManager: ProcessIndexManager? = null
 
 //*************************************************
 //********************** TRACKER ******************

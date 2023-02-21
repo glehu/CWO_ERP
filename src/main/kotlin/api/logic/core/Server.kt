@@ -119,12 +119,13 @@ class Server : IModule {
       host = iniVal.serverIPAddress.substringBefore(':')
       port = 80
     }
-    sslConnector(keyStore = keystore,
-            keyAlias = System.getenv(iniVal.envKeyAlias) ?: "?",
-            keyStorePassword = { (System.getenv(iniVal.envKeyStorePassword) ?: "?").toCharArray() },
-            privateKeyPassword = { (System.getenv(iniVal.envPrivKeyPassword) ?: "?").toCharArray() }) {
-      host = iniVal.serverIPAddress.substringBefore(':')
-      port = 443
+    if (System.getenv(iniVal.envPrivKeyPassword) != null) {
+      sslConnector(keyStore = keystore, keyAlias = System.getenv(iniVal.envKeyAlias) ?: "?",
+              keyStorePassword = { (System.getenv(iniVal.envKeyStorePassword) ?: "?").toCharArray() },
+              privateKeyPassword = { (System.getenv(iniVal.envPrivKeyPassword) ?: "?").toCharArray() }) {
+        host = iniVal.serverIPAddress.substringBefore(':')
+        port = 443
+      }
     }
     module {
       module()
@@ -136,9 +137,11 @@ class Server : IModule {
   fun Application.module() {/*
      * #### Plugins ####
      */
-    install(HttpsRedirect) {
-      sslPort = 443
-      permanentRedirect = true
+    if (System.getenv(iniVal.envPrivKeyPassword) != null) {
+      install(HttpsRedirect) {
+        sslPort = 443
+        permanentRedirect = true
+      }
     }
     install(ContentNegotiation) {
       json(Json {
@@ -391,11 +394,13 @@ class Server : IModule {
   }
 
   init {
-    // Get HTTPS Certificate
-    keystore.load(
-            FileInputStream(Paths.get(programPath, "keystore.jks").toString()),
-            (System.getenv(iniVal.envCertPassword) ?: "?").toCharArray()
-    )
+    if (System.getenv(iniVal.envPrivKeyPassword) != null) {
+      // Get HTTPS Certificate
+      keystore.load(
+              FileInputStream(Paths.get(programPath, "keystore.jks").toString()),
+              (System.getenv(iniVal.envCertPassword) ?: "?").toCharArray()
+      )
+    }
     // Start Server
     serverJobGlobal = GlobalScope.launch {
       serverEngine.start(wait = true)

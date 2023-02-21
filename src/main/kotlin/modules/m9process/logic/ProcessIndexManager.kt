@@ -1,4 +1,4 @@
-package modules.m8notification.logic
+package modules.m9process.logic
 
 import db.Index
 import interfaces.IEntry
@@ -6,22 +6,21 @@ import interfaces.IIndexManager
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
-import modules.m7wisdom.Wisdom
-import modules.m8notification.Notification
-import modules.mx.notificationIndexManager
+import modules.m9process.ProcessEvent
+import modules.mx.processIndexManager
 import java.util.concurrent.atomic.AtomicLong
 
 @ExperimentalSerializationApi
 @InternalAPI
-class NotificationIndexManager(override var level: Long) : IIndexManager {
-  override val moduleNameLong = "NotificationIndexController"
-  override val module = "M8NOTIFICATION"
+class ProcessIndexManager(override var level: Long) : IIndexManager {
+  override val moduleNameLong = "ProcessIndexManager"
+  override val module = "M9PROCESS"
   override fun getIndexManager(): IIndexManager {
-    return notificationIndexManager!!
+    return processIndexManager!!
   }
 
   override fun buildNewIndexManager(): IIndexManager {
-    return NotificationIndexManager(level + 1)
+    return ProcessIndexManager(level + 1)
   }
 
   override var lastChangeDateHex: String = ""
@@ -48,27 +47,34 @@ class NotificationIndexManager(override var level: Long) : IIndexManager {
 
   init {
     initialize(
-            1, // GUID
-            2, // recipientUsername
+            1, // ChatroomUID
+            2 // GUID
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-GUID", "2-recipientUsername"
+            "1-Template", "2-Template"
     )
   }
 
   override suspend fun indexEntry(
     entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
   ) {
-    entry as Notification
+    entry as ProcessEvent
+    val chatUID = entry.guid
     buildIndices(
-            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid), Pair(2, entry.recipientUsername)
+            entry.uID,
+            posDB,
+            byteSize,
+            writeToDisk,
+            userName,
+            Pair(1, if (chatUID != "-1") chatUID else "?"),
+            Pair(2, entry.guid)
     )
   }
 
   override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
-    return json(prettyPrint).encodeToString(entry as Wisdom)
+    return json(prettyPrint).encodeToString(entry as ProcessEvent)
   }
 }

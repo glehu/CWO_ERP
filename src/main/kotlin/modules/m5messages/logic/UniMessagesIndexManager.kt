@@ -70,7 +70,7 @@ class UniMessagesIndexManager(override var level: Long) : IIndexManager {
             writeToDisk,
             userName,
             Pair(1, if (chatUID != "-1") chatUID else "?"),
-            Pair(2, entry.gUID)
+            Pair(2, entry.guid)
     )
   }
 
