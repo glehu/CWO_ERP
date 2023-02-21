@@ -50,12 +50,12 @@ data class Contact(override var uID: Long, var name: String) : IEntry {
   //----------------------------------v
   //--------- Personal Data ----------|
   //----------------------------------^
-  var email: String = "?"
+  var email: String = ""
 
   //----------------------------------v
   //--------- Location Data ----------|
   //----------------------------------^
-  var city: String = "?"
+  var city: String = ""
 
   //----------------------------------v
   //--------- Financial Data ---------|

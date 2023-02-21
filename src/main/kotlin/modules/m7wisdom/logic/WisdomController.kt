@@ -40,6 +40,8 @@ import modules.m7knowledge.logic.KnowledgeController
 import modules.m7wisdom.Wisdom
 import modules.m7wisdom.WisdomCategory
 import modules.m7wisdom.WisdomCollaborator
+import modules.m8notification.Notification
+import modules.m8notification.logic.NotificationController
 import modules.mx.logic.Timestamp
 import modules.mx.logic.UserCLIManager
 import modules.mx.wisdomIndexManager
@@ -80,8 +82,7 @@ class WisdomController : IModule {
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-            searchText = "^${config.knowledgeGUID}$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^${config.knowledgeGUID}$", ixNr = 1, showAll = true) {
       it as Knowledge
       knowledgeRef = it
     }
@@ -96,8 +97,7 @@ class WisdomController : IModule {
     if (wisdomGUID.isNotEmpty()) {
       // Get existing wisdom if one got referenced
       getEntriesFromIndexSearch(
-              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-      ) {
+              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
         it as Wisdom
         question = it
         edit = true
@@ -133,8 +133,7 @@ class WisdomController : IModule {
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     var wisdomRef: Wisdom? = null
     getEntriesFromIndexSearch(
-            searchText = "^${config.wisdomGUID}$", ixNr = 3, showAll = true
-    ) {
+            searchText = "^${config.wisdomGUID}$", ixNr = 3, showAll = true) {
       it as Wisdom
       wisdomRef = it
     }
@@ -148,8 +147,7 @@ class WisdomController : IModule {
     if (wisdomGUID.isNotEmpty()) {
       // Get existing wisdom if one got referenced
       getEntriesFromIndexSearch(
-              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-      ) {
+              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
         it as Wisdom
         answer = it
         edit = true
@@ -190,8 +188,7 @@ class WisdomController : IModule {
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-            searchText = "^${config.knowledgeGUID}$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^${config.knowledgeGUID}$", ixNr = 1, showAll = true) {
       it as Knowledge
       knowledgeRef = it
     }
@@ -206,8 +203,7 @@ class WisdomController : IModule {
     if (wisdomGUID.isNotEmpty()) {
       // Get existing wisdom if one got referenced
       getEntriesFromIndexSearch(
-              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-      ) {
+              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
         it as Wisdom
         lesson = it
         edit = true
@@ -286,8 +282,7 @@ class WisdomController : IModule {
     if (config.inBox && config.boxGUID.isNotEmpty()) {
       var boxWisdom: Wisdom? = null
       getEntriesFromIndexSearch(
-              searchText = "^${config.boxGUID}$", ixNr = 1, showAll = true
-      ) {
+              searchText = "^${config.boxGUID}$", ixNr = 1, showAll = true) {
         it as Wisdom
         boxWisdom = it
       }
@@ -306,13 +301,11 @@ class WisdomController : IModule {
     val historyEntry = if (!edit) {
       WisdomHistoryEntry(
               type = "creation", date = Timestamp.getUnixTimestampHex(), description = "Created",
-              authorUsername = user!!.username
-      )
+              authorUsername = user!!.username)
     } else {
       WisdomHistoryEntry(
               type = "edit", date = Timestamp.getUnixTimestampHex(), description = "Edited",
-              authorUsername = user!!.username
-      )
+              authorUsername = user!!.username)
     }
     lesson.history.add(Json.encodeToString(historyEntry))
     saveEntry(lesson)
@@ -327,8 +320,7 @@ class WisdomController : IModule {
     val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     var wisdomRef: Wisdom? = null
     getEntriesFromIndexSearch(
-            searchText = "^${config.wisdomGUID}$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^${config.wisdomGUID}$", ixNr = 1, showAll = true) {
       it as Wisdom
       wisdomRef = it
     }
@@ -342,8 +334,7 @@ class WisdomController : IModule {
     if (wisdomGUID.isNotEmpty()) {
       // Get existing wisdom if one got referenced
       getEntriesFromIndexSearch(
-              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-      ) {
+              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
         it as Wisdom
         comment = it
         edit = true
@@ -378,8 +369,7 @@ class WisdomController : IModule {
     // val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true) {
       it as Knowledge
       knowledgeRef = it
     }
@@ -432,8 +422,7 @@ class WisdomController : IModule {
       }
       var regexMatchCounts: Int
       getEntriesFromIndexSearch(
-              searchText = indexQuery, ixNr = indexNumber, showAll = true
-      ) {
+              searchText = indexQuery, ixNr = indexNumber, showAll = true) {
         it as Wisdom
         var valid = true
         // If type of wisdom differs from preference then invalidate it
@@ -509,16 +498,13 @@ class WisdomController : IModule {
             // Evaluate
             if (rating >= 4) {
               first.add(
-                      WisdomSearchResponseEntry(it, accuracy)
-              )
+                      WisdomSearchResponseEntry(it, accuracy))
             } else if (rating >= 3) {
               second.add(
-                      WisdomSearchResponseEntry(it, accuracy)
-              )
+                      WisdomSearchResponseEntry(it, accuracy))
             } else {
               third.add(
-                      WisdomSearchResponseEntry(it, accuracy)
-              )
+                      WisdomSearchResponseEntry(it, accuracy))
             }
           }
         }
@@ -549,8 +535,7 @@ class WisdomController : IModule {
     }
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
-            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
       it as Wisdom
       wisdom = it
     }
@@ -560,6 +545,7 @@ class WisdomController : IModule {
     }
     var index = 0
     var reactionTypeExists = false
+    var reactionAdded = false
     for (reaction in wisdom!!.reactions) {
       val react: UniMessageReaction
       // Self-healing! If a reaction is broken, just clear it
@@ -572,7 +558,7 @@ class WisdomController : IModule {
       if (react.type == config.type) {
         reactionTypeExists = true
         if (react.from.contains(user.username)) {
-          // Reaction does exist and contains the user -> Return
+          // Reaction does exist and contains the user -> Remove
           react.from.remove(user.username)
           if (react.from.size > 0) {
             wisdom!!.reactions[index] = Json.encodeToString(react)
@@ -581,22 +567,35 @@ class WisdomController : IModule {
           }
           break
         } else {
-          // Reaction does exist but does not contain the user -> Add user
+          // Reaction does exist but does not contain the user -> Append
           react.from.add(user.username)
           wisdom!!.reactions[index] = Json.encodeToString(react)
+          reactionAdded = true
           break
         }
       }
       index++
     }
     if (!reactionTypeExists) {
+      // Reaction does not exist -> Add
       val reaction = UniMessageReaction(
-              from = arrayListOf(user.username), type = config.type
-      )
+              from = arrayListOf(user.username), type = config.type)
       wisdom!!.reactions.add(Json.encodeToString(reaction))
+      reactionAdded = true
     }
     save(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
+    if (reactionAdded) {
+      val notificationController = NotificationController()
+      val notification = Notification(-1, wisdom!!.authorUsername)
+      notification.title = "${user.username} reacted!"
+      notification.authorUsername = "_server"
+      notification.description = "${user.username} has reacted to \"${wisdom!!.title}\""
+      notification.hasClickAction = true
+      notification.clickAction = "open,wisdom"
+      notification.clickActionReferenceGUID = wisdom!!.guid
+      notificationController.saveEntry(notification)
+    }
   }
 
   suspend fun httpGetWisdomEntriesRelated(
@@ -611,8 +610,7 @@ class WisdomController : IModule {
     var wisdomRef: Wisdom? = null
     if (type == "guid") {
       getEntriesFromIndexSearch(
-              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-      ) {
+              searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
         it as Wisdom
         wisdomRef = it
       }
@@ -625,8 +623,7 @@ class WisdomController : IModule {
     }
     val response = WisdomReferencesResponse()
     getEntriesFromIndexSearch(
-            searchText = "^${wisdomRef!!.uID}$", ixNr = 3, showAll = true
-    ) {
+            searchText = "^${wisdomRef!!.uID}$", ixNr = 3, showAll = true) {
       it as Wisdom
       // Convert dates for convenience
       if (it.finished) {
@@ -650,8 +647,7 @@ class WisdomController : IModule {
   ) {
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true) {
       it as Knowledge
       knowledgeRef = it
     }
@@ -662,8 +658,7 @@ class WisdomController : IModule {
     if (!KnowledgeController().httpCanAccessKnowledge(appCall, knowledgeRef!!)) return
     val contributors = mutableMapOf<String, Int>()
     getEntriesFromIndexSearch(
-            searchText = "^${knowledgeRef!!.uID}$", ixNr = 2, showAll = true
-    ) {
+            searchText = "^${knowledgeRef!!.uID}$", ixNr = 2, showAll = true) {
       it as Wisdom
       if (!it.isTask) {
         if (contributors.containsKey(it.authorUsername)) {
@@ -679,9 +674,7 @@ class WisdomController : IModule {
     for (contributor in contributorsSorted) {
       response.contributors.add(
               WisdomTopContributorsResponseEntry(
-                      username = contributor.key, imageURL = "", lessons = contributor.value
-              )
-      )
+                      username = contributor.key, imageURL = "", lessons = contributor.value))
     }
     appCall.respond(response)
   }
@@ -692,8 +685,7 @@ class WisdomController : IModule {
   ) {
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
-            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
       it as Wisdom
       wisdom = it
     }
@@ -701,10 +693,9 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.NotFound)
       return
     }
-    val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
-    if (!httpCheckWisdomRights(appCall, wisdom!!, user = user)) return
+    if (!httpCheckWisdomRights(appCall, wisdom!!)) return
     // Configure wisdom
-    wisdom!!.guid = "?"
+    wisdom!!.guid = ""
     wisdom!!.knowledgeUID = -1
     wisdom!!.title = "?"
     wisdom!!.description = "?"
@@ -721,8 +712,7 @@ class WisdomController : IModule {
   ) {
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
-            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
       it as Wisdom
       if (it.finished) {
         it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
@@ -734,6 +724,7 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.NotFound)
       return
     }
+    if (!httpCheckWisdomRights(appCall, wisdom!!)) return
     appCall.respond(wisdom!!)
   }
 
@@ -748,8 +739,7 @@ class WisdomController : IModule {
     }
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true) {
       it as Knowledge
       knowledgeRef = it
     }
@@ -761,8 +751,7 @@ class WisdomController : IModule {
     // First, fetch all boxes
     val plannerBoxesPayload = PlannerBoxesPayload()
     getEntriesFromIndexSearch(
-            searchText = "^${knowledgeRef!!.uID};BOX$", ixNr = 6, showAll = true
-    ) {
+            searchText = "^${knowledgeRef!!.uID};BOX$", ixNr = 6, showAll = true) {
       it as Wisdom
       if (it.finished) {
         it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
@@ -782,8 +771,7 @@ class WisdomController : IModule {
     }
     for (i in 0 until plannerBoxesPayload.boxes.size) {
       getEntriesFromIndexSearch(
-              searchText = "^${plannerBoxesPayload.boxes[i].box.uID}$", ixNr = 3, showAll = true
-      ) { taskIt ->
+              searchText = "^${plannerBoxesPayload.boxes[i].box.uID}$", ixNr = 3, showAll = true) { taskIt ->
         taskIt as Wisdom
         // Filter if there is a preference for "is finished"
         if (isFinishedDesire == null || taskIt.finished == isFinishedDesire) {
@@ -795,8 +783,7 @@ class WisdomController : IModule {
           taskIt.dateCreated = Timestamp.getUTCTimestampFromHex(taskIt.dateCreated)
           // Retrieve comments for this task
           getEntriesFromIndexSearch(
-                  searchText = "^${taskIt.uID}$", ixNr = 3, showAll = true
-          ) {
+                  searchText = "^${taskIt.uID}$", ixNr = 3, showAll = true) {
             it as Wisdom
             when (it.type) {
               "comment" -> {
@@ -827,8 +814,7 @@ class WisdomController : IModule {
   ) {
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
-            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
       it as Wisdom
       wisdom = it
     }
@@ -846,8 +832,7 @@ class WisdomController : IModule {
     if (!answerGUID.isNullOrEmpty()) {
       var answer: Wisdom? = null
       getEntriesFromIndexSearch(
-              searchText = "^$answerGUID$", ixNr = 1, showAll = true
-      ) {
+              searchText = "^$answerGUID$", ixNr = 1, showAll = true) {
         it as Wisdom
         answer = it
       }
@@ -866,8 +851,7 @@ class WisdomController : IModule {
     // Write history entry
     val historyEntry = WisdomHistoryEntry(
             type = "completion", date = Timestamp.getUnixTimestampHex(), description = "Finished",
-            authorUsername = user!!.username
-    )
+            authorUsername = user!!.username)
     wisdom!!.history.add(Json.encodeToString(historyEntry))
     saveEntry(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
@@ -880,24 +864,18 @@ class WisdomController : IModule {
     user: Contact? = null
   ): Boolean {
     if (checkKnowledge) {
-      if (wisdom.knowledgeUID == -1L) {
-        appCall.respond(HttpStatusCode.BadRequest)
-        return false
-      }
-      val knowledgeController = KnowledgeController()
-      var knowledgeRef: Knowledge? = null
-      KnowledgeController().getEntriesFromIndexSearch(
-              searchText = "^${wisdom.knowledgeUID}$", ixNr = 0, showAll = true
-      ) {
-        it as Knowledge
-        knowledgeRef = it
-      }
-      if (knowledgeRef == null) {
-        appCall.respond(HttpStatusCode.BadRequest)
-        return false
-      }
-      if (!knowledgeController.httpCanAccessKnowledge(appCall, knowledgeRef!!)) {
-        return false
+      if (wisdom.knowledgeUID != -1L) {
+        val knowledgeController = KnowledgeController()
+        val knowledgeRef: Knowledge
+        try {
+          knowledgeRef = knowledgeController.load(wisdom.knowledgeUID) as Knowledge
+        } catch (e: Exception) {
+          appCall.respond(HttpStatusCode.BadRequest)
+          return false
+        }
+        if (!knowledgeController.httpCanAccessKnowledge(appCall, knowledgeRef)) {
+          return false
+        }
       }
     }
     // Retrieve user if not provided
@@ -936,8 +914,7 @@ class WisdomController : IModule {
   ) {
     var wisdom: Wisdom? = null
     getEntriesFromIndexSearch(
-            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
       it as Wisdom
       wisdom = it
     }
@@ -965,8 +942,7 @@ class WisdomController : IModule {
   ) {
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true) {
       it as Knowledge
       knowledgeRef = it
     }
@@ -978,8 +954,7 @@ class WisdomController : IModule {
     val indexQuery = "^${knowledgeRef!!.uID}$"
     val keywords = arrayListOf<String>()
     getEntriesFromIndexSearch(
-            searchText = indexQuery, ixNr = indexNumber, showAll = true
-    ) {
+            searchText = indexQuery, ixNr = indexNumber, showAll = true) {
       it as Wisdom
       for (keyword in it.keywords.split(',')) {
         if (keyword.isNotEmpty()) keywords.add(keyword)
@@ -1000,8 +975,7 @@ class WisdomController : IModule {
   ) {
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true) {
       it as Knowledge
       knowledgeRef = it
     }
@@ -1015,8 +989,7 @@ class WisdomController : IModule {
     var categoryDecoded: WisdomCategory
     var foundTmp: Boolean
     getEntriesFromIndexSearch(
-            searchText = indexQuery, ixNr = indexNumber, showAll = true
-    ) {
+            searchText = indexQuery, ixNr = indexNumber, showAll = true) {
       it as Wisdom
       for (category in it.categories) {
         categoryDecoded = Json.decodeFromString(category)

@@ -641,5 +641,9 @@ data class ProcessEntryConfig(
   var keywords: String = "",
   var value: String = "",
   var knowledgeGUID: String = "",
-  var wisdomGUID: String = ""
+  var wisdomGUID: String = "",
+  var taskGUID: String = "",
+  var actionType: String = "",
+  var previousEventGUID: String = "",
+  var createTask: Boolean = false
 )

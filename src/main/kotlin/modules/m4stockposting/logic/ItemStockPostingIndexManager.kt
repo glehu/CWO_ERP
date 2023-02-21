@@ -88,6 +88,6 @@ class ItemStockPostingIndexManager(override var level: Long) : IIndexManager {
   }
 
   private fun getIndexTextIfStockAvailable(value: String, stockAvailable: Double): String {
-    return if (stockAvailable != 0.0) value else "?"
+    return if (stockAvailable != 0.0) value else ""
   }
 }

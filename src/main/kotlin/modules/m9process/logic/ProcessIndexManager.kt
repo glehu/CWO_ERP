@@ -47,34 +47,37 @@ class ProcessIndexManager(override var level: Long) : IIndexManager {
 
   init {
     initialize(
-            1, // ChatroomUID
-            2 // GUID
+            1, // GUID
+            2, // Mode|KnowledgeUID
+            3, // WisdomUID
+            4 // TaskWisdomUID
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
-    return arrayListOf(
-            "1-Template", "2-Template"
-    )
+    return arrayListOf("1-GUID", "2-Mode|KnowledgeUID", "3-WisdomUID", "4-TaskWisdomUID")
   }
 
   override suspend fun indexEntry(
-    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
+    entry: IEntry,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String
   ) {
     entry as ProcessEvent
-    val chatUID = entry.guid
+    val wisdomUID = entry.wisdomUID
+    val taskWisdomUID = entry.taskWisdomUID
     buildIndices(
-            entry.uID,
-            posDB,
-            byteSize,
-            writeToDisk,
-            userName,
-            Pair(1, if (chatUID != "-1") chatUID else "?"),
-            Pair(2, entry.guid)
-    )
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid),
+            Pair(2, entry.knowledgeUID.toString()), Pair(3, if (wisdomUID != -1L) wisdomUID.toString() else ""),
+            Pair(4, if (taskWisdomUID != -1L) taskWisdomUID.toString() else ""))
   }
 
-  override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+  override fun encodeToJsonString(
+    entry: IEntry,
+    prettyPrint: Boolean
+  ): String {
     return json(prettyPrint).encodeToString(entry as ProcessEvent)
   }
 }

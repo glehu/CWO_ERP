@@ -12,7 +12,7 @@ import modules.mx.uniMessagesIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class TemplateEntry(
-  override var uID: Long = -1,
+  override var uID: Long = -1L,
 ) : IEntry {
   @SerialName("ts")
   var timestamp: String = ""

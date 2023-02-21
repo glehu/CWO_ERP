@@ -9,6 +9,7 @@ import io.ktor.server.response.*
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -32,10 +33,13 @@ class NotificationController : IModule {
     val mutex = Mutex()
   }
 
-  suspend fun saveEntry(notification: Notification): Long {
+  suspend fun saveEntry(
+    notification: Notification,
+    writeIndex: Boolean = true
+  ): Long {
     var uID: Long
     mutex.withLock {
-      uID = save(notification)
+      uID = save(notification, indexWriteToDisk = writeIndex)
     }
     return uID
   }
@@ -44,36 +48,48 @@ class NotificationController : IModule {
     val usernameTokenEmail = ServerController.getJWTEmail(appCall)
     val usernameToken = UserCLIManager.getUserFromEmail(usernameTokenEmail)!!.username
     val notifications = arrayListOf<Notification>()
-    mutex.withLock {
-      getEntriesFromIndexSearch("^$usernameToken$", 2, true) {
-        it as Notification
-        notifications.add(it)
-      }
+    getEntriesFromIndexSearch("^$usernameToken$", 2, true) {
+      it as Notification
+      notifications.add(it)
     }
     appCall.respond(notifications)
   }
 
-  suspend fun httpDismissNotification(appCall: ApplicationCall, notificationGUID: String) {
+  suspend fun httpDismissNotification(
+    appCall: ApplicationCall,
+    notificationGUID: String
+  ) {
     val usernameTokenEmail = ServerController.getJWTEmail(appCall)
     val usernameToken = UserCLIManager.getUserFromEmail(usernameTokenEmail)!!.username
     var notification: Notification? = null
-    mutex.withLock {
-      getEntriesFromIndexSearch("^$notificationGUID$", 1, true) {
-        it as Notification
-        notification = it
-      }
-      if (notification == null) {
-        appCall.respond(HttpStatusCode.NotFound)
-        return
-      }
-      if (notification!!.recipientUsername != usernameToken) {
-        appCall.respond(HttpStatusCode.Forbidden)
-        return
-      }
-      notification!!.finished = true
-      notification!!.finishedDate = Timestamp.now()
-      notification!!.recipientUsername = "?"
-      save(notification!!)
+    getEntriesFromIndexSearch("^$notificationGUID$", 1, true) {
+      it as Notification
+      notification = it
+    }
+    if (notification == null) {
+      appCall.respond(HttpStatusCode.NotFound)
+      return
+    }
+    if (notification!!.recipientUsername != usernameToken) {
+      appCall.respond(HttpStatusCode.Forbidden)
+      return
+    }
+    notification!!.finished = true
+    notification!!.finishedDate = Timestamp.now()
+    notification!!.recipientUsername = ""
+    saveEntry(notification!!)
+    appCall.respond(HttpStatusCode.OK)
+  }
+
+  suspend fun httpDismissAllNotifications(appCall: ApplicationCall) {
+    val usernameTokenEmail = ServerController.getJWTEmail(appCall)
+    val usernameToken = UserCLIManager.getUserFromEmail(usernameTokenEmail)!!.username
+    getEntriesFromIndexSearch("^$usernameToken$", 2, true) {
+      it as Notification
+      it.finished = true
+      it.finishedDate = Timestamp.now()
+      it.recipientUsername = ""
+      runBlocking { saveEntry(it, false) }
     }
     appCall.respond(HttpStatusCode.OK)
   }

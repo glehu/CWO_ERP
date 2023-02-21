@@ -168,7 +168,10 @@ interface IIndexManager : IModule {
     return uID
   }
 
-  fun setLastChangeData(uID: Long, userName: String) {
+  fun setLastChangeData(
+    uID: Long,
+    userName: String
+  ) {
     lastChangeDateHex = getUnixTimestampHex()
     val lastChange = LastChange(uID, lastChangeDateHex, userName)
     setLastChangeValues(lastChange)
@@ -207,7 +210,11 @@ interface IIndexManager : IModule {
    * This function must call buildIndices, which will build all indices for an entry.
    */
   suspend fun indexEntry(
-    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
+    entry: IEntry,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String
   )
 
   fun buildNewIndexManager(): IIndexManager
@@ -216,7 +223,12 @@ interface IIndexManager : IModule {
    * Used to build indices for an entry.
    */
   suspend fun buildIndices(
-    uID: Long, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String, vararg indices: Pair<Int, String>
+    uID: Long,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String,
+    vararg indices: Pair<Int, String>
   ) {
     if (uID != -1L && uID < localMinUID) {
       if (prevManager != null) {
@@ -263,7 +275,11 @@ interface IIndexManager : IModule {
   /**
    * Builds the default index 0 (uID)
    */
-  private fun buildDefaultIndex(uID: Long, posDB: Long, byteSize: Int) {
+  private fun buildDefaultIndex(
+    uID: Long,
+    posDB: Long,
+    byteSize: Int
+  ) {
     if (indexList[0] == null) addIndex(0)
     indexList[0]!!.indexMap[uID] = IndexContent(pos = posDB, byteSize = byteSize)
   }
@@ -290,7 +306,10 @@ interface IIndexManager : IModule {
     }
   }
 
-  fun getIndicesFromArray(ixNumbers: IntArray, progress: ProgressAnimation) {
+  fun getIndicesFromArray(
+    ixNumbers: IntArray,
+    progress: ProgressAnimation
+  ) {
     for (ixNr in ixNumbers) {
       addIndex(ixNr)
       progress.advance(1L)
@@ -305,7 +324,10 @@ interface IIndexManager : IModule {
     return Json.decodeFromString(getIndexFile(ixNr).readText())
   }
 
-  private fun checkIndexFile(module: String, ixNr: Int): Boolean {
+  private fun checkIndexFile(
+    module: String,
+    ixNr: Int
+  ): Boolean {
     var ok = false
     val nuPath = File(getModulePath(module))
     if (!nuPath.isDirectory) nuPath.mkdirs()
@@ -330,7 +352,10 @@ interface IIndexManager : IModule {
   /**
    * @return the index [File] of a provided module
    */
-  fun getIndexFile(ixNr: Int, levelOverride: Long? = null): File {
+  fun getIndexFile(
+    ixNr: Int,
+    levelOverride: Long? = null
+  ): File {
     return File(Paths.get(getModulePath(module), "$module-$ixNr-${levelOverride ?: level}.ix").toString())
   }
 
@@ -412,8 +437,15 @@ interface IIndexManager : IModule {
     }
   }
 
-  fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean = false): String
-  fun filterStringValues(ixNr: Int, searchText: String): Set<Long> {
+  fun encodeToJsonString(
+    entry: IEntry,
+    prettyPrint: Boolean = false
+  ): String
+
+  fun filterStringValues(
+    ixNr: Int,
+    searchText: String
+  ): Set<Long> {
     var filteredMap: Set<Long> = setOf()
     if (nextManager != null) {
       filteredMap = filteredMap union (nextManager!!.filterStringValues(ixNr, searchText))
@@ -424,7 +456,10 @@ interface IIndexManager : IModule {
     return filteredMap
   }
 
-  fun filterDoubleValues(ixNr: Int, searchText: String): MutableSet<Long> {
+  fun filterDoubleValues(
+    ixNr: Int,
+    searchText: String
+  ): MutableSet<Long> {
     val filteredMap = mutableSetOf<Long>()
     if (nextManager != null) {
       filteredMap union (nextManager!!.filterDoubleValues(ixNr, searchText)).reversed()
@@ -439,7 +474,10 @@ interface IIndexManager : IModule {
    * @return the index results for a search text from all available indices.
    */
   @OptIn(FlowPreview::class)
-  fun returnFromAllIndices(searchText: String, updateProgress: (Map<Long, IndexContent>) -> Unit) {
+  fun returnFromAllIndices(
+    searchText: String,
+    updateProgress: (Map<Long, IndexContent>) -> Unit
+  ) {
     runBlocking {
       if (nextManager != null) {
         searchInAllIndices(searchText).flatMapMerge { nextManager!!.searchInAllIndices(searchText) }

@@ -12,7 +12,7 @@ import modules.mx.uniChatroomIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class Snippet(
-  override var uID: Long = -1,
+  override var uID: Long = -1L,
 ) : IEntry {
   override fun initialize() {
     if (uID == -1L) uID = uniChatroomIndexManager!!.getUID()

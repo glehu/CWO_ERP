@@ -17,8 +17,6 @@ import kotlinx.serialization.json.Json
 import modules.m2.Contact
 import modules.m5.UniBadge
 import modules.m5.UniChatroom
-import modules.m5.UniMember
-import modules.m5.UniRole
 import modules.m5messages.UniMessage
 import modules.mx.contactIndexManager
 import modules.mx.logic.Log
@@ -454,19 +452,7 @@ suspend fun handleUpgradeUniChatroomRequest(appCall: ApplicationCall, config: Un
     appCall.respond(HttpStatusCode.NotFound)
     return
   }
-  var isOwner = false
-  var member: UniMember
-  for (memberJson in mainChatroom.members) {
-    member = Json.decodeFromString(memberJson)
-    if (member.username == username) {
-      // We got the user, now check for the role "Owner"
-      for (roleJson in member.roles) {
-        if (Json.decodeFromString<UniRole>(roleJson).name.uppercase() == "OWNER") {
-          isOwner = true
-        }
-      }
-    }
-  }
+  val isOwner = UniChatroomController().checkIsOwner(username, mainChatroom)
   if (!isOwner) {
     appCall.respond(HttpStatusCode.Forbidden)
     return

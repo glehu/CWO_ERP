@@ -12,7 +12,7 @@ import modules.mx.wisdomIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class Wisdom(
-  override var uID: Long = -1
+  override var uID: Long = -1L
 ) : IEntry {
   @SerialName("t")
   var title: String = ""

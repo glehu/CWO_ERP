@@ -18,9 +18,9 @@ data class Invoice(override var uID: Long) : IEntry, IInvoice {
   //----------------------------------v
   //------------- Who? ---------------|
   //----------------------------------^
-  var seller: String = "?"
+  var seller: String = ""
   var sellerUID: Long = -1L
-  var buyer: String = "?"
+  var buyer: String = ""
   var buyerUID: Long = -1L
 
   //----------------------------------v
@@ -31,14 +31,14 @@ data class Invoice(override var uID: Long) : IEntry, IInvoice {
   //----------------------------------v
   //------------- What? --------------|
   //----------------------------------^
-  var text: String = "?"
+  var text: String = ""
   var grossTotal: Double = 0.0
   var netTotal: Double = 0.0
   var grossPaid: Double = 0.0
   var netPaid: Double = 0.0
 
-  var customerNote: String = "?"
-  var internalNote: String = "?"
+  var customerNote: String = ""
+  var internalNote: String = ""
 
   /**
    * This map contains the items of the invoice.
@@ -52,7 +52,7 @@ data class Invoice(override var uID: Long) : IEntry, IInvoice {
   //*************************************************
 
   var status: Int = 0
-  var statusText: String = "?"
+  var statusText: String = ""
   var finished: Boolean = false
   var emailConfirmationSent: Boolean = false
   var priceCategory: Int = 0

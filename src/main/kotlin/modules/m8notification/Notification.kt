@@ -12,7 +12,7 @@ import modules.mx.notificationIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class Notification(
-  override var uID: Long = -1, @SerialName("recipient") var recipientUsername: String
+  override var uID: Long = -1L, @SerialName("recipient") var recipientUsername: String
 ) : IEntry {
   @SerialName("t")
   var title: String = ""
@@ -44,7 +44,7 @@ data class Notification(
   var backgroundSnippetGUID: String = ""
 
   init {
-    if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
+    if (dateCreated.isEmpty()) dateCreated = Timestamp.now()
     if (guid.isEmpty()) guid = Uuid.randomUUID().toString()
     if (type.isEmpty()) type = "info"
   }

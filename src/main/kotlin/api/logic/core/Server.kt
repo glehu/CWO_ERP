@@ -10,6 +10,7 @@ import api.misc.json.KnowledgeCreation
 import api.misc.json.ListDeltaJson
 import api.misc.json.PairLongJson
 import api.misc.json.PasswordChange
+import api.misc.json.ProcessEntryConfig
 import api.misc.json.PubKeyPEMContainer
 import api.misc.json.SettingsRequestJson
 import api.misc.json.SnippetPayload
@@ -29,6 +30,7 @@ import api.misc.json.WisdomCommentCreation
 import api.misc.json.WisdomLessonCreation
 import api.misc.json.WisdomQuestionCreation
 import api.misc.json.WisdomSearchQuery
+import com.github.ajalt.mordant.rendering.TextColors
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
@@ -71,6 +73,7 @@ import modules.m5.logic.handleUpgradeUniChatroomRequest
 import modules.m7knowledge.logic.KnowledgeController
 import modules.m7wisdom.logic.WisdomController
 import modules.m8notification.logic.NotificationController
+import modules.m9process.logic.ProcessController
 import modules.mx.Ini
 import modules.mx.contactIndexManager
 import modules.mx.dataPath
@@ -85,6 +88,7 @@ import modules.mx.logic.UserCLIManager
 import modules.mx.programPath
 import modules.mx.serverJobGlobal
 import modules.mx.snippetBaseIndexManager
+import modules.mx.terminal
 import modules.mx.uniChatroomIndexManager
 import modules.mx.usageTracker
 import modules.mx.wisdomIndexManager
@@ -121,8 +125,8 @@ class Server : IModule {
     }
     if (System.getenv(iniVal.envPrivKeyPassword) != null) {
       sslConnector(keyStore = keystore, keyAlias = System.getenv(iniVal.envKeyAlias) ?: "?",
-              keyStorePassword = { (System.getenv(iniVal.envKeyStorePassword) ?: "?").toCharArray() },
-              privateKeyPassword = { (System.getenv(iniVal.envPrivKeyPassword) ?: "?").toCharArray() }) {
+                   keyStorePassword = { (System.getenv(iniVal.envKeyStorePassword) ?: "?").toCharArray() },
+                   privateKeyPassword = { (System.getenv(iniVal.envPrivKeyPassword) ?: "?").toCharArray() }) {
         host = iniVal.serverIPAddress.substringBefore(':')
         port = 443
       }
@@ -143,6 +147,16 @@ class Server : IModule {
         permanentRedirect = true
       }
     }
+    if (System.getenv("CWOERPSHUTDOWNURL") != null) {
+      terminal.println(
+              "${TextColors.gray("SERVER")} Initializing Shutdown URL (${System.getenv("CWOERPSHUTDOWNURL")})")
+      install(ShutDownUrl.ApplicationCallPlugin) {
+        shutDownUrl = System.getenv("CWOERPSHUTDOWNURL")
+        exitCodeSupplier = { 0 }
+      }
+    } else {
+      terminal.println("${TextColors.gray("SERVER ")} No Shutdown URL")
+    }
     install(ContentNegotiation) {
       json(Json {
         prettyPrint = true
@@ -156,8 +170,7 @@ class Server : IModule {
         validate { credentials ->
           authMutex.withLock {
             if (UserCLIManager.login(
-                      email = credentials.name, password = credentials.password, doLog = false
-              )) {
+                      email = credentials.name, password = credentials.password, doLog = false)) {
               UserIdPrincipal(credentials.name)
             } else {
               null
@@ -172,8 +185,7 @@ class Server : IModule {
         validate { credential ->
           authMutex.withLock {
             if (UserCLIManager.checkModuleRight(
-                      credential.payload.getClaim("username").asString(), "M*"
-              )) {
+                      credential.payload.getClaim("username").asString(), "M*")) {
               JWTPrincipal(credential.payload)
             } else {
               null
@@ -253,60 +265,25 @@ class Server : IModule {
         route("/api") {
           // General Endpoints
           getIndexSelection(
-                  discographyIndexManager!!,
-                  contactIndexManager!!,
-                  invoiceIndexManager!!,
-                  itemIndexManager!!,
-                  itemStockPostingIndexManager!!,
-                  uniChatroomIndexManager!!,
-                  snippetBaseIndexManager!!,
-                  knowledgeIndexManager!!,
-                  wisdomIndexManager!!
-          )
+                  discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
+                  itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
+                  knowledgeIndexManager!!, wisdomIndexManager!!)
           getEntry(
-                  discographyIndexManager!!,
-                  contactIndexManager!!,
-                  invoiceIndexManager!!,
-                  itemIndexManager!!,
-                  itemStockPostingIndexManager!!,
-                  uniChatroomIndexManager!!,
-                  snippetBaseIndexManager!!,
-                  knowledgeIndexManager!!,
-                  wisdomIndexManager!!
-          )
+                  discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
+                  itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
+                  knowledgeIndexManager!!, wisdomIndexManager!!)
           saveEntry(
-                  discographyIndexManager!!,
-                  contactIndexManager!!,
-                  invoiceIndexManager!!,
-                  itemIndexManager!!,
-                  itemStockPostingIndexManager!!,
-                  uniChatroomIndexManager!!,
-                  snippetBaseIndexManager!!,
-                  knowledgeIndexManager!!,
-                  wisdomIndexManager!!
-          )
+                  discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
+                  itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
+                  knowledgeIndexManager!!, wisdomIndexManager!!)
           getEntryLock(
-                  discographyIndexManager!!,
-                  contactIndexManager!!,
-                  invoiceIndexManager!!,
-                  itemIndexManager!!,
-                  itemStockPostingIndexManager!!,
-                  uniChatroomIndexManager!!,
-                  snippetBaseIndexManager!!,
-                  knowledgeIndexManager!!,
-                  wisdomIndexManager!!
-          )
+                  discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
+                  itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
+                  knowledgeIndexManager!!, wisdomIndexManager!!)
           setEntryLock(
-                  discographyIndexManager!!,
-                  contactIndexManager!!,
-                  invoiceIndexManager!!,
-                  itemIndexManager!!,
-                  itemStockPostingIndexManager!!,
-                  uniChatroomIndexManager!!,
-                  snippetBaseIndexManager!!,
-                  knowledgeIndexManager!!,
-                  wisdomIndexManager!!
-          )
+                  discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
+                  itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
+                  knowledgeIndexManager!!, wisdomIndexManager!!)
           sendEMail()
           getSettingsFileText()
           // M2 Endpoints (Contacts)
@@ -389,6 +366,9 @@ class Server : IModule {
           // Notification
           getNotifications()
           dismissNotification()
+          // Processes
+          createProcessEntry()
+          getProcesses()
         }
       }
     }
@@ -399,8 +379,7 @@ class Server : IModule {
       // Get HTTPS Certificate
       keystore.load(
               FileInputStream(Paths.get(programPath, "keystore.jks").toString()),
-              (System.getenv(iniVal.envCertPassword) ?: "?").toCharArray()
-      )
+              (System.getenv(iniVal.envCertPassword) ?: "?").toCharArray())
     }
     // Start Server
     serverJobGlobal = GlobalScope.launch {
@@ -414,10 +393,8 @@ class Server : IModule {
   private fun Route.logout() {
     get("/logout") {
       log(
-              type = Log.Type.COM,
-              text = "User ${call.principal<UserIdPrincipal>()?.name} logout",
-              apiEndpoint = call.request.uri
-      )
+              type = Log.Type.COM, text = "User ${call.principal<UserIdPrincipal>()?.name} logout",
+              apiEndpoint = call.request.uri)
     }
   }
 
@@ -427,14 +404,12 @@ class Server : IModule {
         val email = call.principal<UserIdPrincipal>()?.name
         var user: Contact? = null
         contactIndexManager!!.getEntriesFromIndexSearch(
-                searchText = "^$email$", ixNr = 1, showAll = true
-        ) { user = it as Contact }
+                searchText = "^$email$", ixNr = 1, showAll = true) { user = it as Contact }
         if (user == null) {
           call.respond(HttpStatusCode.NotFound)
         } else {
           call.respond(
-                  ServerController.generateLoginResponse(user!!)
-          )
+                  ServerController.generateLoginResponse(user!!))
         }
       }
     }
@@ -496,9 +471,7 @@ class Server : IModule {
         } else {
           call.respond(
                   ServerController.getEntry(
-                          appCall = call, indexManager = ix
-                  )
-          )
+                          appCall = call, indexManager = ix))
         }
       }
     }
@@ -513,9 +486,7 @@ class Server : IModule {
           val entryJson: EntryJson = call.receive()
           call.respond(
                   ServerController.saveEntry(
-                          entry = entryJson.entry, indexManager = ix, username = ServerController.getJWTEmail(call)
-                  )
-          )
+                          entry = entryJson.entry, indexManager = ix, username = ServerController.getJWTEmail(call)))
         }
       }
     }
@@ -529,9 +500,7 @@ class Server : IModule {
         } else {
           call.respond(
                   ServerController.getEntryLock(
-                          appCall = call, indexManager = ix
-                  )
-          )
+                          appCall = call, indexManager = ix))
         }
       }
     }
@@ -545,9 +514,7 @@ class Server : IModule {
         } else {
           call.respond(
                   ServerController.setEntryLock(
-                          appCall = call, indexManager = ix
-                  )
-          )
+                          appCall = call, indexManager = ix))
         }
       }
     }
@@ -582,8 +549,7 @@ class Server : IModule {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
-                ItemPriceManager().getCategories()
-        )
+                ItemPriceManager().getCategories())
       }
     }
   }
@@ -594,8 +560,7 @@ class Server : IModule {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
-                ItemPriceManager().getNumber(ItemPriceManager().getCategories())
-        )
+                ItemPriceManager().getNumber(ItemPriceManager().getCategories()))
       }
     }
   }
@@ -626,8 +591,7 @@ class Server : IModule {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
-                ItemStorageManager().getStorages()
-        )
+                ItemStorageManager().getStorages())
       }
     }
   }
@@ -638,8 +602,7 @@ class Server : IModule {
         call.respond(HttpStatusCode.Forbidden)
       } else {
         call.respond(
-                ItemStorageManager().getNumber(ItemStorageManager().getStorages())
-        )
+                ItemStorageManager().getNumber(ItemStorageManager().getStorages()))
       }
     }
   }
@@ -711,9 +674,7 @@ class Server : IModule {
       } else {
         call.respond(
                 ServerController.getSettingsFileText(
-                        moduleShort = body.module, subSetting = body.subSetting
-                )
-        )
+                        moduleShort = body.module, subSetting = body.subSetting))
       }
     }
   }
@@ -740,10 +701,8 @@ class Server : IModule {
     post("m5/addmessage") {
       val config: UniChatroomAddMessage = Json.decodeFromString(call.receive())
       ServerController.addMessageToUniChatroom(
-              appCall = call,
-              config = config,
-              username = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(call))!!.username
-      )
+              appCall = call, config = config,
+              username = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(call))!!.username)
     }
   }
 
@@ -1121,9 +1080,28 @@ class Server : IModule {
     get("m8/notifications/dismiss/{guid}") {
       val notificationGUID = call.parameters["guid"]
       if (notificationGUID.isNullOrEmpty()) {
+        NotificationController().httpDismissAllNotifications(call)
+      } else {
+        NotificationController().httpDismissNotification(call, notificationGUID)
+      }
+    }
+  }
+
+  private fun Route.createProcessEntry() {
+    post("m9/create") {
+      val config: ProcessEntryConfig = Json.decodeFromString(call.receive())
+      ProcessController().httpCreateProcessEvent(call, config)
+    }
+  }
+
+  private fun Route.getProcesses() {
+    get("m9/processes/{knowledgeGUID}") {
+      val knowledgeGUID = call.parameters["knowledgeGUID"]
+      if (knowledgeGUID.isNullOrEmpty()) {
         call.respond(HttpStatusCode.BadRequest)
       }
-      NotificationController().httpDismissNotification(call, notificationGUID!!)
+      val modeFilter: String = call.request.queryParameters["mode"] ?: "START"
+      ProcessController().httpGetProcesses(call, knowledgeGUID!!, modeFilter)
     }
   }
 }

@@ -24,7 +24,7 @@ fun indexFormat(text: String): String {
       formatted += charArray[i]
     }
   }
-  return formatted
+  return formatted.take(200)
 }
 
 /**

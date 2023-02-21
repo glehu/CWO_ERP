@@ -101,14 +101,16 @@ class ServerController {
 
     private val mutex = Mutex()
 
-    suspend fun saveEntry(entry: ByteArray, indexManager: IIndexManager, username: String): Long {
+    suspend fun saveEntry(
+      entry: ByteArray,
+      indexManager: IIndexManager,
+      username: String
+    ): Long {
       val uID: Long
       mutex.withLock {
         log(
-                type = Log.Type.COM,
-                text = "API ${indexManager.module} entry save",
-                apiEndpoint = "/api/${indexManager.module}/save",
-                moduleAlt = indexManager.module
+                type = Log.Type.COM, text = "API ${indexManager.module} entry save",
+                apiEndpoint = "/api/${indexManager.module}/save", moduleAlt = indexManager.module
         )
         uID = indexManager.save(
                 entry = indexManager.decode(entry), userName = username
@@ -117,7 +119,10 @@ class ServerController {
       return uID
     }
 
-    fun getEntry(appCall: ApplicationCall, indexManager: IIndexManager): Any {
+    fun getEntry(
+      appCall: ApplicationCall,
+      indexManager: IIndexManager
+    ): Any {
       val routePar = appCall.parameters["searchString"]
       if (!routePar.isNullOrEmpty()) {
         when (appCall.request.queryParameters["type"]) {
@@ -136,8 +141,7 @@ class ServerController {
               )
             } else {
               indexManager.getBytes(
-                      uID = routePar.toLong(),
-                      lock = doLock,
+                      uID = routePar.toLong(), lock = doLock,
                       userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
               )
             }
@@ -164,7 +168,10 @@ class ServerController {
       return ""
     }
 
-    fun getEntryLock(appCall: ApplicationCall, indexManager: IIndexManager): Boolean {
+    fun getEntryLock(
+      appCall: ApplicationCall,
+      indexManager: IIndexManager
+    ): Boolean {
       val routePar = appCall.parameters["searchString"]
       if (!routePar.isNullOrEmpty()) {
         return indexManager.getEntryLock(
@@ -175,14 +182,16 @@ class ServerController {
       return false
     }
 
-    suspend fun setEntryLock(appCall: ApplicationCall, indexManager: IIndexManager): Boolean {
+    suspend fun setEntryLock(
+      appCall: ApplicationCall,
+      indexManager: IIndexManager
+    ): Boolean {
       val routePar = appCall.parameters["searchString"]
       val queryPar = appCall.request.queryParameters["type"]
       val success: Boolean = if (!routePar.isNullOrEmpty()) {
         mutex.withLock {
           indexManager.setEntryLock(
-                  uID = routePar.toLong(),
-                  doLock = queryPar.toBoolean(),
+                  uID = routePar.toLong(), doLock = queryPar.toBoolean(),
                   userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
           )
         }
@@ -202,22 +211,15 @@ class ServerController {
           .sign(Algorithm.HMAC256(iniVal.token))
         val loginResponse = Json.encodeToString(
                 LoginResponseJson(
-                        httpCode = 200,
-                        username = user.username,
-                        token = token,
-                        expiresInMs = expiresInMs,
-                        accessM1 = user.canAccessDiscography,
-                        accessM2 = user.canAccessContacts,
-                        accessM3 = user.canAccessInvoices,
-                        accessM4 = user.canAccessInventory,
-                        accessM5 = user.canAccessClarifier,
-                        accessM6 = user.canAccessSnippetBase
+                        httpCode = 200, username = user.username, token = token, expiresInMs = expiresInMs,
+                        accessM1 = user.canAccessDiscography, accessM2 = user.canAccessContacts,
+                        accessM3 = user.canAccessInvoices, accessM4 = user.canAccessInventory,
+                        accessM5 = user.canAccessClarifier, accessM6 = user.canAccessSnippetBase
                 )
         )
         return ValidationContainerJson(
                 contentJson = loginResponse, hash = encryptKeccak(
-                input = loginResponse,
-                salt = encryptKeccak(user.email),
+                input = loginResponse, salt = encryptKeccak(user.email),
                 pepper = encryptKeccak("CWO_ERP LoginValidation")
         )
         )
@@ -325,10 +327,8 @@ class ServerController {
       }
       mutex.withLock {
         log(
-                type = Log.Type.COM,
-                text = "web shop order #${order.uID} from ${order.buyer}",
-                apiEndpoint = appCall.request.uri,
-                moduleAlt = invoiceIndexManager!!.module
+                type = Log.Type.COM, text = "web shop order #${order.uID} from ${order.buyer}",
+                apiEndpoint = appCall.request.uri, moduleAlt = invoiceIndexManager!!.module
         )
       }
       if (m3IniVal.autoSendEmailConfirmation) {
@@ -512,7 +512,11 @@ class ServerController {
       }
     }
 
-    suspend fun addMessageToUniChatroom(appCall: ApplicationCall, config: UniChatroomAddMessage, username: String) {
+    suspend fun addMessageToUniChatroom(
+      appCall: ApplicationCall,
+      config: UniChatroomAddMessage,
+      username: String
+    ) {
       with(UniChatroomController()) {
         mutex.withLock {
           val uniChatroom: UniChatroom? = getChatroom(config.uniChatroomGUID)
@@ -614,12 +618,8 @@ class ServerController {
           // Get Messages from index
           val messages = arrayListOf<String>()
           uniMessagesIndexManager!!.getEntriesFromIndexSearch(
-                  searchText = "^${uniChatroom.uID}$",
-                  ixNr = 1,
-                  showAll = false,
-                  paginationIndex = pageIndex,
-                  pageSize = pageSize,
-                  skip = skipCount
+                  searchText = "^${uniChatroom.uID}$", ixNr = 1, showAll = false, paginationIndex = pageIndex,
+                  pageSize = pageSize, skip = skipCount
           ) {
             it as UniMessage
             messages.add(uniMessagesIndexManager!!.encodeToJsonString(it))
@@ -629,7 +629,10 @@ class ServerController {
       }
     }
 
-    suspend fun addMemberToUniChatroom(appCall: ApplicationCall, config: UniChatroomAddMember) {
+    suspend fun addMemberToUniChatroom(
+      appCall: ApplicationCall,
+      config: UniChatroomAddMember
+    ) {
       val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
       if (uniChatroomGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
@@ -658,7 +661,10 @@ class ServerController {
       }
     }
 
-    suspend fun removeMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomRemoveMember) {
+    suspend fun removeMemberOfUniChatroom(
+      appCall: ApplicationCall,
+      config: UniChatroomRemoveMember
+    ) {
       val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
       if (uniChatroomGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
@@ -687,7 +693,10 @@ class ServerController {
       }
     }
 
-    suspend fun banMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomRemoveMember) {
+    suspend fun banMemberOfUniChatroom(
+      appCall: ApplicationCall,
+      config: UniChatroomRemoveMember
+    ) {
       val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
       if (uniChatroomGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
@@ -748,7 +757,10 @@ class ServerController {
       }
     }
 
-    suspend fun addRoleToMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomMemberRole) {
+    suspend fun addRoleToMemberOfUniChatroom(
+      appCall: ApplicationCall,
+      config: UniChatroomMemberRole
+    ) {
       val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
       if (uniChatroomGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
@@ -784,7 +796,10 @@ class ServerController {
       }
     }
 
-    suspend fun removeRoleOfMemberOfUniChatroom(appCall: ApplicationCall, config: UniChatroomMemberRole) {
+    suspend fun removeRoleOfMemberOfUniChatroom(
+      appCall: ApplicationCall,
+      config: UniChatroomMemberRole
+    ) {
       val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
       if (uniChatroomGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
@@ -894,47 +909,9 @@ class ServerController {
       }
     }
 
-    suspend fun setUniChatroomImage(appCall: ApplicationCall, config: UniChatroomImage) {
-      val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
-      if (uniChatroomGUID.isNullOrEmpty()) {
-        appCall.respond(HttpStatusCode.BadRequest)
-        return
-      }
-      with(UniChatroomController()) {
-        mutex.withLock {
-          val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
-          if (uniChatroom == null) {
-            appCall.respond(HttpStatusCode.NotFound)
-            return
-          }
-          if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
-            appCall.respond(HttpStatusCode.Forbidden)
-            return
-          }
-          with(SnippetBaseController()) {
-            val snippet = saveFile(
-                    base64 = config.imageBase64,
-                    snippet = createSnippet(),
-                    owner = "clarifier-$uniChatroomGUID",
-                    maxWidth = 300,
-                    maxHeight = 300
-            )
-            if (snippet == null) {
-              appCall.respond(HttpStatusCode.InternalServerError)
-              return
-            }
-            uniChatroom.imgGUID = snippet.guid
-          }
-          saveChatroom(uniChatroom)
-        }
-        appCall.respond(HttpStatusCode.OK)
-      }
-    }
-
-    suspend fun setUniMemberImage(
-      appCall: ApplicationCall, config: UniMemberProfileImage, isBanner: Boolean = false
+    suspend fun setUniChatroomImage(
+      appCall: ApplicationCall,
+      config: UniChatroomImage
     ) {
       val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
       if (uniChatroomGUID.isNullOrEmpty()) {
@@ -956,11 +933,48 @@ class ServerController {
           }
           with(SnippetBaseController()) {
             val snippet = saveFile(
-                    base64 = config.imageBase64,
-                    snippet = createSnippet(),
-                    owner = getUsernameReversedBase(appCall),
-                    maxWidth = 300,
-                    maxHeight = 300
+                    base64 = config.imageBase64, snippet = createSnippet(), owner = "clarifier-$uniChatroomGUID",
+                    maxWidth = 300, maxHeight = 300
+            )
+            if (snippet == null) {
+              appCall.respond(HttpStatusCode.InternalServerError)
+              return
+            }
+            uniChatroom.imgGUID = snippet.guid
+          }
+          saveChatroom(uniChatroom)
+        }
+        appCall.respond(HttpStatusCode.OK)
+      }
+    }
+
+    suspend fun setUniMemberImage(
+      appCall: ApplicationCall,
+      config: UniMemberProfileImage,
+      isBanner: Boolean = false
+    ) {
+      val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      with(UniChatroomController()) {
+        mutex.withLock {
+          val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
+          if (uniChatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          if (uniChatroom.checkIsMemberBanned(
+                    username = getJWTEmail(appCall), isEmail = true
+            )) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
+          with(SnippetBaseController()) {
+            val snippet = saveFile(
+                    base64 = config.imageBase64, snippet = createSnippet(), owner = getUsernameReversedBase(appCall),
+                    maxWidth = 300, maxHeight = 300
             )
             if (snippet == null) {
               appCall.respond(HttpStatusCode.InternalServerError)
@@ -975,18 +989,18 @@ class ServerController {
       }
     }
 
-    suspend fun createSnippetResource(appCall: ApplicationCall, payload: SnippetPayload) {
+    suspend fun createSnippetResource(
+      appCall: ApplicationCall,
+      payload: SnippetPayload
+    ) {
       if (!UserCLIManager.checkModuleRight(getJWTEmail(appCall), "M6")) {
         appCall.respond(HttpStatusCode.Forbidden)
         return
       }
       with(SnippetBaseController()) {
         val snippet = saveFile(
-                base64 = payload.payload,
-                snippet = createSnippet(),
-                owner = getUsernameReversedBase(appCall),
-                maxWidth = 1920,
-                maxHeight = 1920
+                base64 = payload.payload, snippet = createSnippet(), owner = getUsernameReversedBase(appCall),
+                maxWidth = 1920, maxHeight = 1920
         )
         if (snippet == null) {
           appCall.respond(HttpStatusCode.InternalServerError)
@@ -1018,7 +1032,10 @@ class ServerController {
       }
     }
 
-    suspend fun changeUsername(appCall: ApplicationCall, payload: UsernameChange) {
+    suspend fun changeUsername(
+      appCall: ApplicationCall,
+      payload: UsernameChange
+    ) {
       if (payload.username.isEmpty() || payload.newUsername.isEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
         return
@@ -1030,7 +1047,10 @@ class ServerController {
       }
     }
 
-    suspend fun changePassword(appCall: ApplicationCall, payload: PasswordChange) {
+    suspend fun changePassword(
+      appCall: ApplicationCall,
+      payload: PasswordChange
+    ) {
       if (payload.username.isEmpty() || payload.password.isEmpty() || payload.newPassword.isEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
         return
@@ -1051,7 +1071,8 @@ class ServerController {
     }
 
     suspend fun getActiveMembersOfUniChatroom(
-      appCall: ApplicationCall, uniChatroomGUID: String
+      appCall: ApplicationCall,
+      uniChatroomGUID: String
     ) {
       with(UniChatroomController()) {
         val uniChatroom: UniChatroom? = getChatroom(uniChatroomGUID)
@@ -1082,7 +1103,11 @@ class ServerController {
       }
     }
 
-    suspend fun getDirectChatrooms(appCall: ApplicationCall, username: String?, hasToBeJoined: Boolean = true) {
+    suspend fun getDirectChatrooms(
+      appCall: ApplicationCall,
+      username: String?,
+      hasToBeJoined: Boolean = true
+    ) {
       val chatrooms = UniChatroomController().getDirectChatrooms(appCall, username, hasToBeJoined)
       if (chatrooms.chatrooms.isNotEmpty()) {
         appCall.respond(chatrooms)

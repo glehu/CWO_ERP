@@ -18,7 +18,11 @@ class CwODB {
      * @return the position in the database and byte size of the stored entry.
      */
     fun saveEntry(
-      entryBytes: ByteArray, posDB: Long, byteSize: Int, module: String, raf: RandomAccessFile
+      entryBytes: ByteArray,
+      posDB: Long,
+      byteSize: Int,
+      module: String,
+      raf: RandomAccessFile
     ): Pair<Long, Int> {
       val byteSizeNew = entryBytes.size
       var canOverride = false
@@ -126,7 +130,10 @@ class CwODB {
      * Used to retrieve a single entry with the provided unique identifier.
      * @return the ByteArray of the entry
      */
-    fun getEntryByteArrayFromUID(uID: Long, indexManager: IIndexManager): ByteArray {
+    fun getEntryByteArrayFromUID(
+      uID: Long,
+      indexManager: IIndexManager
+    ): ByteArray {
       lateinit var entryBytes: ByteArray
       if (getDatabaseFile(indexManager.module).isFile) {
         val raf: RandomAccessFile = openRandomFileAccess(indexManager.module, RafMode.READ)
@@ -146,7 +153,10 @@ class CwODB {
      * The usage has to be declared by providing one of the RafModes (READ, WRITE or READWRITE)
      * @return a RandomAccessFile instance
      */
-    fun openRandomFileAccess(module: String, mode: RafMode): RandomAccessFile {
+    fun openRandomFileAccess(
+      module: String,
+      mode: RafMode
+    ): RandomAccessFile {
       val rafMode: String = when (mode) {
         RafMode.READ -> "r"
         RafMode.WRITE -> "w"
@@ -166,7 +176,11 @@ class CwODB {
      * Reads the serialized entry bytes directly from the disk.
      * @return ByteArray of Google ProtoBuf serialized entry.
      */
-    private fun readDBEntry(posInDatabase: Long, byteSize: Int, randAccessFile: RandomAccessFile): ByteArray {
+    private fun readDBEntry(
+      posInDatabase: Long,
+      byteSize: Int,
+      randAccessFile: RandomAccessFile
+    ): ByteArray {
       var entry = ByteArray(byteSize)
       try {
         if (posInDatabase > 0) randAccessFile.seek(posInDatabase)
@@ -184,7 +198,11 @@ class CwODB {
     /**
      * Writes the serialized entry bytes directly to the disk.
      */
-    private fun writeDBEntry(entry: ByteArray, posInDatabase: Long, raf: RandomAccessFile) {
+    private fun writeDBEntry(
+      entry: ByteArray,
+      posInDatabase: Long,
+      raf: RandomAccessFile
+    ) {
       if (posInDatabase > 0) raf.seek(posInDatabase)
       raf.write(entry)
     }
