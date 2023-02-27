@@ -365,10 +365,13 @@ class Server : IModule {
           webPlannerRequest()
           // Notification
           getNotifications()
+          dismissAllNotifications()
           dismissNotification()
           // Processes
           createProcessEntry()
           getProcesses()
+          getProcessEvents()
+          deleteProcessEvent()
         }
       }
     }
@@ -1076,6 +1079,12 @@ class Server : IModule {
     }
   }
 
+  private fun Route.dismissAllNotifications() {
+    get("m8/notifications/dismiss") {
+      NotificationController().httpDismissAllNotifications(call)
+    }
+  }
+
   private fun Route.dismissNotification() {
     get("m8/notifications/dismiss/{guid}") {
       val notificationGUID = call.parameters["guid"]
@@ -1102,6 +1111,28 @@ class Server : IModule {
       }
       val modeFilter: String = call.request.queryParameters["mode"] ?: "START"
       ProcessController().httpGetProcesses(call, knowledgeGUID!!, modeFilter)
+    }
+  }
+
+  private fun Route.getProcessEvents() {
+    get("m9/investigate/{knowledgeGUID}") {
+      val knowledgeGUID = call.parameters["knowledgeGUID"]
+      if (knowledgeGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      val entryPointGUID: String = call.request.queryParameters["entry"] ?: ""
+      ProcessController().httpGetEventsOfProcess(call, knowledgeGUID!!, entryPointGUID)
+    }
+  }
+
+  private fun Route.deleteProcessEvent() {
+    get("m9/delete/{processGUID}") {
+      val processEventGUID = call.parameters["processGUID"]
+      if (processEventGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      // val entryPointGUID: String = call.request.queryParameters["entry"] ?: ""
+      ProcessController().httpDeleteProcessEvent(call, processEventGUID)
     }
   }
 }

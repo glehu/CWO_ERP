@@ -19,6 +19,7 @@ import modules.m7knowledge.Knowledge
 import modules.m8notification.Notification
 import modules.m8notification.logic.NotificationController
 import modules.mx.contactIndexManager
+import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
 
 @DelicateCoroutinesApi
@@ -69,6 +70,7 @@ class ContactController : IModule {
             title = "", type = "direct", directMessageUsernames = arrayOf(usernameToken, username)
     )
     val chatroom = UniChatroomController().createConfiguredChatroom(config, usernameToken)
+    log(Log.Type.INFO, "Creating notifications for friend request...")
     // Add a notification for the user to be befriended
     val notificationController = NotificationController()
     var notification = Notification(-1, username)
@@ -78,6 +80,7 @@ class ContactController : IModule {
     notification.hasClickAction = true
     notification.clickAction = "join,group"
     notification.clickActionReferenceGUID = chatroom.chatroomGUID
+    notification.type = "friend request"
     notificationController.saveEntry(notification)
     // Add a notification for the user that sent the friend request
     notification = Notification(-1, usernameToken)

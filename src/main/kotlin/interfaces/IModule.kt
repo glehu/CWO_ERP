@@ -60,8 +60,8 @@ interface IModule {
     }
     entry.initialize()
     val (posDBXt, byteSizeXt) = CwODB.saveEntry(
-            entryBytes = encode(entry), posDB = posDB, byteSize = byteSize, module = indexManager.module, raf = rafLocal
-    )
+            entryBytes = encode(entry), posDB = posDB, byteSize = byteSize, module = indexManager.module,
+            raf = rafLocal)
     val posDBX: Long = posDBXt
     val byteSizeX: Int = byteSizeXt
     indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, "")
@@ -102,13 +102,16 @@ interface IModule {
    * It is possible to retrieve an [IEntry] of another module if that module gets passed into the function.
    * @return the [ByteArray] of an [IEntry] with the provided unique identifier.
    */
-  fun getBytes(uID: Long, lock: Boolean = false, userName: String = ""): ByteArray {
+  fun getBytes(
+    uID: Long,
+    lock: Boolean = false,
+    userName: String = ""
+  ): ByteArray {
     var entryBytes: ByteArray = byteArrayOf()
     if (uID != -1L) {
       entryBytes = CwODB.getEntryByteArrayFromUID(
-              uID = uID, indexManager = getIndexManager()!!
-      )
-      //Lock the entry (if: GET)
+              uID = uID, indexManager = getIndexManager()!!)
+      // Lock the entry (if: GET)
       getIndexManager()!!.setEntryLock(uID, lock, userName)
     }
     return entryBytes
@@ -139,16 +142,15 @@ interface IModule {
    * @return [EntryBytesListJson]
    */
   fun getEntryBytesListJson(
-    searchText: String, ixNr: Int, exactSearch: Boolean = false
+    searchText: String,
+    ixNr: Int,
+    exactSearch: Boolean = false
   ): EntryBytesListJson {
     val resultsListJson = EntryBytesListJson(0, arrayListOf())
     var resultCounter = 0
     CwODB.getEntriesFromSearchString(
-            searchText = searchText.uppercase(),
-            ixNr = ixNr,
-            exactSearch = exactSearch,
-            indexManager = getIndexManager()!!
-    ) { _, bytes ->
+            searchText = searchText.uppercase(), ixNr = ixNr, exactSearch = exactSearch,
+            indexManager = getIndexManager()!!) { _, bytes ->
       resultCounter++
       resultsListJson.resultsList.add(bytes)
     }
@@ -160,24 +162,22 @@ interface IModule {
    * @return [EntryListJson]
    */
   fun getEntryListJson(
-    searchText: String, ixNr: Int, prettyPrint: Boolean = false, exactSearch: Boolean = false
+    searchText: String,
+    ixNr: Int,
+    prettyPrint: Boolean = false,
+    exactSearch: Boolean = false
   ): EntryListJson {
     val resultsListJson = EntryListJson(0, arrayListOf())
     var resultCounter = 0
     CwODB.getEntriesFromSearchString(
-            searchText = searchText.uppercase(),
-            ixNr = ixNr,
-            exactSearch = exactSearch,
-            indexManager = getIndexManager()!!
-    ) { _, bytes ->
+            searchText = searchText.uppercase(), ixNr = ixNr, exactSearch = exactSearch,
+            indexManager = getIndexManager()!!) { _, bytes ->
       resultCounter++
       val entry = decode(bytes)
       entry.initialize()
       resultsListJson.resultsList.add(
               getIndexManager()!!.encodeToJsonString(
-                      entry = entry, prettyPrint = prettyPrint
-              )
-      )
+                      entry = entry, prettyPrint = prettyPrint))
     }
     resultsListJson.total = resultCounter
     return resultsListJson
@@ -194,18 +194,29 @@ interface IModule {
   /**
    * Displays text on the console and writes it to the module's log file.
    */
-  suspend fun log(type: Log.Type, text: String, apiEndpoint: String = "", moduleAlt: String? = null) {
+  suspend fun log(
+    type: Log.Type,
+    text: String,
+    apiEndpoint: String = "",
+    moduleAlt: String? = null
+  ) {
     Log.log(
-            module = moduleAlt ?: module, type = type, text = text, caller = moduleNameLong, apiEndpoint = apiEndpoint
-    )
+            module = moduleAlt ?: module, type = type, text = text, caller = moduleNameLong, apiEndpoint = apiEndpoint)
   }
 
-  fun getEntryLock(uID: Long, userName: String = ""): Boolean {
+  fun getEntryLock(
+    uID: Long,
+    userName: String = ""
+  ): Boolean {
     val content = getIndexManager()!!.getBaseIndex(uID)?.content ?: ""
     return (content.isNotEmpty() && content != userName)
   }
 
-  fun setEntryLock(uID: Long, doLock: Boolean, userName: String = ""): Boolean {
+  fun setEntryLock(
+    uID: Long,
+    doLock: Boolean,
+    userName: String = ""
+  ): Boolean {
     var success = false
     val indexManager = getIndexManager()!!
     val entryLocked = indexManager.getEntryLock(uID, userName)
@@ -215,7 +226,7 @@ interface IModule {
         success = true
       }
     } else {
-      //If the entry is locked by the user that is trying to unlock -> unlock
+      // If the entry is locked by the user that is trying to unlock -> unlock
       if (indexManager.getBaseIndex(uID)?.content == userName) {
         indexManager.getBaseIndex(uID)?.content = ""
         success = true
@@ -236,12 +247,18 @@ interface IModule {
    * @return the settings file of a provided module
    */
   fun getSettingsFileText(
-    moduleShort: String = module, subSetting: String = "", check: Boolean = true
+    moduleShort: String = module,
+    subSetting: String = "",
+    check: Boolean = true
   ): String {
     return getSettingsFile(moduleShort = moduleShort, subSetting = subSetting).readText()
   }
 
-  fun getSettingsFile(moduleShort: String = module, subSetting: String = "", check: Boolean = true): File {
+  fun getSettingsFile(
+    moduleShort: String = module,
+    subSetting: String = "",
+    check: Boolean = true
+  ): File {
     if (check) checkSettingsFile(subSetting = subSetting)
     val sub = if (subSetting.isNotEmpty()) {
       "-$subSetting"
@@ -263,7 +280,9 @@ interface IModule {
   }
 
   suspend fun sendEmail(
-    subject: String, body: String, recipient: String
+    subject: String,
+    body: String,
+    recipient: String
   ): Boolean {
     Emailer().sendEmailOverMailServer(subject, body, recipient)
     return true
@@ -287,15 +306,9 @@ interface IModule {
   ) {
     val searchTextFormatted = if (format) indexFormat(searchText) else searchText
     CwODB.getEntriesFromSearchString(
-            searchText = searchTextFormatted,
-            ixNr = ixNr,
-            exactSearch = true,
-            indexManager = getIndexManager()!!,
-            maxSearchResults = if (showAll) -1 else pageSize,
-            numberComparison = numberComparison,
-            paginationIndex = paginationIndex,
-            skip = skip
-    ) { _, bytes ->
+            searchText = searchTextFormatted, ixNr = ixNr, exactSearch = true, indexManager = getIndexManager()!!,
+            maxSearchResults = if (showAll) -1 else pageSize, numberComparison = numberComparison,
+            paginationIndex = paginationIndex, skip = skip) { _, bytes ->
       try {
         entryOut(decode(bytes))
       } catch (e: Exception) {

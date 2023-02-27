@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 import modules.m5.UniChatroom
 import modules.m5.UniRole
 import modules.m7wisdom.Wisdom
+import modules.m9process.ProcessEvent
 
 @Serializable
 data class EntryBytesListJson(
@@ -645,5 +646,14 @@ data class ProcessEntryConfig(
   var taskGUID: String = "",
   var actionType: String = "",
   var previousEventGUID: String = "",
+  var nextEventGUID: String = "",
   var createTask: Boolean = false
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class ProcessEventsPayload(
+  var incoming: ArrayList<ProcessEvent> = arrayListOf(),
+  var outgoing: ArrayList<ProcessEvent> = arrayListOf()
 )

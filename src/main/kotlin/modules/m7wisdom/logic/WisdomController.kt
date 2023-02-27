@@ -229,6 +229,11 @@ class WisdomController : IModule {
           lesson.finishedDate = ""
         }
       }
+      lesson.history.add(
+              Json.encodeToString(
+                      WisdomHistoryEntry(
+                              type = "edit", date = Timestamp.getUnixTimestampHex(), description = "Due Date Edited",
+                              authorUsername = user!!.username)))
       saveEntry(lesson)
       appCall.respond(lesson.guid)
       return
@@ -241,6 +246,11 @@ class WisdomController : IModule {
       lesson.keywords = config.keywords
       lesson.categories = config.categories
       lesson.copyContent = config.copyContent
+      lesson.history.add(
+              Json.encodeToString(
+                      WisdomHistoryEntry(
+                              type = "edit", date = Timestamp.getUnixTimestampHex(), description = "Edited",
+                              authorUsername = user!!.username)))
       saveEntry(lesson)
       appCall.respond(lesson.guid)
       return
@@ -298,16 +308,19 @@ class WisdomController : IModule {
         return
       }
     }
-    val historyEntry = if (!edit) {
-      WisdomHistoryEntry(
-              type = "creation", date = Timestamp.getUnixTimestampHex(), description = "Created",
-              authorUsername = user!!.username)
+    if (!edit) {
+      lesson.history.add(
+              Json.encodeToString(
+                      WisdomHistoryEntry(
+                              type = "creation", date = Timestamp.getUnixTimestampHex(), description = "Created",
+                              authorUsername = user!!.username)))
     } else {
-      WisdomHistoryEntry(
-              type = "edit", date = Timestamp.getUnixTimestampHex(), description = "Edited",
-              authorUsername = user!!.username)
+      lesson.history.add(
+              Json.encodeToString(
+                      WisdomHistoryEntry(
+                              type = "edit", date = Timestamp.getUnixTimestampHex(), description = "Edited",
+                              authorUsername = user!!.username)))
     }
-    lesson.history.add(Json.encodeToString(historyEntry))
     saveEntry(lesson)
     appCall.respond(lesson.guid)
   }
@@ -586,7 +599,6 @@ class WisdomController : IModule {
     save(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
     if (reactionAdded) {
-      val notificationController = NotificationController()
       val notification = Notification(-1, wisdom!!.authorUsername)
       notification.title = "${user.username} reacted!"
       notification.authorUsername = "_server"
@@ -594,7 +606,7 @@ class WisdomController : IModule {
       notification.hasClickAction = true
       notification.clickAction = "open,wisdom"
       notification.clickActionReferenceGUID = wisdom!!.guid
-      notificationController.saveEntry(notification)
+      NotificationController().saveEntry(notification)
     }
   }
 
@@ -697,10 +709,10 @@ class WisdomController : IModule {
     // Configure wisdom
     wisdom!!.guid = ""
     wisdom!!.knowledgeUID = -1
-    wisdom!!.title = "?"
-    wisdom!!.description = "?"
-    wisdom!!.srcWisdomUID = -1
-    wisdom!!.refWisdomUID = -1
+    wisdom!!.title = ""
+    wisdom!!.description = ""
+    wisdom!!.srcWisdomUID = -1L
+    wisdom!!.refWisdomUID = -1L
     wisdom!!.isTask = false
     saveEntry(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
@@ -724,7 +736,7 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.NotFound)
       return
     }
-    if (!httpCheckWisdomRights(appCall, wisdom!!)) return
+    if (!httpCheckWisdomRights(appCall, wisdom!!, checkCollaborator = false)) return
     appCall.respond(wisdom!!)
   }
 
@@ -861,6 +873,7 @@ class WisdomController : IModule {
     appCall: ApplicationCall,
     wisdom: Wisdom,
     checkKnowledge: Boolean = true,
+    checkCollaborator: Boolean = true,
     user: Contact? = null
   ): Boolean {
     if (checkKnowledge) {
@@ -878,12 +891,14 @@ class WisdomController : IModule {
         }
       }
     }
-    // Retrieve user if not provided
-    val userTmp = user ?: UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
-    // If the user is unauthorized or neither the creator nor a collaborator, exit
-    if (userTmp == null || (wisdom.authorUsername != userTmp.username && !wisdom.isCollaborator(userTmp.username))) {
-      appCall.respond(HttpStatusCode.Forbidden)
-      return false
+    if (checkCollaborator) {
+      // Retrieve user if not provided
+      val userTmp = user ?: UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
+      // If the user is unauthorized or neither the creator nor a collaborator, exit
+      if (userTmp == null || (wisdom.authorUsername != userTmp.username && !wisdom.isCollaborator(userTmp.username))) {
+        appCall.respond(HttpStatusCode.Forbidden)
+        return false
+      }
     }
     return true
   }
@@ -922,6 +937,7 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.NotFound)
       return
     }
+    if (!httpCheckWisdomRights(appCall, wisdom!!)) return
     for (collaborator in config.collaborators)
     // Add collaborator if he doesn't exist yet
       if (!wisdom!!.isCollaborator(collaborator.username)) {

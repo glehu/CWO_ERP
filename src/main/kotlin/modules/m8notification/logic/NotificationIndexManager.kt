@@ -49,7 +49,7 @@ class NotificationIndexManager(override var level: Long) : IIndexManager {
   init {
     initialize(
             1, // GUID
-            2, // recipientUsername
+            2 // recipientUsername
     )
   }
 

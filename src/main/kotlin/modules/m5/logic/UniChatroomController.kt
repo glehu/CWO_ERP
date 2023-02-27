@@ -467,9 +467,17 @@ class UniChatroomController : IModule {
           if (Json.decodeFromString<UniRole>(roleJson).name.uppercase() == "OWNER") {
             val notificationController = NotificationController()
             val notification = Notification(-1, member.username)
-            notification.title = "New member!"
+            if (uniChatroom.type == "direct") {
+              notification.title = "Friend Request Accepted!"
+            } else {
+              notification.title = "New member!"
+              if (uniChatroom.title.isNotEmpty()) {
+                notification.description = "$username has joined ${uniChatroom.title}!"
+              } else {
+                notification.description = "$username has joined!"
+              }
+            }
             notification.authorUsername = "_server"
-            notification.description = "$username has joined ${uniChatroom.title}!"
             notification.hasClickAction = true
             notification.clickAction = "open,group"
             notification.clickActionReferenceGUID = uniChatroom.chatroomGUID
@@ -950,33 +958,28 @@ class UniChatroomController : IModule {
     }
     // Update parent chatroom with this chatroom's GUID if needed
     if (parentUniChatroomGUID.isNotEmpty()) {
-      val parent: UniChatroom?
-      mutexChatroom.withLock {
-        // We initialize here since we didn't save yet, thus having no GUID to reference etc.
-        uniChatroom.uID = -2 // Little bypass
-        uniChatroom.initialize()
-        uniChatroom.uID = -1
-        // Create a copy since we want to remove unnecessary stuff before saving it into the parent
-        val copy = uniChatroom.copy()
-        copy.imgGUID = ""
-        copy.members.clear()
-        // Copy other values
-        copy.chatroomGUID = uniChatroom.chatroomGUID
-        copy.parentGUID = uniChatroom.parentGUID
-        copy.type = uniChatroom.type
-        parent = getChatroom(parentUniChatroomGUID)
-        if (parent != null) {
-          // Create reference
-          parent.subChatrooms.add(Json.encodeToString(copy))
-          // Reference the parent also
-          uniChatroom.parentGUID = parent.chatroomGUID
-          saveChatroom(parent)
-        }
+      // We initialize here since we didn't save yet, thus having no GUID to reference etc.
+      uniChatroom.uID = -2 // Little bypass
+      uniChatroom.initialize()
+      uniChatroom.uID = -1
+      // Create a copy since we want to remove unnecessary stuff before saving it into the parent
+      val copy = uniChatroom.copy()
+      copy.imgGUID = ""
+      copy.members.clear()
+      // Copy other values
+      copy.chatroomGUID = uniChatroom.chatroomGUID
+      copy.parentGUID = uniChatroom.parentGUID
+      copy.type = uniChatroom.type
+      val parent: UniChatroom? = getChatroom(parentUniChatroomGUID)
+      if (parent != null) {
+        // Create reference
+        parent.subChatrooms.add(Json.encodeToString(copy))
+        // Reference the parent also
+        uniChatroom.parentGUID = parent.chatroomGUID
+        saveChatroom(parent)
       }
     }
-    mutexChatroom.withLock {
-      saveChatroom(uniChatroom)
-    }
+    saveChatroom(uniChatroom)
     uniChatroom.addMessage(
             member = "_server", message = "[s:RegistrationNotification]${owner} has created ${config.title}!")
     return uniChatroom

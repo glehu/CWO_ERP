@@ -10,9 +10,12 @@ import kotlin.streams.asSequence
 //-------------------------------------^
 
 /**
- * Used to format an input string to be used as an index value. The string gets converted to uppercase letters and
- * whitespaces get filtered out.
- * @return the index formatted string
+ * Used to format an input [String] to be used as an index value.
+ * The [String] gets converted to uppercase letters and whitespaces get filtered out.
+ *
+ * Important: A maximum amount of 200 characters can be returned!
+ *
+ * @return the index formatted [String]
  */
 fun indexFormat(text: String): String {
   val charArray = text.uppercase(Locale.getDefault()).toCharArray()
@@ -37,7 +40,10 @@ fun getDefaultDate(): String {
 /**
  * @return a random string (letters or numbers) of a certain length.
  */
-fun getRandomString(size: Long, numbers: Boolean = false): String {
+fun getRandomString(
+  size: Long,
+  numbers: Boolean = false
+): String {
   val dictionary = if (!numbers) "ABCDEFGHIJKLMNOPQRSTUVWXYZ" else "123456789"
   return Random().ints(size, 0, dictionary.length).asSequence().map(dictionary::get).joinToString("")
 }
@@ -51,6 +57,9 @@ fun Double.roundTo(numFractionDigits: Int): Double {
  * Creates a two-dimensional array with a fixed length.
  * @return a two-dimensional array.
  */
-fun d2Array(rows: Int, cols: Int): Array<Array<String>> {
+fun d2Array(
+  rows: Int,
+  cols: Int
+): Array<Array<String>> {
   return Array(rows) { Array(cols) { "" } }
 }
