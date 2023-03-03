@@ -68,9 +68,14 @@ class ProcessIndexManager(override var level: Long) : IIndexManager {
     entry as ProcessEvent
     val wisdomUID = entry.wisdomUID
     val taskWisdomUID = entry.taskWisdomUID
+    var index2 = entry.mode + "|" + entry.knowledgeUID.toString()
+    // Check if both mode and knowledgeUID are invalid (e.g. deleted entry)
+    // The value would be an empty mode () and minus one (-1) seperated by a pipe (|) thus "|-1"
+    if (index2 == "|-1") index2 = ""
     buildIndices(
             entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid),
-            Pair(2, entry.knowledgeUID.toString()), Pair(3, if (wisdomUID != -1L) wisdomUID.toString() else ""),
+            Pair(2, index2),
+            Pair(3, if (wisdomUID != -1L) wisdomUID.toString() else ""),
             Pair(4, if (taskWisdomUID != -1L) taskWisdomUID.toString() else ""))
   }
 

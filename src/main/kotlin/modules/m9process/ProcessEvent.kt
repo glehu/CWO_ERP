@@ -5,6 +5,7 @@ import interfaces.IEntry
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
+import modules.mx.logic.Timestamp
 import modules.mx.uniMessagesIndexManager
 
 @InternalAPI
@@ -13,7 +14,6 @@ import modules.mx.uniMessagesIndexManager
 data class ProcessEvent(
   override var uID: Long = -1L,
 ) : IEntry {
-  @SerialName("ts")
   var guid: String = ""
 
   // Purpose
@@ -36,11 +36,21 @@ data class ProcessEvent(
 
   // Description
 
+  @SerialName("t")
   var title: String = ""
 
+  @SerialName("author")
+  var authorUsername: String = ""
+
+  var collaborators: ArrayList<String> = arrayListOf()
+
+  @SerialName("desc")
   var description: String = ""
 
   var keywords: String = ""
+
+  @SerialName("cdate")
+  var dateCreated: String = ""
 
   var knowledgeUID: Long = -1L
 
@@ -96,6 +106,7 @@ data class ProcessEvent(
   var probability: Int = 1
 
   init {
+    if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
     if (guid.isEmpty()) guid = Uuid.randomUUID().toString()
   }
 

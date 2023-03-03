@@ -11,6 +11,7 @@ import api.misc.json.ListDeltaJson
 import api.misc.json.PairLongJson
 import api.misc.json.PasswordChange
 import api.misc.json.ProcessEntryConfig
+import api.misc.json.ProcessInteractionPayload
 import api.misc.json.PubKeyPEMContainer
 import api.misc.json.SettingsRequestJson
 import api.misc.json.SnippetPayload
@@ -371,6 +372,8 @@ class Server : IModule {
           createProcessEntry()
           getProcesses()
           getProcessEvents()
+          getProcessPath()
+          interactProcessEvent()
           deleteProcessEvent()
         }
       }
@@ -1099,7 +1102,9 @@ class Server : IModule {
   private fun Route.createProcessEntry() {
     post("m9/create") {
       val config: ProcessEntryConfig = Json.decodeFromString(call.receive())
-      ProcessController().httpCreateProcessEvent(call, config)
+      val processGUID: String = call.request.queryParameters["guid"] ?: ""
+      val mode: String = call.request.queryParameters["mode"] ?: ""
+      ProcessController().httpCreateProcessEvent(call, config, processGUID, mode)
     }
   }
 
@@ -1109,8 +1114,9 @@ class Server : IModule {
       if (knowledgeGUID.isNullOrEmpty()) {
         call.respond(HttpStatusCode.BadRequest)
       }
-      val modeFilter: String = call.request.queryParameters["mode"] ?: "START"
-      ProcessController().httpGetProcesses(call, knowledgeGUID!!, modeFilter)
+      val modeFilter: String = call.request.queryParameters["mode"] ?: "start"
+      val authorFilter: String = call.request.queryParameters["author"] ?: ""
+      ProcessController().httpGetProcesses(call, knowledgeGUID!!, modeFilter, authorFilter)
     }
   }
 
@@ -1121,7 +1127,24 @@ class Server : IModule {
         call.respond(HttpStatusCode.BadRequest)
       }
       val entryPointGUID: String = call.request.queryParameters["entry"] ?: ""
+      if (entryPointGUID.isEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
       ProcessController().httpGetEventsOfProcess(call, knowledgeGUID!!, entryPointGUID)
+    }
+  }
+
+  private fun Route.getProcessPath() {
+    get("m9/path/{knowledgeGUID}") {
+      val knowledgeGUID = call.parameters["knowledgeGUID"]
+      if (knowledgeGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      val entryPointGUID: String = call.request.queryParameters["entry"] ?: ""
+      if (entryPointGUID.isEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      ProcessController().httpGetFullProcessPath(call, knowledgeGUID!!, entryPointGUID)
     }
   }
 
@@ -1131,8 +1154,18 @@ class Server : IModule {
       if (processEventGUID.isNullOrEmpty()) {
         call.respond(HttpStatusCode.BadRequest)
       }
-      // val entryPointGUID: String = call.request.queryParameters["entry"] ?: ""
       ProcessController().httpDeleteProcessEvent(call, processEventGUID)
+    }
+  }
+
+  private fun Route.interactProcessEvent() {
+    post("m9/interact/{processGUID}") {
+      val config: ProcessInteractionPayload = Json.decodeFromString(call.receive())
+      val processEventGUID = call.parameters["processGUID"]
+      if (processEventGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      }
+      ProcessController().httpInteractProcessEvent(call, processEventGUID, config)
     }
   }
 }

@@ -654,6 +654,29 @@ data class ProcessEntryConfig(
 @InternalAPI
 @Serializable
 data class ProcessEventsPayload(
+  var process: ProcessEvent,
   var incoming: ArrayList<ProcessEvent> = arrayListOf(),
   var outgoing: ArrayList<ProcessEvent> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class ProcessPathSegmentPayload(
+  var event: ProcessEvent,
+  var alternatives: ArrayList<ProcessEvent> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class ProcessPathPayload(
+  var path: ArrayList<ProcessPathSegmentPayload> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class ProcessInteractionPayload(
+  var action: String = ""
 )
