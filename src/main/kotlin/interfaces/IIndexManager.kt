@@ -256,8 +256,7 @@ interface IIndexManager : IModule {
         if (indexList[ixNr] == null) addIndex(ixNr)
         synchronized(this) {
           indexList[ixNr]!!.indexMap[uID] = IndexContent(
-                  content = indexFormat(ixContent).uppercase()
-          )
+                  content = indexFormat(ixContent))
         }
       } else {
         // Remove "empty" indices to save lots of space
@@ -267,7 +266,7 @@ interface IIndexManager : IModule {
       }
     }
     if (writeToDisk) {
-      coroutineScope { launch { writeIndexData() } }
+      coroutineScope { launch { writeIndexData(*indices) } }
     }
     setLastChangeData(uID, userName)
   }
@@ -294,13 +293,20 @@ interface IIndexManager : IModule {
   /**
    * Writes the index values stored in the RAM onto the disk.
    */
-  suspend fun writeIndexData() = runBlocking {
+  suspend fun writeIndexData(vararg indices: Pair<Int, String>) = runBlocking {
     synchronized(this) {
-      for (index in indexList.entries) {
-        launch {
-          getIndexFile(index.key).writeText(
-                  Json.encodeToString(indexList[index.key])
-          )
+      // Default index (uID)
+      launch {
+        getIndexFile(0).writeText(
+                Json.encodeToString(indexList[0]))
+      }
+      // Custom indices (number 1 and onwards)
+      for ((ixNr, _) in indices) {
+        if (ixNr > 0) {
+          launch {
+            getIndexFile(ixNr).writeText(
+                    Json.encodeToString(indexList[ixNr]))
+          }
         }
       }
     }
@@ -502,6 +508,58 @@ interface IIndexManager : IModule {
         it.content.contains(searchText.toRegex())
       }
       emit(results)
+    }
+  }
+
+  fun setIndexValue(
+    indexNr: Int,
+    uID: Long,
+    indexValue: String
+  ) {
+    if (uID != -1L && uID < localMinUID) {
+      if (prevManager != null) {
+        prevManager!!.setIndexValue(indexNr, uID, indexValue)
+        return
+      }
+    } else if (uID > localMaxUID) {
+      if (nextManager != null) {
+        nextManager!!.setIndexValue(indexNr, uID, indexValue)
+        return
+      }
+    }
+    if (indexNr < 1) return
+    if (uID < 0L) return
+    try {
+      if (indexList[indexNr] == null) {
+        addIndex(indexNr)
+      }
+      indexList[indexNr]!!.indexMap[uID] = IndexContent(content = indexFormat(indexValue))
+    } catch (e: Exception) {
+      println(e.message)
+      return
+    }
+  }
+
+  fun getIndexValue(
+    indexNr: Int,
+    uID: Long
+  ): String {
+    if (uID != -1L && uID < localMinUID) {
+      if (prevManager != null) {
+        return prevManager!!.getIndexValue(indexNr, uID)
+      }
+    } else if (uID > localMaxUID) {
+      if (nextManager != null) {
+        return nextManager!!.getIndexValue(indexNr, uID)
+      }
+    }
+    if (indexNr < 1) return ""
+    if (uID < 0L) return ""
+    return try {
+      indexList[indexNr]!!.indexMap[uID]!!.content
+    } catch (_: Exception) {
+      // :(
+      ""
     }
   }
 }

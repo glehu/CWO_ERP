@@ -4,8 +4,10 @@ import api.logic.core.ServerController
 import api.misc.json.ProcessEntryConfig
 import api.misc.json.ProcessEventsPayload
 import api.misc.json.ProcessInteractionPayload
+import api.misc.json.ProcessPathFullSegmentPayload
 import api.misc.json.ProcessPathPayload
 import api.misc.json.ProcessPathSegmentPayload
+import api.misc.json.QueryResult
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.http.*
@@ -19,6 +21,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import modules.m2.Contact
 import modules.m7knowledge.Knowledge
 import modules.m7knowledge.logic.KnowledgeController
 import modules.m7wisdom.Wisdom
@@ -374,7 +377,8 @@ class ProcessController : IModule {
     appCall: ApplicationCall,
     knowledgeGUID: String,
     modeFilter: String,
-    authorFilter: String
+    authorFilter: String,
+    queryFilter: String
   ) {
     // Retrieve and check knowledge
     var knowledgeRef: Knowledge? = null
@@ -388,11 +392,36 @@ class ProcessController : IModule {
       return
     }
     if (!KnowledgeController().httpCanAccessKnowledge(appCall, knowledgeRef!!)) return
+    var regexPattern: Regex? = null
+    var doQuery = false
+    if (queryFilter.isNotEmpty()) {
+      regexPattern = buildQueryRegexPattern(queryFilter)
+      doQuery = true
+    }
     // Retrieve processes
     val processes: ArrayList<ProcessEvent> = arrayListOf()
+    val results: ArrayList<QueryResult> = arrayListOf()
+    var queryResult: QueryResult
     getEntriesFromIndexSearch("^$modeFilter\\|${knowledgeRef!!.uID}$", 2, true) {
       it as ProcessEvent
-      if (authorFilter.isEmpty() || it.authorUsername.contains("^$authorFilter$".toRegex())) processes.add(it)
+      if (authorFilter.isEmpty() || it.authorUsername.contains("^$authorFilter$".toRegex())) {
+        it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
+        if (doQuery) {
+          queryResult = applyQueryRegexPattern(
+                  regexPattern!!, it, it.title, it.keywords, it.description, it.authorUsername)
+
+          if (queryResult.rating > 0) results.add(queryResult)
+        } else {
+          processes.add(it)
+        }
+      }
+    }
+    if (doQuery) {
+      // Put results back into the response payload array
+      val sortedResults = sortQueryResults(results)
+      for (sortedEntry in sortedResults) {
+        processes.add(sortedEntry.entry as ProcessEvent)
+      }
     }
     if (processes.isEmpty()) {
       appCall.respond(HttpStatusCode.NotFound)
@@ -579,7 +608,24 @@ class ProcessController : IModule {
     processEvent: ProcessEvent,
     processes: ProcessPathPayload = ProcessPathPayload()
   ): ProcessPathPayload {
-    val segment = ProcessPathSegmentPayload(processEvent)
+    val segment = ProcessPathFullSegmentPayload(processEvent)
+    // Related entries?
+    val wisdomController = WisdomController()
+    var wisdom: Wisdom
+    if (processEvent.wisdomUID != -1L) {
+      try {
+        wisdom = wisdomController.get(processEvent.wisdomUID) as Wisdom
+        segment.wisdom = wisdom
+      } catch (_: Exception) {
+      }
+    }
+    if (processEvent.taskWisdomUID != -1L) {
+      try {
+        wisdom = wisdomController.get(processEvent.taskWisdomUID) as Wisdom
+        segment.task = wisdom
+      } catch (_: Exception) {
+      }
+    }
     // Investigate the provided event...
     if (processEvent.outgoingUID.isEmpty()) {
       // There are no next events!
@@ -600,12 +646,29 @@ class ProcessController : IModule {
     if (processEvent.outgoingUID.size > 1) {
       // We skip one since we're only looking for alternatives to the first (index 0)
       var alternateEvent: ProcessEvent
+      var altSegment: ProcessPathSegmentPayload
       for (i in 1 until processEvent.outgoingUID.size) {
         try {
           alternateEvent = get(processEvent.outgoingUID[i]) as ProcessEvent
-          segment.alternatives.add(alternateEvent)
+          altSegment = ProcessPathSegmentPayload(alternateEvent)
+          // Related entries?
+          if (alternateEvent.wisdomUID != -1L) {
+            try {
+              wisdom = wisdomController.get(alternateEvent.wisdomUID) as Wisdom
+              altSegment.wisdom = wisdom
+            } catch (_: Exception) {
+            }
+          }
+          if (alternateEvent.taskWisdomUID != -1L) {
+            try {
+              wisdom = wisdomController.get(alternateEvent.taskWisdomUID) as Wisdom
+              altSegment.task = wisdom
+            } catch (_: Exception) {
+            }
+          }
+          // Add
+          segment.alternatives.add(altSegment)
         } catch (_: Exception) {
-          // Entry could not be retrieved
         }
       }
     }
@@ -647,8 +710,14 @@ class ProcessController : IModule {
       }
     }
     // Analyze action
-    if (config.action.trim().contains("^doc$".toRegex())) {
+    if (config.action.trim().contains("^generate_documentation$".toRegex())) {
       val success = httpGenerateMarkdownDocumentation(appCall, processEvent!!)
+      if (!success) {
+        appCall.respond(HttpStatusCode.InternalServerError)
+        return
+      }
+    } else if (config.action.trim().contains("^create_tasks$".toRegex())) {
+      val success = httpCreateTasks(appCall, processEvent!!)
       if (!success) {
         appCall.respond(HttpStatusCode.InternalServerError)
         return
@@ -672,28 +741,202 @@ class ProcessController : IModule {
       if (index == 0) {
         // Append to title
         sbTitle.append("# " + segment.event.title + nnl)
-        sbBody.append("Date: " + Timestamp.getUTCTimestampFromHex(segment.event.dateCreated) + "  " + nl)
-        sbBody.append("Author: ${segment.event.authorUsername}$nnl")
+        sbBody.append("Author: ${segment.event.authorUsername}  $nl")
+        sbBody.append("Date: " + Timestamp.getUTCTimestampFromHex(segment.event.dateCreated) + nnl)
+      } else {
+        // Skip empty values that also do not contain alternatives
+        if (segment.event.title.isEmpty() && segment.event.description.isEmpty() && segment.alternatives.isEmpty()) {
+          continue
+        }
       }
-      // Append to contents...
-      sbContents.append("${index + 1}. " + segment.event.title + nl)
-      // ... and body
+      // Append to contents and body...
       if (index >= 1) sbBody.append("---$nnl") // Separator if there was a previous entry
-      sbBody.append("## ${index + 1}. " + segment.event.title + nnl)
-      sbBody.append(segment.event.description + nnl)
+      if (segment.event.title.isNotEmpty()) {
+        sbContents.append("${index + 1}. " + segment.event.title + nl)
+        sbBody.append("## ${index + 1}. " + segment.event.title + nnl)
+      } else {
+        sbContents.append("${index + 1}. (No Title)$nl")
+        sbBody.append("## ${index + 1}. (No Title)$nnl")
+      }
+      if (segment.event.description.isNotEmpty()) {
+        sbBody.append(segment.event.description + nnl)
+      } else {
+        sbBody.append("(No Description)$nnl")
+      }
+      // Print alternatives, too
       if (segment.alternatives.isNotEmpty()) {
         for ((indexAlt, altEvent) in segment.alternatives.withIndex()) {
-          // Append to contents...
-          sbContents.append("* ${index + 1}.${indexAlt + 1}. " + altEvent.title + nl)
-          // ... and body
-          sbBody.append("### ${index + 1}.${indexAlt + 1}. " + altEvent.title + nnl)
-          sbBody.append(altEvent.description + nnl)
+          // Skip empty entries
+          if (altEvent.event.title.isEmpty() && altEvent.event.description.isEmpty()) continue
+          // Append to contents and body...
+          if (altEvent.event.title.isNotEmpty()) {
+            sbContents.append("* ${index + 1}.${indexAlt + 1}. " + altEvent.event.title + nl)
+            sbBody.append("### ${index + 1}.${indexAlt + 1}. " + altEvent.event.title + nnl)
+          } else {
+            sbContents.append("* ${index + 1}.${indexAlt + 1}. (No Title)$nl")
+            sbBody.append("### ${index + 1}.${indexAlt + 1}. (No Title)$nnl")
+          }
+          if (altEvent.event.description.isNotEmpty()) {
+            sbBody.append(altEvent.event.description + nnl)
+          } else {
+            sbBody.append("(No Description)$nnl")
+          }
         }
       }
     }
     sbContents.append("$nl---$nnl")
     appCall.respond(sbTitle.toString() + sbContents.toString() + sbBody.toString())
     return true
+  }
+
+  private suspend fun httpCreateTasks(
+    appCall: ApplicationCall,
+    processEvent: ProcessEvent
+  ): Boolean {
+    val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
+    val knowledgeController = KnowledgeController()
+    val knowledgeRef: Knowledge
+    try {
+      knowledgeRef = knowledgeController.load(processEvent.knowledgeUID) as Knowledge
+    } catch (e: Exception) {
+      appCall.respond(HttpStatusCode.BadRequest)
+      return true
+    }
+    if (!knowledgeController.httpCanAccessKnowledge(appCall, knowledgeRef)) {
+      return true
+    }
+    // Create tasks (and a box) using the full path of this processEvent
+    val path = getEventsOfProcess(processEvent)
+    val wisdomController = WisdomController()
+    var box: Wisdom? = null
+    var task: Wisdom?
+    var boxUID = -1L
+    var taskUID: Long
+    for ((index, segment) in path.path.withIndex()) {
+      if (index == 0) {
+        // Check if the box exists
+        if (segment.event.taskWisdomUID == -1L) {
+          // Box does not exist -> Create it
+          box = Wisdom(-1)
+          box.type = "box"
+          box.knowledgeUID = knowledgeRef.uID
+          box.authorUsername = user!!.username
+          if (segment.event.title.isNotEmpty()) {
+            box.title = segment.event.title
+          } else {
+            box.title = "(No Title)"
+          }
+          if (segment.event.description.isNotEmpty()) {
+            box.description = segment.event.description
+          } else {
+            box.description = "(No Description)"
+          }
+          box.keywords = segment.event.keywords
+          box.isTask = true
+          box.taskType = "box"
+          boxUID = wisdomController.saveEntry(box)
+          box.uID = boxUID
+          // Set boxUID and save process event
+          // We retrieve the latest entry to not override any changes made during this operation
+          segment.event = get(segment.event.uID) as ProcessEvent
+          segment.event.taskWisdomUID = boxUID
+          saveEntry(segment.event)
+        } else {
+          // Box exists -> Retrieve and update it
+          try {
+            box = wisdomController.get(segment.event.taskWisdomUID) as Wisdom
+            if (segment.event.title.isNotEmpty()) {
+              box.title = segment.event.title
+            } else {
+              box.title = "(No Title)"
+            }
+            if (segment.event.description.isNotEmpty()) {
+              box.description = segment.event.description
+            } else {
+              box.description = "(No Description)"
+            }
+            boxUID = wisdomController.saveEntry(box)
+          } catch (e: Exception) {
+            appCall.respond(HttpStatusCode.BadRequest)
+            return true
+          }
+        }
+        if (segment.alternatives.isNotEmpty()) {
+          for (altEvent in segment.alternatives) {
+            checkEventTask(altEvent.event, knowledgeRef, box, user!!, wisdomController)
+          }
+        }
+        continue
+      }
+      // Continue with tasks
+      // Check box and boxUID first since we need those for referencing
+      if (box == null || boxUID == -1L) {
+        appCall.respond(HttpStatusCode.ExpectationFailed)
+        return true
+      }
+      checkEventTask(segment.event, knowledgeRef, box, user!!, wisdomController)
+      if (segment.alternatives.isNotEmpty()) {
+        for (altEvent in segment.alternatives) {
+          checkEventTask(altEvent.event, knowledgeRef, box, user, wisdomController)
+        }
+      }
+    }
+    appCall.respond(box!!.guid)
+    return true
+  }
+
+  private suspend fun checkEventTask(
+    event: ProcessEvent,
+    knowledgeRef: Knowledge,
+    box: Wisdom,
+    user: Contact,
+    wisdomController: WisdomController
+  ) {
+    if (event.title.isEmpty() && event.description.isEmpty()) return
+    val task: Wisdom
+    if (event.taskWisdomUID == -1L) {
+      // Task does not exist yet -> Create it
+      task = Wisdom(-1)
+      task.type = "task"
+      task.knowledgeUID = knowledgeRef.uID
+      task.authorUsername = user.username
+      if (event.title.isNotEmpty()) {
+        task.title = event.title
+      } else {
+        task.title = "(No Title)"
+      }
+      if (event.description.isNotEmpty()) {
+        task.description = event.description
+      } else {
+        task.description = "(No Description)"
+      }
+      task.keywords = event.keywords
+      task.isTask = true
+      task.taskType = "task"
+      task.srcWisdomUID = box.uID
+      task.keywords += "," + box.title
+      val taskUID = wisdomController.saveEntry(task)
+      // Set taskUID and save process event
+      // We retrieve the latest entry to not override any changes made during this operation
+      val eventTmp = get(event.uID) as ProcessEvent
+      eventTmp.taskWisdomUID = taskUID
+      saveEntry(eventTmp)
+    } else {
+      // It exists -> Retrieve and update it
+      task = wisdomController.get(event.taskWisdomUID) as Wisdom
+      if (event.title.isNotEmpty()) {
+        task.title = event.title
+      } else {
+        task.title = "(No Title)"
+      }
+      if (event.description.isNotEmpty()) {
+        task.description = event.description
+      } else {
+        task.description = "(No Description)"
+      }
+      task.keywords = event.keywords
+      wisdomController.saveEntry(task)
+    }
   }
 
   private fun ProcessEvent.isCollaborator(

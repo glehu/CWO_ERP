@@ -110,11 +110,9 @@ class ServerController {
       mutex.withLock {
         log(
                 type = Log.Type.COM, text = "API ${indexManager.module} entry save",
-                apiEndpoint = "/api/${indexManager.module}/save", moduleAlt = indexManager.module
-        )
+                apiEndpoint = "/api/${indexManager.module}/save", moduleAlt = indexManager.module)
         uID = indexManager.save(
-                entry = indexManager.decode(entry), userName = username
-        )
+                entry = indexManager.decode(entry), userName = username)
       }
       return uID
     }
@@ -133,17 +131,14 @@ class ServerController {
             }
             return if (appCall.request.queryParameters["format"] == "json") {
               val entry = indexManager.decode(
-                      indexManager.getBytes(uID = routePar.toLong())
-              )
+                      indexManager.getBytes(uID = routePar.toLong()))
               entry.initialize()
               indexManager.encodeToJsonString(
-                      entry = entry, prettyPrint = true
-              )
+                      entry = entry, prettyPrint = true)
             } else {
               indexManager.getBytes(
                       uID = routePar.toLong(), lock = doLock,
-                      userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
-              )
+                      userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString())
             }
           }
 
@@ -153,12 +148,10 @@ class ServerController {
             val exactSearch = requestIndex != null
             return if (appCall.request.queryParameters["format"] == "json") {
               indexManager.getEntryListJson(
-                      searchText = routePar, ixNr, exactSearch = exactSearch
-              )
+                      searchText = routePar, ixNr, exactSearch = exactSearch)
             } else {
               indexManager.getEntryBytesListJson(
-                      searchText = routePar, ixNr, exactSearch = exactSearch
-              )
+                      searchText = routePar, ixNr, exactSearch = exactSearch)
             }
           }
 
@@ -176,8 +169,7 @@ class ServerController {
       if (!routePar.isNullOrEmpty()) {
         return indexManager.getEntryLock(
                 uID = routePar.toLong(),
-                userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
-        )
+                userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString())
       }
       return false
     }
@@ -192,8 +184,7 @@ class ServerController {
         mutex.withLock {
           indexManager.setEntryLock(
                   uID = routePar.toLong(), doLock = queryPar.toBoolean(),
-                  userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString()
-          )
+                  userName = appCall.principal<JWTPrincipal>()!!.payload.getClaim("username").asString())
         }
       } else false
       return success
@@ -214,15 +205,11 @@ class ServerController {
                         httpCode = 200, username = user.username, token = token, expiresInMs = expiresInMs,
                         accessM1 = user.canAccessDiscography, accessM2 = user.canAccessContacts,
                         accessM3 = user.canAccessInvoices, accessM4 = user.canAccessInventory,
-                        accessM5 = user.canAccessClarifier, accessM6 = user.canAccessSnippetBase
-                )
-        )
+                        accessM5 = user.canAccessClarifier, accessM6 = user.canAccessSnippetBase))
         return ValidationContainerJson(
                 contentJson = loginResponse, hash = encryptKeccak(
                 input = loginResponse, salt = encryptKeccak(user.email),
-                pepper = encryptKeccak("CWO_ERP LoginValidation")
-        )
-        )
+                pepper = encryptKeccak("CWO_ERP LoginValidation")))
       }
     }
 
@@ -235,8 +222,7 @@ class ServerController {
     fun updatePriceCategories(categoryJson: ListDeltaJson): Boolean {
       ItemPriceManager().updateCategory(
               categoryNew = Json.decodeFromString(categoryJson.listEntryNew),
-              categoryOld = Json.decodeFromString(categoryJson.listEntryOld)
-      )
+              categoryOld = Json.decodeFromString(categoryJson.listEntryOld))
       return true
     }
 
@@ -252,8 +238,7 @@ class ServerController {
     fun updateStorages(categoryJson: ListDeltaJson): Boolean {
       ItemStorageManager().funUpdateStorage(
               storageNew = Json.decodeFromString(categoryJson.listEntryNew),
-              storageOld = Json.decodeFromString(categoryJson.listEntryOld)
-      )
+              storageOld = Json.decodeFromString(categoryJson.listEntryOld))
       return true
     }
 
@@ -302,8 +287,7 @@ class ServerController {
       order.statusText = InvoiceCLIController().getStatusText(order.status)
       //Check if the customer is an existing contact, if not, create it
       val contactsMatched = contactIndexManager!!.getEntryBytesListJson(
-              searchText = userName, ixNr = 1, exactSearch = false
-      )
+              searchText = userName, ixNr = 1, exactSearch = false)
       if (contactsMatched.resultsList.isEmpty() && m3IniVal.autoCreateContacts) {
         val contact = Contact(-1, userName)
         contact.email = userName
@@ -328,15 +312,13 @@ class ServerController {
       mutex.withLock {
         log(
                 type = Log.Type.COM, text = "web shop order #${order.uID} from ${order.buyer}",
-                apiEndpoint = appCall.request.uri, moduleAlt = invoiceIndexManager!!.module
-        )
+                apiEndpoint = appCall.request.uri, moduleAlt = invoiceIndexManager!!.module)
       }
       if (m3IniVal.autoSendEmailConfirmation) {
         Emailer().sendEmail(
                 subject = "Web Shop Order #${order.uID}",
                 body = "Hey, we're confirming your order over ${order.grossTotal} Euro.\n" + "Order Number: #${order.uID}\n" + "Date: ${order.date}",
-                recipient = order.buyer
-        )
+                recipient = order.buyer)
       }
       return order.uID
     }
@@ -352,16 +334,18 @@ class ServerController {
       mutex.withLock {
         // Check if email is registered already
         contactIndexManager!!.getEntriesFromIndexSearch(
-                searchText = "^${registrationPayload.email}$", ixNr = 1, showAll = true
-        ) { exists = true } // Set 'exists' to true if anything was found
+                searchText = "^${registrationPayload.email}$", ixNr = 1, showAll = true) {
+          exists = true
+        } // Set 'exists' to true if anything was found
         if (exists) {
           message = "User with entered Email already exists"
           return RegistrationResponse(false, message)
         }
         // Check if username is registered already
         contactIndexManager!!.getEntriesFromIndexSearch(
-                searchText = "^${registrationPayload.username}$", ixNr = 2, showAll = true
-        ) { exists = true } // Set 'exists' to true if anything was found
+                searchText = "^${registrationPayload.username}$", ixNr = 2, showAll = true) {
+          exists = true
+        } // Set 'exists' to true if anything was found
         if (exists) {
           message = "User with entered Username already exists"
           return RegistrationResponse(false, message)
@@ -388,8 +372,7 @@ class ServerController {
 
     fun getOwnInvoices(appCall: ApplicationCall): Any {
       return invoiceIndexManager!!.getEntryListJson(
-              searchText = getJWTEmail(appCall), ixNr = 2, exactSearch = true
-      )
+              searchText = getJWTEmail(appCall), ixNr = 2, exactSearch = true)
     }
 
     fun checkStorage(request: TwoLongOneDoubleJson): Boolean {
@@ -421,8 +404,7 @@ class ServerController {
         uniChatroom = createChatroom(config.title, config.type)
         if (config.directMessageUsernames.isEmpty()) {
           uniChatroom.addOrUpdateMember(
-                  username = owner, role = UniRole("Owner")
-          )
+                  username = owner, role = UniRole("Owner"))
         } else {
           uniChatroom.directMessageUsername = ""
           var addedDirectMembers = false
@@ -433,8 +415,7 @@ class ServerController {
               addedDirectMembers = true
               uniChatroom.directMessageUsername += "|$user|"
               uniChatroom.addOrUpdateMember(
-                      username = user, role = UniRole("Owner")
-              )
+                      username = user, role = UniRole("Owner"))
             }
             // Only two people can participate in a direct message
             if (amount == 2) break
@@ -481,8 +462,7 @@ class ServerController {
           saveChatroom(uniChatroom)
         }
         uniChatroom.addMessage(
-                member = "_server", message = "[s:RegistrationNotification]${owner} has created ${config.title}!"
-        )
+                member = "_server", message = "[s:RegistrationNotification]${owner} has created ${config.title}!")
       }
       appCall.respond(uniChatroom)
     }
@@ -501,8 +481,7 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
           } else {
             if (uniChatroom.checkIsMemberBanned(
-                      username = getJWTEmail(appCall), isEmail = true
-              )) {
+                      username = getJWTEmail(appCall), isEmail = true)) {
               appCall.respond(HttpStatusCode.Forbidden)
               return
             }
@@ -525,8 +504,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = username, isEmail = true
-            )) {
+                    username = username, isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -534,64 +512,57 @@ class ServerController {
             appCall.respond(HttpStatusCode.BadRequest)
             return
           }
-          UniChatroomController.clarifierSessions.forEach { session ->
-            if (session.chatroomGUID == config.uniChatroomGUID) {
-              val prefix = "[c:MSG<ENCR]"
-              var isEncrypted = false
-              if (config.text.startsWith(prefix)) isEncrypted = true
-              val uniMessage = UniMessage(
-                      uniChatroomUID = uniChatroom.uID, from = username, message = config.text
-              )
-              uniMessage.isEncrypted = isEncrypted
-              val msg = Json.encodeToString(uniMessage)
-              session.connections.forEach {
-                if (!it.session.outgoing.isClosedForSend) {
-                  it.session.send(Frame.Text(msg))
-                } else {
-                  session.connectionsToDelete.add(it)
-                }
-              }
-              // Send notification to all members
-              val json = Json {
-                isLenient = true
-                ignoreUnknownKeys = true
-              }
-              val fcmTokens: ArrayList<String> = arrayListOf()
-              for (memberJson in uniChatroom.members) {
-                val member: UniMember = json.decodeFromString(memberJson)
-                if (member.firebaseCloudMessagingToken.isEmpty()) continue
-                fcmTokens.add(member.firebaseCloudMessagingToken)
-              }
-              if (fcmTokens.isNotEmpty()) {/*
-                  Build the notification
-                  If there's a parentGUID, then this chatroom must be a subchat
-                */
-                lateinit var destination: String
-                lateinit var subchatGUID: String
-                if (uniChatroom.parentGUID.isNotEmpty()) {
-                  destination = uniChatroom.parentGUID
-                  subchatGUID = uniChatroom.chatroomGUID
-                } else {
-                  destination = uniChatroom.chatroomGUID
-                  subchatGUID = ""
-                }
-                val message = MulticastMessage.builder().setWebpushConfig(
-                        WebpushConfig.builder().setNotification(
-                                WebpushNotification(
-                                        uniChatroom.title, "$username has sent a message."
-                                )
-                        ).setFcmOptions(
-                                WebpushFcmOptions.withLink("/apps/clarifier/wss/$destination")
-                        ).putData("dlType", "clarifier").putData("dlDest", "/apps/clarifier/wss/$destination")
-                          .putData("subchatGUID", subchatGUID).build()
-                ).addAllTokens(fcmTokens).build()
-                FirebaseMessaging.getInstance().sendMulticast(message)
+          val session = UniChatroomController.clarifierSessions[config.uniChatroomGUID] ?: return
+          val prefix = "[c:MSG<ENCR]"
+          var isEncrypted = false
+          if (config.text.startsWith(prefix)) isEncrypted = true
+          val uniMessage = UniMessage(
+                  uniChatroomUID = uniChatroom.uID, from = username, message = config.text)
+          uniMessage.isEncrypted = isEncrypted
+          val msg = Json.encodeToString(uniMessage)
+          session.clarifierSessionMutex.withLock {
+            session.clarifierSessionUsers.forEach {
+              if (!it.value.session.outgoing.isClosedForSend) {
+                it.value.session.send(Frame.Text(msg))
               }
             }
           }
+          // Send notification to all members
+          val json = Json {
+            isLenient = true
+            ignoreUnknownKeys = true
+          }
+          val fcmTokens: ArrayList<String> = arrayListOf()
+          for (memberJson in uniChatroom.members) {
+            val member: UniMember = json.decodeFromString(memberJson)
+            if (member.firebaseCloudMessagingToken.isEmpty()) continue
+            fcmTokens.add(member.firebaseCloudMessagingToken)
+          }
+          if (fcmTokens.isNotEmpty()) {/*
+                  Build the notification
+                  If there's a parentGUID, then this chatroom must be a subchat
+                */
+            lateinit var destination: String
+            lateinit var subchatGUID: String
+            if (uniChatroom.parentGUID.isNotEmpty()) {
+              destination = uniChatroom.parentGUID
+              subchatGUID = uniChatroom.chatroomGUID
+            } else {
+              destination = uniChatroom.chatroomGUID
+              subchatGUID = ""
+            }
+            val message = MulticastMessage.builder().setWebpushConfig(
+                    WebpushConfig.builder().setNotification(
+                            WebpushNotification(
+                                    uniChatroom.title, "$username has sent a message.")).setFcmOptions(
+                            WebpushFcmOptions.withLink("/apps/clarifier/wss/$destination"))
+                      .putData("dlType", "clarifier").putData("dlDest", "/apps/clarifier/wss/$destination")
+                      .putData("subchatGUID", subchatGUID).build()).addAllTokens(fcmTokens).build()
+            FirebaseMessaging.getInstance().sendMulticast(message)
+          }
         }
-        appCall.respond(HttpStatusCode.OK)
       }
+      appCall.respond(HttpStatusCode.OK)
     }
 
     suspend fun getMessagesOfUniChatroom(appCall: ApplicationCall) {
@@ -610,8 +581,7 @@ class ServerController {
           return
         } else {
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+                    username = getJWTEmail(appCall), isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -619,8 +589,7 @@ class ServerController {
           val messages = arrayListOf<String>()
           uniMessagesIndexManager!!.getEntriesFromIndexSearch(
                   searchText = "^${uniChatroom.uID}$", ixNr = 1, showAll = false, paginationIndex = pageIndex,
-                  pageSize = pageSize, skip = skipCount
-          ) {
+                  pageSize = pageSize, skip = skipCount) {
             it as UniMessage
             messages.add(uniMessagesIndexManager!!.encodeToJsonString(it))
           }
@@ -646,8 +615,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+                    username = getJWTEmail(appCall), isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -678,8 +646,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+                    username = getJWTEmail(appCall), isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -710,8 +677,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+                    username = getJWTEmail(appCall), isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -747,8 +713,7 @@ class ServerController {
           appCall.respond(HttpStatusCode.NotFound)
         } else {
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+                    username = getJWTEmail(appCall), isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -782,8 +747,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+                    username = getJWTEmail(appCall), isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -821,8 +785,7 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+                    username = getJWTEmail(appCall), isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -862,15 +825,13 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+                    username = getJWTEmail(appCall), isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           uniChatroom.addOrUpdateMember(
                   username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username,
-                  fcmToken = config.fcmToken
-          )
+                  fcmToken = config.fcmToken)
           saveChatroom(uniChatroom)
         }
         appCall.respond(HttpStatusCode.OK)
@@ -901,8 +862,7 @@ class ServerController {
           }
           uniChatroom.addOrUpdateMember(
                   username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username,
-                  pubKeyPEM = config.pubKeyPEM
-          )
+                  pubKeyPEM = config.pubKeyPEM)
           saveChatroom(uniChatroom)
         }
         appCall.respond(HttpStatusCode.OK)
@@ -926,16 +886,14 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+                    username = getJWTEmail(appCall), isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           with(SnippetBaseController()) {
             val snippet = saveFile(
                     base64 = config.imageBase64, snippet = createSnippet(), owner = "clarifier-$uniChatroomGUID",
-                    maxWidth = 300, maxHeight = 300
-            )
+                    maxWidth = 300, maxHeight = 300)
             if (snippet == null) {
               appCall.respond(HttpStatusCode.InternalServerError)
               return
@@ -966,16 +924,14 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true
-            )) {
+                    username = getJWTEmail(appCall), isEmail = true)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
           with(SnippetBaseController()) {
             val snippet = saveFile(
                     base64 = config.imageBase64, snippet = createSnippet(), owner = getUsernameReversedBase(appCall),
-                    maxWidth = 300, maxHeight = 300
-            )
+                    maxWidth = 300, maxHeight = 300)
             if (snippet == null) {
               appCall.respond(HttpStatusCode.InternalServerError)
               return
@@ -1000,8 +956,7 @@ class ServerController {
       with(SnippetBaseController()) {
         val snippet = saveFile(
                 base64 = payload.payload, snippet = createSnippet(), owner = getUsernameReversedBase(appCall),
-                maxWidth = 1920, maxHeight = 1920
-        )
+                maxWidth = 1920, maxHeight = 1920)
         if (snippet == null) {
           appCall.respond(HttpStatusCode.InternalServerError)
           return
@@ -1082,24 +1037,19 @@ class ServerController {
         }
         val username = getJWTEmail(appCall)
         if (uniChatroom.checkIsMemberBanned(
-                  username = username, isEmail = true
-          )) {
+                  username = username, isEmail = true)) {
           appCall.respond(HttpStatusCode.Forbidden)
           return
         }
         val activeMembers = ActiveMembersPayload()
-        UniChatroomController.clarifierSessions.forEach { session ->
-          if (session.chatroomGUID == uniChatroomGUID) {
-            session.connections.forEach {
-              if (!it.session.outgoing.isClosedForSend) {
-                activeMembers.members.add(it.username)
-              } else {
-                session.connectionsToDelete.add(it)
-              }
-            }
+        val session = UniChatroomController.clarifierSessions[uniChatroomGUID] ?: return
+        session.clarifierSessionUsers.forEach {
+          if (!it.value.session.outgoing.isClosedForSend) {
+            activeMembers.members.add(it.value.username)
           }
         }
         appCall.respond(activeMembers)
+        return
       }
     }
 

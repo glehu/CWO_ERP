@@ -1,5 +1,6 @@
 package api.misc.json
 
+import interfaces.IEntry
 import interfaces.ITokenData
 import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -493,11 +494,13 @@ data class WisdomSearchResponseEntry(
 @InternalAPI
 @Serializable
 data class WisdomReferencesResponse(
+  val wisdom: Wisdom,
   val answers: ArrayList<Wisdom> = arrayListOf(),
   val comments: ArrayList<Wisdom> = arrayListOf(),
   val tasks: ArrayList<Wisdom> = arrayListOf(),
   val questions: ArrayList<Wisdom> = arrayListOf(),
-  val lessons: ArrayList<Wisdom> = arrayListOf()
+  val lessons: ArrayList<Wisdom> = arrayListOf(),
+  val processes: ArrayList<ProcessEvent> = arrayListOf()
 )
 
 @ExperimentalSerializationApi
@@ -662,16 +665,29 @@ data class ProcessEventsPayload(
 @ExperimentalSerializationApi
 @InternalAPI
 @Serializable
-data class ProcessPathSegmentPayload(
+data class ProcessPathPayload(
+  var path: ArrayList<ProcessPathFullSegmentPayload> = arrayListOf()
+)
+
+
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class ProcessPathFullSegmentPayload(
   var event: ProcessEvent,
-  var alternatives: ArrayList<ProcessEvent> = arrayListOf()
+  var alternatives: ArrayList<ProcessPathSegmentPayload> = arrayListOf(),
+  var wisdom: Wisdom? = null,
+  var task: Wisdom? = null,
 )
 
 @ExperimentalSerializationApi
 @InternalAPI
 @Serializable
-data class ProcessPathPayload(
-  var path: ArrayList<ProcessPathSegmentPayload> = arrayListOf()
+data class ProcessPathSegmentPayload(
+  var event: ProcessEvent,
+  var wisdom: Wisdom? = null,
+  var task: Wisdom? = null,
 )
 
 @ExperimentalSerializationApi
@@ -679,4 +695,56 @@ data class ProcessPathPayload(
 @Serializable
 data class ProcessInteractionPayload(
   var action: String = ""
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class QueryResult(
+  var entry: IEntry,
+  var rating: Int,
+  var accuracy: Int
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class OnlineStateConfig(
+  var usernames: ArrayList<String>
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class OnlineStatePayload(
+  var users: ArrayList<UserWithOnlineState> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class UserWithOnlineState(
+  var username: String,
+  var online: Boolean,
+  var recent: Boolean,
+  var lastActivity: String
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class ConnectorFrame(
+  var type: String,
+  var msg: String,
+  var date: String,
+  var obj: String = "",
+  var srcUsername: String = "",
+  var chatroomGUID: String = "",
+  var wisdomGUID: String = "",
+  var processGUID: String = "",
+)
+
+data class ConnectorIncomingCall(
+  var usernameToCall: String,
+  var chatroomGUID: String
 )

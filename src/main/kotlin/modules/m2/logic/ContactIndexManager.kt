@@ -48,12 +48,13 @@ class ContactIndexManager(override var level: Long) : IIndexManager {
   init {
     initialize(
             1, //email
-            2 //username
+            2, //username
+            3 //last-activity (for online state + no write to disk)
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
-    return arrayListOf("1-Email", "2-Username")
+    return arrayListOf("1-Email", "2-Username", "3-last-activity")
   }
 
   override suspend fun indexEntry(

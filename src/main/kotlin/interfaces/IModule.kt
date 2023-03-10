@@ -2,6 +2,7 @@ package interfaces
 
 import api.misc.json.EntryBytesListJson
 import api.misc.json.EntryListJson
+import api.misc.json.QueryResult
 import db.CwODB
 import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
@@ -317,5 +318,81 @@ interface IModule {
         }
       }
     }
+  }
+
+  fun buildQueryRegexPattern(query: String): Regex {
+    // Split words on each whitespace after removing duplicate whitespaces
+    val cleanQuery = query.replace("\\s+".toRegex()) { it.value[0].toString() }
+    val queryWords = cleanQuery.split("\\s".toRegex())
+    val queryFormatted = StringBuilder()
+    for ((amount, word) in queryWords.withIndex()) {
+      if (amount > 0) queryFormatted.append("|")
+      queryFormatted.append("(")
+      queryFormatted.append(word)
+      // Negative Lookahead to prevent tokens to be matched multiple times
+      queryFormatted.append("(?!.*")
+      queryFormatted.append(word)
+      queryFormatted.append("))")
+    }
+    val queryFormattedString = queryFormatted.toString()
+    return queryFormattedString.toRegex(RegexOption.IGNORE_CASE)
+  }
+
+  fun applyQueryRegexPattern(
+    regexPattern: Regex,
+    entry: IEntry,
+    title: String = "",
+    keywords: String = "",
+    description: String = "",
+    authorUsername: String = "",
+    filterOverride: String = ""
+  ): QueryResult {
+    var matchesAll: Sequence<MatchResult>
+    var rating = 0
+    var accuracy = 0
+    var regexMatchCounts: Int
+    // Title
+    if (filterOverride.isEmpty() || filterOverride.contains("title")) {
+      matchesAll = regexPattern.findAll(title)
+      regexMatchCounts = matchesAll.count()
+      if (regexMatchCounts > 0) {
+        rating += 2
+        accuracy += regexMatchCounts
+      }
+    }
+    // Keywords
+    if (filterOverride.isEmpty() || filterOverride.contains("keywords")) {
+      matchesAll = regexPattern.findAll(keywords)
+      regexMatchCounts = matchesAll.count()
+      if (regexMatchCounts > 0) {
+        rating += 2
+        accuracy += regexMatchCounts
+      }
+    }
+    // Description
+    if (filterOverride.isEmpty() || filterOverride.contains("description")) {
+      matchesAll = regexPattern.findAll(description)
+      regexMatchCounts = matchesAll.count()
+      if (regexMatchCounts > 0) {
+        rating += 1
+        accuracy += regexMatchCounts
+      }
+    }
+    // Author
+    if (filterOverride.isEmpty() || filterOverride.contains("author")) {
+      matchesAll = regexPattern.findAll(authorUsername)
+      regexMatchCounts = matchesAll.count()
+      if (regexMatchCounts > 0) {
+        rating += 1
+        accuracy += regexMatchCounts
+      }
+    }
+    // Return Result
+    return QueryResult(entry, rating, accuracy)
+  }
+
+  fun sortQueryResults(results: ArrayList<QueryResult>): List<QueryResult> {
+    // Negative values to sort in descending order! Nice "hack"!
+    return results.sortedWith(compareBy({ -it.rating }, { -it.accuracy }))
   }
 }

@@ -39,7 +39,6 @@ class DiscographyBenchmark : IModule {
         )
         if (i % 10_000 == 0) {
           log(Log.Type.INFO, "BENCHMARK_INSERTION uID ${song.uID}")
-          discographyIndexManager!!.writeIndexData()
         }
       }
     }

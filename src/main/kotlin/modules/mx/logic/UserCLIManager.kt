@@ -1,10 +1,13 @@
 package modules.mx.logic
 
+import api.logic.core.Connector
 import api.misc.json.PasswordChange
 import api.misc.json.UsernameChange
 import interfaces.IIndexManager
 import interfaces.IModule
 import io.ktor.util.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -27,13 +30,26 @@ class UserCLIManager {
      * Attempts to log in a user.
      * @return true if the user is logged in.
      */
-    suspend fun login(email: String, password: String, doLog: Boolean = true): Boolean {
+    suspend fun login(
+      email: String,
+      password: String,
+      doLog: Boolean = true
+    ): Boolean {
       return compareCredentials(email, password, doLog)
     }
 
-    fun checkModuleRight(email: String, module: String): Boolean {
+    @DelicateCoroutinesApi
+    @ExperimentalCoroutinesApi
+    suspend fun checkModuleRight(
+      email: String,
+      module: String,
+      setOnlineState: Boolean = false
+    ): Boolean {
       if (email.isEmpty() || module.length < 2) return false
       val user = getUserFromEmail(email) ?: return false
+      if (setOnlineState) {
+        Connector.setOnlineState(user)
+      }
       when (module.uppercase().substring(0, 2)) {
         "MX" -> return user.canAccessManagement
         "M1" -> return user.canAccessDiscography
@@ -59,7 +75,9 @@ class UserCLIManager {
     }
 
     private suspend fun compareCredentials(
-      email: String, password: String, doLog: Boolean
+      email: String,
+      password: String,
+      doLog: Boolean
     ): Boolean {
       mutex.withLock {
         val user = getUserFromEmail(email)
@@ -80,27 +98,31 @@ class UserCLIManager {
     fun getUserFromEmail(email: String): Contact? {
       var user: Contact? = null
       contactIndexManager!!.getEntriesFromIndexSearch(
-              searchText = "^${email}$", ixNr = 1, showAll = true
-      ) { user = it as Contact }
+              searchText = "^${email}$", ixNr = 1, showAll = true) { user = it as Contact }
       return user
     }
 
     fun getUserFromUsername(username: String): Contact? {
       var user: Contact? = null
       contactIndexManager!!.getEntriesFromIndexSearch(
-              searchText = "^${username}$", ixNr = 2, showAll = true
-      ) { user = it as Contact }
+              searchText = "^${username}$", ixNr = 2, showAll = true) { user = it as Contact }
       return user
     }
 
-    suspend fun changeUsername(email: String, config: UsernameChange): Boolean {
+    suspend fun changeUsername(
+      email: String,
+      config: UsernameChange
+    ): Boolean {
       val user = getUserFromEmail(email) ?: return false
       user.username = config.newUsername
       save(user)
       return true
     }
 
-    suspend fun changePassword(email: String, config: PasswordChange): Boolean {
+    suspend fun changePassword(
+      email: String,
+      config: PasswordChange
+    ): Boolean {
       val user = getUserFromEmail(email) ?: return false
       if (!validateKeccak(config.password, user.password)) return false
       user.password = encryptKeccak(config.newPassword)

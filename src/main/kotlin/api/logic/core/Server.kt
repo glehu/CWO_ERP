@@ -3,17 +3,16 @@ package api.logic.core
 import api.logic.webapps.Mockingbird
 import api.logic.webapps.WebPlanner
 import api.misc.json.EMailJson
-import api.misc.json.EntryJson
 import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.KnowledgeCategoryEdit
 import api.misc.json.KnowledgeCreation
 import api.misc.json.ListDeltaJson
+import api.misc.json.OnlineStateConfig
 import api.misc.json.PairLongJson
 import api.misc.json.PasswordChange
 import api.misc.json.ProcessEntryConfig
 import api.misc.json.ProcessInteractionPayload
 import api.misc.json.PubKeyPEMContainer
-import api.misc.json.SettingsRequestJson
 import api.misc.json.SnippetPayload
 import api.misc.json.TwoLongOneDoubleJson
 import api.misc.json.UniChatroomAddMember
@@ -78,21 +77,13 @@ import modules.m9process.logic.ProcessController
 import modules.mx.Ini
 import modules.mx.contactIndexManager
 import modules.mx.dataPath
-import modules.mx.discographyIndexManager
 import modules.mx.getIniFile
-import modules.mx.invoiceIndexManager
-import modules.mx.itemIndexManager
-import modules.mx.itemStockPostingIndexManager
-import modules.mx.knowledgeIndexManager
 import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
 import modules.mx.programPath
 import modules.mx.serverJobGlobal
-import modules.mx.snippetBaseIndexManager
 import modules.mx.terminal
-import modules.mx.uniChatroomIndexManager
 import modules.mx.usageTracker
-import modules.mx.wisdomIndexManager
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileInputStream
@@ -186,7 +177,7 @@ class Server : IModule {
         validate { credential ->
           authMutex.withLock {
             if (UserCLIManager.checkModuleRight(
-                      credential.payload.getClaim("username").asString(), "M*")) {
+                      credential.payload.getClaim("username").asString(), "M*", true)) {
               JWTPrincipal(credential.payload)
             } else {
               null
@@ -242,6 +233,15 @@ class Server : IModule {
         }
       }
 
+      /*
+       * Clarifier WebSocket Session
+      */
+      webSocket("/connect") {
+        with(Connector) {
+          this@webSocket.connect()
+        }
+      }
+
       authenticate("auth-basic") {
         login()
         logout()
@@ -265,6 +265,7 @@ class Server : IModule {
         }
         route("/api") {
           // General Endpoints
+          /*
           getIndexSelection(
                   discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
                   itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
@@ -285,12 +286,13 @@ class Server : IModule {
                   discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
                   itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
                   knowledgeIndexManager!!, wisdomIndexManager!!)
+           */
           sendEMail()
-          getSettingsFileText()
           // M2 Endpoints (Contacts)
           changeUsername()
           changePassword()
           sendFriendRequest()
+          getOnlineState()
           // M3 Endpoints (Invoice)
           getOwnInvoices()
           // M4 Endpoints (Item)
@@ -457,75 +459,6 @@ class Server : IModule {
     }
   }
 
-  private fun Route.getIndexSelection(vararg indexManager: IIndexManager) {
-    for (ix in indexManager) {
-      get("${ix.module.lowercase()}/indexselection") {
-        if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), ix.module)) {
-          call.respond(HttpStatusCode.Forbidden)
-        } else {
-          call.respond(ix.getIndexUserSelection())
-        }
-      }
-    }
-  }
-
-  private fun Route.getEntry(vararg indexManager: IIndexManager) {
-    for (ix in indexManager) {
-      get("${ix.module.lowercase()}/entry/{searchString}") {
-        if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), ix.module)) {
-          call.respond(HttpStatusCode.Forbidden)
-        } else {
-          call.respond(
-                  ServerController.getEntry(
-                          appCall = call, indexManager = ix))
-        }
-      }
-    }
-  }
-
-  private fun Route.saveEntry(vararg indexManager: IIndexManager) {
-    for (ix in indexManager) {
-      post("${ix.module.lowercase()}/saveentry") {
-        if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), ix.module)) {
-          call.respond(HttpStatusCode.Forbidden)
-        } else {
-          val entryJson: EntryJson = call.receive()
-          call.respond(
-                  ServerController.saveEntry(
-                          entry = entryJson.entry, indexManager = ix, username = ServerController.getJWTEmail(call)))
-        }
-      }
-    }
-  }
-
-  private fun Route.getEntryLock(vararg indexManager: IIndexManager) {
-    for (ix in indexManager) {
-      get("${ix.module.lowercase()}/getentrylock/{searchString}") {
-        if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), ix.module)) {
-          call.respond(HttpStatusCode.Forbidden)
-        } else {
-          call.respond(
-                  ServerController.getEntryLock(
-                          appCall = call, indexManager = ix))
-        }
-      }
-    }
-  }
-
-  private fun Route.setEntryLock(vararg indexManager: IIndexManager) {
-    for (ix in indexManager) {
-      get("${ix.module.lowercase()}/setentrylock/{searchString}") {
-        if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), ix.module)) {
-          call.respond(HttpStatusCode.Forbidden)
-        } else {
-          call.respond(
-                  ServerController.setEntryLock(
-                          appCall = call, indexManager = ix))
-        }
-      }
-    }
-  }
-
   private fun Route.addWebshopOrder() {
     post("m3/neworder") {
       if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), "M3")) {
@@ -669,19 +602,6 @@ class Server : IModule {
       val body = call.receive<EMailJson>()
       sendEmail(body.subject, body.body, body.recipient)
       call.respond(true)
-    }
-  }
-
-  private fun Route.getSettingsFileText() {
-    post("getsettingsfiletext") {
-      val body: SettingsRequestJson = Json.decodeFromString(call.receive())
-      if (!UserCLIManager.checkModuleRight(ServerController.getJWTEmail(call), body.module)) {
-        call.respond(HttpStatusCode.Forbidden)
-      } else {
-        call.respond(
-                ServerController.getSettingsFileText(
-                        moduleShort = body.module, subSetting = body.subSetting))
-      }
     }
   }
 
@@ -1076,6 +996,13 @@ class Server : IModule {
     }
   }
 
+  private fun Route.getOnlineState() {
+    post("m2/online") {
+      val config: OnlineStateConfig = Json.decodeFromString(call.receive())
+      ContactController().httpCheckOnlineState(call, config)
+    }
+  }
+
   private fun Route.getNotifications() {
     get("m8/notifications") {
       NotificationController().httpGetNotifications(call)
@@ -1116,7 +1043,8 @@ class Server : IModule {
       }
       val modeFilter: String = call.request.queryParameters["mode"] ?: "start"
       val authorFilter: String = call.request.queryParameters["author"] ?: ""
-      ProcessController().httpGetProcesses(call, knowledgeGUID!!, modeFilter, authorFilter)
+      val queryFilter: String = call.request.queryParameters["query"] ?: ""
+      ProcessController().httpGetProcesses(call, knowledgeGUID!!, modeFilter, authorFilter, queryFilter)
     }
   }
 

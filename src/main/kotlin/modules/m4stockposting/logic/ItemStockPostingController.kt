@@ -19,7 +19,10 @@ class ItemStockPostingController : IModule {
     return itemStockPostingIndexManager!!
   }
 
-  fun getAvailableStock(storageUnitUID: Long, storageUID: Long): Double {
+  fun getAvailableStock(
+    storageUnitUID: Long,
+    storageUID: Long
+  ): Double {
     var availableStock = 0.0
     val ixSearchText = "<${storageUID}><${storageUnitUID}>"
     //Find stock taken from this storage unit
@@ -44,12 +47,10 @@ class ItemStockPostingController : IModule {
   fun getStorageUnitWithAtLeast(amount: Double): Triple<Long, Long, Long> {
     val entriesFound: ArrayList<ItemStockPosting> = arrayListOf()
     getEntriesFromIndexSearch(
-            searchText = amount.toString(), ixNr = 6, showAll = true, format = false, numberComparison = true
-    ) {
+            searchText = amount.toString(), ixNr = 6, showAll = true, format = false, numberComparison = true) {
       it as ItemStockPosting
       if (check(
-                storageFromUID = it.storageToUID, storageUnitFromUID = it.storageUnitToUID, amount = amount
-        )) {
+                storageFromUID = it.storageToUID, storageUnitFromUID = it.storageUnitToUID, amount = amount)) {
         entriesFound.add(it)
       }
     }
@@ -63,12 +64,10 @@ class ItemStockPostingController : IModule {
     val entriesFound: ArrayList<ItemStockPosting> = arrayListOf()
     var amountLeft = amount
     getEntriesFromIndexSearch(
-            searchText = "1", ixNr = 6, showAll = true, format = false, numberComparison = true
-    ) {
+            searchText = "1", ixNr = 6, showAll = true, format = false, numberComparison = true) {
       it as ItemStockPosting
       if (check(
-                storageFromUID = it.storageToUID, storageUnitFromUID = it.storageUnitToUID, amount = 1.0
-        )) {
+                storageFromUID = it.storageToUID, storageUnitFromUID = it.storageUnitToUID, amount = 1.0)) {
         entriesFound.add(it)
       }
     }
@@ -128,7 +127,8 @@ class ItemStockPostingController : IModule {
    * @return a [Triple] StorageUID, StorageUnitUID and ItemStockPostingUID
    */
   private fun pickAccordingToOrderType(
-    entriesFound: ArrayList<ItemStockPosting>, autoStorageSelectionOrder: AutoStorageSelectionOrderType
+    entriesFound: ArrayList<ItemStockPosting>,
+    autoStorageSelectionOrder: AutoStorageSelectionOrderType
   ): Triple<Long, Long, Long> {
     return if (entriesFound.isEmpty()) {
       Triple(-1L, -1L, -1L)
@@ -148,7 +148,11 @@ class ItemStockPostingController : IModule {
     return Triple(itemStockPosting.storageToUID, itemStockPosting.storageUnitToUID, itemStockPosting.uID)
   }
 
-  fun check(storageFromUID: Long, storageUnitFromUID: Long, amount: Double? = null): Boolean {
+  fun check(
+    storageFromUID: Long,
+    storageUnitFromUID: Long,
+    amount: Double? = null
+  ): Boolean {
     //Check if the storage exists
     if (storageFromUID == -1L) return false
     if (storageUnitFromUID == -1L) return false

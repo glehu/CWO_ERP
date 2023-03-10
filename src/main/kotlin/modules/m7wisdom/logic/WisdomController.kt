@@ -1,8 +1,10 @@
 package modules.m7wisdom.logic
 
+import api.logic.core.Connector
 import api.logic.core.ServerController
 import api.misc.json.CategoriesPayload
 import api.misc.json.CategoryPayload
+import api.misc.json.ConnectorFrame
 import api.misc.json.KeywordsPayload
 import api.misc.json.PlannerBoxTasksPayload
 import api.misc.json.PlannerBoxesPayload
@@ -42,6 +44,8 @@ import modules.m7wisdom.WisdomCategory
 import modules.m7wisdom.WisdomCollaborator
 import modules.m8notification.Notification
 import modules.m8notification.logic.NotificationController
+import modules.m9process.ProcessEvent
+import modules.m9process.logic.ProcessController
 import modules.mx.logic.Timestamp
 import modules.mx.logic.UserCLIManager
 import modules.mx.wisdomIndexManager
@@ -300,8 +304,10 @@ class WisdomController : IModule {
         lesson.srcWisdomUID = boxWisdom!!.uID
         if (!edit) {
           // Add the box's title to the task's keywords
-          if (lesson.keywords.isNotEmpty()) lesson.keywords += ','
-          lesson.keywords += boxWisdom!!.title
+          if (!config.keywords.contains(boxWisdom!!.title)) {
+            if (lesson.keywords.isNotEmpty()) lesson.keywords += ','
+            lesson.keywords += boxWisdom!!.title
+          }
         }
       } else {
         appCall.respond(HttpStatusCode.BadRequest)
@@ -372,6 +378,24 @@ class WisdomController : IModule {
     comment.keywords = config.keywords
     saveEntry(comment)
     appCall.respond(comment.guid)
+    if (!edit) {
+      val notification = Notification(-1, wisdomRef!!.authorUsername)
+      notification.title = "${user!!.username} commented!"
+      notification.authorUsername = "_server"
+      if (wisdomRef!!.type != "comment") {
+        notification.description = "${user.username} has commented \"${wisdomRef!!.title.trim()}\""
+      } else {
+        notification.description = "${user.username} has replied to one of your comments!"
+      }
+      notification.hasClickAction = true
+      notification.clickAction = "open,wisdom"
+      notification.clickActionReferenceGUID = wisdomRef!!.guid
+      NotificationController().saveEntry(notification)
+      Connector.sendFrame(
+              username = wisdomRef!!.authorUsername, frame = ConnectorFrame(
+              type = "notification", msg = notification.description, date = Timestamp.now(),
+              obj = Json.encodeToString(notification), srcUsername = user.username, wisdomGUID = wisdomRef!!.guid))
+    }
   }
 
   suspend fun httpWisdomQuery(
@@ -602,11 +626,19 @@ class WisdomController : IModule {
       val notification = Notification(-1, wisdom!!.authorUsername)
       notification.title = "${user.username} reacted!"
       notification.authorUsername = "_server"
-      notification.description = "${user.username} has reacted to \"${wisdom!!.title}\""
+      if (wisdom!!.type != "comment") {
+        notification.description = "${user.username} has reacted to \"${wisdom!!.title}\""
+      } else {
+        notification.description = "${user.username} has reacted to one of your comments!"
+      }
       notification.hasClickAction = true
       notification.clickAction = "open,wisdom"
       notification.clickActionReferenceGUID = wisdom!!.guid
       NotificationController().saveEntry(notification)
+      Connector.sendFrame(
+              username = wisdom!!.authorUsername, frame = ConnectorFrame(
+              type = "notification", msg = notification.description, date = Timestamp.now(),
+              obj = Json.encodeToString(notification), wisdomGUID = wisdom!!.guid))
     }
   }
 
@@ -633,7 +665,22 @@ class WisdomController : IModule {
       appCall.respond(HttpStatusCode.NotFound)
       return
     }
-    val response = WisdomReferencesResponse()
+    // Retrieve and check knowledge
+    if (wisdomRef!!.knowledgeUID != -1L) {
+      val knowledgeController = KnowledgeController()
+      val knowledgeRef: Knowledge
+      try {
+        knowledgeRef = knowledgeController.load(wisdomRef!!.knowledgeUID) as Knowledge
+      } catch (e: Exception) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
+      if (!knowledgeController.httpCanAccessKnowledge(appCall, knowledgeRef)) {
+        return
+      }
+    }
+    val response = WisdomReferencesResponse(wisdomRef!!)
+    // Related Wisdom entries
     getEntriesFromIndexSearch(
             searchText = "^${wisdomRef!!.uID}$", ixNr = 3, showAll = true) {
       it as Wisdom
@@ -650,6 +697,16 @@ class WisdomController : IModule {
         "lesson" -> response.lessons.add(it)
       }
     }
+    // Related Processes entries
+    ProcessController().getEntriesFromIndexSearch("^${wisdomRef!!.uID}$", ixNr = 3, true) {
+      it as ProcessEvent
+      response.processes.add(it)
+    }
+    ProcessController().getEntriesFromIndexSearch("^${wisdomRef!!.uID}$", ixNr = 4, true) {
+      it as ProcessEvent
+      response.processes.add(it)
+    }
+
     appCall.respond(response)
   }
 
