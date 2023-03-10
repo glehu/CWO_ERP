@@ -56,7 +56,11 @@ class ItemIndexManager(override var level: Long) : IIndexManager {
   }
 
   override suspend fun indexEntry(
-    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
+    entry: IEntry,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String
   ) {
     entry as Item
     buildIndices(
@@ -69,7 +73,10 @@ class ItemIndexManager(override var level: Long) : IIndexManager {
     )
   }
 
-  override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+  override fun encodeToJsonString(
+    entry: IEntry,
+    prettyPrint: Boolean
+  ): String {
     return json(prettyPrint).encodeToString(entry as Item)
   }
 }

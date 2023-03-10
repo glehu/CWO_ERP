@@ -54,27 +54,27 @@ class TemplateIndexManager(override var level: Long) : IIndexManager {
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-Template", "2-Template"
-    )
+            "1-Template", "2-Template")
   }
 
   override suspend fun indexEntry(
-    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
+    entry: IEntry,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String
   ) {
     entry as TemplateEntry
     val chatUID = entry.guid
     buildIndices(
-            entry.uID,
-            posDB,
-            byteSize,
-            writeToDisk,
-            userName,
-            Pair(1, if (chatUID != "-1") chatUID else ""),
-            Pair(2, entry.guid)
-    )
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, if (chatUID != "-1") chatUID else ""),
+            Pair(2, entry.guid))
   }
 
-  override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+  override fun encodeToJsonString(
+    entry: IEntry,
+    prettyPrint: Boolean
+  ): String {
     return json(prettyPrint).encodeToString(entry as TemplateEntry)
   }
 }

@@ -12,10 +12,13 @@ import java.util.*
  */
 @InternalAPI
 @ExperimentalSerializationApi
-fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String {
+fun encryptKeccak(
+  input: String,
+  salt: String = "",
+  pepper: String = ""
+): String {
   return Base64.getEncoder().encodeToString(
-          "$pepper$input$salt".digestKeccak(parameter = KeccakParameter.SHA3_512)
-  )
+          "$pepper$input$salt".digestKeccak(parameter = KeccakParameter.SHA3_512))
 }
 
 /**
@@ -26,7 +29,10 @@ fun encryptKeccak(input: String, salt: String = "", pepper: String = ""): String
 @InternalAPI
 @ExperimentalSerializationApi
 fun validateKeccak(
-  input: String, base64KeccakString: String, salt: String = "", pepper: String = ""
+  input: String,
+  base64KeccakString: String,
+  salt: String = "",
+  pepper: String = ""
 ): Boolean {
   return (encryptKeccak("$pepper$input$salt") == base64KeccakString)
 }

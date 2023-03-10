@@ -57,7 +57,11 @@ class Mockingbird {
     //private fun respondWithHTTPCode(appCall: ApplicationCall, config: MockingbirdConfig, elapsed: Long) {
     //}
 
-    private suspend fun respondWithMessage(appCall: ApplicationCall, config: MockingbirdConfig, elapsed: Long) {
+    private suspend fun respondWithMessage(
+      appCall: ApplicationCall,
+      config: MockingbirdConfig,
+      elapsed: Long
+    ) {
       val message: String
       val delayMs: Long
       // Measure time to stay as close as possible to the defined delay time by calculate the delta

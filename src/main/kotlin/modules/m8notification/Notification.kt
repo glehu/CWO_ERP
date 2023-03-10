@@ -12,7 +12,8 @@ import modules.mx.notificationIndexManager
 @ExperimentalSerializationApi
 @kotlinx.serialization.Serializable
 data class Notification(
-  override var uID: Long = -1L, @SerialName("recipient") var recipientUsername: String
+  override var uID: Long = -1L,
+  @SerialName("recipient") var recipientUsername: String
 ) : IEntry {
   @SerialName("t")
   var title: String = ""

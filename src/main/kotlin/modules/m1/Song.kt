@@ -10,7 +10,10 @@ import modules.mx.logic.getDefaultDate
 @InternalAPI
 @ExperimentalSerializationApi
 @Serializable
-data class Song(override var uID: Long, var name: String) : IEntry {
+data class Song(
+  override var uID: Long,
+  var name: String
+) : IEntry {
   //*************************************************
   //********************** User Input Data **********
   //*************************************************

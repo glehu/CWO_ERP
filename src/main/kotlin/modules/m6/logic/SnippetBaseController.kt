@@ -77,7 +77,11 @@ class SnippetBaseController : IModule, IWebApp {
    *
    */
   suspend fun saveFile(
-    base64: String, snippet: Snippet, owner: String, maxWidth: Int? = null, maxHeight: Int? = null
+    base64: String,
+    snippet: Snippet,
+    owner: String,
+    maxWidth: Int? = null,
+    maxHeight: Int? = null
   ): Snippet? {
     // Get Bytes from Base64 String
     val strings: List<String> = base64.split(",")
@@ -117,8 +121,7 @@ class SnippetBaseController : IModule, IWebApp {
           maxWidth
         } else maxHeight
         image = Scalr.resize(
-                image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, maxWidth, maxTrueHeight, Scalr.OP_ANTIALIAS
-        )
+                image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, maxWidth, maxTrueHeight, Scalr.OP_ANTIALIAS)
       }
       withContext(Dispatchers.IO) {
         ImageIO.write(image, fileExtension, file)

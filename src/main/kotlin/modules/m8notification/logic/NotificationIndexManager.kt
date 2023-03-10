@@ -55,20 +55,25 @@ class NotificationIndexManager(override var level: Long) : IIndexManager {
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-GUID", "2-recipientUsername"
-    )
+            "1-GUID", "2-recipientUsername")
   }
 
   override suspend fun indexEntry(
-    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
+    entry: IEntry,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String
   ) {
     entry as Notification
     buildIndices(
-            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid), Pair(2, entry.recipientUsername)
-    )
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid), Pair(2, entry.recipientUsername))
   }
 
-  override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+  override fun encodeToJsonString(
+    entry: IEntry,
+    prettyPrint: Boolean
+  ): String {
     return json(prettyPrint).encodeToString(entry as Wisdom)
   }
 }

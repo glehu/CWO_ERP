@@ -25,7 +25,10 @@ class ItemPriceManager : IModule {
     return null
   }
 
-  fun updateCategory(categoryNew: ItemPriceCategory, categoryOld: ItemPriceCategory) {
+  fun updateCategory(
+    categoryNew: ItemPriceCategory,
+    categoryOld: ItemPriceCategory
+  ) {
     val categories = getCategories()
     //Check if number changed
     if (categoryNew.number != categoryOld.number) {

@@ -51,11 +51,17 @@ class InvoiceCLIController : IModule {
     return getIni().statusTexts[status] ?: "?"
   }
 
-  fun getNetFromGross(gross: Double, vat: Double): Double {
+  fun getNetFromGross(
+    gross: Double,
+    vat: Double
+  ): Double {
     return (gross / (1 + (vat / 100))).roundTo(2)
   }
 
-  fun getGrossFromNet(net: Double, vat: Double): Double {
+  fun getGrossFromNet(
+    net: Double,
+    vat: Double
+  ): Double {
     return net + (net * vat)
   }
 

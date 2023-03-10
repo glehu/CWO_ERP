@@ -25,7 +25,8 @@ class DiscographyAnalytics : IModule {
 
   @ExperimentalSerializationApi
   suspend fun getDistributionChartData(
-    distType: DistType, updateProgress: (Pair<Long, String>) -> Unit
+    distType: DistType,
+    updateProgress: (Pair<Long, String>) -> Unit
   ): MutableMap<String, Double> {
     var songCount = 0.0
     val map = mutableMapOf<String, Double>()
@@ -33,12 +34,8 @@ class DiscographyAnalytics : IModule {
     log(Log.Type.INFO, "Distribution analysis start")
     val timeInMS = measureTimeMillis {
       CwODB.getEntriesFromSearchString(
-              searchText = "*",
-              ixNr = 0,
-              exactSearch = false,
-              maxSearchResults = -1,
-              indexManager = discographyIndexManager!!
-      ) { uID, entryBytes ->
+              searchText = "*", ixNr = 0, exactSearch = false, maxSearchResults = -1,
+              indexManager = discographyIndexManager!!) { uID, entryBytes ->
         updateProgress(Pair(uID, "Mapping data..."))
         val song: Song? = try {
           decode(entryBytes) as Song

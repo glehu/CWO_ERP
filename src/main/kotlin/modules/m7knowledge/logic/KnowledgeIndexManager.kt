@@ -55,27 +55,26 @@ class KnowledgeIndexManager(override var level: Long) : IIndexManager {
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-GUID", "2-mainChatroomGUID", "3-keywords"
-    )
+            "1-GUID", "2-mainChatroomGUID", "3-keywords")
   }
 
   override suspend fun indexEntry(
-    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
+    entry: IEntry,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String
   ) {
     entry as Knowledge
     buildIndices(
-            entry.uID,
-            posDB,
-            byteSize,
-            writeToDisk,
-            userName,
-            Pair(1, entry.guid),
-            Pair(2, entry.mainChatroomGUID),
-            Pair(3, entry.keywords.take(100))
-    )
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid), Pair(2, entry.mainChatroomGUID),
+            Pair(3, entry.keywords.take(100)))
   }
 
-  override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+  override fun encodeToJsonString(
+    entry: IEntry,
+    prettyPrint: Boolean
+  ): String {
     return json(prettyPrint).encodeToString(entry as Knowledge)
   }
 }

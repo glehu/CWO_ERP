@@ -133,7 +133,10 @@ fun readAndSetIniValues() {
 @DelicateCoroutinesApi
 @InternalAPI
 @ExperimentalSerializationApi
-fun startupRoutines(modeOffline: Boolean, modeSafety: Boolean) {
+fun startupRoutines(
+  modeOffline: Boolean,
+  modeSafety: Boolean
+) {
   //Load index managers
   if (!modeSafety) loadIndex()
   //Start the embedded server and usage tracker

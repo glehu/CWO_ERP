@@ -11,7 +11,10 @@ import modules.mx.contactIndexManager
 @InternalAPI
 @ExperimentalSerializationApi
 @Serializable
-data class Contact(override var uID: Long, var name: String) : IEntry {
+data class Contact(
+  override var uID: Long,
+  var name: String
+) : IEntry {
   var guid: String = ""
 
   //----------------------------------v

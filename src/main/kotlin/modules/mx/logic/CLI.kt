@@ -56,8 +56,7 @@ class CLI : IModule {
       } else {
         log(
                 Log.Type.WARNING,
-                "REMOVED FLAG -env REASON incomplete-env-variables HELP check CWOERPUSER and CWOERPPASS"
-        )
+                "REMOVED FLAG -env REASON incomplete-env-variables HELP check CWOERPUSER and CWOERPPASS")
       }
     }
     if (args.contains("-server")) {
@@ -71,8 +70,7 @@ class CLI : IModule {
       } catch (e: Exception) {
         log(Log.Type.ERROR, "ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
         terminal.println(
-                red("ERROR WHILE STARTING SERVER MODE REASON ${e.message}")
-        )
+                red("ERROR WHILE STARTING SERVER MODE REASON ${e.message}"))
         cliExit(false)
       }
     } else {/*
@@ -139,8 +137,7 @@ class CLI : IModule {
     log(Log.Type.SYS, "Terminating System...")
     exitMain()
     terminal.println(
-            "${gray("CWO:>")} ${green("System successfully terminated.")}"
-    )
+            "${gray("CWO:>")} ${green("System successfully terminated.")}")
     exitProcess(0)
   }
 

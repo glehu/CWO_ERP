@@ -54,27 +54,27 @@ class UniMessagesIndexManager(override var level: Long) : IIndexManager {
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-ChatroomUID", "2-GUID"
-    )
+            "1-ChatroomUID", "2-GUID")
   }
 
   override suspend fun indexEntry(
-    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
+    entry: IEntry,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String
   ) {
     entry as UniMessage
     val chatUID = entry.uniChatroomUID.toString()
     buildIndices(
-            entry.uID,
-            posDB,
-            byteSize,
-            writeToDisk,
-            userName,
-            Pair(1, if (chatUID != "-1") chatUID else ""),
-            Pair(2, entry.guid)
-    )
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, if (chatUID != "-1") chatUID else ""),
+            Pair(2, entry.guid))
   }
 
-  override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+  override fun encodeToJsonString(
+    entry: IEntry,
+    prettyPrint: Boolean
+  ): String {
     return json(prettyPrint).encodeToString(entry as UniMessage)
   }
 }

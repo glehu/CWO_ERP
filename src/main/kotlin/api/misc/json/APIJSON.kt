@@ -669,8 +669,6 @@ data class ProcessPathPayload(
   var path: ArrayList<ProcessPathFullSegmentPayload> = arrayListOf()
 )
 
-
-
 @ExperimentalSerializationApi
 @InternalAPI
 @Serializable

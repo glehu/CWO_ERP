@@ -57,29 +57,26 @@ class UniChatroomIndexManager(override var level: Long) : IIndexManager {
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-Title", "2-ChatroomGUID", "3-Date Created", "4-Status", "5-DirectMessageUsername"
-    )
+            "1-Title", "2-ChatroomGUID", "3-Date Created", "4-Status", "5-DirectMessageUsername")
   }
 
   override suspend fun indexEntry(
-    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
+    entry: IEntry,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String
   ) {
     entry as UniChatroom
     buildIndices(
-            entry.uID,
-            posDB,
-            byteSize,
-            writeToDisk,
-            userName,
-            Pair(1, entry.title),
-            Pair(2, entry.chatroomGUID),
-            Pair(3, entry.dateCreated),
-            Pair(4, entry.status.toString()),
-            Pair(5, entry.directMessageUsername)
-    )
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.title), Pair(2, entry.chatroomGUID),
+            Pair(3, entry.dateCreated), Pair(4, entry.status.toString()), Pair(5, entry.directMessageUsername))
   }
 
-  override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+  override fun encodeToJsonString(
+    entry: IEntry,
+    prettyPrint: Boolean
+  ): String {
     return json(prettyPrint).encodeToString(entry as UniChatroom)
   }
 }

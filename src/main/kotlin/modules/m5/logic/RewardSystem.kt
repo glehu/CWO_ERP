@@ -28,7 +28,10 @@ import modules.mx.uniMessagesIndexManager
 @DelicateCoroutinesApi
 @ExperimentalSerializationApi
 @InternalAPI
-suspend fun giveMessagesBadges(chatroomGUID: String?, appCall: ApplicationCall) {
+suspend fun giveMessagesBadges(
+  chatroomGUID: String?,
+  appCall: ApplicationCall
+) {
   if (chatroomGUID.isNullOrEmpty()) {
     appCall.respond(HttpStatusCode.BadRequest)
     return
@@ -65,7 +68,10 @@ suspend fun giveMessagesBadges(chatroomGUID: String?, appCall: ApplicationCall) 
 @DelicateCoroutinesApi
 @ExperimentalSerializationApi
 @InternalAPI
-suspend fun getBadges(username: String?, appCall: ApplicationCall) {
+suspend fun getBadges(
+  username: String?,
+  appCall: ApplicationCall
+) {
   if (username.isNullOrEmpty()) {
     appCall.respond(HttpStatusCode.BadRequest)
     return
@@ -83,69 +89,35 @@ suspend fun getBadges(username: String?, appCall: ApplicationCall) {
 @ExperimentalSerializationApi
 @InternalAPI
 fun runMessageBadgeDist(
-  user: Contact, statistic: MutableMap.MutableEntry<String, LeaderboardStatsAdvanced>
+  user: Contact,
+  statistic: MutableMap.MutableEntry<String, LeaderboardStatsAdvanced>
 ): Contact {
   var userTmp = user
   userTmp = statistic.value.checkAndPutMessageBadge(
           user = userTmp, threshold = 100, badge = UniBadge(
-          title = "Talkative I.",
-          handle = "msg100",
-          description = "Earned for having sent a total of 100 messages.",
-          xpGain = 50,
-          rank = 1,
-          Timestamp.now()
-  )
-  )
+          title = "Talkative I.", handle = "msg100", description = "Earned for having sent a total of 100 messages.",
+          xpGain = 50, rank = 1, Timestamp.now()))
   userTmp = statistic.value.checkAndPutMessageBadge(
           user = userTmp, threshold = 500, badge = UniBadge(
-          title = "Talkative II.",
-          handle = "msg500",
-          description = "Earned for having sent a total of 500 messages.",
-          xpGain = 150,
-          rank = 2,
-          Timestamp.now()
-  )
-  )
+          title = "Talkative II.", handle = "msg500", description = "Earned for having sent a total of 500 messages.",
+          xpGain = 150, rank = 2, Timestamp.now()))
   userTmp = statistic.value.checkAndPutMessageBadge(
           user = userTmp, threshold = 1000, badge = UniBadge(
-          title = "Talkative III.",
-          handle = "msg1000",
-          description = "Earned for having sent a total of 1,000 messages.",
-          xpGain = 450,
-          rank = 3,
-          Timestamp.now()
-  )
-  )
+          title = "Talkative III.", handle = "msg1000",
+          description = "Earned for having sent a total of 1,000 messages.", xpGain = 450, rank = 3, Timestamp.now()))
   userTmp = statistic.value.checkAndPutMessageBadge(
           user = userTmp, threshold = 2000, badge = UniBadge(
-          title = "Talkative IV.",
-          handle = "msg2000",
-          description = "Earned for having sent a total of 2,000 messages.",
-          xpGain = 1350,
-          rank = 4,
-          Timestamp.now()
-  )
-  )
+          title = "Talkative IV.", handle = "msg2000",
+          description = "Earned for having sent a total of 2,000 messages.", xpGain = 1350, rank = 4, Timestamp.now()))
   userTmp = statistic.value.checkAndPutMessageBadge(
           user = userTmp, threshold = 5000, badge = UniBadge(
-          title = "Talkative V.",
-          handle = "msg4000",
-          description = "Earned for having sent a total of 5,000 messages.",
-          xpGain = 4050,
-          rank = 5,
-          Timestamp.now()
-  )
-  )
+          title = "Talkative V.", handle = "msg4000", description = "Earned for having sent a total of 5,000 messages.",
+          xpGain = 4050, rank = 5, Timestamp.now()))
   userTmp = statistic.value.checkAndPutMessageBadge(
           user = userTmp, threshold = 10_000, badge = UniBadge(
-          title = "Talkative VI.",
-          handle = "msg10000",
-          description = "Earned for having sent a total of 10,000 messages.",
-          xpGain = 12_150,
-          rank = 6,
-          Timestamp.now()
-  )
-  )
+          title = "Talkative VI.", handle = "msg10000",
+          description = "Earned for having sent a total of 10,000 messages.", xpGain = 12_150, rank = 6,
+          Timestamp.now()))
   return userTmp
 }
 
@@ -154,69 +126,34 @@ fun runMessageBadgeDist(
 @ExperimentalSerializationApi
 @InternalAPI
 fun runRatingBadgeDist(
-  user: Contact, statistic: MutableMap.MutableEntry<String, LeaderboardStatsAdvanced>
+  user: Contact,
+  statistic: MutableMap.MutableEntry<String, LeaderboardStatsAdvanced>
 ): Contact {
   var userTmp = user
   userTmp = statistic.value.checkAndPutRatingBadge(
           user = userTmp, threshold = 10, badge = UniBadge(
-          title = "Guru I.",
-          handle = "rt10",
-          description = "Earned for having a rating of at least 10.",
-          xpGain = 50,
-          rank = 1,
-          Timestamp.now()
-  )
-  )
+          title = "Guru I.", handle = "rt10", description = "Earned for having a rating of at least 10.", xpGain = 50,
+          rank = 1, Timestamp.now()))
   userTmp = statistic.value.checkAndPutRatingBadge(
           user = userTmp, threshold = 100, badge = UniBadge(
-          title = "Guru II.",
-          handle = "rt100",
-          description = "Earned for having a rating of at least 100.",
-          xpGain = 150,
-          rank = 2,
-          Timestamp.now()
-  )
-  )
+          title = "Guru II.", handle = "rt100", description = "Earned for having a rating of at least 100.",
+          xpGain = 150, rank = 2, Timestamp.now()))
   userTmp = statistic.value.checkAndPutRatingBadge(
           user = userTmp, threshold = 200, badge = UniBadge(
-          title = "Guru III.",
-          handle = "rt200",
-          description = "Earned for having a rating of at least 200.",
-          xpGain = 450,
-          rank = 3,
-          Timestamp.now()
-  )
-  )
+          title = "Guru III.", handle = "rt200", description = "Earned for having a rating of at least 200.",
+          xpGain = 450, rank = 3, Timestamp.now()))
   userTmp = statistic.value.checkAndPutRatingBadge(
           user = userTmp, threshold = 500, badge = UniBadge(
-          title = "Guru IV.",
-          handle = "rt500",
-          description = "Earned for having a rating of at least 500.",
-          xpGain = 1350,
-          rank = 4,
-          Timestamp.now()
-  )
-  )
+          title = "Guru IV.", handle = "rt500", description = "Earned for having a rating of at least 500.",
+          xpGain = 1350, rank = 4, Timestamp.now()))
   userTmp = statistic.value.checkAndPutRatingBadge(
           user = userTmp, threshold = 1000, badge = UniBadge(
-          title = "Guru V.",
-          handle = "rt1000",
-          description = "Earned for having a rating of at least 1000.",
-          xpGain = 4050,
-          rank = 5,
-          Timestamp.now()
-  )
-  )
+          title = "Guru V.", handle = "rt1000", description = "Earned for having a rating of at least 1000.",
+          xpGain = 4050, rank = 5, Timestamp.now()))
   userTmp = statistic.value.checkAndPutRatingBadge(
           user = userTmp, threshold = 2000, badge = UniBadge(
-          title = "Guru VI.",
-          handle = "rt2000",
-          description = "Earned for having a rating of at least 2000.",
-          xpGain = 12_150,
-          rank = 6,
-          Timestamp.now()
-  )
-  )
+          title = "Guru VI.", handle = "rt2000", description = "Earned for having a rating of at least 2000.",
+          xpGain = 12_150, rank = 6, Timestamp.now()))
   return userTmp
 }
 
@@ -225,7 +162,9 @@ fun runRatingBadgeDist(
 @ExperimentalSerializationApi
 @InternalAPI
 fun LeaderboardStatsAdvanced.checkAndPutMessageBadge(
-  user: Contact, threshold: Int, badge: UniBadge
+  user: Contact,
+  threshold: Int,
+  badge: UniBadge
 ): Contact {
   if (this.messages > threshold) {
     if (!checkMemberBadge(user, badge.handle)) {
@@ -240,7 +179,9 @@ fun LeaderboardStatsAdvanced.checkAndPutMessageBadge(
 @ExperimentalSerializationApi
 @InternalAPI
 fun LeaderboardStatsAdvanced.checkAndPutRatingBadge(
-  user: Contact, threshold: Int, badge: UniBadge
+  user: Contact,
+  threshold: Int,
+  badge: UniBadge
 ): Contact {
   if (this.totalRating > threshold) {
     if (!checkMemberBadge(user, badge.handle)) {
@@ -254,7 +195,10 @@ fun LeaderboardStatsAdvanced.checkAndPutRatingBadge(
 @DelicateCoroutinesApi
 @ExperimentalSerializationApi
 @InternalAPI
-fun checkMemberBadge(username: String, badgeHandle: String): Boolean {
+fun checkMemberBadge(
+  username: String,
+  badgeHandle: String
+): Boolean {
   val user = UserCLIManager.getUserFromUsername(username) ?: return false
   return checkMemberBadge(user, badgeHandle)
 }
@@ -263,7 +207,10 @@ fun checkMemberBadge(username: String, badgeHandle: String): Boolean {
 @DelicateCoroutinesApi
 @ExperimentalSerializationApi
 @InternalAPI
-fun checkMemberBadge(user: Contact, badgeHandle: String): Boolean {
+fun checkMemberBadge(
+  user: Contact,
+  badgeHandle: String
+): Boolean {
   if (user.badges.isEmpty()) {
     return false
   }
@@ -289,8 +236,7 @@ suspend fun getMemberStatsOfChatroom(
     var subchat: UniChatroom?
     for (subchatJson in chatroom.subChatrooms) {
       subchat = UniChatroomController().getChatroom(
-              Json.decodeFromString<UniChatroom>(subchatJson).chatroomGUID
-      )
+              Json.decodeFromString<UniChatroom>(subchatJson).chatroomGUID)
       if (subchat != null) {
         subchatUIDs.append("|")
         subchatUIDs.append(subchat.uID)
@@ -299,16 +245,12 @@ suspend fun getMemberStatsOfChatroom(
   }
   val regexString = "($subchatUIDs)"
   Log.log(
-          module = "M5",
-          type = Log.Type.INFO,
-          text = "ANALYSIS for Chatroom uIDs: $regexString",
-          caller = "RewardSystem"
-  )
+          module = "M5", type = Log.Type.INFO, text = "ANALYSIS for Chatroom uIDs: $regexString",
+          caller = "RewardSystem")
   // Map to be populated by Usernames with their message stats
   var memberStats: MutableMap<String, LeaderboardStatsAdvanced> = mutableMapOf()
   uniMessagesIndexManager!!.getEntriesFromIndexSearch(
-          searchText = "^$regexString$", ixNr = 1, showAll = true
-  ) {
+          searchText = "^$regexString$", ixNr = 1, showAll = true) {
     it as UniMessage
     if (it.from != "_server") {
       if (!memberStats.containsKey(it.from)) {
@@ -327,7 +269,8 @@ suspend fun getMemberStatsOfChatroom(
 @ExperimentalSerializationApi
 @InternalAPI
 fun countMessageTypes(
-  message: UniMessage, memberStats: MutableMap<String, LeaderboardStatsAdvanced>
+  message: UniMessage,
+  memberStats: MutableMap<String, LeaderboardStatsAdvanced>
 ): MutableMap<String, LeaderboardStatsAdvanced> {
   if (message.message.startsWith("[c:GIF]")) {
     memberStats[message.from]!!.amountGIF += 1
@@ -344,7 +287,8 @@ fun countMessageTypes(
 @ExperimentalSerializationApi
 @InternalAPI
 fun countReactions(
-  message: UniMessage, memberStats: MutableMap<String, LeaderboardStatsAdvanced>
+  message: UniMessage,
+  memberStats: MutableMap<String, LeaderboardStatsAdvanced>
 ): MutableMap<String, LeaderboardStatsAdvanced> {
   if (message.reactions.size > 0) {
     var upvotes = 0.0
@@ -431,10 +375,12 @@ fun isChatroomEligibleForRewards(chatroom: UniChatroom): Boolean {
 @ExperimentalSerializationApi
 @DelicateCoroutinesApi
 @InternalAPI
-suspend fun handleUpgradeUniChatroomRequest(appCall: ApplicationCall, config: UniChatroomUpgrade) {
+suspend fun handleUpgradeUniChatroomRequest(
+  appCall: ApplicationCall,
+  config: UniChatroomUpgrade
+) {
   val username = UserCLIManager.getUserFromEmail(
-          ServerController.getJWTEmail(appCall)
-  )!!.username
+          ServerController.getJWTEmail(appCall))!!.username
   val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
   if (uniChatroomGUID.isNullOrEmpty()) {
     appCall.respond(HttpStatusCode.BadRequest)

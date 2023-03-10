@@ -58,15 +58,21 @@ class SnippetBaseIndexManager(override var level: Long) : IIndexManager {
   }
 
   override suspend fun indexEntry(
-    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
+    entry: IEntry,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String
   ) {
     entry as Snippet
     buildIndices(
-            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid)
-    )
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid))
   }
 
-  override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+  override fun encodeToJsonString(
+    entry: IEntry,
+    prettyPrint: Boolean
+  ): String {
     return json(prettyPrint).encodeToString(entry as Snippet)
   }
 }

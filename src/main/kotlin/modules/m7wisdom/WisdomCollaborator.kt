@@ -4,7 +4,8 @@ import modules.m5.UniRole
 
 @kotlinx.serialization.Serializable
 data class WisdomCollaborator(
-  var username: String, var roles: Array<UniRole> = arrayOf()
+  var username: String,
+  var roles: Array<UniRole> = arrayOf()
 ) {
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

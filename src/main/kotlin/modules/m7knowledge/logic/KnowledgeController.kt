@@ -46,11 +46,13 @@ class KnowledgeController : IModule {
     return uID
   }
 
-  suspend fun httpGetKnowledgeFromUniChatroomGUID(appCall: ApplicationCall, mainChatroomGUID: String) {
+  suspend fun httpGetKnowledgeFromUniChatroomGUID(
+    appCall: ApplicationCall,
+    mainChatroomGUID: String
+  ) {
     var knowledge: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-            searchText = "^$mainChatroomGUID$", ixNr = 2, showAll = true
-    ) {
+            searchText = "^$mainChatroomGUID$", ixNr = 2, showAll = true) {
       it as Knowledge
       knowledge = it
     }
@@ -61,11 +63,13 @@ class KnowledgeController : IModule {
     }
   }
 
-  suspend fun httpGetKnowledgeFromGUID(appCall: ApplicationCall, knowledgeGUID: String) {
+  suspend fun httpGetKnowledgeFromGUID(
+    appCall: ApplicationCall,
+    knowledgeGUID: String
+  ) {
     var knowledge: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true) {
       it as Knowledge
       knowledge = it
     }
@@ -76,11 +80,13 @@ class KnowledgeController : IModule {
     }
   }
 
-  suspend fun httpCreateKnowledge(appCall: ApplicationCall, config: KnowledgeCreation) {
+  suspend fun httpCreateKnowledge(
+    appCall: ApplicationCall,
+    config: KnowledgeCreation
+  ) {
     var knowledge: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
-            searchText = "^${config.mainChatroomGUID}$", ixNr = 2, showAll = true
-    ) {
+            searchText = "^${config.mainChatroomGUID}$", ixNr = 2, showAll = true) {
       it as Knowledge
       knowledge = it
     }
@@ -99,12 +105,13 @@ class KnowledgeController : IModule {
   }
 
   suspend fun httpEditKnowledgeCategories(
-    appCall: ApplicationCall, config: KnowledgeCategoryEdit, knowledgeGUID: String?
+    appCall: ApplicationCall,
+    config: KnowledgeCategoryEdit,
+    knowledgeGUID: String?
   ) {
     var knowledge: Knowledge? = null
     getEntriesFromIndexSearch(
-            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true
-    ) {
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true) {
       it as Knowledge
       knowledge = it
     }
@@ -159,7 +166,10 @@ class KnowledgeController : IModule {
    * Check if user is authorized in case the knowledge is private.
    * @return [Boolean] "true" if the user is authorized and "false" if not.
    */
-  suspend fun httpCanAccessKnowledge(appCall: ApplicationCall, knowledgeRef: Knowledge): Boolean {
+  suspend fun httpCanAccessKnowledge(
+    appCall: ApplicationCall,
+    knowledgeRef: Knowledge
+  ): Boolean {
     if (knowledgeRef.isPrivate) {
       if (knowledgeRef.mainChatroomGUID.isNotEmpty()) {
         with(UniChatroomController()) {
@@ -169,8 +179,7 @@ class KnowledgeController : IModule {
             return false
           }
           if (!chatroom.checkIsMember(
-                    UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))!!.username
-            )) {
+                    UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))!!.username)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return false
           } else return true

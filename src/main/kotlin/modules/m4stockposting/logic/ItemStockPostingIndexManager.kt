@@ -59,35 +59,37 @@ class ItemStockPostingIndexManager(override var level: Long) : IIndexManager {
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-ItemUID", "2-From", "3-To", "4-Date", "5-Status", "6-Amount"
-    )
+            "1-ItemUID", "2-From", "3-To", "4-Date", "5-Status", "6-Amount")
   }
 
   override suspend fun indexEntry(
-    entry: IEntry, posDB: Long, byteSize: Int, writeToDisk: Boolean, userName: String
+    entry: IEntry,
+    posDB: Long,
+    byteSize: Int,
+    writeToDisk: Boolean,
+    userName: String
   ) {
     entry as ItemStockPosting
     val stockAvailable = entry.stockAvailable ?: 0.0
     buildIndices(
-            entry.uID,
-            posDB,
-            byteSize,
-            writeToDisk,
-            userName,
-            Pair(1, entry.itemUID.toString()),
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.itemUID.toString()),
             Pair(2, getIndexTextIfStockAvailable(entry.ixStorageAndStorageUnitFrom, stockAvailable)),
             Pair(3, getIndexTextIfStockAvailable(entry.ixStorageAndStorageUnitTo, stockAvailable)),
-            Pair(4, entry.dateBooked),
-            Pair(5, entry.status.toString()),
-            Pair(6, (getIndexTextIfStockAvailable(stockAvailable.toString(), stockAvailable)))
-    )
+            Pair(4, entry.dateBooked), Pair(5, entry.status.toString()),
+            Pair(6, (getIndexTextIfStockAvailable(stockAvailable.toString(), stockAvailable))))
   }
 
-  override fun encodeToJsonString(entry: IEntry, prettyPrint: Boolean): String {
+  override fun encodeToJsonString(
+    entry: IEntry,
+    prettyPrint: Boolean
+  ): String {
     return json(prettyPrint).encodeToString(entry as Item)
   }
 
-  private fun getIndexTextIfStockAvailable(value: String, stockAvailable: Double): String {
+  private fun getIndexTextIfStockAvailable(
+    value: String,
+    stockAvailable: Double
+  ): String {
     return if (stockAvailable != 0.0) value else ""
   }
 }

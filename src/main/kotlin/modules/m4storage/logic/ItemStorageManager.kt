@@ -26,7 +26,10 @@ class ItemStorageManager : IModule {
     return null
   }
 
-  fun funUpdateStorage(storageNew: ItemStorage, storageOld: ItemStorage) {
+  fun funUpdateStorage(
+    storageNew: ItemStorage,
+    storageOld: ItemStorage
+  ) {
     val storages = getStorages()
     //Check if number changed
     if (storageNew.number != storageOld.number) {

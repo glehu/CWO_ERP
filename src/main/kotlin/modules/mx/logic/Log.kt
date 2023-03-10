@@ -38,13 +38,16 @@ class Log {
      * Writes a log message to the disk.
      */
     suspend fun log(
-      module: String, type: Type, text: String, caller: String, write: Boolean = true, apiEndpoint: String = ""
+      module: String,
+      type: Type,
+      text: String,
+      caller: String,
+      write: Boolean = true,
+      apiEndpoint: String = ""
     ) {
       val logMessageSerialized = Json.encodeToString(
               LogMessage(
-                      Timestamp.getUnixTimestampHex(), module, type, text, caller, apiEndpoint
-              )
-      ) + "\n"
+                      Timestamp.getUnixTimestampHex(), module, type, text, caller, apiEndpoint)) + "\n"
       print(logMessageSerialized)
       if (write) {
         mutex.withLock {
@@ -56,7 +59,11 @@ class Log {
     /**
      * Checks a log file and creates it if it's missing and createIfMissing is set to true.
      */
-    suspend fun checkLogFile(module: String, createIfMissing: Boolean, log: Boolean = true): Boolean {
+    suspend fun checkLogFile(
+      module: String,
+      createIfMissing: Boolean,
+      log: Boolean = true
+    ): Boolean {
       val logPath = File(getLogPath(module))
       if (!logPath.isDirectory) {
         if (createIfMissing) {

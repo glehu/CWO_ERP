@@ -12,7 +12,8 @@ import java.util.*
 @ExperimentalSerializationApi
 @Serializable
 data class Item(
-  override var uID: Long, var description: String
+  override var uID: Long,
+  var description: String
 ) : IEntry {
   var articleNumber = ""
   var ean = ""
