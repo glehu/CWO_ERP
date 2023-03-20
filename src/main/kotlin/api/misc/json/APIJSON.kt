@@ -742,6 +742,9 @@ data class ConnectorFrame(
   var processGUID: String = "",
 )
 
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
 data class ConnectorIncomingCall(
   var usernameToCall: String,
   var chatroomGUID: String

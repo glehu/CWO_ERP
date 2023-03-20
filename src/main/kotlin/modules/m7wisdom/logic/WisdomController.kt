@@ -66,10 +66,13 @@ class WisdomController : IModule {
     val mutex = Mutex()
   }
 
-  suspend fun saveEntry(wisdom: Wisdom): Long {
+  suspend fun saveEntry(
+    wisdom: Wisdom,
+    indexToDisk: Boolean = true
+  ): Long {
     var uID: Long
     mutex.withLock {
-      uID = save(wisdom)
+      uID = save(wisdom, indexWriteToDisk = indexToDisk)
     }
     return uID
   }
@@ -220,6 +223,30 @@ class WisdomController : IModule {
         if (!httpCheckWisdomRights(appCall, lesson, false, user = user)) return
       }
     }
+    // If mode was set to "row", update the rowIndex only
+    if (mode.contains("^row$".toRegex())) {
+      lesson.rowIndex = config.rowIndex
+      if (config.boxGUID.isNotEmpty()) {
+        var boxWisdom: Wisdom? = null
+        getEntriesFromIndexSearch(
+                searchText = "^${config.boxGUID}$", ixNr = 1, showAll = true) {
+          it as Wisdom
+          boxWisdom = it
+        }
+        if (boxWisdom != null) {
+          lesson.srcWisdomUID = boxWisdom!!.uID
+          lesson.keywords = boxWisdom!!.title
+        }
+      }
+      lesson.history.add(
+              Json.encodeToString(
+                      WisdomHistoryEntry(
+                              type = "move", date = Timestamp.getUnixTimestampHex(), description = "Moved",
+                              authorUsername = user!!.username)))
+      saveEntry(lesson)
+      appCall.respond(lesson.guid)
+      return
+    }
     // If mode was set to "due", update the due dates only and fix them while doing so
     if (mode.contains("^due$".toRegex())) {
       lesson.dueDate = config.dueDate
@@ -308,6 +335,20 @@ class WisdomController : IModule {
             if (lesson.keywords.isNotEmpty()) lesson.keywords += ','
             lesson.keywords += boxWisdom!!.title
           }
+        }
+        // Check rowIndex
+        if (lesson.rowIndex == 0) {
+          var highestRowIndex = 0
+          getEntriesFromIndexSearch(
+                  searchText = "^${boxWisdom!!.uID}$", ixNr = 3, showAll = true) { taskIt ->
+            taskIt as Wisdom
+            // Filter if there is a preference for "is finished"
+            if (!taskIt.finished) {
+              if (taskIt.rowIndex > highestRowIndex) highestRowIndex = taskIt.rowIndex
+            }
+          }
+          highestRowIndex += 20_000
+          lesson.rowIndex = highestRowIndex
         }
       } else {
         appCall.respond(HttpStatusCode.BadRequest)
@@ -818,7 +859,7 @@ class WisdomController : IModule {
     }
     if (!KnowledgeController().httpCanAccessKnowledge(appCall, knowledgeRef!!)) return
     // First, fetch all boxes
-    val plannerBoxesPayload = PlannerBoxesPayload()
+    var plannerBoxesPayload = PlannerBoxesPayload()
     getEntriesFromIndexSearch(
             searchText = "^${knowledgeRef!!.uID};BOX$", ixNr = 6, showAll = true) {
       it as Wisdom
@@ -871,9 +912,52 @@ class WisdomController : IModule {
           plannerBoxesPayload.boxes[i].tasks.add(plannerTaskPayload)
         }
       }
+      if (plannerBoxesPayload.boxes[i].tasks.isNotEmpty()) {
+        plannerBoxesPayload = sortPlannerBoxesPayload(plannerBoxesPayload, i)
+        // With tasks being inserted everywhere, we need to care for the first task to receive a row index too small
+        if (plannerBoxesPayload.boxes[i].tasks[0].task.rowIndex < 10) {
+          plannerBoxesPayload = reSortPlannerBoxesPayload(plannerBoxesPayload, i)
+        } else {
+          // Quick check to make sure all tasks are in order by making sure the last task's row index is greater than zero
+          if (plannerBoxesPayload.boxes[i].tasks[plannerBoxesPayload.boxes[i].tasks.size - 1].task.rowIndex <= 0) {
+            plannerBoxesPayload = reSortPlannerBoxesPayload(plannerBoxesPayload, i)
+          }
+        }
+      }
     }
     // Respond
     appCall.respond(plannerBoxesPayload)
+  }
+
+  private suspend fun reSortPlannerBoxesPayload(
+    plannerBoxesPayload: PlannerBoxesPayload,
+    i: Int
+  ): PlannerBoxesPayload {
+    var lastRowIndex = 20_000 * plannerBoxesPayload.boxes[i].tasks.size
+    var task: Wisdom
+    for (j in 0 until plannerBoxesPayload.boxes[i].tasks.size) {
+      // Update task
+      plannerBoxesPayload.boxes[i].tasks[j].task.rowIndex = lastRowIndex
+      // Update Wisdom entry
+      task = get(plannerBoxesPayload.boxes[i].tasks[j].task.uID) as Wisdom
+      task.rowIndex = lastRowIndex
+      saveEntry(task, false)
+      // Decrement row index
+      lastRowIndex -= 20_000
+    }
+    return sortPlannerBoxesPayload(plannerBoxesPayload, i)
+  }
+
+  private fun sortPlannerBoxesPayload(
+    plannerBoxesPayload: PlannerBoxesPayload,
+    i: Int
+  ): PlannerBoxesPayload {
+    val sortedTasks = plannerBoxesPayload.boxes[i].tasks.sortedWith(compareBy { it.task.rowIndex })
+    plannerBoxesPayload.boxes[i].tasks.clear()
+    for (j in sortedTasks.indices) {
+      plannerBoxesPayload.boxes[i].tasks.add(sortedTasks[j])
+    }
+    return plannerBoxesPayload
   }
 
   suspend fun httpFinishWisdom(
