@@ -6,7 +6,7 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import modules.mx.logic.Timestamp
-import modules.mx.uniMessagesIndexManager
+import modules.mx.processIndexManager
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -71,6 +71,8 @@ data class ProcessEvent(
 
   var outgoingUID: ArrayList<Long> = arrayListOf()
 
+  var rowIndex: Int = 0
+
   // #### Timing
 
   var graceTime: Double = 0.0
@@ -111,6 +113,6 @@ data class ProcessEvent(
   }
 
   override fun initialize() {
-    if (uID == -1L) uID = uniMessagesIndexManager!!.getUID()
+    if (uID == -1L) uID = processIndexManager!!.getUID()
   }
 }

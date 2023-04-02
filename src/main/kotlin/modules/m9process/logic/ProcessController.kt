@@ -47,10 +47,13 @@ class ProcessController : IModule {
     val mutex = Mutex()
   }
 
-  private suspend fun saveEntry(event: ProcessEvent): Long {
+  suspend fun saveEntry(
+    event: ProcessEvent,
+    indexToDisk: Boolean = true
+  ): Long {
     var uID: Long
     mutex.withLock {
-      uID = save(event)
+      uID = save(event, indexWriteToDisk = indexToDisk)
     }
     return uID
   }
@@ -183,7 +186,7 @@ class ProcessController : IModule {
     mode: String
   ) {
     // Are we editing?
-    if (mode.contains("^edit$".toRegex())) {
+    if (mode.contains("^edit$".toRegex()) || mode.contains("^row$".toRegex())) {
       httpEditProcessEvent(appCall, config, processGUID, mode)
       return
     }
@@ -289,6 +292,68 @@ class ProcessController : IModule {
     event.value = config.value
     event.actionType = config.actionType
     event.mode = config.mode
+    // Check rowIndex
+    if (event.rowIndex == 0) {
+      // Are we moving an alternate event or a main event?
+      var entry: ProcessEvent
+      var highestRowIndex = 0
+      var prevMainEvent: ProcessEvent? = null
+      if (event.incomingUID.isNotEmpty()) prevMainEvent = load(event.incomingUID[0]) as ProcessEvent
+      if (prevMainEvent != null && prevMainEvent.outgoingUID.isEmpty()) {
+        event.rowIndex = prevMainEvent.rowIndex + 20_000
+      } else if (prevMainEvent == null || prevMainEvent.outgoingUID[0] == event.uID) {
+        // Main event since current event's uID is first outgoing uID
+        // If we have a previous event then we need to go back further to find the first event
+        if (prevMainEvent != null) {
+          // Find first event in this chain
+          var incomingUID = -2L
+          while (incomingUID != -1L) {
+            entry = load(prevMainEvent.incomingUID[0]) as ProcessEvent
+            incomingUID = if (entry.incomingUID.isNotEmpty()) {
+              entry.incomingUID[0]
+            } else {
+              -1L
+            }
+          }
+          prevMainEvent = load(incomingUID) as ProcessEvent
+        } else {
+          // If prevMainEvent is null we are at the beginning already!
+          // Set the current event, so we can continue...
+          prevMainEvent = event
+        }
+        // Retrieve all main events and get the highest row index
+        val processes = getEventsOfProcess(prevMainEvent, onlyMainEvents = true)
+        if (processes.path.isEmpty()) {
+          // If for whatever reason there are no process events related...
+          // ... to this one just set rowIndex to the default
+          event.rowIndex = 20_0000
+        } else {
+          for (segment in processes.path) {
+            try {
+              if (segment.event.rowIndex > highestRowIndex) highestRowIndex = segment.event.rowIndex
+            } catch (_: Exception) {
+              // Entry could not get loaded!
+            }
+          }
+          highestRowIndex += 20_000
+          event.rowIndex = highestRowIndex
+        }
+      } else {
+        // Alternate event
+        // Retrieve all alternate events and get highest row index
+        val tPrev = load(event.incomingUID[0]) as ProcessEvent
+        for (i in 1 until tPrev.outgoingUID.size) {
+          try {
+            entry = load(tPrev.outgoingUID[i]) as ProcessEvent
+            if (entry.rowIndex > highestRowIndex) highestRowIndex = entry.rowIndex
+          } catch (_: Exception) {
+            // Entry could not get loaded!
+          }
+        }
+        highestRowIndex += 20_000
+        event.rowIndex = highestRowIndex
+      }
+    }
     // Save event
     val uID = saveEntry(event)
     // Update the previous event if it exists
@@ -327,6 +392,78 @@ class ProcessController : IModule {
     }
     if (processEvent === null) {
       appCall.respond(HttpStatusCode.NotFound)
+      return
+    }
+    if (mode.contains("^row$".toRegex())) {
+      // If mode was set to "row", update the rowIndex
+      processEvent!!.rowIndex = config.rowIndex
+      // Did this event change main process?
+      if (config.previousEventGUID.isNotEmpty()) {
+        var prevEvent: ProcessEvent? = null
+        getEntriesFromIndexSearch(
+                searchText = "^${config.previousEventGUID}$", ixNr = 1, showAll = true) {
+          it as ProcessEvent
+          prevEvent = it
+        }
+        if (prevEvent === null) {
+          appCall.respond(HttpStatusCode.NotFound)
+          return
+        }
+        if (!processEvent!!.incomingUID.contains(
+                  prevEvent!!.uID)) { // || processEvent!!.incomingUID[0] != prevEvent!!.uID) {
+          // Event does not contain provided previous event -> previous event changed!
+          // ### STEP 1: Clean up current event's in and outgoing events
+          freeProcessEvent(processEvent!!)
+          // ### STEP 2: Now replace current event's main incoming and outgoing event to make it fit in again
+          // a) Replace ingoing with new previous event
+          processEvent!!.incomingUID[0] = prevEvent!!.uID
+          // b) Replace outgoing with next event of new previous event
+          /*
+          if (config.nextEventGUID.isNotEmpty() && prevEvent!!.outgoingUID.isNotEmpty()) {
+            val nextEvent = get(prevEvent!!.outgoingUID[0]) as ProcessEvent
+            processEvent!!.outgoingUID[0] = nextEvent.uID
+            nextEvent.incomingUID[0] = processEvent!!.uID
+            saveEntry(nextEvent)
+          }
+           */
+          // ### STEP 3: Clean up the new previous and next events to close the chain again
+          prevEvent!!.outgoingUID.add(processEvent!!.uID)
+          saveEntry(prevEvent!!)
+        }
+      } else if (config.nextEventGUID.isNotEmpty()) {
+        // Check next event, too, to make sure the main events are a stable double linked list
+        var nextEvent: ProcessEvent? = null
+        getEntriesFromIndexSearch(
+                searchText = "^${config.nextEventGUID}$", ixNr = 1, showAll = true) {
+          it as ProcessEvent
+          nextEvent = it
+        }
+        if (nextEvent === null) {
+          appCall.respond(HttpStatusCode.NotFound)
+          return
+        }
+        if (!processEvent!!.outgoingUID.contains(nextEvent!!.uID) || processEvent!!.outgoingUID[0] != nextEvent!!.uID) {
+          // Event does not contain provided next event -> next event changed!
+          // ### STEP 1: Clean up current event's in and outgoing events
+          freeProcessEvent(processEvent!!)
+          // ### STEP 2: Now replace current event's main incoming and outgoing event to make it fit in again
+          // a) Replace ingoing with previous event of new next event
+          if (nextEvent!!.incomingUID.isNotEmpty()) {
+            val prevEvent = get(nextEvent!!.incomingUID[0]) as ProcessEvent
+            processEvent!!.incomingUID[0] = prevEvent.uID
+            prevEvent.outgoingUID[0] = processEvent!!.uID
+            saveEntry(prevEvent)
+          }
+          // b) Replace outgoing with new next event
+          processEvent!!.outgoingUID[0] = nextEvent!!.uID
+          // ### STEP 3: Clean up the new previous and next events to close the chain again
+          nextEvent!!.incomingUID[0] = processEvent!!.uID
+          saveEntry(nextEvent!!)
+        }
+      }
+      // Save and respond
+      saveEntry(processEvent!!)
+      appCall.respond(HttpStatusCode.OK)
       return
     }
     // Edit
@@ -371,6 +508,21 @@ class ProcessController : IModule {
     // Save and respond
     saveEntry(processEvent!!)
     appCall.respond(HttpStatusCode.OK)
+  }
+
+  private suspend fun freeProcessEvent(processEvent: ProcessEvent) {
+    // a) Remove current event's uID from original previous
+    if (processEvent.incomingUID.isNotEmpty()) {
+      val tPrevEvent = get(processEvent.incomingUID[0]) as ProcessEvent
+      tPrevEvent.outgoingUID.remove(processEvent.uID)
+      saveEntry(tPrevEvent)
+    }
+    // b) Remove current event's uID from original next
+    if (processEvent.outgoingUID.isNotEmpty()) {
+      val tNextEvent = get(processEvent.outgoingUID[0]) as ProcessEvent
+      tNextEvent.incomingUID.remove(processEvent.uID)
+      saveEntry(tNextEvent)
+    }
   }
 
   suspend fun httpGetProcesses(
@@ -523,7 +675,13 @@ class ProcessController : IModule {
       for (uid in processEvent!!.incomingUID) {
         try {
           tmpEntry = get(uid) as ProcessEvent
-          tmpEntry.outgoingUID.remove(processEvent!!.uID)
+          if (tmpEntry.outgoingUID[0] == processEvent!!.uID && processEvent!!.outgoingUID.isNotEmpty()) {
+            // Event was main event -> prepare to close gap
+            tmpEntry.outgoingUID[0] = -1L
+          } else {
+            // Event was main event or there will not be a following event -> remove uID
+            tmpEntry.outgoingUID.remove(processEvent!!.uID)
+          }
           saveEntry(tmpEntry)
         } catch (_: Exception) {
           // Entry could not get loaded!
@@ -547,8 +705,18 @@ class ProcessController : IModule {
               the in-/outgoing connections of both edge entries:
                 1 - 2 - 4
              */
-            if (processEvent!!.incomingUID.isNotEmpty() && processEvent!!.incomingUID.size == 1) {
+            if (processEvent!!.incomingUID.isNotEmpty()) {
               tmpEntry.incomingUID.add(processEvent!!.incomingUID[0])
+              // Close gap for previous event, too
+              val tmpPrevEntry = get(processEvent!!.incomingUID[0]) as ProcessEvent
+              if (tmpPrevEntry.outgoingUID[0] == -1L) {
+                // Previous entry does not contain a following entry -> add as main
+                tmpPrevEntry.outgoingUID[0] = tmpEntry.uID
+              } else {
+                // Previous entry already contains next ones -> add as alternate event
+                tmpPrevEntry.outgoingUID.add(tmpEntry.uID)
+              }
+              saveEntry(tmpPrevEntry)
             }
           }
           // Save
@@ -596,7 +764,19 @@ class ProcessController : IModule {
       return
     }
     // We now need to retrieve all outgoing connections thus constructing the full path
-    val processes = getEventsOfProcess(entryPoint!!)
+    var processes = getEventsOfProcess(entryPoint!!)
+    if (processes.path.isNotEmpty()) {
+      processes = sortSegments(processes)
+      // With tasks being inserted everywhere, we need to care for the first task to receive a row index too small
+      if (processes.path[0].event.rowIndex < 10) {
+        processes = reSortSegments(processes)
+      } else {
+        // Quick check to make sure all tasks are in order by making sure the last task's row index is greater than zero
+        if (processes.path[processes.path.size - 1].event.rowIndex <= 0) {
+          processes = reSortSegments(processes)
+        }
+      }
+    }
     appCall.respond(processes)
   }
 
@@ -604,22 +784,23 @@ class ProcessController : IModule {
    * Recursively retrieves all events following the specified [ProcessEvent].
    * @return [ProcessPathPayload]
    */
-  private tailrec fun getEventsOfProcess(
+  private tailrec suspend fun getEventsOfProcess(
     processEvent: ProcessEvent,
-    processes: ProcessPathPayload = ProcessPathPayload()
+    processes: ProcessPathPayload = ProcessPathPayload(),
+    onlyMainEvents: Boolean = false
   ): ProcessPathPayload {
-    val segment = ProcessPathFullSegmentPayload(processEvent)
+    var segment = ProcessPathFullSegmentPayload(processEvent)
     // Related entries?
     val wisdomController = WisdomController()
     var wisdom: Wisdom
-    if (processEvent.wisdomUID != -1L) {
+    if (!onlyMainEvents && processEvent.wisdomUID != -1L) {
       try {
         wisdom = wisdomController.get(processEvent.wisdomUID) as Wisdom
         segment.wisdom = wisdom
       } catch (_: Exception) {
       }
     }
-    if (processEvent.taskWisdomUID != -1L) {
+    if (!onlyMainEvents && processEvent.taskWisdomUID != -1L) {
       try {
         wisdom = wisdomController.get(processEvent.taskWisdomUID) as Wisdom
         segment.task = wisdom
@@ -643,7 +824,7 @@ class ProcessController : IModule {
       return processes
     }
     // Add alternatives if they exist
-    if (processEvent.outgoingUID.size > 1) {
+    if (!onlyMainEvents && processEvent.outgoingUID.size > 1) {
       // We skip one since we're only looking for alternatives to the first (index 0)
       var alternateEvent: ProcessEvent
       var altSegment: ProcessPathSegmentPayload
@@ -671,9 +852,79 @@ class ProcessController : IModule {
         } catch (_: Exception) {
         }
       }
+      if (segment.alternatives.isNotEmpty()) {
+        segment = sortSegmentAlternatives(segment)
+        // With tasks being inserted everywhere, we need to care for the first task to receive a row index too small
+        if (segment.alternatives[0].event.rowIndex < 10) {
+          segment = reSortSegmentAlternatives(segment)
+        } else {
+          // Quick check to make sure all tasks are in order by making sure the last task's row index is greater than zero
+          if (segment.alternatives[segment.alternatives.size - 1].event.rowIndex <= 0) {
+            segment = reSortSegmentAlternatives(segment)
+          }
+        }
+      }
     }
     processes.path.add(segment)
     return getEventsOfProcess(nextEvent, processes)
+  }
+
+  private suspend fun reSortSegmentAlternatives(
+    segment: ProcessPathFullSegmentPayload
+  ): ProcessPathFullSegmentPayload {
+    var lastRowIndex = 20_000 * segment.alternatives.size
+    var task: ProcessEvent
+    for (j in 0 until segment.alternatives.size) {
+      // Update task
+      segment.alternatives[j].event.rowIndex = lastRowIndex
+      // Update Wisdom entry
+      task = get(segment.alternatives[j].event.uID) as ProcessEvent
+      task.rowIndex = lastRowIndex
+      saveEntry(task, false)
+      // Decrement row index
+      lastRowIndex -= 20_000
+    }
+    return segment
+  }
+
+  private fun sortSegmentAlternatives(
+    segment: ProcessPathFullSegmentPayload
+  ): ProcessPathFullSegmentPayload {
+    val sortedTasks = segment.alternatives.sortedWith(compareBy { it.event.rowIndex })
+    segment.alternatives.clear()
+    for (j in sortedTasks.indices) {
+      segment.alternatives.add(sortedTasks[j])
+    }
+    return segment
+  }
+
+  private suspend fun reSortSegments(
+    path: ProcessPathPayload
+  ): ProcessPathPayload {
+    var lastRowIndex = 20_000 * path.path.size
+    var task: ProcessEvent
+    for (j in 0 until path.path.size) {
+      // Update task
+      path.path[j].event.rowIndex = lastRowIndex
+      // Update Wisdom entry
+      task = get(path.path[j].event.uID) as ProcessEvent
+      task.rowIndex = lastRowIndex
+      saveEntry(task, false)
+      // Decrement row index
+      lastRowIndex -= 20_000
+    }
+    return path
+  }
+
+  private fun sortSegments(
+    path: ProcessPathPayload
+  ): ProcessPathPayload {
+    val sortedTasks = path.path.sortedWith(compareBy { it.event.rowIndex })
+    path.path.clear()
+    for (j in sortedTasks.indices) {
+      path.path.add(sortedTasks[j])
+    }
+    return path
   }
 
   suspend fun httpInteractProcessEvent(
@@ -934,7 +1185,7 @@ class ProcessController : IModule {
       } else {
         task.description = "(No Description)"
       }
-      task.keywords = event.keywords
+      // task.keywords = event.keywords
       wisdomController.saveEntry(task)
     }
   }

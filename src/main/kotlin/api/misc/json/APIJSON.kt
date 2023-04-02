@@ -650,7 +650,9 @@ data class ProcessEntryConfig(
   var actionType: String = "",
   var previousEventGUID: String = "",
   var nextEventGUID: String = "",
-  var createTask: Boolean = false
+  var createTask: Boolean = false,
+  var rowIndex: Int = 0,
+
 )
 
 @ExperimentalSerializationApi
