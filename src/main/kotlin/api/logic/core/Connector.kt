@@ -168,7 +168,6 @@ class Connector {
     ) {
       if (frameText.isEmpty()) return
       if (frameText.startsWith("[c:CALL]")) {
-        println("\n>>> Handling incoming call frame\n")
         this.handleCall(frameText)
       }
     }
@@ -199,7 +198,6 @@ class Connector {
       } else {
         chatroomGUID = config.chatroomGUID
       }
-      println("\n>>> Forwared call frame to ${userToCall.username}\n")
       sendFrame(
               username = userToCall.username, frame = ConnectorFrame(
               type = "incoming call", msg = "Incoming call from ${this.username}!", date = now(),

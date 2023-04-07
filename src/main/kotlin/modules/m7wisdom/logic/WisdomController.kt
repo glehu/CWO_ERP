@@ -37,6 +37,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m2.Contact
+import modules.m5.UniMember
+import modules.m5.logic.UniChatroomController
 import modules.m7knowledge.Knowledge
 import modules.m7knowledge.logic.KnowledgeController
 import modules.m7wisdom.Wisdom
@@ -245,6 +247,7 @@ class WisdomController : IModule {
                               authorUsername = user!!.username)))
       saveEntry(lesson)
       appCall.respond(lesson.guid)
+      if (lesson.isTask) notifyPlannerKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
       return
     }
     // If mode was set to "due", update the due dates only and fix them while doing so
@@ -267,6 +270,7 @@ class WisdomController : IModule {
                               authorUsername = user!!.username)))
       saveEntry(lesson)
       appCall.respond(lesson.guid)
+      if (lesson.isTask) notifyPlannerKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
       return
     }
     // If mode was set to "edit", update some human-entered fields only.
@@ -284,6 +288,7 @@ class WisdomController : IModule {
                               authorUsername = user!!.username)))
       saveEntry(lesson)
       appCall.respond(lesson.guid)
+      if (lesson.isTask) notifyPlannerKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
       return
     }
     // Meta
@@ -370,6 +375,7 @@ class WisdomController : IModule {
     }
     saveEntry(lesson)
     appCall.respond(lesson.guid)
+    if (lesson.isTask) notifyPlannerKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
   }
 
   suspend fun httpCreateComment(
@@ -420,22 +426,28 @@ class WisdomController : IModule {
     saveEntry(comment)
     appCall.respond(comment.guid)
     if (!edit) {
-      val notification = Notification(-1, wisdomRef!!.authorUsername)
-      notification.title = "${user!!.username} commented!"
-      notification.authorUsername = "_server"
-      if (wisdomRef!!.type != "comment") {
-        notification.description = "${user.username} has commented \"${wisdomRef!!.title.trim()}\""
-      } else {
-        notification.description = "${user.username} has replied to one of your comments!"
+      if (wisdomRef!!.authorUsername != user!!.username) {
+        val notification = Notification(-1, wisdomRef!!.authorUsername)
+        notification.title = "${user.username} commented!"
+        notification.authorUsername = "_server"
+        if (wisdomRef!!.type != "comment") {
+          notification.description = "${user.username} has commented \"${wisdomRef!!.title.trim()}\""
+        } else {
+          notification.description = "${user.username} has replied to one of your comments!"
+        }
+        notification.hasClickAction = true
+        notification.clickAction = "open,wisdom"
+        notification.clickActionReferenceGUID = wisdomRef!!.guid
+        NotificationController().saveEntry(notification)
+        Connector.sendFrame(
+                username = wisdomRef!!.authorUsername, frame = ConnectorFrame(
+                type = "notification", msg = notification.description, date = Timestamp.now(),
+                obj = Json.encodeToString(notification), srcUsername = user.username, wisdomGUID = wisdomRef!!.guid))
       }
-      notification.hasClickAction = true
-      notification.clickAction = "open,wisdom"
-      notification.clickActionReferenceGUID = wisdomRef!!.guid
-      NotificationController().saveEntry(notification)
-      Connector.sendFrame(
-              username = wisdomRef!!.authorUsername, frame = ConnectorFrame(
-              type = "notification", msg = notification.description, date = Timestamp.now(),
-              obj = Json.encodeToString(notification), srcUsername = user.username, wisdomGUID = wisdomRef!!.guid))
+      if (wisdomRef!!.isTask) {
+        val knowledgeRef = KnowledgeController().load(wisdomRef!!.knowledgeUID) as Knowledge
+        notifyPlannerKnowledgeMembers(knowledgeRef.guid, "", user.username)
+      }
     }
   }
 
@@ -458,9 +470,12 @@ class WisdomController : IModule {
     if (!KnowledgeController().httpCanAccessKnowledge(appCall, knowledgeRef!!)) return
     // Matches Total
     var matchesAll: Sequence<MatchResult>
+    var matchDestructuredList: List<String>
     // Etc
     var rating: Int
-    var accuracy: Int
+    var accuracyTotalCount: Int
+    var foundTmp: Int
+    var accuracyPercentage: Double
     val first: ArrayList<WisdomSearchResponseEntry> = arrayListOf()
     val second: ArrayList<WisdomSearchResponseEntry> = arrayListOf()
     val third: ArrayList<WisdomSearchResponseEntry> = arrayListOf()
@@ -468,6 +483,7 @@ class WisdomController : IModule {
       // Split words on each whitespace after removing duplicate whitespaces
       val cleanQuery = config.query.replace("\\s+".toRegex()) { it.value[0].toString() }
       val queryWords = cleanQuery.split("\\s".toRegex())
+      val queryWordsResults = getQueryWordsResultInit(queryWords)
       val queryFormatted = StringBuilder()
       for ((amount, word) in queryWords.withIndex()) {
         if (amount > 0) queryFormatted.append("|")
@@ -514,14 +530,22 @@ class WisdomController : IModule {
         }
         if (valid) {
           rating = 0
-          accuracy = 0
+          accuracyTotalCount = 0
           // Title
           if (config.filterOverride.isEmpty() || config.filterOverride.contains("title")) {
             matchesAll = regexPattern.findAll(it.title)
             regexMatchCounts = matchesAll.count()
             if (regexMatchCounts > 0) {
               rating += 2
-              accuracy += regexMatchCounts
+              accuracyTotalCount += regexMatchCounts
+              for (match in matchesAll) {
+                matchDestructuredList = match.destructured.toList()
+                for (matchedWord in matchDestructuredList) {
+                  if (matchedWord.isNotEmpty()) {
+                    queryWordsResults[matchedWord] = it.uID
+                  }
+                }
+              }
             }
           }
           // Keywords
@@ -530,7 +554,15 @@ class WisdomController : IModule {
             regexMatchCounts = matchesAll.count()
             if (regexMatchCounts > 0) {
               rating += 2
-              accuracy += regexMatchCounts
+              accuracyTotalCount += regexMatchCounts
+              for (match in matchesAll) {
+                matchDestructuredList = match.destructured.toList()
+                for (matchedWord in matchDestructuredList) {
+                  if (matchedWord.isNotEmpty()) {
+                    queryWordsResults[matchedWord] = it.uID
+                  }
+                }
+              }
             }
           }
           // Description
@@ -539,7 +571,15 @@ class WisdomController : IModule {
             regexMatchCounts = matchesAll.count()
             if (regexMatchCounts > 0) {
               rating += 1
-              accuracy += regexMatchCounts
+              accuracyTotalCount += regexMatchCounts
+              for (match in matchesAll) {
+                matchDestructuredList = match.destructured.toList()
+                for (matchedWord in matchDestructuredList) {
+                  if (matchedWord.isNotEmpty()) {
+                    queryWordsResults[matchedWord] = it.uID
+                  }
+                }
+              }
             }
           }
           // Author
@@ -548,15 +588,23 @@ class WisdomController : IModule {
             regexMatchCounts = matchesAll.count()
             if (regexMatchCounts > 0) {
               rating += 1
-              accuracy += regexMatchCounts
+              accuracyTotalCount += regexMatchCounts
+              for (match in matchesAll) {
+                matchDestructuredList = match.destructured.toList()
+                for (matchedWord in matchDestructuredList) {
+                  if (matchedWord.isNotEmpty()) {
+                    queryWordsResults[matchedWord] = it.uID
+                  }
+                }
+              }
             }
           }
           // Discard if irrelevant
           if (rating > 0) {
+            // Cut the description to a maximum of 200 characters if there is one
             if (it.description.isNotEmpty()) {
               var description = it.description
               var truncated = false
-              // Cut the description to a maximum of 200 characters if there is one
               if (it.description.length > 200) {
                 description = description.substring(0..200)
                 truncated = true
@@ -573,16 +621,24 @@ class WisdomController : IModule {
               it.finishedDate = Timestamp.getUTCTimestampFromHex(it.finishedDate)
             }
             it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
+            // Calculate accuracy percentage
+            foundTmp = 0
+            for (queryWordResult in queryWordsResults) {
+              if (queryWordResult.value == it.uID) {
+                foundTmp += 1
+              }
+            }
+            accuracyPercentage = foundTmp.toDouble() / queryWordsResults.size.toDouble()
             // Evaluate
             if (rating >= 4) {
               first.add(
-                      WisdomSearchResponseEntry(it, accuracy))
+                      WisdomSearchResponseEntry(it, accuracyTotalCount, accuracyPercentage))
             } else if (rating >= 3) {
               second.add(
-                      WisdomSearchResponseEntry(it, accuracy))
+                      WisdomSearchResponseEntry(it, accuracyTotalCount, accuracyPercentage))
             } else {
               third.add(
-                      WisdomSearchResponseEntry(it, accuracy))
+                      WisdomSearchResponseEntry(it, accuracyTotalCount, accuracyPercentage))
             }
           }
         }
@@ -594,9 +650,9 @@ class WisdomController : IModule {
     }
     val response = WisdomSearchResponse()
     response.time = elapsedMillis.toInt()
-    response.first = first.sortedWith(compareBy { it.accuracy }).reversed()
-    response.second = second.sortedWith(compareBy { it.accuracy }).reversed()
-    response.third = third.sortedWith(compareBy { it.accuracy }).reversed()
+    response.first = first.sortedWith(compareBy({ -it.accuracyPercent }, { -it.accuracyTotalCount }))
+    response.second = second.sortedWith(compareBy({ -it.accuracyPercent }, { -it.accuracyTotalCount }))
+    response.third = third.sortedWith(compareBy({ -it.accuracyPercent }, { -it.accuracyTotalCount }))
     val jsonPayload = Json.encodeToString(response)
     appCall.respond(jsonPayload)
   }
@@ -664,22 +720,24 @@ class WisdomController : IModule {
     save(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
     if (reactionAdded) {
-      val notification = Notification(-1, wisdom!!.authorUsername)
-      notification.title = "${user.username} reacted!"
-      notification.authorUsername = "_server"
-      if (wisdom!!.type != "comment") {
-        notification.description = "${user.username} has reacted to \"${wisdom!!.title}\""
-      } else {
-        notification.description = "${user.username} has reacted to one of your comments!"
+      if (wisdom!!.authorUsername != user.username) {
+        val notification = Notification(-1, wisdom!!.authorUsername)
+        notification.title = "${user.username} reacted!"
+        notification.authorUsername = "_server"
+        if (wisdom!!.type != "comment") {
+          notification.description = "${user.username} has reacted to \"${wisdom!!.title}\""
+        } else {
+          notification.description = "${user.username} has reacted to one of your comments!"
+        }
+        notification.hasClickAction = true
+        notification.clickAction = "open,wisdom"
+        notification.clickActionReferenceGUID = wisdom!!.guid
+        NotificationController().saveEntry(notification)
+        Connector.sendFrame(
+                username = wisdom!!.authorUsername, frame = ConnectorFrame(
+                type = "notification", msg = notification.description, date = Timestamp.now(),
+                obj = Json.encodeToString(notification), wisdomGUID = wisdom!!.guid))
       }
-      notification.hasClickAction = true
-      notification.clickAction = "open,wisdom"
-      notification.clickActionReferenceGUID = wisdom!!.guid
-      NotificationController().saveEntry(notification)
-      Connector.sendFrame(
-              username = wisdom!!.authorUsername, frame = ConnectorFrame(
-              type = "notification", msg = notification.description, date = Timestamp.now(),
-              obj = Json.encodeToString(notification), wisdomGUID = wisdom!!.guid))
     }
   }
 
@@ -804,6 +862,8 @@ class WisdomController : IModule {
       return
     }
     if (!httpCheckWisdomRights(appCall, wisdom!!)) return
+    val isTask = wisdom!!.isTask
+    val knowledgeUID = wisdom!!.knowledgeUID
     // Configure wisdom
     wisdom!!.guid = ""
     wisdom!!.knowledgeUID = -1
@@ -814,6 +874,12 @@ class WisdomController : IModule {
     wisdom!!.isTask = false
     saveEntry(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
+    if (isTask) {
+      val knowledgeRef = KnowledgeController().load(knowledgeUID) as Knowledge
+      notifyPlannerKnowledgeMembers(
+              knowledgeGUID = knowledgeRef.guid, message = "",
+              srcUsername = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))!!.username)
+    }
   }
 
   suspend fun httpGetWisdomEntry(
@@ -1008,6 +1074,10 @@ class WisdomController : IModule {
     wisdom!!.history.add(Json.encodeToString(historyEntry))
     saveEntry(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
+    if (wisdom!!.isTask) {
+      val knowledgeRef = KnowledgeController().load(wisdom!!.knowledgeUID) as Knowledge
+      notifyPlannerKnowledgeMembers(knowledgeRef.guid, "", user.username)
+    }
   }
 
   private suspend fun httpCheckWisdomRights(
@@ -1079,8 +1149,8 @@ class WisdomController : IModule {
       return
     }
     if (!httpCheckWisdomRights(appCall, wisdom!!)) return
-    for (collaborator in config.collaborators)
-    // Add collaborator if he doesn't exist yet
+    for (collaborator in config.collaborators) {
+      // Add collaborator if he doesn't exist yet
       if (!wisdom!!.isCollaborator(collaborator.username)) {
         if (collaborator.add) {
           wisdom!!.collaborators.add(Json.encodeToString(WisdomCollaborator(collaborator.username)))
@@ -1089,8 +1159,14 @@ class WisdomController : IModule {
         // Remove him if he does
         wisdom!!.isCollaborator(collaborator.username, true)
       }
+    }
     save(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
+    if (wisdom!!.isTask) {
+      val knowledgeRef = KnowledgeController().load(wisdom!!.knowledgeUID) as Knowledge
+      val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
+      notifyPlannerKnowledgeMembers(knowledgeRef.guid, "", user!!.username)
+    }
   }
 
   suspend fun httpGetRecentKeywords(
@@ -1163,5 +1239,30 @@ class WisdomController : IModule {
       }
     }
     appCall.respond(payload)
+  }
+
+  suspend fun notifyPlannerKnowledgeMembers(
+    knowledgeGUID: String,
+    message: String,
+    srcUsername: String
+  ) {
+    var knowledgeRef: Knowledge? = null
+    KnowledgeController().getEntriesFromIndexSearch(
+            searchText = "^$knowledgeGUID$", ixNr = 1, showAll = true) {
+      it as Knowledge
+      knowledgeRef = it
+    }
+    if (knowledgeRef == null) return
+    if (knowledgeRef!!.mainChatroomGUID.isEmpty()) return
+    val chatroom = UniChatroomController().getChatroom(knowledgeRef!!.mainChatroomGUID) ?: return
+    var username: String
+    chatroom.members.forEach {
+      username = Json.decodeFromString<UniMember>(it).username
+      if (username != srcUsername) {
+        Connector.sendFrame(
+                username = username, frame = ConnectorFrame(
+                type = "planner change", msg = message, date = Timestamp.now(), srcUsername = srcUsername))
+      }
+    }
   }
 }

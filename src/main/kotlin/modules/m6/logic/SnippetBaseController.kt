@@ -61,8 +61,9 @@ class SnippetBaseController : IModule, IWebApp {
    * Saves a Base64 [String] to a file on the disk.
    *
    * Accepts:
-   * + Images: JPEG, PNG
-   * + Audio: MP3, WAV
+   * + Images: .JPEG, .PNG
+   * + Audio: .MP3, .WAV
+   * + General: .txt, .ZIP
    *
    * In case an Image is provided, there is the option to pass two optional values:
    *
@@ -108,6 +109,16 @@ class SnippetBaseController : IModule, IWebApp {
         fileExtension = "mp3"
       } else if (mimeType.contains("wav")) {
         fileExtension = "wav"
+      }
+    } else if (mimeType.contains("text")) {
+      // Text types
+      if (mimeType.contains("plain")) {
+        fileExtension = "txt"
+      }
+    } else if (mimeType.contains("application")) {
+      // Application types
+      if (mimeType.contains("x-zip-compressed")) {
+        fileExtension = "zip"
       }
     }
     // Exit upon reaching this point without having found a supported media type

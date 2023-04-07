@@ -6,7 +6,7 @@ import io.ktor.util.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import modules.mx.logic.Timestamp
-import modules.mx.uniChatroomIndexManager
+import modules.mx.snippetBaseIndexManager
 
 @InternalAPI
 @ExperimentalSerializationApi
@@ -15,7 +15,7 @@ data class Snippet(
   override var uID: Long = -1L,
 ) : IEntry {
   override fun initialize() {
-    if (uID == -1L) uID = uniChatroomIndexManager!!.getUID()
+    if (uID == -1L) uID = snippetBaseIndexManager!!.getUID()
     if (guid.isEmpty()) guid = "snippet-" + Uuid.randomUUID().toString()
     if (dateCreated.isEmpty()) dateCreated = Timestamp.getUnixTimestampHex()
   }

@@ -544,10 +544,14 @@ class ProcessController : IModule {
       return
     }
     if (!KnowledgeController().httpCanAccessKnowledge(appCall, knowledgeRef!!)) return
+    val pair: Pair<Regex, List<String>>
+    var queryWordsResults: MutableMap<String, Long>? = null
     var regexPattern: Regex? = null
     var doQuery = false
     if (queryFilter.isNotEmpty()) {
-      regexPattern = buildQueryRegexPattern(queryFilter)
+      pair = buildQueryRegexPattern(queryFilter)
+      regexPattern = pair.first
+      queryWordsResults = getQueryWordsResultInit(pair.second)
       doQuery = true
     }
     // Retrieve processes
@@ -560,7 +564,8 @@ class ProcessController : IModule {
         it.dateCreated = Timestamp.getUTCTimestampFromHex(it.dateCreated)
         if (doQuery) {
           queryResult = applyQueryRegexPattern(
-                  regexPattern!!, it, it.title, it.keywords, it.description, it.authorUsername)
+                  regexPattern = regexPattern!!, queryWordsResults = queryWordsResults!!, entry = it, title = it.title,
+                  keywords = it.keywords, description = it.description, authorUsername = it.authorUsername)
 
           if (queryResult.rating > 0) results.add(queryResult)
         } else {
@@ -1060,9 +1065,7 @@ class ProcessController : IModule {
     val path = getEventsOfProcess(processEvent)
     val wisdomController = WisdomController()
     var box: Wisdom? = null
-    var task: Wisdom?
     var boxUID = -1L
-    var taskUID: Long
     for ((index, segment) in path.path.withIndex()) {
       if (index == 0) {
         // Check if the box exists
@@ -1133,6 +1136,9 @@ class ProcessController : IModule {
       }
     }
     appCall.respond(box!!.guid)
+    WisdomController().notifyPlannerKnowledgeMembers(
+            knowledgeGUID = knowledgeRef.guid, message = "",
+            srcUsername = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))!!.username)
     return true
   }
 

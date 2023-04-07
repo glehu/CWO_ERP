@@ -83,6 +83,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.set
+import kotlin.math.ceil
 
 @ExperimentalSerializationApi
 class ServerController {
@@ -951,6 +952,20 @@ class ServerController {
     ) {
       if (!UserCLIManager.checkModuleRight(getJWTEmail(appCall), "M6")) {
         appCall.respond(HttpStatusCode.Forbidden)
+        return
+      }
+      // Check if file size does not exceed maximum
+      /* We calculate the file size with the following formula:
+          Math.Ceiling(base64 / 4) * 3 * 0.000001
+        Explanation:
+          base64 String is 133,33% bigger (usually) than the true file size
+            -> we need to divide by 4 and multiply by 3
+          We want to compare the MB size for convenience
+            -> we multiply by 0.000001 to convert B to MB
+       */
+      val sizeInMB = ceil((payload.payload.length / 4).toDouble()) * 3 * 0.000001
+      if (sizeInMB > 20) {
+        appCall.respond(HttpStatusCode.PayloadTooLarge)
         return
       }
       with(SnippetBaseController()) {

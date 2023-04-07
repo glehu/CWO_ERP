@@ -47,13 +47,13 @@ class SnippetBaseIndexManager(override var level: Long) : IIndexManager {
 
   init {
     initialize(
-            1, //ChatroomGUID
+            1, // GUID
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-ChatroomGUID",
+            "1-GUID",
     )
   }
 

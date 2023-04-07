@@ -320,7 +320,7 @@ interface IModule {
     }
   }
 
-  fun buildQueryRegexPattern(query: String): Regex {
+  fun buildQueryRegexPattern(query: String): Pair<Regex, List<String>> {
     // Split words on each whitespace after removing duplicate whitespaces
     val cleanQuery = query.replace("\\s+".toRegex()) { it.value[0].toString() }
     val queryWords = cleanQuery.split("\\s".toRegex())
@@ -335,11 +335,12 @@ interface IModule {
       queryFormatted.append("))")
     }
     val queryFormattedString = queryFormatted.toString()
-    return queryFormattedString.toRegex(RegexOption.IGNORE_CASE)
+    return Pair(queryFormattedString.toRegex(RegexOption.IGNORE_CASE), queryWords)
   }
 
   fun applyQueryRegexPattern(
     regexPattern: Regex,
+    queryWordsResults: MutableMap<String, Long>,
     entry: IEntry,
     title: String = "",
     keywords: String = "",
@@ -351,6 +352,7 @@ interface IModule {
     var rating = 0
     var accuracy = 0
     var regexMatchCounts: Int
+    var matchDestructuredList: List<String>
     // Title
     if (filterOverride.isEmpty() || filterOverride.contains("title")) {
       matchesAll = regexPattern.findAll(title)
@@ -358,6 +360,14 @@ interface IModule {
       if (regexMatchCounts > 0) {
         rating += 2
         accuracy += regexMatchCounts
+        for (match in matchesAll) {
+          matchDestructuredList = match.destructured.toList()
+          for (matchedWord in matchDestructuredList) {
+            if (matchedWord.isNotEmpty()) {
+              queryWordsResults[matchedWord] = entry.uID
+            }
+          }
+        }
       }
     }
     // Keywords
@@ -367,6 +377,14 @@ interface IModule {
       if (regexMatchCounts > 0) {
         rating += 2
         accuracy += regexMatchCounts
+        for (match in matchesAll) {
+          matchDestructuredList = match.destructured.toList()
+          for (matchedWord in matchDestructuredList) {
+            if (matchedWord.isNotEmpty()) {
+              queryWordsResults[matchedWord] = entry.uID
+            }
+          }
+        }
       }
     }
     // Description
@@ -376,6 +394,14 @@ interface IModule {
       if (regexMatchCounts > 0) {
         rating += 1
         accuracy += regexMatchCounts
+        for (match in matchesAll) {
+          matchDestructuredList = match.destructured.toList()
+          for (matchedWord in matchDestructuredList) {
+            if (matchedWord.isNotEmpty()) {
+              queryWordsResults[matchedWord] = entry.uID
+            }
+          }
+        }
       }
     }
     // Author
@@ -385,14 +411,40 @@ interface IModule {
       if (regexMatchCounts > 0) {
         rating += 1
         accuracy += regexMatchCounts
+        for (match in matchesAll) {
+          matchDestructuredList = match.destructured.toList()
+          for (matchedWord in matchDestructuredList) {
+            if (matchedWord.isNotEmpty()) {
+              queryWordsResults[matchedWord] = entry.uID
+            }
+          }
+        }
       }
     }
+    // Calculate accuracy percentage
+    var foundTmp = 0
+    for (queryWordResult in queryWordsResults) {
+      if (queryWordResult.value == entry.uID) {
+        foundTmp += 1
+      }
+    }
+    val accuracyPercentage = foundTmp.toDouble() / queryWordsResults.size.toDouble()
     // Return Result
-    return QueryResult(entry, rating, accuracy)
+    return QueryResult(entry, rating, accuracy, accuracyPercentage)
+  }
+
+  fun getQueryWordsResultInit(
+    queryWords: List<String>
+  ): MutableMap<String, Long> {
+    val map = mutableMapOf<String, Long>()
+    for (word in queryWords) {
+      map[word] = -1
+    }
+    return map
   }
 
   fun sortQueryResults(results: ArrayList<QueryResult>): List<QueryResult> {
     // Negative values to sort in descending order! Nice "hack"!
-    return results.sortedWith(compareBy({ -it.rating }, { -it.accuracy }))
+    return results.sortedWith(compareBy({ -it.rating }, { -it.accuracyPercent }, { -it.accuracyTotalCount }))
   }
 }

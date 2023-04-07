@@ -487,7 +487,8 @@ data class WisdomSearchResponse(
 @Serializable
 data class WisdomSearchResponseEntry(
   val wisdom: Wisdom,
-  val accuracy: Int
+  val accuracyTotalCount: Int,
+  var accuracyPercent: Double
 )
 
 @ExperimentalSerializationApi
@@ -703,7 +704,8 @@ data class ProcessInteractionPayload(
 data class QueryResult(
   var entry: IEntry,
   var rating: Int,
-  var accuracy: Int
+  var accuracyTotalCount: Int,
+  var accuracyPercent: Double
 )
 
 @ExperimentalSerializationApi
