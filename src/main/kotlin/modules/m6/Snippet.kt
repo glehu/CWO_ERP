@@ -27,4 +27,5 @@ data class Snippet(
   var dateCreated = ""
   var payload = ""
   var payloadType = ""
+  var payloadName = ""
 }

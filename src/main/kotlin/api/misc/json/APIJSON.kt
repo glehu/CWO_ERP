@@ -359,7 +359,8 @@ data class UniChatroomMessages(
 @Serializable
 data class SnippetPayload(
   val type: String,
-  val payload: String = ""
+  val payload: String = "",
+  val name: String = ""
 )
 
 @Serializable

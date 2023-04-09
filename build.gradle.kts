@@ -55,6 +55,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.4.0")
+  implementation("io.ktor:ktor-server-auto-head-response-jvm:2.1.2")
 }
 
 val mainClassName = "modules.mx.logic.StartKt"

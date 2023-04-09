@@ -43,6 +43,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.doublereceive.*
@@ -197,7 +198,10 @@ class Server : IModule {
       maxFrameSize = Long.MAX_VALUE
       masking = false
     }
-    install(DoubleReceive)/*
+    install(DoubleReceive)
+    install(AutoHeadResponse)
+    // SERVER
+    /*
      * #### Routing ####
      */
     routing {

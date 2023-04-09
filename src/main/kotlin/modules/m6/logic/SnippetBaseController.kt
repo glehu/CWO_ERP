@@ -61,13 +61,15 @@ class SnippetBaseController : IModule, IWebApp {
    * Saves a Base64 [String] to a file on the disk.
    *
    * Accepts:
-   * + Images: .JPEG, .PNG
+   *
+   * + Images: .JPEG, .PNG, .GIF
    * + Audio: .MP3, .WAV
-   * + General: .txt, .ZIP
+   * + Text: .TXT, .CSV, .MD, .XML
+   * + Application: .ZIP, .7Z, .PDF, .JSON, .XML
    *
    * In case an Image is provided, there is the option to pass two optional values:
    *
-   * + maxWidth: [Int]
+   * + maxWidth:  [Int]
    * + maxHeight: [Int] (maxWidth if no valid value provided)
    *
    * If maxWidth (with or without maxHeight) is provided, the image will be resized (Imgscalr)
@@ -78,6 +80,7 @@ class SnippetBaseController : IModule, IWebApp {
    *
    */
   suspend fun saveFile(
+    filename: String,
     base64: String,
     snippet: Snippet,
     owner: String,
@@ -89,43 +92,25 @@ class SnippetBaseController : IModule, IWebApp {
     val mimeType = strings[0]
     val decoder = Base64.getDecoder()
     val decodedBytes: ByteArray = decoder.decode(strings[1])
-    var image = withContext(Dispatchers.IO) {
-      ImageIO.read(ByteArrayInputStream(decodedBytes))
-    }
     // Get the file extension
-    var fileExtension: String? = null
-    if (mimeType.contains("image")) {
-      // Image types
-      if (mimeType.contains("jpeg")) {
-        fileExtension = "jpg"
-      } else if (mimeType.contains("png")) {
-        fileExtension = "png"
-      } else if (mimeType.contains("gif")) {
-        fileExtension = "gif"
+    val fileExtension: String = getFileExtensionToMimeType(mimeType) ?: return null
+    val nameOfFile: String
+    if (filename.isNotEmpty()) {
+      nameOfFile = filename.take(100).replace('.', '-').replace(' ', '-') + '-' + snippet.guid
+      snippet.payloadName = filename
+      if (!snippet.payloadName.endsWith(fileExtension)) {
+        snippet.payloadName += ".$fileExtension"
       }
-    } else if (mimeType.contains("audio")) {
-      // Audio types
-      if (mimeType.contains("mpeg")) {
-        fileExtension = "mp3"
-      } else if (mimeType.contains("wav")) {
-        fileExtension = "wav"
-      }
-    } else if (mimeType.contains("text")) {
-      // Text types
-      if (mimeType.contains("plain")) {
-        fileExtension = "txt"
-      }
-    } else if (mimeType.contains("application")) {
-      // Application types
-      if (mimeType.contains("x-zip-compressed")) {
-        fileExtension = "zip"
-      }
+    } else {
+      nameOfFile = snippet.guid
+      snippet.payloadName = snippet.guid + '.' + fileExtension
     }
-    // Exit upon reaching this point without having found a supported media type
-    if (fileExtension == null) return null
-    val file = getProjectJsonFile(owner, snippet.guid, extension = fileExtension)
+    val file = getProjectJsonFile(owner, nameOfFile, extension = fileExtension)
     // Create the resource and save it to the disk
     if (mimeType.contains("image") && !mimeType.contains("gif")) {
+      var image = withContext(Dispatchers.IO) {
+        ImageIO.read(ByteArrayInputStream(decodedBytes))
+      }
       // Resizing necessary?
       if (maxWidth != null && maxWidth > 0) {
         val maxTrueHeight = if (maxHeight == null || maxHeight < 1) {
@@ -153,6 +138,52 @@ class SnippetBaseController : IModule, IWebApp {
     // Save and return
     saveResource(snippet)
     return snippet
+  }
+
+  private fun getFileExtensionToMimeType(mimeType: String): String? {
+    var fileExtension: String? = null
+    if (mimeType.contains("image/")) {
+      // Image types
+      if (mimeType.contains("jpeg")) {
+        fileExtension = "jpg"
+      } else if (mimeType.contains("png")) {
+        fileExtension = "png"
+      } else if (mimeType.contains("gif")) {
+        fileExtension = "gif"
+      }
+    } else if (mimeType.contains("audio/")) {
+      // Audio types
+      if (mimeType.contains("mpeg")) {
+        fileExtension = "mp3"
+      } else if (mimeType.contains("wav")) {
+        fileExtension = "wav"
+      }
+    } else if (mimeType.contains("text/")) {
+      // Text types
+      if (mimeType.contains("plain")) {
+        fileExtension = "txt"
+      } else if (mimeType.contains("csv")) {
+        fileExtension = "csv"
+      } else if (mimeType.contains("markdown")) {
+        fileExtension = "md"
+      } else if (mimeType.contains("xml")) {
+        fileExtension = "xml"
+      }
+    } else if (mimeType.contains("application/")) {
+      // Application types
+      if (mimeType.contains("zip")) {
+        fileExtension = "zip"
+      } else if (mimeType.contains("7z")) {
+        fileExtension = "7z"
+      } else if (mimeType.contains("pdf")) {
+        fileExtension = "pdf"
+      } else if (mimeType.contains("json")) {
+        fileExtension = "json"
+      } else if (mimeType.contains("xml")) {
+        fileExtension = "xml"
+      }
+    }
+    return fileExtension
   }
 
   private suspend fun saveResource(snippet: Snippet) {

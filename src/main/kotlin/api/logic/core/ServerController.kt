@@ -893,8 +893,8 @@ class ServerController {
           }
           with(SnippetBaseController()) {
             val snippet = saveFile(
-                    base64 = config.imageBase64, snippet = createSnippet(), owner = "clarifier-$uniChatroomGUID",
-                    maxWidth = 300, maxHeight = 300)
+                    filename = "", base64 = config.imageBase64, snippet = createSnippet(),
+                    owner = "clarifier-$uniChatroomGUID", maxWidth = 300, maxHeight = 300)
             if (snippet == null) {
               appCall.respond(HttpStatusCode.InternalServerError)
               return
@@ -931,8 +931,8 @@ class ServerController {
           }
           with(SnippetBaseController()) {
             val snippet = saveFile(
-                    base64 = config.imageBase64, snippet = createSnippet(), owner = getUsernameReversedBase(appCall),
-                    maxWidth = 300, maxHeight = 300)
+                    filename = "", base64 = config.imageBase64, snippet = createSnippet(),
+                    owner = getUsernameReversedBase(appCall), maxWidth = 300, maxHeight = 300)
             if (snippet == null) {
               appCall.respond(HttpStatusCode.InternalServerError)
               return
@@ -970,8 +970,8 @@ class ServerController {
       }
       with(SnippetBaseController()) {
         val snippet = saveFile(
-                base64 = payload.payload, snippet = createSnippet(), owner = getUsernameReversedBase(appCall),
-                maxWidth = 1920, maxHeight = 1920)
+                filename = payload.name, base64 = payload.payload, snippet = createSnippet(),
+                owner = getUsernameReversedBase(appCall), maxWidth = 1920, maxHeight = 1920)
         if (snippet == null) {
           appCall.respond(HttpStatusCode.InternalServerError)
           return
@@ -993,7 +993,11 @@ class ServerController {
           return
         }
         if (snippet.payloadType.contains("file")) {
-          appCall.respondFile(File(Paths.get(snippet.payload).toString()))
+          val fileToDownload = File(Paths.get(snippet.payload).toString())
+          appCall.response.header(
+                  name = HttpHeaders.ContentDisposition, value = ContentDisposition.Attachment.withParameter(
+                  key = ContentDisposition.Parameters.FileName, value = snippet.payloadName).toString())
+          appCall.respondFile(fileToDownload)
           return
         } else {
           appCall.respond(HttpStatusCode.BadRequest)
