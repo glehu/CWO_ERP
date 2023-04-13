@@ -48,13 +48,15 @@ class SnippetBaseIndexManager(override var level: Long) : IIndexManager {
   init {
     initialize(
             1, // GUID
+            2, // srcUniChatroomUID
+            3, // srcWisdomUID
+            4 // srcProcessUID
     )
   }
 
   override fun getIndicesList(): ArrayList<String> {
     return arrayListOf(
-            "1-GUID",
-    )
+            "1-GUID", "2-srcUniChatroomUID", "3-srcWisdomUID", "4-srcProcessUID")
   }
 
   override suspend fun indexEntry(
@@ -65,8 +67,12 @@ class SnippetBaseIndexManager(override var level: Long) : IIndexManager {
     userName: String
   ) {
     entry as Snippet
+    val srcUniChatroomUID = if (entry.srcUniChatroomUID != -1L) entry.srcUniChatroomUID.toString() else ""
+    val srcWisdomUID = if (entry.srcWisdomUID != -1L) entry.srcWisdomUID.toString() else ""
+    val srcProcessUID = if (entry.srcProcessUID != -1L) entry.srcProcessUID.toString() else ""
     buildIndices(
-            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid))
+            entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid), Pair(2, srcUniChatroomUID),
+            Pair(3, srcWisdomUID), Pair(4, srcProcessUID))
   }
 
   override fun encodeToJsonString(

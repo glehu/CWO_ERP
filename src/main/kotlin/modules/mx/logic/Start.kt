@@ -89,6 +89,7 @@ suspend fun checkLogFiles() {
   Log.checkLogFile("M7", true)
   Log.checkLogFile("M7WISDOM", true)
   Log.checkLogFile("M8NOTIFICATION", true)
+  Log.checkLogFile("M9PROCESS", true)
 }
 
 fun checkModules() {
@@ -104,6 +105,7 @@ fun checkModules() {
   checkModuleDir("M7")
   checkModuleDir("M7WISDOM")
   checkModuleDir("M8NOTIFICATION")
+  checkModuleDir("M9PROCESS")
 }
 
 fun checkModuleDir(module: String) {

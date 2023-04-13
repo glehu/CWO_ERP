@@ -28,4 +28,9 @@ data class Snippet(
   var payload = ""
   var payloadType = ""
   var payloadName = ""
+  var payloadSizeMB = 0.0
+  var payloadMimeType = ""
+  var srcUniChatroomUID = -1L
+  var srcWisdomUID = -1L
+  var srcProcessUID = -1L
 }

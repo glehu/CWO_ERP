@@ -69,14 +69,14 @@ class WisdomIndexManager(override var level: Long) : IIndexManager {
     userName: String
   ) {
     entry as Wisdom
-    val knowledgeUID = entry.knowledgeUID.toString()
-    val srcWisdomUID = entry.srcWisdomUID.toString()
-    val refWisdomUID = entry.refWisdomUID.toString()
+    val knowledgeUID = if (entry.knowledgeUID != -1L) entry.knowledgeUID.toString() else ""
+    val srcWisdomUID = if (entry.srcWisdomUID != -1L) entry.srcWisdomUID.toString() else ""
+    val refWisdomUID = if (entry.refWisdomUID != -1L) entry.refWisdomUID.toString() else ""
     buildIndices(
             entry.uID, posDB, byteSize, writeToDisk, userName, Pair(1, entry.guid),
-            Pair(2, if (knowledgeUID != "-1") knowledgeUID else ""),
-            Pair(3, if (srcWisdomUID != "-1") srcWisdomUID else ""), Pair(4, entry.keywords.take(100)),
-            Pair(5, if (refWisdomUID != "-1") refWisdomUID else ""),
+            Pair(2, knowledgeUID),
+            Pair(3, srcWisdomUID), Pair(4, entry.keywords.take(100)),
+            Pair(5, refWisdomUID),
             Pair(6, if (entry.isTask) "$knowledgeUID;${entry.taskType}" else ""))
   }
 

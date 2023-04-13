@@ -58,6 +58,16 @@ class ProcessController : IModule {
     return uID
   }
 
+  fun getProcessFromGUID(processGUID: String): ProcessEvent? {
+    var processEvent: ProcessEvent? = null
+    getEntriesFromIndexSearch(
+            searchText = "^$processGUID$", ixNr = 1, showAll = true) {
+      it as ProcessEvent
+      processEvent = it
+    }
+    return processEvent
+  }
+
   enum class Mode(val toString: String) {
     /**
      * Defines a start of a process.
@@ -1138,7 +1148,7 @@ class ProcessController : IModule {
     appCall.respond(box!!.guid)
     WisdomController().notifyPlannerKnowledgeMembers(
             knowledgeGUID = knowledgeRef.guid, message = "",
-            srcUsername = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))!!.username)
+            srcUsername = user!!.username)
     return true
   }
 

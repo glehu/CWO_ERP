@@ -241,7 +241,11 @@ interface IModule {
    * @return a json serializer.
    */
   fun json(prettyPrint: Boolean): Json {
-    return Json { this.prettyPrint = prettyPrint }
+    return Json {
+      this.prettyPrint = prettyPrint
+      this.ignoreUnknownKeys = true
+      this.isLenient = true
+    }
   }
 
   /**

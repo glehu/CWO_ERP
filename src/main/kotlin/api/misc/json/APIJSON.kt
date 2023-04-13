@@ -360,7 +360,10 @@ data class UniChatroomMessages(
 data class SnippetPayload(
   val type: String,
   val payload: String = "",
-  val name: String = ""
+  val name: String = "",
+  val chatroomGUID: String = "",
+  val wisdomGUID: String = "",
+  val processGUID: String = ""
 )
 
 @Serializable
@@ -655,7 +658,7 @@ data class ProcessEntryConfig(
   var createTask: Boolean = false,
   var rowIndex: Int = 0,
 
-)
+  )
 
 @ExperimentalSerializationApi
 @InternalAPI
@@ -753,4 +756,23 @@ data class ConnectorFrame(
 data class ConnectorIncomingCall(
   var usernameToCall: String,
   var chatroomGUID: String
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class SnippetsOfUniChatroomPayload(
+  var snippets: ArrayList<SnippetLink> = arrayListOf()
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
+data class SnippetLink(
+  var url: String = "",
+  var filename: String = "",
+  var filesizeMB: Double = 0.0,
+  var filetype: String = "",
+  var filedate: String = "",
+  var guid: String = ""
 )

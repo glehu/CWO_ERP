@@ -65,6 +65,10 @@ import modules.m5.UniRole
 import modules.m5.logic.UniChatroomController
 import modules.m5messages.UniMessage
 import modules.m6.logic.SnippetBaseController
+import modules.m7knowledge.Knowledge
+import modules.m7knowledge.logic.KnowledgeController
+import modules.m7wisdom.logic.WisdomController
+import modules.m9process.logic.ProcessController
 import modules.mx.Ini
 import modules.mx.contactIndexManager
 import modules.mx.dataPath
@@ -78,6 +82,7 @@ import modules.mx.logic.encryptKeccak
 import modules.mx.maxSearchResultsGlobal
 import modules.mx.uniMessagesIndexManager
 import java.io.File
+import java.math.RoundingMode
 import java.nio.file.Paths
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -963,15 +968,68 @@ class ServerController {
           We want to compare the MB size for convenience
             -> we multiply by 0.000001 to convert B to MB
        */
-      val sizeInMB = ceil((payload.payload.length / 4).toDouble()) * 3 * 0.000001
-      if (sizeInMB > 20) {
+      var sizeInMB = ceil((payload.payload.length / 4).toDouble()) * 3 * 0.000001
+      // Round to two decimal places
+      sizeInMB = sizeInMB.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
+      // We allow for a maximum of 20.0 MB for now
+      if (sizeInMB > 20.0) {
         appCall.respond(HttpStatusCode.PayloadTooLarge)
         return
+      }
+      var srcUniChatroomUID = -1L
+      var chatroom: UniChatroom? = null
+      if (payload.chatroomGUID.isNotEmpty()) {
+        with(UniChatroomController()) {
+          chatroom = getChatroom(payload.chatroomGUID)
+          if (chatroom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          val username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username
+          if (!chatroom!!.checkIsMember(username) || chatroom!!.checkIsMemberBanned(username)) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
+          srcUniChatroomUID = chatroom!!.uID
+        }
+      }
+      var srcWisdomUID = -1L
+      val knowledgeController = KnowledgeController()
+      var knowledge: Knowledge?
+      var knowledgeChecked = false
+      if (payload.wisdomGUID.isNotEmpty()) {
+        with(WisdomController()) {
+          val wisdom = getWisdomFromGUID(payload.wisdomGUID)
+          if (wisdom == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          knowledge = knowledgeController.get(wisdom.knowledgeUID) as Knowledge
+          if (!knowledgeController.httpCanAccessKnowledge(appCall, knowledge!!, chatroom)) return
+          srcWisdomUID = wisdom.uID
+          knowledgeChecked = true
+        }
+      }
+      var srcProcessUID = -1L
+      if (payload.processGUID.isNotEmpty()) {
+        with(ProcessController()) {
+          val process = getProcessFromGUID(payload.processGUID)
+          if (process == null) {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
+          if (!knowledgeChecked) {
+            knowledge = knowledgeController.get(process.knowledgeUID) as Knowledge
+            if (!knowledgeController.httpCanAccessKnowledge(appCall, knowledge!!, chatroom)) return
+          }
+          srcProcessUID = process.uID
+        }
       }
       with(SnippetBaseController()) {
         val snippet = saveFile(
                 filename = payload.name, base64 = payload.payload, snippet = createSnippet(),
-                owner = getUsernameReversedBase(appCall), maxWidth = 1920, maxHeight = 1920)
+                owner = getUsernameReversedBase(appCall), maxWidth = 1920, maxHeight = 1920, fileSize = sizeInMB,
+                srcUniChatroomUID = srcUniChatroomUID, srcWisdomUID = srcWisdomUID, srcProcessUID = srcProcessUID)
         if (snippet == null) {
           appCall.respond(HttpStatusCode.InternalServerError)
           return
@@ -980,7 +1038,10 @@ class ServerController {
       }
     }
 
-    suspend fun getSnippetResource(appCall: ApplicationCall) {
+    suspend fun getSnippetResource(
+      appCall: ApplicationCall,
+      delete: Boolean = false
+    ) {
       val snippetGUID = appCall.parameters["snippetGUID"]
       if (snippetGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
@@ -994,11 +1055,33 @@ class ServerController {
         }
         if (snippet.payloadType.contains("file")) {
           val fileToDownload = File(Paths.get(snippet.payload).toString())
-          appCall.response.header(
-                  name = HttpHeaders.ContentDisposition, value = ContentDisposition.Attachment.withParameter(
-                  key = ContentDisposition.Parameters.FileName, value = snippet.payloadName).toString())
-          appCall.respondFile(fileToDownload)
-          return
+          if (fileToDownload.isFile) {
+            if (!delete) {
+              appCall.response.header(
+                      name = HttpHeaders.ContentDisposition, value = ContentDisposition.Attachment.withParameter(
+                      key = ContentDisposition.Parameters.FileName, value = snippet.payloadName).toString())
+              appCall.respondFile(fileToDownload)
+              return
+            } else {
+              if (fileToDownload.delete()) {
+                // Remove snippet from index
+                snippet.guid = ""
+                snippet.srcUniChatroomUID = -1L
+                snippet.srcWisdomUID = -1L
+                snippet.srcProcessUID = -1L
+                saveResource(snippet)
+                // Feedback
+                appCall.respond(HttpStatusCode.OK)
+                return
+              } else {
+                appCall.respond(HttpStatusCode.Conflict)
+                return
+              }
+            }
+          } else {
+            appCall.respond(HttpStatusCode.NotFound)
+            return
+          }
         } else {
           appCall.respond(HttpStatusCode.BadRequest)
           return

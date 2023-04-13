@@ -17,6 +17,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import modules.m5.UniChatroom
 import modules.m5.logic.UniChatroomController
 import modules.m7knowledge.Knowledge
 import modules.m7wisdom.WisdomCategory
@@ -168,12 +169,13 @@ class KnowledgeController : IModule {
    */
   suspend fun httpCanAccessKnowledge(
     appCall: ApplicationCall,
-    knowledgeRef: Knowledge
+    knowledgeRef: Knowledge,
+    chatroomRef: UniChatroom? = null
   ): Boolean {
     if (knowledgeRef.isPrivate) {
       if (knowledgeRef.mainChatroomGUID.isNotEmpty()) {
         with(UniChatroomController()) {
-          val chatroom = getChatroom(knowledgeRef.mainChatroomGUID)
+          val chatroom = chatroomRef ?: getChatroom(knowledgeRef.mainChatroomGUID)
           if (chatroom == null) {
             appCall.respond(HttpStatusCode.Conflict)
             return false

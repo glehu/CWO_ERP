@@ -71,6 +71,7 @@ import modules.m5.logic.UniChatroomController
 import modules.m5.logic.getBadges
 import modules.m5.logic.giveMessagesBadges
 import modules.m5.logic.handleUpgradeUniChatroomRequest
+import modules.m6.logic.SnippetBaseController
 import modules.m7knowledge.logic.KnowledgeController
 import modules.m7wisdom.logic.WisdomController
 import modules.m8notification.logic.NotificationController
@@ -155,6 +156,7 @@ class Server : IModule {
         prettyPrint = true
         isLenient = true
         encodeDefaults = true
+        ignoreUnknownKeys = true
       })
     }
     install(Authentication) {
@@ -269,28 +271,6 @@ class Server : IModule {
         }
         route("/api") {
           // General Endpoints
-          /*
-          getIndexSelection(
-                  discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
-                  itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
-                  knowledgeIndexManager!!, wisdomIndexManager!!)
-          getEntry(
-                  discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
-                  itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
-                  knowledgeIndexManager!!, wisdomIndexManager!!)
-          saveEntry(
-                  discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
-                  itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
-                  knowledgeIndexManager!!, wisdomIndexManager!!)
-          getEntryLock(
-                  discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
-                  itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
-                  knowledgeIndexManager!!, wisdomIndexManager!!)
-          setEntryLock(
-                  discographyIndexManager!!, contactIndexManager!!, invoiceIndexManager!!, itemIndexManager!!,
-                  itemStockPostingIndexManager!!, uniChatroomIndexManager!!, snippetBaseIndexManager!!,
-                  knowledgeIndexManager!!, wisdomIndexManager!!)
-           */
           sendEMail()
           // M2 Endpoints (Contacts)
           changeUsername()
@@ -341,6 +321,10 @@ class Server : IModule {
           getBadges()
           // M6 Endpoints (SnippetBase)
           saveSnippetImage()
+          deleteSnippetImage()
+          retrieveSnippetsOfUniChatroom()
+          retrieveSnippetsOfWisdom()
+          retrieveSnippetsOfProcess()
           // M7 Endpoints (Knowledge)
           getKnowledge()
           createKnowledge()
@@ -751,9 +735,48 @@ class Server : IModule {
     }
   }
 
+  private fun Route.retrieveSnippetsOfUniChatroom() {
+    get("m6/clarifier/{uniChatroomGUID}") {
+      val uniChatroomGUID = call.parameters["uniChatroomGUID"]
+      if (uniChatroomGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      } else {
+        SnippetBaseController().httpGetSnippetsOfUniChatroom(call, uniChatroomGUID)
+      }
+    }
+  }
+
+  private fun Route.retrieveSnippetsOfWisdom() {
+    get("m6/wisdom/{wisdomGUID}") {
+      val wisdomGUID = call.parameters["wisdomGUID"]
+      if (wisdomGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      } else {
+        SnippetBaseController().httpGetSnippetsOfWisdom(call, wisdomGUID)
+      }
+    }
+  }
+
+  private fun Route.retrieveSnippetsOfProcess() {
+    get("m6/process/{processGUID}") {
+      val processGUID = call.parameters["processGUID"]
+      if (processGUID.isNullOrEmpty()) {
+        call.respond(HttpStatusCode.BadRequest)
+      } else {
+        SnippetBaseController().httpGetSnippetsOfProcess(call, processGUID)
+      }
+    }
+  }
+
   private fun Route.getSnippetImage() {
     get("m6/get/{snippetGUID}") {
       ServerController.getSnippetResource(call)
+    }
+  }
+
+  private fun Route.deleteSnippetImage() {
+    get("m6/del/{snippetGUID}") {
+      ServerController.getSnippetResource(call, true)
     }
   }
 

@@ -79,6 +79,26 @@ class WisdomController : IModule {
     return uID
   }
 
+  fun getWisdomFromGUID(wisdomGUID: String): Wisdom? {
+    var wisdom: Wisdom? = null
+    getEntriesFromIndexSearch(
+            searchText = "^$wisdomGUID$", ixNr = 1, showAll = true) {
+      it as Wisdom
+      wisdom = it
+    }
+    return wisdom
+  }
+
+  fun getKnowledgeFromGUID(knowledgeGUID: String): Knowledge? {
+    var knowledgeRef: Knowledge? = null
+    KnowledgeController().getEntriesFromIndexSearch(
+            searchText = "^${knowledgeGUID}$", ixNr = 1, showAll = true) {
+      it as Knowledge
+      knowledgeRef = it
+    }
+    return knowledgeRef
+  }
+
   suspend fun httpCreateQuestion(
     appCall: ApplicationCall,
     config: WisdomQuestionCreation,
@@ -1221,11 +1241,15 @@ class WisdomController : IModule {
     val payload = CategoriesPayload()
     var categoryDecoded: WisdomCategory
     var foundTmp: Boolean
+    val json = Json {
+      isLenient = true
+      ignoreUnknownKeys = true
+    }
     getEntriesFromIndexSearch(
             searchText = indexQuery, ixNr = indexNumber, showAll = true) {
       it as Wisdom
       for (category in it.categories) {
-        categoryDecoded = Json.decodeFromString(category)
+        categoryDecoded = json.decodeFromString(category)
         foundTmp = false
         if (payload.categories.isNotEmpty()) {
           for (cat in payload.categories) {
