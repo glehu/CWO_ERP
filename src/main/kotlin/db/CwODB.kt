@@ -45,9 +45,9 @@ class CwODB {
            */
           if (posDB > -1L && !canOverride) {
             val emptyEntry = ByteArray(byteSize)
-            val emptyRaf = openRandomFileAccess(module, RafMode.READWRITE)
+            val emptyRaf = openRandomAccessFile(module, RafMode.READWRITE)
             writeDBEntry(emptyEntry, posDB, emptyRaf)
-            closeRandomFileAccess(emptyRaf)
+            closeRandomAccessFile(emptyRaf)
           }
         }
       }
@@ -76,7 +76,7 @@ class CwODB {
       if (maxSearchResults > 0 && paginationIndex >= 0) toSkip += maxSearchResults * paginationIndex
       try {
         if (getDatabaseFile(module).isFile) {
-          val raf: RandomAccessFile = openRandomFileAccess(module, RafMode.READ)
+          val raf: RandomAccessFile = openRandomAccessFile(module, RafMode.READ)
           val filteredSet: Set<Long>
           // Check if we are looking at every index
           if (!exactSearch) {
@@ -136,10 +136,10 @@ class CwODB {
     ): ByteArray {
       lateinit var entryBytes: ByteArray
       if (getDatabaseFile(indexManager.module).isFile) {
-        val raf: RandomAccessFile = openRandomFileAccess(indexManager.module, RafMode.READ)
+        val raf: RandomAccessFile = openRandomAccessFile(indexManager.module, RafMode.READ)
         val indexContent = indexManager.getBaseIndex(uID) ?: return byteArrayOf()
         entryBytes = readDBEntry(indexContent.pos, indexContent.byteSize, raf)
-        closeRandomFileAccess(raf)
+        closeRandomAccessFile(raf)
       }
       return entryBytes
     }
@@ -153,7 +153,7 @@ class CwODB {
      * The usage has to be declared by providing one of the RafModes (READ, WRITE or READWRITE)
      * @return a RandomAccessFile instance
      */
-    fun openRandomFileAccess(
+    fun openRandomAccessFile(
       module: String,
       mode: RafMode
     ): RandomAccessFile {
@@ -168,7 +168,7 @@ class CwODB {
     /**
      * Used to close a previously created instance of a RandomAccessFile.
      */
-    fun closeRandomFileAccess(randAccessFile: RandomAccessFile) {
+    fun closeRandomAccessFile(randAccessFile: RandomAccessFile) {
       randAccessFile.close()
     }
 

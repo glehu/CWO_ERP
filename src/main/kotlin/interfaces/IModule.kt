@@ -49,7 +49,7 @@ interface IModule {
     unlock: Boolean = true
   ): Long {
     val indexManager = getIndexManager()!!
-    val rafLocal = raf ?: CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
+    val rafLocal = raf ?: CwODB.openRandomAccessFile(module, CwODB.CwODB.RafMode.READWRITE)
     var posDB: Long = -1L
     var byteSize: Int = -1
     if (entry.uID != -1L) {
@@ -66,7 +66,7 @@ interface IModule {
     val posDBX: Long = posDBXt
     val byteSizeX: Int = byteSizeXt
     indexManager.indexEntry(entry, posDBX, byteSizeX, indexWriteToDisk, "")
-    if (raf == null) CwODB.closeRandomFileAccess(rafLocal)
+    if (raf == null) CwODB.closeRandomAccessFile(rafLocal)
     val uID: Long = entry.uID
     //Unlock the entry
     if (unlock) getIndexManager()!!.setEntryLock(uID, false)

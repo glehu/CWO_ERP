@@ -505,7 +505,8 @@ data class WisdomReferencesResponse(
   val tasks: ArrayList<Wisdom> = arrayListOf(),
   val questions: ArrayList<Wisdom> = arrayListOf(),
   val lessons: ArrayList<Wisdom> = arrayListOf(),
-  val processes: ArrayList<ProcessEvent> = arrayListOf()
+  val processes: ArrayList<ProcessEvent> = arrayListOf(),
+  var srcWisdom: Wisdom? = null
 )
 
 @ExperimentalSerializationApi
@@ -748,6 +749,7 @@ data class ConnectorFrame(
   var chatroomGUID: String = "",
   var wisdomGUID: String = "",
   var processGUID: String = "",
+  var receiveAction: String = ""
 )
 
 @ExperimentalSerializationApi

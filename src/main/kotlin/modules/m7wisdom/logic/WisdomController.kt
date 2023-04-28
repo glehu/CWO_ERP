@@ -152,6 +152,9 @@ class WisdomController : IModule {
     question.copyContent = config.copyContent
     saveEntry(question)
     appCall.respond(question.guid)
+    if (edit) {
+      notifyKnowledgeMembers(knowledgeRef!!.guid, "", user!!.username, "wisdom change", question.guid)
+    }
   }
 
   suspend fun httpCreateAnswer(
@@ -202,6 +205,28 @@ class WisdomController : IModule {
     answer.copyContent = config.copyContent
     saveEntry(answer)
     appCall.respond(answer.guid)
+    val knowledgeRef = KnowledgeController().load(wisdomRef!!.knowledgeUID) as Knowledge
+    if (!wisdomRef!!.isTask) {
+      if (wisdomRef!!.authorUsername != user!!.username) {
+        val notification = Notification(-1, wisdomRef!!.authorUsername)
+        notification.title = "${user.username} answered!"
+        notification.authorUsername = "_server"
+        if (wisdomRef!!.type != "comment") {
+          notification.description = "${user.username} has answered \"${wisdomRef!!.title.trim()}\""
+        } else {
+          notification.description = "${user.username} has answered your question!"
+        }
+        notification.hasClickAction = true
+        notification.clickAction = "open,wisdom"
+        notification.clickActionReferenceGUID = wisdomRef!!.guid
+        NotificationController().saveEntry(notification)
+        Connector.sendFrame(
+                username = wisdomRef!!.authorUsername, frame = ConnectorFrame(
+                type = "notification", msg = notification.description, date = Timestamp.now(),
+                obj = Json.encodeToString(notification), srcUsername = user.username, wisdomGUID = wisdomRef!!.guid))
+      }
+      notifyKnowledgeMembers(knowledgeRef.guid, "", user.username, "wisdom change", wisdomRef!!.guid)
+    }
   }
 
   suspend fun httpCreateLesson(
@@ -267,7 +292,7 @@ class WisdomController : IModule {
                               authorUsername = user!!.username)))
       saveEntry(lesson)
       appCall.respond(lesson.guid)
-      if (lesson.isTask) notifyPlannerKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
+      if (lesson.isTask) notifyKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
       return
     }
     // If mode was set to "due", update the due dates only and fix them while doing so
@@ -290,7 +315,11 @@ class WisdomController : IModule {
                               authorUsername = user!!.username)))
       saveEntry(lesson)
       appCall.respond(lesson.guid)
-      if (lesson.isTask) notifyPlannerKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
+      if (lesson.isTask) {
+        notifyKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
+      } else {
+        notifyKnowledgeMembers(knowledgeRef!!.guid, "", user.username, "wisdom change", lesson.guid)
+      }
       return
     }
     // If mode was set to "edit", update some human-entered fields only.
@@ -308,7 +337,11 @@ class WisdomController : IModule {
                               authorUsername = user!!.username)))
       saveEntry(lesson)
       appCall.respond(lesson.guid)
-      if (lesson.isTask) notifyPlannerKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
+      if (lesson.isTask) {
+        notifyKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
+      } else {
+        notifyKnowledgeMembers(knowledgeRef!!.guid, "", user.username, "wisdom change", lesson.guid)
+      }
       return
     }
     // Meta
@@ -395,7 +428,7 @@ class WisdomController : IModule {
     }
     saveEntry(lesson)
     appCall.respond(lesson.guid)
-    if (lesson.isTask) notifyPlannerKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
+    if (lesson.isTask) notifyKnowledgeMembers(knowledgeRef!!.guid, "", user.username)
   }
 
   suspend fun httpCreateComment(
@@ -464,9 +497,11 @@ class WisdomController : IModule {
                 type = "notification", msg = notification.description, date = Timestamp.now(),
                 obj = Json.encodeToString(notification), srcUsername = user.username, wisdomGUID = wisdomRef!!.guid))
       }
+      val knowledgeRef = KnowledgeController().load(wisdomRef!!.knowledgeUID) as Knowledge
       if (wisdomRef!!.isTask) {
-        val knowledgeRef = KnowledgeController().load(wisdomRef!!.knowledgeUID) as Knowledge
-        notifyPlannerKnowledgeMembers(knowledgeRef.guid, "", user.username)
+        notifyKnowledgeMembers(knowledgeRef.guid, "", user.username)
+      } else {
+        notifyKnowledgeMembers(knowledgeRef.guid, "", user.username, "wisdom change", wisdomRef!!.guid)
       }
     }
   }
@@ -632,7 +667,8 @@ class WisdomController : IModule {
               // Remove line breaks as this could lead to broken design
               description = description.replace("(\r\n|\r|\n)".toRegex(), " ")
               // Remove mermaid markdown graphs since they can only exist as a whole, which might be too much to show
-              description = description.replace(regex = """```.*(```)?""".toRegex(), replacement = "")
+              description = description.replace(
+                      regex = """```.*(```)?""".toRegex(), replacement = """ `(Formatted Text / Code)  `""")
               if (truncated) description = "$description..."
               it.description = description
             }
@@ -825,7 +861,10 @@ class WisdomController : IModule {
       it as ProcessEvent
       response.processes.add(it)
     }
-
+    if (wisdomRef!!.srcWisdomUID != -1L) {
+      val srcWisdom = get(wisdomRef!!.srcWisdomUID) as Wisdom
+      response.srcWisdom = srcWisdom
+    }
     appCall.respond(response)
   }
 
@@ -896,7 +935,7 @@ class WisdomController : IModule {
     appCall.respond(HttpStatusCode.OK)
     if (isTask) {
       val knowledgeRef = KnowledgeController().load(knowledgeUID) as Knowledge
-      notifyPlannerKnowledgeMembers(
+      notifyKnowledgeMembers(
               knowledgeGUID = knowledgeRef.guid, message = "",
               srcUsername = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))!!.username)
     }
@@ -1094,9 +1133,11 @@ class WisdomController : IModule {
     wisdom!!.history.add(Json.encodeToString(historyEntry))
     saveEntry(wisdom!!)
     appCall.respond(HttpStatusCode.OK)
+    val knowledgeRef = KnowledgeController().load(wisdom!!.knowledgeUID) as Knowledge
     if (wisdom!!.isTask) {
-      val knowledgeRef = KnowledgeController().load(wisdom!!.knowledgeUID) as Knowledge
-      notifyPlannerKnowledgeMembers(knowledgeRef.guid, "", user.username)
+      notifyKnowledgeMembers(knowledgeRef.guid, "", user.username)
+    } else {
+      notifyKnowledgeMembers(knowledgeRef.guid, "", user.username, "wisdom change", wisdomGUID = wisdom!!.guid)
     }
   }
 
@@ -1185,7 +1226,7 @@ class WisdomController : IModule {
     if (wisdom!!.isTask) {
       val knowledgeRef = KnowledgeController().load(wisdom!!.knowledgeUID) as Knowledge
       val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
-      notifyPlannerKnowledgeMembers(knowledgeRef.guid, "", user!!.username)
+      notifyKnowledgeMembers(knowledgeRef.guid, "", user!!.username)
     }
   }
 
@@ -1265,10 +1306,12 @@ class WisdomController : IModule {
     appCall.respond(payload)
   }
 
-  suspend fun notifyPlannerKnowledgeMembers(
+  suspend fun notifyKnowledgeMembers(
     knowledgeGUID: String,
     message: String,
-    srcUsername: String
+    srcUsername: String,
+    type: String = "planner change",
+    wisdomGUID: String = ""
   ) {
     var knowledgeRef: Knowledge? = null
     KnowledgeController().getEntriesFromIndexSearch(
@@ -1280,12 +1323,16 @@ class WisdomController : IModule {
     if (knowledgeRef!!.mainChatroomGUID.isEmpty()) return
     val chatroom = UniChatroomController().getChatroom(knowledgeRef!!.mainChatroomGUID) ?: return
     var username: String
+    val json = Json {
+      isLenient = true
+      ignoreUnknownKeys = true
+    }
     chatroom.members.forEach {
-      username = Json.decodeFromString<UniMember>(it).username
+      username = json.decodeFromString<UniMember>(it).username
       if (username != srcUsername) {
         Connector.sendFrame(
                 username = username, frame = ConnectorFrame(
-                type = "planner change", msg = message, date = Timestamp.now(), srcUsername = srcUsername))
+                type = type, msg = message, date = Timestamp.now(), srcUsername = srcUsername, wisdomGUID = wisdomGUID))
       }
     }
   }

@@ -111,21 +111,24 @@ class SnippetBaseController : IModule, IWebApp {
     fileSize: Double = 0.0,
     srcUniChatroomUID: Long? = -1L,
     srcWisdomUID: Long? = -1L,
-    srcProcessUID: Long? = -1L
+    srcProcessUID: Long? = -1L,
+    forceFileExtension: String? = null,
+    forceMimeType: String? = null
   ): Snippet? {
-    // Get Bytes from Base64 String
-    val strings: List<String> = base64.split(",")
-    val mimeType = strings[0]
-    val decoder = Base64.getDecoder()
-    val decodedBytes: ByteArray = decoder.decode(strings[1])
-    // Get the file extension
-    val fileExtension: String = getFileExtensionToMimeType(mimeType) ?: return null
-    // Get the file size
-    val sizeInMB: Double = if (fileSize > 0.0) {
-      fileSize
-    } else {
-      // Trigger Warning: Maths
-      /* We calculate the file size with the following formula:
+    try {
+      // Get Bytes from Base64 String
+      val strings: List<String> = base64.split(",")
+      val mimeType = forceMimeType ?: strings[0]
+      val decoder = Base64.getDecoder()
+      val decodedBytes: ByteArray = decoder.decode(strings[1])
+      // Get the file extension
+      val fileExtension: String = forceFileExtension ?: (getFileExtensionToMimeType(mimeType) ?: return null)
+      // Get the file size
+      val sizeInMB: Double = if (fileSize > 0.0) {
+        fileSize
+      } else {
+        // Trigger Warning: Maths
+        /* We calculate the file size with the following formula:
           Math.Ceiling(base64 / 4) * 3 * 0.000001
         Explanation:
           Base64 String is 133,33% bigger (usually) than the true file size
@@ -133,56 +136,61 @@ class SnippetBaseController : IModule, IWebApp {
           We want to compare the MB size for convenience
             -> we multiply by 0.000001 to convert B to MB
        */
-      ceil((base64.length / 4).toDouble()) * 3 * 0.000001
+        ceil((base64.length / 4).toDouble()) * 3 * 0.000001
+      }
+      val nameOfFile: String
+      if (filename.isNotEmpty()) {
+        nameOfFile = filename.take(100).replace('.', '-').replace(' ', '-') + '-' + snippet.guid
+        snippet.payloadName = filename
+        if (!snippet.payloadName.endsWith(fileExtension)) {
+          snippet.payloadName += ".$fileExtension"
+        }
+      } else {
+        nameOfFile = snippet.guid
+        snippet.payloadName = snippet.guid + '.' + fileExtension
+      }
+      val file = getProjectJsonFile(owner, nameOfFile, extension = fileExtension)
+      // Create the resource and save it to the disk
+      if (mimeType.contains("image") && !mimeType.contains("gif")) {
+        var image = withContext(Dispatchers.IO) {
+          ImageIO.read(ByteArrayInputStream(decodedBytes))
+        }
+        // Resizing necessary?
+        if (maxWidth != null && maxWidth > 0) {
+          val maxTrueHeight = if (maxHeight == null || maxHeight < 1) {
+            maxWidth
+          } else maxHeight
+          image = Scalr.resize(
+                  image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, maxWidth, maxTrueHeight, Scalr.OP_ANTIALIAS)
+        }
+        withContext(Dispatchers.IO) {
+          ImageIO.write(image, fileExtension, file)
+          image.flush() // Flush to free system resources
+        }
+      } else {
+        // Write Bytes to File
+        withContext(Dispatchers.IO) {
+          val fos = FileOutputStream(file)
+          fos.write(decodedBytes)
+          fos.flush()
+          fos.close()
+        }
+      }
+      //Update Snippet
+      snippet.payloadType = "url:file"
+      snippet.payload = file.absolutePath
+      snippet.payloadSizeMB = sizeInMB.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
+      if (srcUniChatroomUID != null && srcUniChatroomUID != 1L) snippet.srcUniChatroomUID = srcUniChatroomUID
+      if (srcWisdomUID != null && srcWisdomUID != 1L) snippet.srcWisdomUID = srcWisdomUID
+      if (srcProcessUID != null && srcProcessUID != 1L) snippet.srcProcessUID = srcProcessUID
+      snippet.payloadMimeType = mimeType
+      // Save and return
+      saveResource(snippet)
+    } catch (e: Exception) {
+      log(
+              type = Log.Type.ERROR, text = e.message ?: "Profile picture could not be saved (unknown error occurred)",
+              apiEndpoint = "m5/setmemberimage/ or m5/setmemberbanner/")
     }
-    val nameOfFile: String
-    if (filename.isNotEmpty()) {
-      nameOfFile = filename.take(100).replace('.', '-').replace(' ', '-') + '-' + snippet.guid
-      snippet.payloadName = filename
-      if (!snippet.payloadName.endsWith(fileExtension)) {
-        snippet.payloadName += ".$fileExtension"
-      }
-    } else {
-      nameOfFile = snippet.guid
-      snippet.payloadName = snippet.guid + '.' + fileExtension
-    }
-    val file = getProjectJsonFile(owner, nameOfFile, extension = fileExtension)
-    // Create the resource and save it to the disk
-    if (mimeType.contains("image") && !mimeType.contains("gif")) {
-      var image = withContext(Dispatchers.IO) {
-        ImageIO.read(ByteArrayInputStream(decodedBytes))
-      }
-      // Resizing necessary?
-      if (maxWidth != null && maxWidth > 0) {
-        val maxTrueHeight = if (maxHeight == null || maxHeight < 1) {
-          maxWidth
-        } else maxHeight
-        image = Scalr.resize(
-                image, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, maxWidth, maxTrueHeight, Scalr.OP_ANTIALIAS)
-      }
-      withContext(Dispatchers.IO) {
-        ImageIO.write(image, fileExtension, file)
-        image.flush() // Flush to free system resources
-      }
-    } else {
-      // Write Bytes to File
-      withContext(Dispatchers.IO) {
-        val fos = FileOutputStream(file)
-        fos.write(decodedBytes)
-        fos.flush()
-        fos.close()
-      }
-    }
-    //Update Snippet
-    snippet.payloadType = "url:file"
-    snippet.payload = file.absolutePath
-    snippet.payloadSizeMB = sizeInMB.toBigDecimal().setScale(2, RoundingMode.UP).toDouble()
-    if (srcUniChatroomUID != null && srcUniChatroomUID != 1L) snippet.srcUniChatroomUID = srcUniChatroomUID
-    if (srcWisdomUID != null && srcWisdomUID != 1L) snippet.srcWisdomUID = srcWisdomUID
-    if (srcProcessUID != null && srcProcessUID != 1L) snippet.srcProcessUID = srcProcessUID
-    snippet.payloadMimeType = mimeType
-    // Save and return
-    saveResource(snippet)
     return snippet
   }
 

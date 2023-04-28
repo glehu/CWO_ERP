@@ -1059,7 +1059,7 @@ class ProcessController : IModule {
     appCall: ApplicationCall,
     processEvent: ProcessEvent
   ): Boolean {
-    val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))
+    val user = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall)) ?: return false
     val knowledgeController = KnowledgeController()
     val knowledgeRef: Knowledge
     try {
@@ -1084,7 +1084,7 @@ class ProcessController : IModule {
           box = Wisdom(-1)
           box.type = "box"
           box.knowledgeUID = knowledgeRef.uID
-          box.authorUsername = user!!.username
+          box.authorUsername = user.username
           if (segment.event.title.isNotEmpty()) {
             box.title = segment.event.title
           } else {
@@ -1105,6 +1105,7 @@ class ProcessController : IModule {
           segment.event = get(segment.event.uID) as ProcessEvent
           segment.event.taskWisdomUID = boxUID
           saveEntry(segment.event)
+          checkEventTask(segment.event, knowledgeRef, box, user, wisdomController)
         } else {
           // Box exists -> Retrieve and update it
           try {
@@ -1120,6 +1121,7 @@ class ProcessController : IModule {
               box.description = "(No Description)"
             }
             boxUID = wisdomController.saveEntry(box)
+            checkEventTask(segment.event, knowledgeRef, box, user, wisdomController)
           } catch (e: Exception) {
             appCall.respond(HttpStatusCode.BadRequest)
             return true
@@ -1127,7 +1129,7 @@ class ProcessController : IModule {
         }
         if (segment.alternatives.isNotEmpty()) {
           for (altEvent in segment.alternatives) {
-            checkEventTask(altEvent.event, knowledgeRef, box, user!!, wisdomController)
+            checkEventTask(altEvent.event, knowledgeRef, box, user, wisdomController)
           }
         }
         continue
@@ -1138,7 +1140,7 @@ class ProcessController : IModule {
         appCall.respond(HttpStatusCode.ExpectationFailed)
         return true
       }
-      checkEventTask(segment.event, knowledgeRef, box, user!!, wisdomController)
+      checkEventTask(segment.event, knowledgeRef, box, user, wisdomController)
       if (segment.alternatives.isNotEmpty()) {
         for (altEvent in segment.alternatives) {
           checkEventTask(altEvent.event, knowledgeRef, box, user, wisdomController)
@@ -1146,9 +1148,8 @@ class ProcessController : IModule {
       }
     }
     appCall.respond(box!!.guid)
-    WisdomController().notifyPlannerKnowledgeMembers(
-            knowledgeGUID = knowledgeRef.guid, message = "",
-            srcUsername = user!!.username)
+    WisdomController().notifyKnowledgeMembers(
+            knowledgeGUID = knowledgeRef.guid, message = "", srcUsername = user.username)
     return true
   }
 

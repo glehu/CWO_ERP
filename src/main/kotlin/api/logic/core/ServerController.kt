@@ -935,14 +935,42 @@ class ServerController {
             return
           }
           with(SnippetBaseController()) {
+            val maxWidth = if (isBanner) {
+              1920
+            } else {
+              300
+            }
+            val maxHeight = if (isBanner) {
+              1080
+            } else {
+              300
+            }
             val snippet = saveFile(
                     filename = "", base64 = config.imageBase64, snippet = createSnippet(),
-                    owner = getUsernameReversedBase(appCall), maxWidth = 300, maxHeight = 300)
+                    owner = getUsernameReversedBase(appCall), maxWidth = maxWidth, maxHeight = maxHeight)
             if (snippet == null) {
               appCall.respond(HttpStatusCode.InternalServerError)
               return
             }
-            if (!isBanner) uniChatroom.addOrUpdateMember(config.username, imageSnippetURL = snippet.guid)
+            if (!isBanner) {
+              // Did we save a GIF as the profile picture?
+              if (snippet.payloadMimeType.contains("image/gif")) {
+                // Yes => save it again as a .jpg to have both the animated and static images
+                val snippetStatic = saveFile(
+                        filename = "", base64 = config.imageBase64, snippet = createSnippet(),
+                        owner = getUsernameReversedBase(appCall),
+                        forceFileExtension = "png", forceMimeType = "data:image/png;base64")
+                if (snippetStatic == null) {
+                  appCall.respond(HttpStatusCode.InternalServerError)
+                  return
+                }
+                uniChatroom.addOrUpdateMember(config.username, imageSnippetURL = snippetStatic.guid)
+                uniChatroom.addOrUpdateMember(config.username, imageSnippetAnimatedURL = snippet.guid)
+              } else {
+                uniChatroom.addOrUpdateMember(config.username, imageSnippetURL = snippet.guid)
+                uniChatroom.addOrUpdateMember(config.username, imageSnippetAnimatedURL = "")
+              }
+            }
             if (isBanner) uniChatroom.addOrUpdateMember(config.username, bannerSnippetURL = snippet.guid)
           }
           saveChatroom(uniChatroom)

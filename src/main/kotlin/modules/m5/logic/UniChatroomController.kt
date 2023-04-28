@@ -124,7 +124,8 @@ class UniChatroomController : IModule {
     fcmToken: String? = null,
     pubKeyPEM: String? = null,
     imageSnippetURL: String? = null,
-    bannerSnippetURL: String? = null
+    bannerSnippetURL: String? = null,
+    imageSnippetAnimatedURL: String? = null
   ): Boolean {
     if (username.isEmpty()) return false
     // Does the member already exist in the Clarifier Session?
@@ -148,6 +149,7 @@ class UniChatroomController : IModule {
       if (!fcmToken.isNullOrEmpty()) member.subscribeFCM(fcmToken)
       if (!pubKeyPEM.isNullOrEmpty()) member.addRSAPubKeyPEM(pubKeyPEM)
       if (!imageSnippetURL.isNullOrEmpty()) member.imageURL = imageSnippetURL
+      if (imageSnippetAnimatedURL != null) member.imageURLAnimated = imageSnippetAnimatedURL
       if (!bannerSnippetURL.isNullOrEmpty()) member.bannerURL = bannerSnippetURL
       // Save
       this.members[indexAt] = json.encodeToString(member)
@@ -158,6 +160,7 @@ class UniChatroomController : IModule {
       if (!fcmToken.isNullOrEmpty()) member.subscribeFCM(fcmToken)
       if (!pubKeyPEM.isNullOrEmpty()) member.addRSAPubKeyPEM(pubKeyPEM)
       if (!imageSnippetURL.isNullOrEmpty()) member.imageURL = imageSnippetURL
+      if (!imageSnippetAnimatedURL.isNullOrEmpty()) member.imageURLAnimated = imageSnippetAnimatedURL
       if (!bannerSnippetURL.isNullOrEmpty()) member.bannerURL = bannerSnippetURL
       // Save
       this.members.add(json.encodeToString(member))
@@ -495,30 +498,30 @@ class UniChatroomController : IModule {
       // Ignore self
       if (member.username != username) {
         for (roleJson in member.roles) {
-          if (Json.decodeFromString<UniRole>(roleJson).name.uppercase() == "OWNER") {
-            val notificationController = NotificationController()
-            val notification = Notification(-1, member.username)
-            if (uniChatroom.type == "direct") {
-              notification.title = "Friend Request Accepted!"
+          // if (Json.decodeFromString<UniRole>(roleJson).name.uppercase() == "OWNER") {
+          val notificationController = NotificationController()
+          val notification = Notification(-1, member.username)
+          if (uniChatroom.type == "direct") {
+            notification.title = "Friend Request Accepted!"
+          } else {
+            notification.title = "New member!"
+            if (uniChatroom.title.isNotEmpty()) {
+              notification.description = "$username has joined ${uniChatroom.title}!"
             } else {
-              notification.title = "New member!"
-              if (uniChatroom.title.isNotEmpty()) {
-                notification.description = "$username has joined ${uniChatroom.title}!"
-              } else {
-                notification.description = "$username has joined!"
-              }
+              notification.description = "$username has joined!"
             }
-            notification.authorUsername = "_server"
-            notification.hasClickAction = true
-            notification.clickAction = "open,group"
-            notification.clickActionReferenceGUID = uniChatroom.chatroomGUID
-            notificationController.saveEntry(notification)
-            Connector.sendFrame(
-                    username = member.username, frame = ConnectorFrame(
-                    type = "notification", msg = notification.description, date = now(),
-                    obj = Json.encodeToString(notification), srcUsername = username,
-                    chatroomGUID = uniChatroom.chatroomGUID))
           }
+          notification.authorUsername = "_server"
+          notification.hasClickAction = true
+          notification.clickAction = "open,group"
+          notification.clickActionReferenceGUID = uniChatroom.chatroomGUID
+          notificationController.saveEntry(notification)
+          Connector.sendFrame(
+                  username = member.username, frame = ConnectorFrame(
+                  type = "notification", msg = notification.description, date = now(),
+                  obj = Json.encodeToString(notification), srcUsername = username,
+                  chatroomGUID = uniChatroom.chatroomGUID, receiveAction = "load,members"))
+          // }
         }
       }
     }

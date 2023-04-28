@@ -31,6 +31,9 @@ data class UniMember(
   @SerialName("burl")
   var bannerURL = ""
 
+  @SerialName("iurla")
+  var imageURLAnimated = ""
+
   init {
     if (id.isEmpty()) id = Uuid.randomUUID().toString()
   }

@@ -23,7 +23,7 @@ class DiscographyBenchmark : IModule {
 
   suspend fun insertRandomEntries(amount: Int) {
     log(Log.Type.INFO, "Benchmark entry insertion start")
-    val raf = CwODB.openRandomFileAccess(module, CwODB.CwODB.RafMode.READWRITE)
+    val raf = CwODB.openRandomAccessFile(module, CwODB.CwODB.RafMode.READWRITE)
     val timeInMillis = measureTimeMillis {
       for (i in 1..amount) {
         val song = Song(-1, getRandomGenre())
@@ -42,7 +42,7 @@ class DiscographyBenchmark : IModule {
         }
       }
     }
-    CwODB.closeRandomFileAccess(raf)
+    CwODB.closeRandomAccessFile(raf)
     log(Log.Type.INFO, "Benchmark entry insertion end (${timeInMillis / 1000} sec)")
   }
 
