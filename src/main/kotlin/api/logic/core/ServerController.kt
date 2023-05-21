@@ -810,8 +810,8 @@ class ServerController {
     fun getUsernameReversedBase(appCall: ApplicationCall): String {
       val username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username
       val usernameReversed = username.reversed()
-      val usernameBase = Base64.getUrlEncoder().encodeToString(usernameReversed.toByteArray())
-      return java.net.URLEncoder.encode(usernameBase.replace('=', Character.MIN_VALUE), "utf-8")
+      val usernameBase = Base64.getUrlEncoder().encodeToString(usernameReversed.toByteArray()).replace("=", "")
+      return java.net.URLEncoder.encode(usernameBase, "utf-8")
     }
 
     suspend fun setFirebaseCloudMessagingSubscription(
@@ -958,8 +958,8 @@ class ServerController {
                 // Yes => save it again as a .jpg to have both the animated and static images
                 val snippetStatic = saveFile(
                         filename = "", base64 = config.imageBase64, snippet = createSnippet(),
-                        owner = getUsernameReversedBase(appCall),
-                        forceFileExtension = "png", forceMimeType = "data:image/png;base64")
+                        owner = getUsernameReversedBase(appCall), forceFileExtension = "png",
+                        forceMimeType = "data:image/png;base64")
                 if (snippetStatic == null) {
                   appCall.respond(HttpStatusCode.InternalServerError)
                   return

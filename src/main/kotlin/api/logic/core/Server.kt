@@ -1,7 +1,6 @@
 package api.logic.core
 
 import api.logic.webapps.Mockingbird
-import api.logic.webapps.WebPlanner
 import api.misc.json.EMailJson
 import api.misc.json.FirebaseCloudMessagingSubscription
 import api.misc.json.KnowledgeCategoryEdit
@@ -351,9 +350,6 @@ class Server : IModule {
           // Web Solution Endpoints
           addWebshopOrder()
           userTracking()
-          // Web Apps
-          webPlannerCommit()
-          webPlannerRequest()
           // Notification
           getNotifications()
           dismissAllNotifications()
@@ -454,19 +450,6 @@ class Server : IModule {
       } else {
         call.respond(ServerController.placeWebshopOrder(call))
       }
-    }
-  }
-
-  private fun Route.webPlannerCommit() {
-    post("/planner") {
-      WebPlanner().save(call)
-      call.respond(HttpStatusCode.OK)
-    }
-  }
-
-  private fun Route.webPlannerRequest() {
-    post("/planner/load") {
-      call.respond(WebPlanner().load(call))
     }
   }
 

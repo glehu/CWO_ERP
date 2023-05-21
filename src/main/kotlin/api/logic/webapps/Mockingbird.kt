@@ -1,6 +1,10 @@
 package api.logic.webapps
 
+import api.logic.core.Connector
+import api.logic.core.ServerController
 import api.logic.core.ServerController.Server.getUsernameReversedBase
+import api.misc.json.ConnectorFrame
+import api.misc.json.MockingbirdCallback
 import api.misc.json.MockingbirdConfig
 import api.misc.json.WebMockingbirdConfig
 import interfaces.IIndexManager
@@ -19,6 +23,8 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.mx.logic.Log
+import modules.mx.logic.Timestamp
+import modules.mx.logic.UserCLIManager
 import kotlin.system.measureTimeMillis
 
 @ExperimentalSerializationApi
@@ -65,11 +71,12 @@ class Mockingbird {
       val message: String
       val delayMs: Long
       // Measure time to stay as close as possible to the defined delay time by calculate the delta
+      val requestMessage: String = appCall.receive()
       val elapsedLocal = measureTimeMillis {
         message = when (config.message_type) {
-          "Same Message" -> appCall.receive()
+          "Same Message" -> requestMessage
           "Fixed Message" -> config.return_message
-          else -> appCall.receive()
+          else -> requestMessage
         }
         delayMs = when (config.return_delay_unit) {
           "Seconds" -> config.return_delay.toLong() * 1000
@@ -81,6 +88,16 @@ class Mockingbird {
       val timeToWait = delayMs - (elapsed + elapsedLocal)
       if (timeToWait > 0) delay(timeToWait)
       appCall.respond(message)
+      // Prepare callback
+      val callbackPayload = MockingbirdCallback(
+              requestPayload = requestMessage, requestHeaders = appCall.request.headers.names().toString(),
+              responsePayload = message)
+      if (config.callbackUsername.isNotEmpty()) {
+        Connector.sendFrame(
+                username = config.callbackUsername, frame = ConnectorFrame(
+                type = "mock", msg = "", date = Timestamp.now(), obj = Json.encodeToString(callbackPayload),
+                receiveAction = "inc,mock"))
+      }
     }
 
     suspend fun handleSubmit(appCall: ApplicationCall) {
@@ -99,7 +116,8 @@ class Mockingbird {
 
     private suspend fun handleSubmitConfig(appCall: ApplicationCall) {
       log(Log.Type.COM, "Mock Config Submission", "/mockingbird/submit")
-      val config: WebMockingbirdConfig = appCall.receive()
+      val config: WebMockingbirdConfig = Json.decodeFromString(appCall.receive())
+      config.config.callbackUsername = UserCLIManager.getUserFromEmail(ServerController.getJWTEmail(appCall))!!.username
       // Check Config
       val userString = getUsernameReversedBase(appCall)
       getProjectJsonFile(userString, userString).writeText(Json.encodeToString(config))

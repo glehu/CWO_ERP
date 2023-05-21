@@ -248,8 +248,16 @@ data class MockingbirdConfig(
   val return_message: String,
   val return_code: String,
   val return_redirect: String,
-  val return_delay: String,
-  val return_delay_unit: String
+  val return_delay: Int,
+  val return_delay_unit: String,
+  var callbackUsername: String = ""
+)
+
+@Serializable
+data class MockingbirdCallback(
+  val requestPayload: String,
+  val requestHeaders: String,
+  val responsePayload: String
 )
 
 @Serializable
