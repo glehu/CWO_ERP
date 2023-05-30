@@ -651,8 +651,12 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
-          if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true)) {
+          val requestUsername = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username
+          if (uniChatroom.checkIsMemberBanned(requestUsername)) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
+          if (!checkIsOwner(requestUsername, uniChatroom)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -682,8 +686,12 @@ class ServerController {
             appCall.respond(HttpStatusCode.NotFound)
             return
           }
-          if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true)) {
+          val requestUsername = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username
+          if (uniChatroom.checkIsMemberBanned(requestUsername)) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
+          if (!checkIsOwner(requestUsername, uniChatroom)) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }

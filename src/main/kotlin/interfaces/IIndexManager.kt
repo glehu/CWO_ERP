@@ -265,9 +265,7 @@ interface IIndexManager : IModule {
         }
       }
     }
-    if (writeToDisk) {
-      coroutineScope { launch { writeIndexData(*indices) } }
-    }
+    coroutineScope { launch { writeIndexData(writeToDisk, *indices) } }
     setLastChangeData(uID, userName)
   }
 
@@ -293,7 +291,10 @@ interface IIndexManager : IModule {
   /**
    * Writes the index values stored in the RAM onto the disk.
    */
-  suspend fun writeIndexData(vararg indices: Pair<Int, String>) = runBlocking {
+  suspend fun writeIndexData(
+    writeAll: Boolean = true,
+    vararg indices: Pair<Int, String>
+  ) = runBlocking {
     synchronized(this) {
       // Default index (uID)
       launch {
@@ -301,11 +302,13 @@ interface IIndexManager : IModule {
                 Json.encodeToString(indexList[0]))
       }
       // Custom indices (number 1 and onwards)
-      for ((ixNr, _) in indices) {
-        if (ixNr > 0) {
-          launch {
-            getIndexFile(ixNr).writeText(
-                    Json.encodeToString(indexList[ixNr]))
+      if (writeAll) {
+        for ((ixNr, _) in indices) {
+          if (ixNr > 0) {
+            launch {
+              getIndexFile(ixNr).writeText(
+                      Json.encodeToString(indexList[ixNr]))
+            }
           }
         }
       }

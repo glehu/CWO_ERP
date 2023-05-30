@@ -256,8 +256,15 @@ data class MockingbirdConfig(
 @Serializable
 data class MockingbirdCallback(
   val requestPayload: String,
-  val requestHeaders: String,
-  val responsePayload: String
+  val requestHeaders: ArrayList<MockingbirdHeader> = arrayListOf(),
+  val responsePayload: String,
+  val responseCode: String
+)
+
+@Serializable
+data class MockingbirdHeader(
+  val name: String,
+  val value: String
 )
 
 @Serializable

@@ -6,6 +6,7 @@ import api.logic.core.ServerController.Server.getUsernameReversedBase
 import api.misc.json.ConnectorFrame
 import api.misc.json.MockingbirdCallback
 import api.misc.json.MockingbirdConfig
+import api.misc.json.MockingbirdHeader
 import api.misc.json.WebMockingbirdConfig
 import interfaces.IIndexManager
 import interfaces.IModule
@@ -55,43 +56,54 @@ class Mockingbird {
       }
       when (config.return_type) {
         "Message" -> respondWithMessage(appCall, config, elapsed)
-        //"HTTP Code" -> respondWithHTTPCode(appCall, config, elapsed)
+        "HTTP Code" -> respondWithMessage(appCall, config, elapsed, true)
         else -> appCall.respond(HttpStatusCode.NotFound)
       }
     }
 
-    //private fun respondWithHTTPCode(appCall: ApplicationCall, config: MockingbirdConfig, elapsed: Long) {
-    //}
-
     private suspend fun respondWithMessage(
       appCall: ApplicationCall,
       config: MockingbirdConfig,
-      elapsed: Long
+      elapsed: Long,
+      isHTTPCode: Boolean = false
     ) {
-      val message: String
+      var message = ""
+      var returnCode = HttpStatusCode.OK
       val delayMs: Long
       // Measure time to stay as close as possible to the defined delay time by calculate the delta
-      val requestMessage: String = appCall.receive()
+      val requestMessage: String
       val elapsedLocal = measureTimeMillis {
-        message = when (config.message_type) {
-          "Same Message" -> requestMessage
-          "Fixed Message" -> config.return_message
-          else -> requestMessage
+        requestMessage = appCall.receive()
+        if (!isHTTPCode) {
+          message = when (config.message_type) {
+            "Same Message" -> requestMessage
+            "Fixed Message" -> config.return_message
+            else -> ""
+          }
         }
         delayMs = when (config.return_delay_unit) {
           "Seconds" -> config.return_delay.toLong() * 1000
           "Milliseconds" -> config.return_delay.toLong()
           else -> 0
         }
+        if (config.return_code.isNotEmpty()) {
+          returnCode = HttpStatusCode(
+                  value = config.return_code.substringBefore(" ").toInt(),
+                  description = config.return_code.substringAfter(" "))
+        }
       }
       // How long do we still have to wait?
       val timeToWait = delayMs - (elapsed + elapsedLocal)
       if (timeToWait > 0) delay(timeToWait)
-      appCall.respond(message)
+      // Send response
+      appCall.respond(returnCode, message)
       // Prepare callback
+      val headerArray = arrayListOf<MockingbirdHeader>()
+      for (headerName in appCall.request.headers.names()) {
+        headerArray.add(MockingbirdHeader(headerName, appCall.request.headers[headerName] ?: ""))
+      }
       val callbackPayload = MockingbirdCallback(
-              requestPayload = requestMessage, requestHeaders = appCall.request.headers.names().toString(),
-              responsePayload = message)
+              requestPayload = requestMessage, requestHeaders = headerArray, responsePayload = message, returnCode.toString())
       if (config.callbackUsername.isNotEmpty()) {
         Connector.sendFrame(
                 username = config.callbackUsername, frame = ConnectorFrame(

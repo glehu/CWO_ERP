@@ -5,6 +5,7 @@ import api.logic.core.Server
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -188,18 +189,21 @@ fun loadIndex(module: String = "") {
 @DelicateCoroutinesApi
 @ExperimentalSerializationApi
 @InternalAPI
-suspend fun exitMain() {
-  if (serverJobGlobal != null && serverJobGlobal!!.isActive) {
-    Log.log(Log.Type.SYS, "Shutting down server...")
-    try {
-      server.serverEngine.stop(100L, 100L)
-    } catch (_: IOException) {
-    } finally {
-      serverJobGlobal!!.cancel()
+fun exitMain(): Int {
+  runBlocking {
+    if (serverJobGlobal != null && serverJobGlobal!!.isActive) {
+      Log.log(Log.Type.SYS, "Shutting down server...")
+      try {
+        server.serverEngine.stop(100L, 100L)
+      } catch (_: IOException) {
+      } finally {
+        serverJobGlobal!!.cancel()
+      }
+    }
+    if (taskJobGlobal != null && taskJobGlobal!!.isActive) {
+      Log.log(Log.Type.SYS, "Shutting down ticker...")
+      taskJobGlobal!!.cancel()
     }
   }
-  if (taskJobGlobal != null && taskJobGlobal!!.isActive) {
-    Log.log(Log.Type.SYS, "Shutting down ticker...")
-    taskJobGlobal!!.cancel()
-  }
+  return 0
 }

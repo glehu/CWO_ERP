@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import modules.mx.programPath
 import modules.mx.server
+import modules.mx.taskJobGlobal
 import modules.mx.terminal
 import kotlin.system.exitProcess
 
@@ -130,6 +131,8 @@ class CLI : IModule {
       }
     }
     server = Server()
+    // Start a long-running coroutine task to do various stuff
+    taskJobGlobal = Ticker.startTicker()
   }
 
   private suspend fun cliExit(clearTerminal: Boolean = true) {

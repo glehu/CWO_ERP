@@ -90,12 +90,12 @@ class UniChatroomController : IModule {
   /**
    * @return the main [UniChatroom] of the provided subchat or the subchat if it is the main chatroom.
    */
-  suspend fun getMainChatroom(chatroomGUID: String): UniChatroom? {
+  fun getMainChatroom(chatroomGUID: String): UniChatroom? {
     val chatroom = getChatroom(chatroomGUID) ?: return null
     return getMainChatroom(chatroom)
   }
 
-  private suspend fun getMainChatroom(chatroom: UniChatroom): UniChatroom? {
+  fun getMainChatroom(chatroom: UniChatroom): UniChatroom? {
     // No Subchats allowed
     val mainChatroom = if (chatroom.parentGUID.isNotEmpty()) {
       getChatroom(chatroom.parentGUID)
@@ -751,8 +751,8 @@ class UniChatroomController : IModule {
       }
       if (topRating > 0.0 && topFlip != null) {
         val prefix = if (isFlipOfTheDay) {
-          "The Daily Top Flip..."
-        } else "The All-Time Top Flip..."
+          "# The Daily Top Flip..."
+        } else "# The All-Time Top Flip..."
         val serverMessage = "$prefix Presented by ${topFlip!!.from}!" + "\nRating: $topRating"
         val tmpMessage = UniMessage(
                 uID = -1, uniChatroomUID = -1, from = "_server", message = serverMessage)

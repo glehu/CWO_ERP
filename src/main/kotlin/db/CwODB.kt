@@ -14,7 +14,7 @@ class CwODB {
   @InternalAPI
   companion object CwODB {
     /**
-     * Used to save the ByteArray of an entry (achieved by serialization) and store it in the database.
+     * Used to save the [ByteArray] of an entry (achieved by serialization) and store it in the database.
      * @return the position in the database and byte size of the stored entry.
      */
     fun saveEntry(

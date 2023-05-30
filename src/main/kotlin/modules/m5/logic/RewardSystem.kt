@@ -10,6 +10,8 @@ import io.ktor.server.response.*
 import io.ktor.util.*
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -30,38 +32,42 @@ import modules.mx.uniMessagesIndexManager
 @InternalAPI
 suspend fun giveMessagesBadges(
   chatroomGUID: String?,
-  appCall: ApplicationCall
+  appCall: ApplicationCall?
 ) {
   if (chatroomGUID.isNullOrEmpty()) {
-    appCall.respond(HttpStatusCode.BadRequest)
+    appCall?.respond(HttpStatusCode.BadRequest)
     return
   }
   val chatroom = UniChatroomController().getMainChatroom(chatroomGUID)
   if (chatroom == null) {
-    appCall.respond(HttpStatusCode.NotFound)
+    appCall?.respond(HttpStatusCode.NotFound)
     return
   }
   // Check eligibility status...
   if (!isChatroomEligibleForRewards(chatroom)) {
-    appCall.respond(HttpStatusCode.Forbidden)
+    appCall?.respond(HttpStatusCode.Forbidden)
     return
   }
   // Get advanced member stats
   val memberStats: MutableMap<String, LeaderboardStatsAdvanced> = getMemberStatsOfChatroom(chatroom)
   if (memberStats.isEmpty()) {
-    appCall.respond(HttpStatusCode.ExpectationFailed)
+    appCall?.respond(HttpStatusCode.ExpectationFailed)
     return
   }
+  var badgesBefore: Int
   for (statistic in memberStats) {
     var user = UserCLIManager.getUserFromUsername(statistic.key) ?: continue
+    badgesBefore = user.badges.size
     // Distribute badges for message count
     user = runMessageBadgeDist(user, statistic)
     // Distribute badges for rating
     user = runRatingBadgeDist(user, statistic)
     // Save badges
-    contactIndexManager!!.save(user)
+    if (user.badges.size != badgesBefore) {
+      contactIndexManager!!.save(user, indexWriteToDisk = false)
+    }
   }
-  appCall.respond(HttpStatusCode.OK)
+  appCall?.respond(HttpStatusCode.OK)
 }
 
 @ExperimentalCoroutinesApi
@@ -336,7 +342,6 @@ fun countReactions(
 @ExperimentalSerializationApi
 @DelicateCoroutinesApi
 @InternalAPI
-suspend
         /**
          * Checks if a chatroom (or its parent main chatroom if a subchat GUID was provided) is
          * eligible for the Reward System.
@@ -355,7 +360,6 @@ fun isChatroomEligibleForRewards(chatroomGUID: String): Boolean {
 @ExperimentalSerializationApi
 @DelicateCoroutinesApi
 @InternalAPI
-suspend
         /**
          * Checks if a chatroom (or its parent main chatroom if a subchat GUID was provided) is
          * eligible for the Reward System.
@@ -419,4 +423,21 @@ suspend fun handleUpgradeUniChatroomRequest(
   }
   UniChatroomController().saveChatroom(mainChatroom)
   appCall.respond(HttpStatusCode.OK)
+}
+
+@ExperimentalCoroutinesApi
+@ExperimentalSerializationApi
+@DelicateCoroutinesApi
+@InternalAPI
+suspend fun tickerDistributeMessageBadges() = runBlocking {
+  val chatroomController = UniChatroomController()
+  chatroomController.getEntriesFromIndexSearch(".*", 2, true) {
+    it as UniChatroom
+    // Filter out subchats by checking if parentGUID is filled
+    if (it.parentGUID.isEmpty()) {
+      launch {
+        giveMessagesBadges(chatroomController.getMainChatroom(it)?.chatroomGUID, null)
+      }
+    }
+  }
 }

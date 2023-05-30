@@ -81,6 +81,7 @@ import modules.mx.dataPath
 import modules.mx.getIniFile
 import modules.mx.logic.Log
 import modules.mx.logic.UserCLIManager
+import modules.mx.logic.exitMain
 import modules.mx.programPath
 import modules.mx.serverJobGlobal
 import modules.mx.terminal
@@ -145,7 +146,7 @@ class Server : IModule {
               "${TextColors.gray("SERVER")} Initializing Shutdown URL (${System.getenv("CWOERPSHUTDOWNURL")})")
       install(ShutDownUrl.ApplicationCallPlugin) {
         shutDownUrl = System.getenv("CWOERPSHUTDOWNURL")
-        exitCodeSupplier = { 0 }
+        exitCodeSupplier = { exitMain() }
       }
     } else {
       terminal.println("${TextColors.gray("SERVER ")} No Shutdown URL")
