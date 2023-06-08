@@ -451,6 +451,18 @@ interface IIndexManager : IModule {
     prettyPrint: Boolean = false
   ): String
 
+  fun <K, V> Map<out K, V>.filterValuesReversed(predicate: (V) -> Boolean): Map<K, V> {
+    val result = LinkedHashMap<K, V>()
+    var entry: Map.Entry<K, V>
+    for (index in this.size - 1 downTo 0) {
+      entry = this.entries.elementAt(index)
+      if (predicate(entry.value)) {
+        result[entry.key] = entry.value
+      }
+    }
+    return result
+  }
+
   fun filterStringValues(
     ixNr: Int,
     searchText: String
@@ -459,9 +471,9 @@ interface IIndexManager : IModule {
     if (nextManager != null) {
       filteredMap = filteredMap union (nextManager!!.filterStringValues(ixNr, searchText))
     }
-    filteredMap = filteredMap union (indexList[ixNr]!!.indexMap.filterValues {
+    filteredMap = filteredMap union (indexList[ixNr]!!.indexMap.filterValuesReversed {
       it.content.contains(searchText.toRegex())
-    }.keys.reversed())
+    }.keys)
     return filteredMap
   }
 
@@ -471,11 +483,11 @@ interface IIndexManager : IModule {
   ): MutableSet<Long> {
     val filteredMap = mutableSetOf<Long>()
     if (nextManager != null) {
-      filteredMap union (nextManager!!.filterDoubleValues(ixNr, searchText)).reversed()
+      filteredMap union (nextManager!!.filterDoubleValues(ixNr, searchText))
     }
-    filteredMap union (indexList[ixNr]!!.indexMap.filterValues {
+    filteredMap union (indexList[ixNr]!!.indexMap.filterValuesReversed {
       it.content.toDouble() >= searchText.toDouble()
-    }.keys.reversed())
+    }.keys)
     return filteredMap
   }
 

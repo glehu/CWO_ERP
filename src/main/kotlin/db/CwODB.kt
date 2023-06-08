@@ -99,6 +99,7 @@ class CwODB {
             return
           } else {
             // Searches in the provided index
+            // TODO: Integrate skipping here, not later (saves time)
             filteredSet = if (!numberComparison) {
               indexManager.filterStringValues(ixNr, searchText)
             } else {
