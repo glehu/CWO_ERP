@@ -23,6 +23,12 @@ data class UniChatroom(
       rank = 1
       rankDescription = "Starter"
     }
+    if (rolesRequiredRead.isEmpty()) {
+      rolesRequiredRead.add("Member")
+    }
+    if (rolesRequiredWrite.isEmpty()) {
+      rolesRequiredWrite.add("Member")
+    }
     // Always keep this up to date
     dateChangedUnix = Timestamp.getUnixTimestamp()
   }
@@ -55,4 +61,15 @@ data class UniChatroom(
   var rank: Int = 0
   var rankDescription: String = ""
   var directMessageUsername: String = ""
+
+  /**
+   * List of JSON encoded roles available in this chatroom (+ its subchatrooms if available)
+   */
+  var roles: ArrayList<String> = arrayListOf()
+
+  @SerialName("writeRoles")
+  var rolesRequiredWrite: ArrayList<String> = arrayListOf()
+
+  @SerialName("readRoles")
+  var rolesRequiredRead: ArrayList<String> = arrayListOf()
 }

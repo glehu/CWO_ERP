@@ -34,6 +34,9 @@ data class UniMember(
   @SerialName("iurla")
   var imageURLAnimated = ""
 
+  @SerialName("rights")
+  var rightsRoles: ArrayList<String> = arrayListOf()
+
   init {
     if (id.isEmpty()) id = Uuid.randomUUID().toString()
   }

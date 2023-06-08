@@ -66,6 +66,7 @@ import modules.m2.Contact
 import modules.m2.logic.ContactController
 import modules.m4.logic.ItemPriceManager
 import modules.m4storage.logic.ItemStorageManager
+import modules.m5.UniChatroomRole
 import modules.m5.logic.UniChatroomController
 import modules.m5.logic.getBadges
 import modules.m5.logic.giveMessagesBadges
@@ -639,22 +640,66 @@ class Server : IModule {
 
   private fun Route.addRoleToMemberOfUniChatroom() {
     post("m5/addrole/{uniChatroomGUID}") {
-      val config: UniChatroomMemberRole = Json.decodeFromString(call.receive())
-      if (config.role.uppercase() == "OWNER") {
+      var memberConfig: UniChatroomMemberRole? = null
+      var chatroomConfig: UniChatroomRole? = null
+      val isChatroomTmp: String = call.request.queryParameters["chatroom"] ?: "false"
+      var isChatroom = false
+      val isChatroomReadTmp: String = call.request.queryParameters["read"] ?: "false"
+      var isRead = false
+      val isChatroomWriteTmp: String = call.request.queryParameters["write"] ?: "false"
+      var isWrite = false
+      if (isChatroomTmp == "true") {
+        isChatroom = true
+        chatroomConfig = Json.decodeFromString(call.receive())
+      } else {
+        memberConfig = Json.decodeFromString(call.receive())
+      }
+      var isInvalid = false
+      if (memberConfig != null && memberConfig.role.uppercase() == "OWNER") isInvalid = true
+      // We do not check owner role if we're setting read/write access roles
+      if (isChatroomReadTmp == "false" && isChatroomWriteTmp == "false") {
+        if (chatroomConfig != null && chatroomConfig.name.uppercase() == "OWNER") isInvalid = true
+      } else {
+        isRead = isChatroomReadTmp == "true"
+        isWrite = isChatroomWriteTmp == "true"
+      }
+      if (isInvalid) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
-        ServerController.addRoleToMemberOfUniChatroom(call, config)
+        ServerController.addRoleToMemberOfUniChatroom(call, memberConfig, chatroomConfig, isChatroom, isRead, isWrite)
       }
     }
   }
 
   private fun Route.removeRoleOfMemberOfUniChatroom() {
     post("m5/removerole/{uniChatroomGUID}") {
-      val config: UniChatroomMemberRole = Json.decodeFromString(call.receive())
-      if (config.role.uppercase() == "OWNER") {
+      var memberConfig: UniChatroomMemberRole? = null
+      var chatroomConfig: UniChatroomRole? = null
+      val isChatroomTmp: String = call.request.queryParameters["chatroom"] ?: "false"
+      var isChatroom = false
+      val isChatroomReadTmp: String = call.request.queryParameters["read"] ?: "false"
+      var isRead = false
+      val isChatroomWriteTmp: String = call.request.queryParameters["write"] ?: "false"
+      var isWrite = false
+      if (isChatroomTmp == "true") {
+        isChatroom = true
+        chatroomConfig = Json.decodeFromString(call.receive())
+      } else {
+        memberConfig = Json.decodeFromString(call.receive())
+      }
+      var isInvalid = false
+      if (memberConfig != null && memberConfig.role.uppercase() == "OWNER") isInvalid = true
+      // We do not check owner role if we're setting read/write access roles
+      if (isChatroomReadTmp == "false" && isChatroomWriteTmp == "false") {
+        if (chatroomConfig != null && chatroomConfig.name.uppercase() == "OWNER") isInvalid = true
+      } else {
+        isRead = isChatroomReadTmp == "true"
+        isWrite = isChatroomWriteTmp == "true"
+      }
+      if (isInvalid) {
         call.respond(HttpStatusCode.Forbidden)
       } else {
-        ServerController.removeRoleOfMemberOfUniChatroom(call, config)
+        ServerController.removeRoleOfMemberOfUniChatroom(call, memberConfig, chatroomConfig, isChatroom, isRead, isWrite)
       }
     }
   }

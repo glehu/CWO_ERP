@@ -21,7 +21,6 @@ import modules.m5.UniBadge
 import modules.m5.UniChatroom
 import modules.m5messages.UniMessage
 import modules.mx.contactIndexManager
-import modules.mx.logic.Log
 import modules.mx.logic.Timestamp
 import modules.mx.logic.UserCLIManager
 import modules.mx.uniMessagesIndexManager
@@ -250,9 +249,12 @@ suspend fun getMemberStatsOfChatroom(
     }
   }
   val regexString = "($subchatUIDs)"
+  //
+  /*
   Log.log(
           module = "M5", type = Log.Type.INFO, text = "ANALYSIS for Chatroom uIDs: $regexString",
           caller = "RewardSystem")
+   */
   // Map to be populated by Usernames with their message stats
   var memberStats: MutableMap<String, LeaderboardStatsAdvanced> = mutableMapOf()
   uniMessagesIndexManager!!.getEntriesFromIndexSearch(

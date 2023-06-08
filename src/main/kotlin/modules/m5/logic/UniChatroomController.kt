@@ -34,6 +34,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import modules.m5.UniChatroom
+import modules.m5.UniChatroomRole
 import modules.m5.UniMember
 import modules.m5.UniRole
 import modules.m5messages.UniMessage
@@ -184,6 +185,55 @@ class UniChatroomController : IModule {
   }
 
   /**
+   * Adds a role to this chatroom
+   */
+  fun UniChatroom.addRole(
+    role: UniChatroomRole,
+    isRead: Boolean = false,
+    isWrite: Boolean = false
+  ) {
+    // Does the chatroom already have this role?
+    var found = false
+    var index = 0
+    if (!isRead && !isWrite) {
+      for (rle in this.roles) {
+        if (Json.decodeFromString<UniChatroomRole>(rle).name == role.name) {
+          found = true
+          break
+        }
+        index++
+      }
+    } else {
+      if (isRead) {
+        index = this.rolesRequiredRead.indexOf(role.name)
+        found = index >= 0
+      } else {
+        index = this.rolesRequiredWrite.indexOf(role.name)
+        found = index >= 0
+      }
+    }
+    if (!found) {
+      // Add
+      if (isRead) {
+        this.rolesRequiredRead.add(role.name)
+      } else if (isWrite) {
+        this.rolesRequiredWrite.add(role.name)
+      } else {
+        this.roles.add(Json.encodeToString(role))
+      }
+    } else {
+      // Update
+      if (isRead) {
+        this.rolesRequiredRead[index] = role.name
+      } else if (isWrite) {
+        this.rolesRequiredWrite[index] = role.name
+      } else {
+        this.roles[index] = Json.encodeToString(role)
+      }
+    }
+  }
+
+  /**
    * Removes a role from this member
    */
   fun UniMember.removeRole(role: UniRole) {
@@ -194,7 +244,35 @@ class UniChatroomController : IModule {
         break
       }
     }
-    if (indexAt != -1) this.roles.removeAt(indexAt)
+    if (indexAt >= 0) this.roles.removeAt(indexAt)
+  }
+
+  /**
+   * Removes a role from this chatroom
+   */
+  fun UniChatroom.removeRole(
+    role: UniChatroomRole,
+    isRead: Boolean = false,
+    isWrite: Boolean = false
+  ) {
+    var indexAt = -1
+    if (!isRead && !isWrite) {
+      for (uniRole in this.roles) {
+        indexAt++
+        if (Json.decodeFromString<UniChatroomRole>(uniRole).name == role.name) {
+          break
+        }
+      }
+      if (indexAt >= 0) this.roles.removeAt(indexAt)
+    } else {
+      if (isRead) {
+        indexAt = this.rolesRequiredRead.indexOf(role.name)
+        if (indexAt >= 0) this.rolesRequiredRead.removeAt(indexAt)
+      } else {
+        indexAt = this.rolesRequiredWrite.indexOf(role.name)
+        if (indexAt >= 0) this.rolesRequiredWrite.removeAt(indexAt)
+      }
+    }
   }
 
   fun UniChatroom.removeMember(username: String): Boolean {
@@ -306,7 +384,8 @@ class UniChatroomController : IModule {
 
   class Connection(
     val session: DefaultWebSocketSession,
-    val username: String
+    val username: String,
+    val userRights: UniChatroomRole
   ) {
     companion object {
       // var lastId = AtomicInteger(0)
@@ -339,7 +418,8 @@ class UniChatroomController : IModule {
   private suspend fun setUserConnection(
     uniChatroomGUID: String,
     session: DefaultWebSocketSession,
-    username: String
+    username: String,
+    userRights: UniChatroomRole
   ): Connection? {
     // Check parameter values
     if (uniChatroomGUID.isEmpty()) return null
@@ -352,7 +432,7 @@ class UniChatroomController : IModule {
       }
     }
     // Create connection if it does not exist already
-    val connection = Connection(session, username)
+    val connection = Connection(session, username, userRights)
     clarifierSessions[uniChatroomGUID]!!.clarifierSessionUsers[username] = connection
     return connection
   }
@@ -412,17 +492,15 @@ class UniChatroomController : IModule {
       this.close(CloseReason(CloseReason.Codes.CANNOT_ACCEPT, "Unauthorized"))
       return
     }
-    // Does this clarifier session exist?
-    val clarifierSession: ClarifierSession? = setClarifierSession(uniChatroomGUID)
-    // Add this new WebSocket connection
-    val thisConnection: Connection? = setUserConnection(uniChatroomGUID, this, username)
-    // Retrieve UniChatroom
+    // Retrieve UniChatroom and check ban status (no intruders!!!)
     val uniChatroom = getOrCreateUniChatroom(uniChatroomGUID, username)
     if (uniChatroom.checkIsMemberBanned(username)) {
       this.close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Forbidden"))
       return
     }
-    if (!uniChatroom.checkIsMember(thisConnection!!.username)) {
+    // Does this clarifier session exist?
+    val clarifierSession: ClarifierSession? = setClarifierSession(uniChatroomGUID)
+    if (!uniChatroom.checkIsMember(username)) {
       // Register new member
       uniChatroom.addOrUpdateMember(username, UniRole("Member"))
       saveChatroom(uniChatroom)
@@ -442,6 +520,10 @@ class UniChatroomController : IModule {
         notifyJoined(uniChatroom, username)
       }
     }
+    // Add this new WebSocket connection including rights
+    val userRights: UniChatroomRole = applyUniChatroomRights(uniChatroom, username)
+    if (!userRights.canRead) return
+    val thisConnection: Connection = setUserConnection(uniChatroomGUID, this, username, userRights) ?: return
     thisConnection.session.send(
             Json.encodeToString(
                     UniMessage(
@@ -453,25 +535,27 @@ class UniChatroomController : IModule {
     for (frame in incoming) {
       when (frame) {
         is Frame.Text -> {
-          // Add new message to the chatroom
-          launch {
-            val frameText = frame.readText()
-            // What's happening?
-            if (frameText.startsWith("[c:EDIT<JSON]")) { // Edit Message
-              handleReceivedEditMessage(
-                      frameText, "[c:EDIT<JSON]", thisConnection, clarifierSession!!)
-            } else if (frameText.startsWith("[c:REACT<JSON]")) { // Reaction
-              handleReceivedReactMessage(
-                      frameText, "[c:REACT<JSON]", thisConnection, clarifierSession!!)
-            } else if (frameText.startsWith("[c:SC]")) { // Screenshare Blob
-              handleReceivedScreenshareBlob(
-                      frameText, clarifierSession!!)
-            } else if (frameText.startsWith("[c:CMD]")) { // Command
-              handleReceivedCommand(
-                      frameText, clarifierSession!!, uniChatroom)
-            } else { // Regular Message
-              handleReceivedMessage(
-                      frameText, uniChatroom, thisConnection, clarifierSession!!)
+          if (thisConnection.userRights.canWrite) {
+            // Add new message to the chatroom
+            launch {
+              val frameText = frame.readText()
+              // What's happening?
+              if (frameText.startsWith("[c:EDIT<JSON]")) { // Edit Message
+                handleReceivedEditMessage(
+                        frameText, "[c:EDIT<JSON]", thisConnection, clarifierSession!!)
+              } else if (frameText.startsWith("[c:REACT<JSON]")) { // Reaction
+                handleReceivedReactMessage(
+                        frameText, "[c:REACT<JSON]", thisConnection, clarifierSession!!)
+              } else if (frameText.startsWith("[c:SC]")) { // Screenshare Blob
+                handleReceivedScreenshareBlob(
+                        frameText, clarifierSession!!)
+              } else if (frameText.startsWith("[c:CMD]")) { // Command
+                handleReceivedCommand(
+                        frameText, clarifierSession!!, uniChatroom)
+              } else { // Regular Message
+                handleReceivedMessage(
+                        frameText, uniChatroom, thisConnection, clarifierSession!!)
+              }
             }
           }
         }
@@ -485,6 +569,76 @@ class UniChatroomController : IModule {
         else -> {}
       }
     }
+  }
+
+  fun applyUniChatroomRights(
+    uniChatroom: UniChatroom,
+    username: String
+  ): UniChatroomRole {
+    val mainChatroom = getMainChatroom(uniChatroom)
+    val name = "Member"
+    val priority = 1
+    // Get the highest role of user...
+    val isOwner = checkIsOwner(username, mainChatroom!!)
+    if (isOwner) return UniChatroomRole(
+            name = "Owner", priority = 999, canPingEveryone = true, canPingRole = true, canKick = true, canBan = true,
+            canEditSubchat = true, canEditRoles = true, canEditEvents = true)
+    // ... only if we're not looking at the owner of course!
+    val roleConfigUser = getHighestUserRole(username, mainChatroom)
+    // Init rights
+    val canPingEveryone = false
+    val canPingRole = true
+    val canKick = false
+    val canBan = false
+    val canEditSubchat = true
+    val canEditRoles = false
+    val canEditEvents = true
+    // Get rights from the highest role
+    var highestRole: UniChatroomRole? = null
+    if (mainChatroom.roles.isNotEmpty() && roleConfigUser.first != "Member") {
+      var uniChatroomRole: UniChatroomRole
+      for (roleTmp in mainChatroom.roles) {
+        uniChatroomRole = Json.decodeFromString(roleTmp)
+        if (highestRole == null || uniChatroomRole.priority > highestRole.priority) {
+          highestRole = uniChatroomRole
+        }
+      }
+    }
+    // Can the user access the chatroom? From here on we will not be looking at the main chatroom
+    var canRead = false
+    var canWrite = false
+    // Only check individual roles if we're not looking at a direct chatroom (we don't have roles here)
+    if (uniChatroom.directMessageUsername.isEmpty()) {
+      for (roleTmp in uniChatroom.rolesRequiredRead) {
+        if (roleConfigUser.second.contains(roleTmp)) {
+          canRead = true
+          break
+        }
+      }
+      // Can the user write to this chatroom?
+      if (canRead) {
+        for (roleTmp in uniChatroom.rolesRequiredRead) {
+          if (roleConfigUser.second.contains(roleTmp)) {
+            canWrite = true
+            break
+          }
+        }
+      }
+    } else {
+      // If we're looking at a direct chatroom, just check if the user is a member
+      canRead = roleConfigUser.first.isNotEmpty()
+      canWrite = canRead
+    }
+    // Apply access rights to the highest role if present
+    if (highestRole != null) {
+      highestRole.canRead = canRead
+      highestRole.canWrite = canWrite
+    }
+    // Return rights
+    return highestRole ?: UniChatroomRole(
+            name = name, priority = priority, canPingEveryone = canPingEveryone, canPingRole = canPingRole,
+            canKick = canKick, canBan = canBan, canEditSubchat = canEditSubchat, canEditRoles = canEditRoles,
+            canEditEvents = canEditEvents, canRead = canRead, canWrite = canWrite)
   }
 
   private suspend fun notifyJoined(
@@ -1040,5 +1194,36 @@ class UniChatroomController : IModule {
       }
     }
     return isOwner
+  }
+
+  private fun getHighestUserRole(
+    username: String,
+    uniChatroom: UniChatroom
+  ): Pair<String, ArrayList<String>> {
+    var highestRole: UniChatroomRole? = null
+    val rightsList = arrayListOf<String>()
+    var member: UniMember
+    var defaultRoleName = ""
+    for (memberJson in uniChatroom.members) {
+      member = Json.decodeFromString(memberJson)
+      if (member.username == username) {
+        // Add member role if user is actually a member
+        rightsList.add("Member")
+        defaultRoleName = "Member"
+        var rightsRole: UniChatroomRole
+        for (roleJson in member.rightsRoles) {
+          rightsRole = Json.decodeFromString(roleJson)
+          rightsList.add(rightsRole.name)
+          if (highestRole == null || rightsRole.priority > highestRole.priority) {
+            highestRole = rightsRole
+          }
+        }
+      }
+    }
+    return if (highestRole != null) {
+      Pair(highestRole.name, rightsList)
+    } else {
+      Pair(defaultRoleName, rightsList)
+    }
   }
 }

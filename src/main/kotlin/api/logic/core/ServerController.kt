@@ -60,6 +60,7 @@ import modules.m4.logic.ItemPriceManager
 import modules.m4stockposting.logic.ItemStockPostingController
 import modules.m4storage.logic.ItemStorageManager
 import modules.m5.UniChatroom
+import modules.m5.UniChatroomRole
 import modules.m5.UniMember
 import modules.m5.UniRole
 import modules.m5.logic.UniChatroomController
@@ -510,7 +511,13 @@ class ServerController {
             return
           }
           if (uniChatroom.checkIsMemberBanned(
-                    username = username, isEmail = true)) {
+                    username = username, isEmail = false)) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
+          // Is this action allowed?
+          val userRights = applyUniChatroomRights(uniChatroom, username = username)
+          if (!userRights.canWrite) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -586,8 +593,15 @@ class ServerController {
           appCall.respond(HttpStatusCode.NotFound)
           return
         } else {
+          val username = UserCLIManager.getUserFromEmail(getJWTEmail(appCall))!!.username
           if (uniChatroom.checkIsMemberBanned(
-                    username = getJWTEmail(appCall), isEmail = true)) {
+                    username = username, isEmail = false)) {
+            appCall.respond(HttpStatusCode.Forbidden)
+            return
+          }
+          // Is this action allowed?
+          val userRights = applyUniChatroomRights(uniChatroom, username = username)
+          if (!userRights.canRead) {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
@@ -738,20 +752,35 @@ class ServerController {
 
     suspend fun addRoleToMemberOfUniChatroom(
       appCall: ApplicationCall,
-      config: UniChatroomMemberRole
+      config: UniChatroomMemberRole?,
+      chatroomConfig: UniChatroomRole?,
+      isChatroom: Boolean = false,
+      isRead: Boolean = false,
+      isWrite: Boolean = false
     ) {
+      if ((isChatroom && chatroomConfig == null) || (!isChatroom && config == null)) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
       val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
       if (uniChatroomGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
         return
       }
-      if (config.member.isEmpty()) {
-        appCall.respond(HttpStatusCode.BadRequest)
-        return
-      }
-      if (config.role.isEmpty()) {
-        appCall.respond(HttpStatusCode.BadRequest)
-        return
+      if (isChatroom) {
+        if (chatroomConfig != null && chatroomConfig.name.isEmpty()) {
+          appCall.respond(HttpStatusCode.BadRequest)
+          return
+        }
+      } else {
+        if (config != null && config.member.isEmpty()) {
+          appCall.respond(HttpStatusCode.BadRequest)
+          return
+        }
+        if (config != null && config.role.isEmpty()) {
+          appCall.respond(HttpStatusCode.BadRequest)
+          return
+        }
       }
       with(UniChatroomController()) {
         mutex.withLock {
@@ -765,8 +794,14 @@ class ServerController {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
-          if (uniChatroom.addOrUpdateMember(config.member, UniRole(config.role))) {
-            log(Log.Type.COM, "Role ${config.role} added to ${config.member}")
+          if (isChatroom) {
+            if (chatroomConfig != null) uniChatroom.addRole(chatroomConfig, isRead, isWrite)
+          } else {
+            if (config != null) {
+              if (uniChatroom.addOrUpdateMember(config.member, UniRole(config.role))) {
+                log(Log.Type.COM, "Role ${config.role} added to ${config.member}")
+              }
+            }
           }
           saveChatroom(uniChatroom)
         }
@@ -776,20 +811,35 @@ class ServerController {
 
     suspend fun removeRoleOfMemberOfUniChatroom(
       appCall: ApplicationCall,
-      config: UniChatroomMemberRole
+      config: UniChatroomMemberRole?,
+      chatroomConfig: UniChatroomRole?,
+      isChatroom: Boolean = false,
+      isRead: Boolean = false,
+      isWrite: Boolean = false
     ) {
+      if ((isChatroom && chatroomConfig == null) || (!isChatroom && config == null)) {
+        appCall.respond(HttpStatusCode.BadRequest)
+        return
+      }
       val uniChatroomGUID = appCall.parameters["uniChatroomGUID"]
       if (uniChatroomGUID.isNullOrEmpty()) {
         appCall.respond(HttpStatusCode.BadRequest)
         return
       }
-      if (config.member.isEmpty()) {
-        appCall.respond(HttpStatusCode.BadRequest)
-        return
-      }
-      if (config.role.isEmpty()) {
-        appCall.respond(HttpStatusCode.BadRequest)
-        return
+      if (isChatroom) {
+        if (chatroomConfig != null && chatroomConfig.name.isEmpty()) {
+          appCall.respond(HttpStatusCode.BadRequest)
+          return
+        }
+      } else {
+        if (config != null && config.member.isEmpty()) {
+          appCall.respond(HttpStatusCode.BadRequest)
+          return
+        }
+        if (config != null && config.role.isEmpty()) {
+          appCall.respond(HttpStatusCode.BadRequest)
+          return
+        }
       }
       with(UniChatroomController()) {
         mutex.withLock {
@@ -803,14 +853,22 @@ class ServerController {
             appCall.respond(HttpStatusCode.Forbidden)
             return
           }
-          for (uniMember in uniChatroom.members) {
-            val member = Json.decodeFromString<UniMember>(uniMember)
-            if (member.username == config.member) {
-              member.removeRole(UniRole(config.role))
-              saveChatroom(uniChatroom)
-              break
+          if (isChatroom) {
+            if (chatroomConfig != null) {
+              uniChatroom.removeRole(chatroomConfig, isRead, isWrite)
+            }
+          } else {
+            if (config != null) {
+              for (uniMember in uniChatroom.members) {
+                val member = Json.decodeFromString<UniMember>(uniMember)
+                if (member.username == config.member) {
+                  member.removeRole(UniRole(config.role))
+                  break
+                }
+              }
             }
           }
+          saveChatroom(uniChatroom)
         }
       }
     }
