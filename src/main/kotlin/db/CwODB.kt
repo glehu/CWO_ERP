@@ -99,7 +99,7 @@ class CwODB {
             return
           } else {
             // Searches in the provided index
-            // TODO: Integrate skipping here, not later (saves time)
+            // TODO: Integrate skipping and max results here, not later (saves time)
             filteredSet = if (!numberComparison) {
               indexManager.filterStringValues(ixNr, searchText)
             } else {
@@ -107,7 +107,6 @@ class CwODB {
             }
           }
           // Process filtered map, reading all entries and returning their bytes
-          // ( Reversed
           for (uID in filteredSet) {
             if (toSkip > 0) {
               toSkip--

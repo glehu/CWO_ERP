@@ -1,5 +1,6 @@
 package api.logic.core
 
+import api.misc.json.ConnectorForward
 import api.misc.json.ConnectorFrame
 import api.misc.json.ConnectorIncomingCall
 import api.misc.json.UserWithOnlineState
@@ -169,6 +170,8 @@ class Connector {
       if (frameText.isEmpty()) return
       if (frameText.startsWith("[c:CALL]")) {
         this.handleCall(frameText)
+      } else if (frameText.startsWith("[c:FWD]")) {
+        this.handleForward(frameText)
       }
     }
 
@@ -188,20 +191,36 @@ class Connector {
       if (usernameToCall.isEmpty()) return
       // Retrieve user
       val userToCall = UserCLIManager.getUserFromUsername(usernameToCall) ?: return
-      val chatroomGUID: String
-      if (config.chatroomGUID.isEmpty()) {
+      val chatroomGUID: String = config.chatroomGUID.ifEmpty {
         // Check if there's a direct message chatroom available
         val directChatrooms = UniChatroomController().directChatrooms(
                 this.username, userToCall.username, true)
         if (directChatrooms.chatrooms.isEmpty()) return
-        chatroomGUID = directChatrooms.chatrooms.first().chatroomGUID
-      } else {
-        chatroomGUID = config.chatroomGUID
+        directChatrooms.chatrooms.first().chatroomGUID
       }
       sendFrame(
               username = userToCall.username, frame = ConnectorFrame(
               type = "incoming call", msg = "Incoming call from ${this.username}!", date = now(),
               srcUsername = this.username, chatroomGUID = chatroomGUID))
+    }
+
+    private suspend fun Connection.handleForward(
+      frameText: String
+    ) {
+      val delimiter = "[c:FWD]"
+      // Check frame text
+      val config: ConnectorForward
+      try {
+        config = Json.decodeFromString(frameText.substringAfter(delimiter))
+      } catch (e: Exception) {
+        println(e.message)
+        return
+      }
+      val usernameTarget = config.username
+      if (usernameTarget.isEmpty()) return
+      sendFrame(
+              username = usernameTarget, frame = ConnectorFrame(
+              type = "fwd:" + config.type, msg = config.value, date = now(), srcUsername = this.username))
     }
 
     suspend fun setOnlineState(user: Contact) {

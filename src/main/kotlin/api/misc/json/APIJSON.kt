@@ -778,6 +778,15 @@ data class ConnectorIncomingCall(
 @ExperimentalSerializationApi
 @InternalAPI
 @Serializable
+data class ConnectorForward(
+  var username: String,
+  var type: String,
+  var value: String
+)
+
+@ExperimentalSerializationApi
+@InternalAPI
+@Serializable
 data class SnippetsOfUniChatroomPayload(
   var snippets: ArrayList<SnippetLink> = arrayListOf()
 )

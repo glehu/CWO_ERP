@@ -668,7 +668,7 @@ class WisdomController : IModule {
               description = description.replace("(\r\n|\r|\n)".toRegex(), " ")
               // Remove mermaid markdown graphs since they can only exist as a whole, which might be too much to show
               description = description.replace(
-                      regex = """```.*(```)?""".toRegex(), replacement = """ `(Formatted Text / Code)  `""")
+                      regex = """```.*(```)?""".toRegex(), replacement = """ `(Formatted Text / Code)` """)
               if (truncated) description = "$description..."
               it.description = description
             }
